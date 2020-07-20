@@ -1,7 +1,6 @@
 ---
 title: "Github Pages の種類"
 date: 2020-07-20T22:50:17+09:00
-draft: true
 tags: ["hugo"]
 ---
 
