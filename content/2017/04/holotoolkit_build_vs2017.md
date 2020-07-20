@@ -1,0 +1,31 @@
+---
+Title: "Holotoolkit-unityでMSBuild-15.0(VS2017)を使う"
+Published: 2017-4-16
+Tags: []
+---
+
+VS2017からレジストリの構成が変わっている。
+
+
+http://stackoverflow.com/questions/328017/path-to-msbuild
+
+        public static string CalcMSBuildPath(string msBuildVersion)
+        {
+            if (msBuildVersion == "15.0")
+            {
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                    @"SOFTWARE\WOW6432Node\Microsoft\VisualStudio\SxS\VS7"))
+                {
+                    if (key == null)
+                    {
+                        return null;
+                    }
+                    string folder = key.GetValue(msBuildVersion) as string;
+                    string msBuildPath = Path.Combine(folder, "MSBuild\\15.0\\Bin\\msbuild.exe");
+                    return msBuildPath;
+                }
+            }
+
+            // 既存のコード
+        }
+
