@@ -1,7 +1,7 @@
 ---
 Title: "hugoでmapを使ってpartialに追加の変数を渡す"
 Published: 2017-5-14
-Tags: []
+Tags: ["hugo"]
 ---
 
 hugoのrange内のpartialから.Siteにアクセスできなくて困ったので、代替する方法を探した。

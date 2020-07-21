@@ -1,7 +1,7 @@
 ---
 Title: "Hugoに乗り換え"
 Published: 2017-2-17
-Tags: []
+Tags: ["hugo"]
 ---
 
 なんとなくまたサイトシステム更新。

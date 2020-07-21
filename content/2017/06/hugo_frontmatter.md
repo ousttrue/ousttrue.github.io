@@ -1,7 +1,7 @@
 ---
 Title: "hugoのfrontmatter"
 Published: 2017-6-5
-Tags: []
+Tags: ["hugo"]
 ---
 
 hugo newで新しく記事を作成した時のfrontmatterをカスタマイズするには。

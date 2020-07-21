@@ -1,7 +1,7 @@
 ---
 Title: "HoloToolkitのInputManager"
 Published: 2017-2-18
-Tags: []
+Tags: ["hololens"]
 ---
 
 HololensのInputManagerの動きを読んでみた

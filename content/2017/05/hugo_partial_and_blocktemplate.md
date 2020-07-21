@@ -1,7 +1,7 @@
 ---
 Title: "PartialとBlockTemplate"
 Published: 2017-5-23
-Tags: []
+Tags: ["hugo"]
 ---
 
 ページを部品に分解するPartialとBlockTemplateについて。

@@ -1,7 +1,7 @@
 ---
 Title: "Hugoのテーマ作り"
 Published: 2017-5-5
-Tags: []
+Tags: ["hugo"]
 ---
 
 hugoの仕組みも気になることだし作ってみることにした。
