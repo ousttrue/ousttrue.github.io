@@ -58,3 +58,5 @@ deploy:
   on:
     branch: hugo # hugo branch が push されたのをトリガーに public フォルダを master ブランチにpushする
 ```
+
+default branch を hugo の方に変えてから、git clone すると作業しやすい。
