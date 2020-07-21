@@ -4,17 +4,28 @@
 <head>
     <meta charset="utf-8">
     <title>{{ block "title" . }}{{ end }}</title>
+    <link ref="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css">
+    {{ $style := resources.Get "sass/main.scss" | toCSS | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}">
 </head>
 
-<body>
+<body class="container">
     {{ "<!-- _default/baseof.html start -->" | safeHTML }}
-    <ul>
-        <li><a href="{{ relURL "/" }}">トップ</a></li>
-        <li><a href="{{ relURL "/tags/" }}">タグ</a></li>
-    </ul>
-    <hr />
-    {{ block "main" . }}{{ end }}
+    <header class="header">
+        <ul>
+            <li><a href="{{ relURL "/" }}">トップ</a></li>
+            <li><a href="{{ relURL "/tags/" }}">タグ</a></li>
+        </ul>
+        <h1>{{ .Site.Title }}</h1>
+    </header>
+    <div class="main">
+        {{ block "main" . }}
+        {{ end }}
+    </div>
     {{ "<!-- _default/baseof.html end -->" | safeHTML }}
+    <footer class="footer">
+        FOOTER
+    </footer>
 </body>
 
 </html>
