@@ -3,10 +3,28 @@
 {{ end }}
 {{ define "main" }}
 {{ "<!-- _default/list.html start -->" | safeHTML }}
-<ul>
-{{ range .Pages -}}
-<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-{{ end -}}
-</ul>
+<div class="content">
+    {{ if .Content }}
+    <h1 class="title">{{- .Title -}}</h1>
+    {{- .Content -}}
+    {{ end }}
+    <h2>tag</h2>
+    {{ if and (.Params.tags) }}
+    {{ $site_obj := .Site }}
+    {{ range .Params.tags }}
+    {{ $t := . }}
+
+    {{ $tposts := index $site_obj.Taxonomies.tags (replace (lower $t) " " "-") }}
+    {{ if gt (len $tposts) 1 }}
+    <div class="same-category-tags-posts-area">
+        <h2>Other posts tagged by "{{ $t }}"</h2>
+        {{ range $tposts }}
+        {{ .Render "li" }}
+        {{ end }}
+    </div>
+    {{ end }}
+    {{ end }}
+    {{ end }}
+</div>
 {{ "<!-- _default/list.html end -->" | safeHTML }}
 {{ end }}
