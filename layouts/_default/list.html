@@ -8,6 +8,13 @@
     <h1 class="title">{{- .Title -}}</h1>
     {{- .Content -}}
     {{ end }}
+
+    <ul>
+        {{ range .Pages -}}
+        {{ .Render "li" }}
+        {{ end -}}
+    </ul>
+
     <h2>tag</h2>
     {{ if and (.Params.tags) }}
     {{ $site_obj := .Site }}
@@ -17,10 +24,12 @@
     {{ $tposts := index $site_obj.Taxonomies.tags (replace (lower $t) " " "-") }}
     {{ if gt (len $tposts) 1 }}
     <div class="same-category-tags-posts-area">
-        <h2>Other posts tagged by "{{ $t }}"</h2>
-        {{ range $tposts }}
-        {{ .Render "li" }}
-        {{ end }}
+        <h2>{{ $t }}</h2>
+        <ul>
+            {{ range $tposts }}
+            {{ .Render "li" }}
+            {{ end }}
+        </ul>
     </div>
     {{ end }}
     {{ end }}
