@@ -1,5 +1,5 @@
 {{ define "title" }}
-{{- .Title -}}
+{{- .Title -}}(list)
 {{ end }}
 {{ define "main" }}
 {{ "<!-- _default/list.html start -->" | safeHTML }}
@@ -9,32 +9,18 @@
     {{- .Content -}}
     {{ end }}
 
-    <ul>
-        {{ range .Pages -}}
-        {{ .Render "li" }}
-        {{ end -}}
-    </ul>
+    {{ partial "contents.html" .Pages }}
 
     <h2>tag</h2>
     {{ if and (.Params.tags) }}
     {{ $site := .Site }}
     {{ range .Params.tags }}
     {{ $t := . }}
-
     {{ $tposts := index $site.Taxonomies.tags (replace (lower $t) " " "-") }}
-    {{ if gt (len $tposts) 1 }}
-    <div class="same-category-tags-posts-area">
-        <h2>{{ $t }}</h2>
-        <ul>
-            {{ range $tposts }}
-            {{ .Render "li" }}
-            {{ end }}
-        </ul>
-    </div>
+    {{ partial "contents.html" $tposts}}
     {{ end }}
-    {{ end }}
-    {{ end }}
-    <span>© {{ now.Year }} Powered by <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a></span>
+    {{ end }}   
 </div>
+{{ partial "powered.html" }}
 {{ "<!-- _default/list.html end -->" | safeHTML }}
 {{ end }}
