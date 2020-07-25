@@ -1,5 +1,5 @@
 ---
-title: "w3mセクション"
+title: "w3m"
 date: 2020-07-25
 tags: ["w3m"]
 ---

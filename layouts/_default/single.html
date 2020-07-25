@@ -8,12 +8,8 @@
     <h1 class="title">{{- .Title -}}</h1>
     {{- .Date -}}
     {{ range .Params.tags -}}
-    {{ $tag := .}}
-    {{ if in $site.Sections $tag }}
-    <li>section <a href="{{ print "/tags/" . | relURL }}/">{{ . }}</a></li>
-    {{ else }}
-    <li>tag <a href="{{ print "/tags/" . | relURL }}/">{{ . }}</a></li>
-    {{ end }}
+    {{ $section_or_tag := $site.GetPage "section" . }}
+    {{ $section_or_tag.Render "li" }}
     {{ end -}}
     {{ .Content }}
 </div>

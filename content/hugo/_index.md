@@ -1,5 +1,5 @@
 ---
-title: "hugoセクション"
+title: "hugo"
 date: 2020-07-24
 tags: ["hugo"]
 ---
