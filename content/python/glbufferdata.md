@@ -1,6 +1,6 @@
 ---
 Title: "PyOpenGLのglBufferDataにはどんなデータが渡せるのか"
-Published: 2017-8-1
+date: 2017-08-01
 Tags: ["python", "opengl"]
 ---
 

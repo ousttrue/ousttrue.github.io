@@ -1,6 +1,6 @@
 ---
 Title: "SharpDXでHololens"
-Published: 2017-7-5
+date: 2017-07-05
 Tags: []
 ---
 

@@ -4,9 +4,6 @@ date: 2020-07-20T22:50:17+09:00
 tags: ["hugo"]
 ---
 
-再びサイトジェネレーターを `hugo` に戻した。
-今度は、 `travis-ci` の自動ビルドを入れた。
-
 https://docs.github.com/ja/github/working-with-github-pages/about-github-pages
 
 ## プロジェクトサイト (gh-pages)

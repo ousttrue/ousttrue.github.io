@@ -1,6 +1,6 @@
 ---
 Title: "Mir"
-Published: 2013-3-6
+date: 2013-03-06
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "node.js(Windows版)を自前ビルドする"
-Published: 2015-12-21
+date: 2015-12-21
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "SharpDX事始め"
-Published: 2013-12-1
+date: 2013-12-01
 Tags: []
 ---
 

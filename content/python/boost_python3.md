@@ -1,6 +1,6 @@
 ---
 Title: "Boost.PythonのPython3でのstd::string、std::wstringのふるまい"
-Published: 2017-8-10
+date: 2017-08-10
 Tags: ["c++", "python"]
 ---
 

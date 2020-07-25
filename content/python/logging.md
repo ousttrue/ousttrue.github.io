@@ -1,6 +1,6 @@
 ---
 Title: python の logger
-Published: 2019-04-30T23:19:20+09:00
+date: 2019-04-30T23:19:20+09:00
 Tags: ['python']
 ---
 

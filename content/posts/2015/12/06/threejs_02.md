@@ -1,6 +1,6 @@
 ---
 Title: "Three.jsにマウスによる視点操作を入れる"
-Published: 2015-12-6
+date: 2015-12-06
 Tags: []
 ---
 

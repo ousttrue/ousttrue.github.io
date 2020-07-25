@@ -1,6 +1,6 @@
 ---
 Title: "pyopengl"
-Published: 2019-08-24
+date: 2019-08-24
 Tags: ["python", "opengl"]
 ---
 

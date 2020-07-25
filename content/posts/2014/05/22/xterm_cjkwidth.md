@@ -1,6 +1,6 @@
 ---
 Title: "cygwin上のxorg上のtermで日本語を表示する"
-Published: 2014-5-22
+date: 2014-05-22
 Tags: []
 ---
 

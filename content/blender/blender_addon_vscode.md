@@ -1,6 +1,6 @@
 ---
 Title: "BlenderのAddOnを、VSCodeでデバッグする"
-Published: 2017-11-23
+date: 2017-11-23
 Tags: ["blender", "vscode"]
 ---
 

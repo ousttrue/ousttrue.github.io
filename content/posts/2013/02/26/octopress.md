@@ -1,6 +1,6 @@
 ---
 Title: "更にoctopressに引越し"
-Published: 2013-2-26
+date: 2013-02-26
 Tags: []
 ---
 

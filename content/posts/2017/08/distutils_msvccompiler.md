@@ -1,6 +1,6 @@
 ---
 Title: "distutilsでcl.exeが見つからない"
-Published: 2017-8-6
+date: 2017-08-06
 Tags: []
 ---
 

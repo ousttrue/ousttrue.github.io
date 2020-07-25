@@ -1,6 +1,6 @@
 ---
 Title: "Gentoo再構築"
-Published: 2013-5-20
+date: 2013-05-20
 Tags: []
 ---
 

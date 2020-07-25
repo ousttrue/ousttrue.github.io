@@ -1,6 +1,6 @@
 ---
 Title: "Python27のbuild_extで新しいVCを使う"
-Published: 2017-10-8
+date: 2017-10-08
 Tags: ["python", "c++"]
 ---
 

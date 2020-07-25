@@ -1,6 +1,6 @@
 ---
 Title: "cmakeで実行ファイルを作成する例"
-Published: 2017-5-28
+date: 2017-05-28
 Tags: []
 ---
 

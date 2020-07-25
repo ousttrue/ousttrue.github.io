@@ -1,6 +1,6 @@
 ---
 Title: "HoloToolkitのInputManager"
-Published: 2017-2-18
+date: 2017-02-18
 Tags: ["hololens"]
 ---
 

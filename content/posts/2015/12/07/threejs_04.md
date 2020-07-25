@@ -1,6 +1,6 @@
 ---
 Title: "Three.jsのJSONモデルフォーマット"
-Published: 2015-12-7
+date: 2015-12-07
 Tags: []
 ---
 

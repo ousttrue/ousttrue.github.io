@@ -1,6 +1,6 @@
 ---
 Title: "Pythonのlogger"
-Published: 2017-10-9
+date: 2017-10-09
 Tags: ["python"]
 ---
 

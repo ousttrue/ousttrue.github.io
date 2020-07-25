@@ -1,6 +1,6 @@
 ---
 Title: "MmdBridgeをビルドしてみる"
-Published: 2017-4-21
+date: 2017-04-21
 Tags: []
 ---
 

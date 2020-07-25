@@ -1,6 +1,6 @@
 ---
 Title: "UWPでNativeDllを使う"
-Published: 2017-5-3
+date: 2017-05-03
 Tags: []
 ---
 

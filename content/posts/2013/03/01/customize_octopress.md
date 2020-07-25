@@ -1,6 +1,6 @@
 ---
 Title: "octopress調整中"
-Published: 2013-3-1
+date: 2013-03-01
 Tags: []
 ---
 

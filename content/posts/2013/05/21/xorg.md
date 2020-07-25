@@ -1,6 +1,6 @@
 ---
 Title: "xorgインストール"
-Published: 2013-5-21
+date: 2013-05-21
 Tags: []
 ---
 

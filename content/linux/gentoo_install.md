@@ -1,6 +1,6 @@
 ---
 Title: "久しぶりにGentooインストール"
-Published: 2017-9-4
+date: 2017-09-04
 Tags: []
 ---
 

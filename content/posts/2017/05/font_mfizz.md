@@ -1,6 +1,6 @@
 ---
 Title: "Geek向けアイコンフォントfont-mfizz"
-Published: 2017-5-6
+date: 2017-05-06
 Tags: []
 ---
 

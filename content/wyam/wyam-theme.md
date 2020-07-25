@@ -1,6 +1,6 @@
 ---
 Title: wyam のテーマをカスタマイズする
-Published: 2019-08-17 19:00+9
+date: 2019-08-17
 Tags: ['wyam']
 ---
 cssとかの調整。

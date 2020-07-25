@@ -1,6 +1,6 @@
 ---
 Title: "hwclockの設定"
-Published: 2013-5-25
+date: 2013-05-25
 Tags: []
 ---
 

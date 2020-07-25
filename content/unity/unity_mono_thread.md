@@ -1,6 +1,6 @@
 ---
 Title: "UnityEditorでnativeスレッドからC# delegateを呼ぶと後でフリーズする件"
-Published: 2017-10-30
+date: 2017-10-30
 Tags: ["unity"]
 ---
 

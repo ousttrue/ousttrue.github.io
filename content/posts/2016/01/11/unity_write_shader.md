@@ -1,6 +1,6 @@
 ---
 Title: "UnityのShaderを書いてみる"
-Published: 2016-1-11
+date: 2016-01-11
 Tags: []
 ---
 

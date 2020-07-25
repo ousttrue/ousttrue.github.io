@@ -1,6 +1,6 @@
 ---
 Title: "hugoのfrontmatter"
-Published: 2017-6-5
+date: 2017-06-05
 Tags: ["hugo"]
 ---
 

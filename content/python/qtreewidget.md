@@ -1,6 +1,6 @@
 ---
 Title: "PyQtのTreeWidget"
-Published: 2017-10-14
+date: 2017-10-14
 Tags: ["python", "qt"]
 ---
 

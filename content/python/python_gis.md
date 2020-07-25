@@ -1,6 +1,6 @@
 ---
 Title: pythonでGIS
-Published: 2019-08-27
+date: 2019-08-27
 Tags: ["python"]
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "WindowsでPyAlembicできるのか"
-Published: 2017-8-7
+date: 2017-08-07
 Tags: []
 ---
 

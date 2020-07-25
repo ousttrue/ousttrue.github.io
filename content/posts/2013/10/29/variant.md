@@ -1,6 +1,6 @@
 ---
 Title: "wafでdebugとreleaseの設定を記述する(variant)"
-Published: 2013-10-29
+date: 2013-10-29
 Tags: []
 ---
 

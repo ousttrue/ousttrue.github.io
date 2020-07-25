@@ -1,6 +1,6 @@
 ---
 Title: "Oculus来たー"
-Published: 2013-6-24
+date: 2013-06-24
 Tags: []
 ---
 

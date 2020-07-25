@@ -1,6 +1,6 @@
 ---
 Title: "UnityのUsePassを追う"
-Published: 2016-1-10
+date: 2016-01-10
 Tags: []
 ---
 

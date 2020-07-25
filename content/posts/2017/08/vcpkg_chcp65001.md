@@ -1,6 +1,6 @@
 ---
 Title: "vcpkgでchcp 65001が必要な件"
-Published: 2017-8-31
+date: 2017-08-31
 Tags: []
 ---
 

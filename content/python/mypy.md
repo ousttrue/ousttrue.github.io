@@ -1,6 +1,6 @@
 ---
 Title: "mypyでPythonい型チェックを取り入れる"
-Published: 2017-10-15
+date: 2017-10-15
 Tags: ["python"]
 ---
 

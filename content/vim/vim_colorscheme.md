@@ -1,6 +1,6 @@
 ---
 Title: Vimのカラースキーム
-Published: 2019-08-25
+date: 2019-08-25
 Tags: ["vim"]
 ---
 

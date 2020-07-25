@@ -1,6 +1,6 @@
 ---
 Title: "lambdaの引数の型を得たい"
-Published: 2013-5-16
+date: 2013-05-16
 Tags: []
 ---
 

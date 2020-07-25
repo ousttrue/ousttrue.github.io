@@ -1,6 +1,6 @@
 ---
 Title: "Gstreamerを始めてみた"
-Published: 2013-6-11
+date: 2013-06-11
 Tags: []
 ---
 

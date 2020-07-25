@@ -1,6 +1,6 @@
 ---
 Title: "MediaSinkを実装する"
-Published: 2017-8-27
+date: 2017-08-27
 Tags: []
 ---
 

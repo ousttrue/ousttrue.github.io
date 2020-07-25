@@ -1,6 +1,6 @@
 ---
 Title: "Typescriptのモジュールでまたはまる"
-Published: 2017-6-14
+date: 2017-06-14
 Tags: []
 ---
 

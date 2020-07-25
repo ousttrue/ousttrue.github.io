@@ -1,6 +1,6 @@
 ---
 Title: "MeidaFoundation情報収集"
-Published: 2017-8-25
+date: 2017-08-25
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "Python3のasyncioについてのメモ"
-Published: 2017-6-10
+date: 2017-06-10
 Tags: []
 ---
 

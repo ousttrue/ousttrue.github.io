@@ -1,6 +1,6 @@
 ---
 Title: "Markdown形式メモ"
-Published: 2013-3-8
+date: 2013-03-08
 Tags: []
 ---
 

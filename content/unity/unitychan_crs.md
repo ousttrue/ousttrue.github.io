@@ -1,6 +1,6 @@
 ---
 Title: "Unityちゃんの-Candy Rock Star-を研究する"
-Published: 2017-12-15
+date: 2017-12-15
 Tags: ["unity"]
 ---
 

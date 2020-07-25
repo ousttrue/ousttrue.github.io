@@ -1,6 +1,6 @@
 ---
 Title: "PartialとBlockTemplate"
-Published: 2017-5-23
+date: 2017-05-23
 Tags: ["hugo"]
 ---
 

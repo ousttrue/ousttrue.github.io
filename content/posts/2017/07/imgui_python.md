@@ -1,6 +1,6 @@
 ---
 Title: "PythonでImGuiする"
-Published: 2017-7-31
+date: 2017-07-31
 Tags: []
 ---
 

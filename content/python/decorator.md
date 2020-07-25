@@ -1,6 +1,6 @@
 ---
 Title: pythonのdecorator
-Published: 2019-05-06T13:14:23+09:00
+date: 2019-05-06T13:14:23+09:00
 Tags: ['python']
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "Boost.GIL再学習"
-Published: 2013-3-2
+date: 2013-03-02
 Tags: []
 ---
 

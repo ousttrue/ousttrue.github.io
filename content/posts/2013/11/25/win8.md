@@ -1,6 +1,6 @@
 ---
 Title: "Windows8導入"
-Published: 2013-11-25
+date: 2013-11-25
 Tags: []
 ---
 

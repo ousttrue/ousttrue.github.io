@@ -1,6 +1,6 @@
 ---
 Title: "dat-guiを試してみる"
-Published: 2015-12-12
+date: 2015-12-12
 Tags: []
 ---
 

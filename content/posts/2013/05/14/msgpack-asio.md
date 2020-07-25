@@ -1,6 +1,6 @@
 ---
 Title: "msgpack-rpcのasio版を作成中"
-Published: 2013-5-14
+date: 2013-05-14
 Tags: []
 ---
 

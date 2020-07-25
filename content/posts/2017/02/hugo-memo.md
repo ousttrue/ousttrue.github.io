@@ -1,6 +1,6 @@
 ---
 Title: "Hugoに乗り換え"
-Published: 2017-2-17
+date: 2017-02-17
 Tags: ["hugo"]
 ---
 

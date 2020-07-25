@@ -1,6 +1,6 @@
 ---
 Title: "Windows Creators UPDATEが来たしWSL環境を整備"
-Published: 2017-4-14
+date: 2017-04-14
 Tags: []
 ---
 

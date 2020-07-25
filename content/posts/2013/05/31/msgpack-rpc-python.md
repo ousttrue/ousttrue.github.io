@@ -1,6 +1,6 @@
 ---
 Title: "おれおれmsgpack-rpc-pythonを作る"
-Published: 2013-5-31
+date: 2013-05-31
 Tags: []
 ---
 

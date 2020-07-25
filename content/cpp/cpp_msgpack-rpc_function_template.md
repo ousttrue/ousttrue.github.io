@@ -1,6 +1,6 @@
 ---
 Title: msgpack-rpc-asioの関数登録と実行
-Published: 2013-05-19
+date: 2013-05-19
 Tags: ["c++"]
 ---
 

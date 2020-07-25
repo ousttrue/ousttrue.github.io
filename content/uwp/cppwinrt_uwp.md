@@ -1,6 +1,6 @@
 ---
 Title: "C++WinRTではじめるUWP"
-Published: 2017-9-14
+date: 2017-09-14
 Tags: ["c++", "uwp"]
 ---
 

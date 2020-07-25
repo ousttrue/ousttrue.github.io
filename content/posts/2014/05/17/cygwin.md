@@ -1,6 +1,6 @@
 ---
 Title: "cygwinの導入とgit最新版のビルドまで"
-Published: 2014-5-17
+date: 2014-05-17
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "Boost.Pythonのリンク周り"
-Published: 2017-4-22
+date: 2017-04-22
 Tags: []
 ---
 

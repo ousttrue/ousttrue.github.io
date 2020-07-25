@@ -1,6 +1,6 @@
 ---
 Title: "IrrlichtにVRPNを合体する"
-Published: 2013-6-22
+date: 2013-06-22
 Tags: []
 ---
 

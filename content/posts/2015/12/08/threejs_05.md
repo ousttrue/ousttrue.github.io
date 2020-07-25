@@ -1,6 +1,6 @@
 ---
 Title: "Three.jsのBuild"
-Published: 2015-12-8
+date: 2015-12-08
 Tags: []
 ---
 

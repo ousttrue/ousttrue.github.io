@@ -1,6 +1,6 @@
 ---
 Title: "c++でHololens"
-Published: 2017-7-9
+date: 2017-07-09
 Tags: []
 ---
 

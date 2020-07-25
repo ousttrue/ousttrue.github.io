@@ -1,6 +1,6 @@
 ---
 Title: "Jadeを入れてみる"
-Published: 2015-11-20
+date: 2015-11-20
 Tags: []
 ---
 

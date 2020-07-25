@@ -1,6 +1,6 @@
 ---
 Title: "QTableViewとQAbstractTableModel"
-Published: 2013-1-4
+date: 2013-01-04
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "MmdBridgeのビルドスクリプトを作った"
-Published: 2017-4-24
+date: 2017-04-24
 Tags: []
 ---
 

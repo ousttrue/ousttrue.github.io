@@ -1,6 +1,6 @@
 ---
 Title: "CMakeでBoost.Pythonを使う"
-Published: 2017-8-9
+date: 2017-08-09
 Tags: []
 ---
 

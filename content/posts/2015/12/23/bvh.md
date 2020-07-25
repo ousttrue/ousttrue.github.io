@@ -1,6 +1,6 @@
 ---
 Title: "Three.jsでbvh"
-Published: 2015-12-23
+date: 2015-12-23
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "gypでdebugとrelease設定を分ける"
-Published: 2014-5-16
+date: 2014-05-16
 Tags: []
 ---
 

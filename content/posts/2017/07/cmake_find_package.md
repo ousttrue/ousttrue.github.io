@@ -1,6 +1,6 @@
 ---
 Title: "cmakeのfind_package"
-Published: 2017-7-20
+date: 2017-07-20
 Tags: []
 ---
 

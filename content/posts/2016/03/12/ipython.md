@@ -1,6 +1,6 @@
 ---
 Title: "IPythonことはじめ"
-Published: 2016-3-12
+date: 2016-03-12
 Tags: []
 ---
 

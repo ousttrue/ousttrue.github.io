@@ -1,6 +1,6 @@
 ---
 Title: "FontAwesomeを取り入れる"
-Published: 2015-12-11
+date: 2015-12-11
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "RenderingスレッドでC#関数を呼び出すと次回play時に固まる"
-Published: 2017-4-15
+date: 2017-04-15
 Tags: []
 ---
 

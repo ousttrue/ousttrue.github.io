@@ -1,6 +1,6 @@
 ---
 Title: "Tinkererに引越し"
-Published: 2013-10-21
+date: 2013-10-21
 Tags: []
 ---
 

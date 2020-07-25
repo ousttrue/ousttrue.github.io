@@ -1,6 +1,6 @@
 ---
 Title: "gulpで静的サイト生成"
-Published: 2015-11-12
+date: 2015-11-12
 Tags: []
 ---
 

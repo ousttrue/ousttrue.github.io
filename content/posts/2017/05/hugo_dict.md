@@ -1,6 +1,6 @@
 ---
 Title: "hugoでmapを使ってpartialに追加の変数を渡す"
-Published: 2017-5-14
+date: 2017-05-14
 Tags: ["hugo"]
 ---
 

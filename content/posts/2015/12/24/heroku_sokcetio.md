@@ -1,6 +1,6 @@
 ---
 Title: "Node.jsでSocket.IOなアプリをHerokuにデプロイ"
-Published: 2015-12-24
+date: 2015-12-24
 Tags: []
 ---
 

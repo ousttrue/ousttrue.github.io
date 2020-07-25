@@ -1,6 +1,6 @@
 ---
 Title: "vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"
-Published: 2017-7-18
+date: 2017-07-18
 Tags: []
 ---
 

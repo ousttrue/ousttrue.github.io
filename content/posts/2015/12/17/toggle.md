@@ -1,6 +1,6 @@
 ---
 Title: "特定のHtmlElementを画面いっぱいにするToggleの実験"
-Published: 2015-12-17
+date: 2015-12-17
 Tags: []
 ---
 

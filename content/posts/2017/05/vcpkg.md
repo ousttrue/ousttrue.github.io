@@ -1,6 +1,6 @@
 ---
 Title: "vc向けのメタビルドツールvcpkgを発見"
-Published: 2017-5-4
+date: 2017-05-04
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "Windows上でPython3.5をビルドする"
-Published: 2017-4-20
+date: 2017-04-20
 Tags: []
 ---
 

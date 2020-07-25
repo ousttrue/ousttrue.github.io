@@ -1,5 +1,5 @@
 ---
-Published: 2019-04-18T16:10:34+09:00
+date: 2019-04-18T16:10:34+09:00
 Tags: ['clang', 'python', 'c++', 'dlang', 'com']
 Title: pythonモジュール clang で C++ ヘッダーを変換する
 ---

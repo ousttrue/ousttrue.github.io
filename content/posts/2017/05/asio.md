@@ -1,6 +1,6 @@
 ---
 Title: "boostから独立したasio"
-Published: 2017-5-5
+date: 2017-05-05
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "node-ffiでstdcallが使いたい(頓挫)"
-Published: 2015-12-19
+date: 2015-12-19
 Tags: []
 ---
 

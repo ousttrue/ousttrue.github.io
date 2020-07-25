@@ -1,6 +1,6 @@
 ---
 Title: "GentooでX11を設定する"
-Published: 2017-9-5
+date: 2017-09-05
 Tags: []
 ---
 

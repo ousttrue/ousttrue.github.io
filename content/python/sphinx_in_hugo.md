@@ -1,6 +1,6 @@
 ---
 Title: "hugoで作ったサイトにSphinxを埋めこむ"
-Published: 2017-9-16
+date: 2017-09-16
 Tags: []
 ---
 

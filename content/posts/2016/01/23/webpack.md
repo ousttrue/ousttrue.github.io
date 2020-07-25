@@ -1,6 +1,6 @@
 ---
 Title: "WebPackやってみる"
-Published: 2016-1-23
+date: 2016-01-23
 Tags: []
 ---
 

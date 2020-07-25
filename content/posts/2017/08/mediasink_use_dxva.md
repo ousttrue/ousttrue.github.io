@@ -1,6 +1,6 @@
 ---
 Title: "MediaSinkでDXVA"
-Published: 2017-8-28
+date: 2017-08-28
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "Unity5.3でWebGL"
-Published: 2015-12-30
+date: 2015-12-30
 Tags: []
 ---
 

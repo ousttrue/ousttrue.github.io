@@ -1,6 +1,6 @@
 ---
 Title: "Octopress整備"
-Published: 2013-3-11
+date: 2013-03-11
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "TypeScriptでThree.jsことはじめ"
-Published: 2015-12-6
+date: 2015-12-06
 Tags: []
 ---
 

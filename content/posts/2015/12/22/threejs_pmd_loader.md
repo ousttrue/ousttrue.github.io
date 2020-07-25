@@ -1,6 +1,6 @@
 ---
 Title: "Three.jsでpmd読み込み"
-Published: 2015-12-22
+date: 2015-12-22
 Tags: []
 ---
 

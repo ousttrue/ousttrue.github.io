@@ -1,6 +1,6 @@
 ---
 Title: "alsaとかpulseaudio設定"
-Published: 2013-5-22
+date: 2013-05-22
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "Socket.IOな実験環境"
-Published: 2015-12-11
+date: 2015-12-11
 Tags: []
 ---
 

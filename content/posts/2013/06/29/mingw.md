@@ -1,6 +1,6 @@
 ---
 Title: "MinGW環境"
-Published: 2013-6-29
+date: 2013-06-29
 Tags: []
 ---
 

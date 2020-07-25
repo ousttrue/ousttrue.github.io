@@ -1,6 +1,6 @@
 ---
 Title: "Hugoのレイアウトとコンテントの関係"
-Published: 2017-5-22
+date: 2017-05-22
 Tags: ["hugo"]
 ---
 

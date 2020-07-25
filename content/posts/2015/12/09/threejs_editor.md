@@ -1,6 +1,6 @@
 ---
 Title: "Three.jsのEditor"
-Published: 2015-12-9
+date: 2015-12-09
 Tags: []
 ---
 

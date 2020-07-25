@@ -1,6 +1,6 @@
 ---
 Title: "sphinxも入れてみる"
-Published: 2013-2-28
+date: 2013-02-28
 Tags: []
 ---
 

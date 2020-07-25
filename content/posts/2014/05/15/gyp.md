@@ -1,6 +1,6 @@
 ---
 Title: "python製のビルドツールgypを使ってみる"
-Published: 2014-5-15
+date: 2014-05-15
 Tags: []
 ---
 

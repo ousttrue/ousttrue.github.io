@@ -1,6 +1,6 @@
 ---
 Title: "UnityでToon"
-Published: 2016-1-12
+date: 2016-01-12
 Tags: []
 ---
 

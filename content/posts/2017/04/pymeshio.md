@@ -1,6 +1,6 @@
 ---
 Title: "pymeshio再構築計画"
-Published: 2017-4-18
+date: 2017-04-18
 Tags: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 Title: "pythonのmoduleとpackage周り"
-Published: 2019-05-01T00:47:39+09:00
+date: 2019-05-01T00:47:39+09:00
 Tags: ['python']
 ---
 

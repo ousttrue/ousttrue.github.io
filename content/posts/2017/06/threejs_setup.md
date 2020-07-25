@@ -1,6 +1,6 @@
 ---
 Title: "threejsとwebsocketを使った開発環境"
-Published: 2017-6-7
+date: 2017-06-07
 Tags: []
 ---
 
