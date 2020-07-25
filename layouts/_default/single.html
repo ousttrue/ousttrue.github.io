@@ -2,15 +2,19 @@
 {{- .Title -}}
 {{ end }}
 {{ define "main" }}
+{{ $site := .Site }}
 {{ "<!-- _default/single.html start -->" | safeHTML }}
 <div class="content">
     <h1 class="title">{{- .Title -}}</h1>
     {{- .Date -}}
-    <ul>
-        {{ range .Params.tags -}}
-        <li><a href="{{ print "/tags/" . | relURL }}/">{{ . }}</a></li>
-        {{ end -}}
-    </ul>
+    {{ range .Params.tags -}}
+    {{ $tag := .}}
+    {{ if in $site.Sections $tag }}
+    <li>section <a href="{{ print "/tags/" . | relURL }}/">{{ . }}</a></li>
+    {{ else }}
+    <li>tag <a href="{{ print "/tags/" . | relURL }}/">{{ . }}</a></li>
+    {{ end }}
+    {{ end -}}
     {{ .Content }}
 </div>
 {{ "<!-- _default/single.html end -->" | safeHTML }}
