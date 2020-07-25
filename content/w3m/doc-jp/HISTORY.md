@@ -1,3 +1,10 @@
+---
+title: "W3M HISTORY"
+date: 2001-11-08
+tags: ["w3m"]
+---
+
+```
 2001/3/23 ==============================================================
 From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
 Subject: [w3m-dev 01807] Re: w3m-0.2.0
@@ -4271,3 +4278,4 @@ table で，rowspan が3以上でborder=1の場合に，表の中に
 記録開始．αからβバージョンに格上げ．
 これまでの config.h 編集方式をやめて，configure を書く．
 添付のBoehm GC library を 4.10 から 4.11 に上げる．
+```
