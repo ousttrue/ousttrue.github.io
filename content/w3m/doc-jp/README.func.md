@@ -1,3 +1,10 @@
+---
+title: "README.func"
+date: 2003-09-23
+tags: ["w3m"]
+---
+
+```
 ABORT		確認せずにw3mを終了します
 ACCESSKEY	Accesskey メニューを立ち上げます
 ALARM		アラームを設定します
@@ -143,3 +150,4 @@ VIEW_BOOKMARK	ブックマークを読み込みます
 VIEW_IMAGE	リンクに対応する画像を表示します
 WHEREIS		ファイル末尾に向かって正規表現を検索します
 WRAP_TOGGLE     折り返し検索モードを切り換えます
+```
