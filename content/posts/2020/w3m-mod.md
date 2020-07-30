@@ -2,7 +2,6 @@
 title: "w3m改造"
 date: 2020-07-25T23:59:50+09:00
 tags: ["w3m"]
-draft: true
 ---
 
 以前にも何度かやったことがあるのだけど立ち消えになっていた、 [w3m](http://w3m.sourceforge.net/index.ja.html) の改造を試みている。
@@ -272,14 +271,14 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
 
 機能ごとにモジュールに分割する。
 
-* Term
-    * 低レベル描画
-        * tputs termio/terminfo
-    * キーボード入力
-    * マウス入力
-    * リサイズイベント
-    * SIGNALハンドリング
 * UI(frontend)
+    * Term
+        * 低レベル描画
+            * tputs termcap
+        * キーボード入力
+        * マウス入力
+        * リサイズイベント
+        * SIGNALハンドリング
     * 高レベル描画
     * Tab
     * Buffer
@@ -292,27 +291,38 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
         * History
 * IO(transport)
     * IStream
-        * polymorphism化
-        * http
-            * HttpSession
-                * HttpRequest
-                * HttpResponse
-            * cookie
-            * redirect
-            * referer
-        * https
-        * ftp
-    * Compression
+        * union => class polymorphism化
+        * file descriptor
+        * FILE*
+        * ssl
+        * memory
+        * Compression
     * LocalCGI
-* Document/String
-    * 文字コード
+
+* http
+    * HttpSession
+        * HttpRequest
+        * HttpResponse
+    * cookie
+    * redirect
+    * referer
+    * https
+    * ftp
     * URL
-    * html parse
-        * HTMLtagproc1
-        * HTMLlineproc2body
-            * process_form
-            * process_form_int
-        * form
-        * table
-        * frame
+
+* HTML
+    * HTMLtagproc1
+    * HTMLlineproc2body
+        * process_form
+        * process_form_int
+    * form
+    * table
+    * frame
     * term rendering
+
+* String
+    * 文字コード
+    * quote
+    * url escape
+    * html escape
+    * html entity
