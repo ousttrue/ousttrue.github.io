@@ -1,9 +1,14 @@
+---
+title: "国際化/マルチリンガル化 w3m"
+date: 2011-01-04
+tags: ["w3m"]
+---
 
 国際化/マルチリンガル化 w3m 
                                                               2003/03/08
                                                               坂本 浩則
 
-はじめに
+## はじめに
 
   w3m を国際化/マルチリンガル化しました。w3m-0.4.1 に対する拡張版を
   以下に置いてあります。
@@ -17,44 +22,44 @@
 
   現在のところ以下の機能があります。
 
-扱える文字コード
+## 扱える文字コード
 
-  ・日本語
-      EUC-JP           - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212
-      (EUC-JISX0213)     (JIS X 0213)
-      ISO-2022-JP      - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212, etc.
-      ISO-2022-JP-2    - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212,
+  * 日本語
+      * EUC-JP           - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212
+      * (EUC-JISX0213)     (JIS X 0213)
+      * ISO-2022-JP      - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212, etc.
+      * ISO-2022-JP-2    - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212,
                          GB 2312, KS X 1001, ISO 8859-1, ISO 8859-7, etc.
-      ISO-2022-JP-3    - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0213, etc
-      Shift_JIS(CP932) - US_ASCII, JIS X 0208, JIS X 0201, CP932 の拡張文字
-      Shift_JISX0213   - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0213
-  ・中国語(簡体字)
-      EUC-CN(GB2312) - US_ASCII, GB 2312
-      ISO-2022-CN    - US_ASCII, GB 2312, CNS-11643-1,..7, etc.
-      GBK(CP936)     - US_ASCII, GB 2312, GBK
-      GB18030        - US_ASCII, GB 2312, GBK, GB18030, Unicode
-      HZ-GB-2312     - US_ASCII, GB 2312
-  ・中国語(台湾、繁体字)
-      EUC-TW        - US_ASCII, CNS 11643-1,..16
-      ISO-2022-CN   - US_ASCII, CNS-11643-1,..7, GB 2312, etc.
-      Big5(CP950)   - Big5
-      HKSCS         - Big5, HKSCS
-  ・韓国語
-      EUC-KR        - US_ASCII, KS X 1001 Wansung
-      ISO-2022-KR   - US_ASCII, KS X 1001 Wansung, etc.
-      Johab         - US_ASCII, KS X 1001 Johab
-      UHC(CP949)    - US_ASCII, KS X 1001 Wansung, UHC
-  ・ベトナム語
-      TCVN-5712 VN-1, VISCII 1.1, VPS, CP1258
-  ・タイ語
-      TIS-620 (ISO-8859-11), CP874
-  ・その他
-      US_ASCII, ISO-8859-1 ～ 10, 13 ～ 15,
-      KOI8-R, KOI8-U, NeXT, CP437, CP737, CP775, CP850, CP852, CP855, CP856,
-      CP857, CP860, CP861, CP862, CP863, CP864, CP865, CP866, CP869, CP1006,
-      CP1250, CP1251, CP1252, CP1253, CP1254, CP1255, CP1256, CP1257
-  ・Unicode (UCS-4)
-      UTF-8, UTF-7
+      * ISO-2022-JP-3    - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0213, etc
+      * Shift_JIS(CP932) - US_ASCII, JIS X 0208, JIS X 0201, CP932 の拡張文字
+      * Shift_JISX0213   - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0213
+  * 中国語(簡体字)
+      * EUC-CN(GB2312) - US_ASCII, GB 2312
+      * ISO-2022-CN    - US_ASCII, GB 2312, CNS-11643-1,..7, etc.
+      * GBK(CP936)     - US_ASCII, GB 2312, GBK
+      * GB18030        - US_ASCII, GB 2312, GBK, GB18030, Unicode
+      * HZ-GB-2312     - US_ASCII, GB 2312
+  * 中国語(台湾、繁体字)
+      * EUC-TW        - US_ASCII, CNS 11643-1,..16
+      * ISO-2022-CN   - US_ASCII, CNS-11643-1,..7, GB 2312, etc.
+      * Big5(CP950)   - Big5
+      * HKSCS         - Big5, HKSCS
+  * 韓国語
+      * EUC-KR        - US_ASCII, KS X 1001 Wansung
+      * ISO-2022-KR   - US_ASCII, KS X 1001 Wansung, etc.
+      * Johab         - US_ASCII, KS X 1001 Johab
+      * UHC(CP949)    - US_ASCII, KS X 1001 Wansung, UHC
+  * ベトナム語
+      * TCVN-5712 VN-1, VISCII 1.1, VPS, CP1258
+  * タイ語
+      * TIS-620 (ISO-8859-11), CP874
+  * その他
+      * US_ASCII, ISO-8859-1 ～ 10, 13 ～ 15,
+      * KOI8-R, KOI8-U, NeXT, CP437, CP737, CP775, CP850, CP852, CP855, CP856,
+      * CP857, CP860, CP861, CP862, CP863, CP864, CP865, CP866, CP869, CP1006,
+      * CP1250, CP1251, CP1252, CP1253, CP1254, CP1255, CP1256, CP1257
+  * Unicode (UCS-4)
+      * UTF-8, UTF-7
 
   注意)
     * JIS X 0201 のローマ字部分と GB 1988(中国語ASCII) は US_ASCII として
@@ -63,7 +68,7 @@
     * JIS C 6226(旧JIS) は JIS X 0208 として扱います。
     * HZ-GB-2312 の '~\n' は対応していません。
 
-表示
+## 表示
 
   多言語表示させるためには現在のところ以下の方法があります。
 
@@ -138,7 +143,7 @@
   端末がフォントを切替えられるならば文書の言語に従って表示コードと
   フォントを切替えて使用することも可能です。
 
-コマンドラインオプション
+## コマンドラインオプション
 
    -I <優先文書コード>
    -O <表示/出力コード>
@@ -176,7 +181,7 @@
         u(tf8):    UTF-8
         u(tf)7:    UTF-7
 
-オプションパネル
+## オプションパネル
 
    display_charset
        表示用文字コード
@@ -241,16 +246,16 @@
        テーブルやメニューの枠に DEC 特殊文字文字を使う(デフォルト OFF)
        OFF の場合 CJK の文字コード、UTF-8 では罫線を使う。
 
-コード変換
+## コード変換
 
-  ・各コード間で特別の変換を用意しているものは、
+  * 各コード間で特別の変換を用意しているものは、
     * EUC-JP <-> ISO-2022-JP <-> Shift-JIS
     * EUC-CN <-> ISO-2022-CN <-> HZ-GB-2312
     * EUC-TW <-> ISO-2022-CN
     * EUC-KR <-> ISO-2022-KR <-> Johab (記号、Hanja のみ)
     のみです。それ以外は Unicode を介した変換となります。
 
-文書のコードの切替え
+## 文書のコードの切替え
 
    '=' で文書の情報を表示させると文書のコードを選択できる様になっています。
 
@@ -260,7 +265,7 @@
    の様に設定しておくと、C で現在の文書のコードを、M-c で標準の文書の
    コードを変更できます。
 
-一行エディタ
+## 一行エディタ
 
    8bit 文字の場合は、表示コードが 8bit コードの場合はそのコードで、
    表示コードが 7bit コード(ISO-2022) の場合は、対応する EUC で
@@ -271,11 +276,11 @@
    理由は、G1 ～ G3 を使うために必要な SI(\017, ^O), SO(\016, ^N)
    SS3(ESC O, ^[O) が他に割り当てられているためです。
 
-正規表現
+## 正規表現
 
    対応しています。[あ-ん] なども使用可能です。
 
-URL やファイルの文字コード
+## URL やファイルの文字コード
 
    文書内の URL は文書の文字コード、local ファイルの文字コードは SystemCharset
    であつかわれます。ただし、通常 % でエンコードして扱われます。
@@ -291,7 +296,7 @@ URL やファイルの文字コード
    * GOTO('U') はコマンドラインと全く同じ扱いにしています。
      current の URL も NULL にしています。
 
-既知のバグ(というか問題のある仕様)
+## 既知のバグ(というか問題のある仕様)
 
  * 日本語 L10N はしてますが、I18N(NLS) 関連は未対応です。
  * 結合文字が文字列の先頭にきた場合、レンダリングが崩れる(かもしれない)。
@@ -303,16 +308,16 @@ URL やファイルの文字コード
  * JIS X 0208:1990 の ESC & @ は無視されます。
 
 -----------------------------------
-TODO
+## TODO
 
  * NLS 対応
-   # NLS ライブラリ(gettext, catgets) を使うか、自前で処理するか？
-   # 落ち着いてからでも良いと思う。
+   * NLS ライブラリ(gettext, catgets) を使うか、自前で処理するか？
+   * 落ち着いてからでも良いと思う。
  * #undef USE_M17N, #define LANG EN, #undef USE_UNICODE のチェック
-   # 時々やらないとまずいかな。やっぱり。
+   * 時々やらないとまずいかな。やっぱり。
 
 -----------------------------------
-更新記録
+## 更新記録
 
 2003/03/08	w3m-0.4.1-m17n-20030308
  * w3m-0.4.1 ベース
