@@ -12,10 +12,17 @@
     {{ $this := . }}
     {{ $site := .Site }}
     {{ $pages := .Pages }}
+    
+    {{ $names := (slice $this.Path) }}
+    {{ range $pages }}
+    {{ $names = $names | append .Path }}
+    {{ end }}
+
     {{ $tag := .Name }}
     {{ range index $site.Taxonomies.tags (replace (lower $tag) " " "-") }}
-    {{ if and (not (eq . $this)) (not (in $pages .)) }}
+    {{ if not (in $names .Path) }}
     {{ $pages = $pages | append . }}
+    {{ $names = $names | append .Path }}
     {{ end }}
     {{ end }}
 
