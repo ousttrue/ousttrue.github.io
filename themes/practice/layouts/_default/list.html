@@ -9,16 +9,20 @@
     {{- .Content -}}
     {{ end }}
 
-    {{ partial "contents.html" .Pages }}
-
-    {{ if and (.Params.tags) }}
+    {{ $this := . }}
     {{ $site := .Site }}
+    {{ $pages := .Pages }}
     {{ range .Params.tags }}
-    {{ $t := . }}
-    {{ $tposts := index $site.Taxonomies.tags (replace (lower $t) " " "-") }}
-    {{ partial "contents.html" $tposts}}
+    {{ $tag := . }}
+    {{ range index $site.Taxonomies.tags (replace (lower $tag) " " "-") }}
+    {{ if and (not (eq . $this)) (not (in $pages .)) }}
+    {{ $pages = $pages | append . }}
     {{ end }}
-    {{ end }}   
+    {{ end }}
+    {{ end }}
+
+    {{ partial "contents.html" $pages }}
+
 </div>
 {{ partial "powered.html" }}
 {{ "<!-- _default/list.html end -->" | safeHTML }}
