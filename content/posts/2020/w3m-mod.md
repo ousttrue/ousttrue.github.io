@@ -267,6 +267,11 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
 メンバーに `std::string` 等を配置できるようになる。
 あとで、 `gc_cleanup` から `std::shared_ptr` に変更することも視野に入れている。
 
+## グローバル変数を減らす
+
+関数の中でグローバル変数にアクセスしている場合(CurrentBufferなど)、これを関数の引数経由でもらうようにする。
+できればメソッドにする。
+
 ## モジュールに分割
 
 機能ごとにモジュールに分割する。
@@ -326,3 +331,49 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
     * url escape
     * html escape
     * html entity
+    * char_util
+        * myctype
+    * string_view_util
+        * strip
+    * string_util
+        * malloc
+
+## イベントキュー的なのを導入する
+
+```
+{
+    type = Key
+    int = keycode
+}
+{
+    type = resize
+    int = COLS
+    int = LINES
+}
+{
+    // dirty flag
+    type = redraw
+}
+```
+
+# メモ
+
+## リンクをたどる(followLink)
+
+followA();
+loadLink();
+loadGeneralFile();
+
+cmd_loadURL();
+loadGeneralFile();
+
+cmd_loadURL();
+loadGeneralFile();
+
+## 描画する
+
+displayBuffer
+redrawBuffer
+redrawNLine
+
+## key入力
