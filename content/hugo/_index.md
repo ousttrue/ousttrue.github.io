@@ -9,7 +9,7 @@ hugo メモ。
 
 # TODO
 
-* 同じページが2回出ないようにする
-* このページ自身へのリンクを除外する
-* What's on this Page
-* paging
+* [x] 同じページが2回出ないようにする
+* [x] このページ自身へのリンクを除外する
+* [ ] What's on this Page
+* [ ] paging

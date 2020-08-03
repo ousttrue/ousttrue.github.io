@@ -1,7 +1,7 @@
 ---
-Title: "GentooでBluetooth"
+title: "GentooでBluetooth"
 date: 2013-05-27
-Tags: []
+tags: ['linux']
 ---
 
 GentooでBluetooth

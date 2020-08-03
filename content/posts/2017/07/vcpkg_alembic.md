@@ -1,7 +1,7 @@
 ---
 Title: "vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"
 date: 2017-07-18
-Tags: []
+Tags: ['vcpkg', 'cg']
 ---
 
 mmdbridgeのvcpkgを使ったビルド手順を作ったついでにAlembicのvcpkg向けパッケージを作ってみる。

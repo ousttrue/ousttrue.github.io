@@ -1,7 +1,7 @@
 ---
 Title: "C++WinRTではじめるUWP"
 date: 2017-09-14
-Tags: ["c++", "uwp"]
+Tags: ["cpp", "uwp"]
 ---
 
 C++/CXを置き換えるよさげなライブラリC++WinRTを発見した。

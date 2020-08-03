@@ -1,7 +1,7 @@
 ---
 Title: "python製のビルドツールgypを使ってみる"
 date: 2014-05-15
-Tags: []
+Tags: ['gyp']
 ---
 
 python製のビルドツールgypを使ってみる

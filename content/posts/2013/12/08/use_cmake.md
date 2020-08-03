@@ -1,7 +1,7 @@
 ---
 Title: "cmakeを使ってみる(Windowsかつコマンドラインで)"
 date: 2013-12-08
-Tags: []
+Tags: ['cmake']
 ---
 
 ArUcoを使おうとしたら、msvcpdのvc10版を要求されてvc12でデバッグビルドが動かなかった。

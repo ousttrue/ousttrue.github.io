@@ -1,7 +1,7 @@
 ---
 Title: "PythonでImGuiする"
 date: 2017-07-31
-Tags: []
+Tags: ['python', 'imgui']
 ---
 
 PythonでImGuiするのがよさげな気がしたのでやってみた。

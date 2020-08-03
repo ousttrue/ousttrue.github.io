@@ -1,7 +1,7 @@
 ---
 Title: "msbuildとcmakeの在りか"
 date: 2017-05-28
-Tags: []
+Tags: ['cmake']
 ---
 
 bat作るときにたまに使う

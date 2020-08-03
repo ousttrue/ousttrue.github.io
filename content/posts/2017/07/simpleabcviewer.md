@@ -1,7 +1,7 @@
 ---
 Title: "SimpleAbcViewerをビルドしてみる"
 date: 2017-07-28
-Tags: []
+Tags: ['vcpkg', 'cg']
 ---
 
 alembic-1.7.1に無かったので、alembic-1.5.8から発掘してビルドしてみた。

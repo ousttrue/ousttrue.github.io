@@ -1,7 +1,7 @@
 ---
 Title: "alsaとかpulseaudio設定"
 date: 2013-05-22
-Tags: []
+Tags: ['linux']
 ---
 
 alsaとかpulseaudio設定

@@ -1,7 +1,7 @@
 ---
 Title: "Gentooでネットワークインターフェースがeth0にならない件"
 date: 2013-05-26
-Tags: []
+Tags: ['linux']
 ---
 
 Gentooでネットワークインターフェースがeth0にならない件

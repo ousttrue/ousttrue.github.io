@@ -1,7 +1,7 @@
 ---
 Title: "MediaSinkを実装する"
 date: 2017-08-27
-Tags: []
+Tags: ['d3d', 'mediafoundation']
 ---
 
 DX11VideoRendererを解読して、VideoRenderer要件を探る。

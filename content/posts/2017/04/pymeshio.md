@@ -1,7 +1,7 @@
 ---
 Title: "pymeshio再構築計画"
 date: 2017-04-18
-Tags: []
+Tags: ['blender']
 ---
 
 はじめてのBlenderアドオン開発を読んでいる。pymeshioを更新してBlenderの作法にちゃんと適合させようというわけである。

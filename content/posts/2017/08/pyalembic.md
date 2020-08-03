@@ -1,7 +1,7 @@
 ---
 Title: "WindowsでPyAlembicできるのか"
 date: 2017-08-07
-Tags: []
+Tags: ['python', 'cg', 'cmake']
 ---
 
 Windows上でPyAlembicを使いたいのだができるのか。

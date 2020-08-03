@@ -1,7 +1,7 @@
 ---
 Title: "xorgインストール"
 date: 2013-05-21
-Tags: []
+Tags: ['linux']
 ---
 
 xorgインストール

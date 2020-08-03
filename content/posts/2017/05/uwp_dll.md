@@ -1,7 +1,7 @@
 ---
 Title: "UWPでNativeDllを使う"
 date: 2017-05-03
-Tags: []
+Tags: ['cmake', 'uwp']
 ---
 
 UWPでNativeのDLLを使うとどんな感じなのか試してみた。

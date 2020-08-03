@@ -1,7 +1,7 @@
 ---
 Title: "vcpkgでopencvの開発環境を作る"
 date: 2017-07-01
-Tags: []
+Tags: ['vcpkg', 'opencv']
 ---
 
 Windowsでcmakeを使う場合に外部ライブラリの解決がわりと困難。

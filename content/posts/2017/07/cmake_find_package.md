@@ -1,7 +1,7 @@
 ---
 Title: "cmakeのfind_package"
 date: 2017-07-20
-Tags: []
+Tags: ['cmake']
 ---
 
 cmakeのFIND_PACKAGEわかりずらいよ。もやもやするものがある。

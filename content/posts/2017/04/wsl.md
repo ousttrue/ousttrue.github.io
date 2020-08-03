@@ -1,7 +1,7 @@
 ---
 Title: "Windows Creators UPDATEが来たしWSL環境を整備"
 date: 2017-04-14
-Tags: []
+Tags: ['linux', 'wsl']
 ---
 
 Windows SubSystem for Linux

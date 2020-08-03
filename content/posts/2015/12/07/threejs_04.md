@@ -1,11 +1,8 @@
 ---
 Title: "Three.jsのJSONモデルフォーマット"
 date: 2015-12-07
-Tags: []
+Tags: ['threejs']
 ---
-
-
-
 
 source
 外部のJSONに記述されたモデルを読み込む機能がある。

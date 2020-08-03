@@ -1,7 +1,7 @@
 ---
 Title: "GentooでX11を設定する"
 date: 2017-09-05
-Tags: []
+Tags: ['linux']
 ---
 
 デスクトップの構築メモ。

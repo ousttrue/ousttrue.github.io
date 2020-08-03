@@ -1,7 +1,7 @@
 ---
 Title: "c++でHololens"
 date: 2017-07-09
-Tags: []
+Tags: ['cpp', 'hololens']
 ---
 
 SharpDXでHololensが頓挫したので、C++でまいりましょう。
