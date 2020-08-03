@@ -1,7 +1,7 @@
 ---
 Title: "cmakeを使ってみる(Windowsかつコマンドラインで)"
 date: 2013-12-08
-Tags: []
+Tags: ['cmake']
 ---
 
 cmakeを使ってみる(Windowsかつコマンドラインで)
