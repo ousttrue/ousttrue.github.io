@@ -7,11 +7,23 @@ tags: ["w3m"]
 以前にも何度かやったことがあるのだけど立ち消えになっていた、 [w3m](http://w3m.sourceforge.net/index.ja.html) の改造を試みている。
 w3m はわりと好きなテキストブラウザなのだが、 2011 年くらいの 0.5.3 で開発が終了している様子。
 
+https://github.com/ousttrue/w3m
+
 まずは `C++` 化してから、HTML処理などを再入可能にしてタブごとにスレッド独立する方向を目指す。
 同時に、 `boehm-GC` を少しずつ `STL` のコンテナや `std::string` に置き換えて慣れた形式に変えてゆく。
 
-https://github.com/ousttrue/w3m
+だいぶ改造してちゃんと動かなくなってきたのだが、構造はわかってきた。
+ここを乗り越えて、 `boehm-GC` を文字コード変換界隈に封じ込めればクラッシュしなくできるかもしれない。
 
+改造にあたってなるべく機能を維持しようとしていたのだけど、ある程度わりきって機能を落とさないと手に負えないところがある。
+
+* http + https 以外の通信プロトコルは落とす。NNTP とか Gopher 使ったことないしなー
+* backend, dump, halfload 等の出力に介入する機能は落とす。コードを読むのが大変
+* M17N, COLOR, IMAGE は使う
+* Mouse は微妙。削ってもよいかも
+* GetText も削る
+
+量を減らす。思ったよりコードが多かったのだ。
 
 # 下準備
 
@@ -267,10 +279,29 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
 メンバーに `std::string` 等を配置できるようになる。
 あとで、 `gc_cleanup` から `std::shared_ptr` に変更することも視野に入れている。
 
+## GC文字列 Str
+
+アプリ全体で使われていて一挙になくすことはできないのだけど、構造体の末端のメンバーから `std::string` に変える。
+あと、がんばって `const char *` の範囲を増やす。
+`libwc` から `Str` を剥そうと思っていたのだが、逆に `libwc` に `Str` を封じ込める方向に軌道修正。
+`indep.c` の便利文字列関数も少しずつ変えてく。
+
 ## グローバル変数を減らす
 
-関数の中でグローバル変数にアクセスしている場合(CurrentBufferなど)、これを関数の引数経由でもらうようにする。
-できればメソッドにする。
+関数の中でグローバル変数にアクセスしている場合(CurrentBufferなど)、これを関数の引数経由とか、クラスのメンバー経由でもらう。
+リエントラント可能にする。
+
+## Stream処理
+
+多分、最難関の `loadGeneralFile` 関数。700行くらいだったか。
+goto とか longjmp があってよくわからなかったのだが、なんとなく理解。 
+`http`, `https`, `NNTP ?`, `gopher`, `ftp`, `pipe` 等、`http` のプロキシーやリダイレクト、 `www-auth` などを一手に処理していて容易に手を付けられない。
+何度か整理しようとして悉く撃退されたので、雑にやることにした。
+機能を `http(https)` に絞ってそれ以外をコメントアウトしてとにかく量を減らす。
+プロキシーとか、 `dump`, `halfload` などのよく知らない機能もどんどん削る。
+としてなんとか改造できるようになってきた。
+
+ここを `HttpClient`, `LocalFile`, `PipeReader` あたりに整理したい。
 
 ## モジュールに分割
 
@@ -279,15 +310,17 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
 * UI(frontend)
     * Term
         * 低レベル描画
-            * tputs termcap
+            * termcap の関数を直接呼ぶ。curses の自前実装的な
+            * マルチバイト、マルチカラムの文字列と密接に関連していて libwc と不可分
         * キーボード入力
         * マウス入力
         * リサイズイベント
         * SIGNALハンドリング
+            * SIGINT => longjmp でキャンセル処理を実現している。c++ のデストラクタとかまずそう
     * 高レベル描画
+        * Lineの構築(byte ごとに char と Lineprop がペアになる)
     * Tab
     * Buffer
-    * Line
     * Message
     * Menu
     * Keymap
@@ -338,23 +371,6 @@ http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5
     * string_util
         * malloc
 
-## イベントキュー的なのを導入する
-
-```
-{
-    type = Key
-    int = keycode
-}
-{
-    type = resize
-    int = COLS
-    int = LINES
-}
-{
-    // dirty flag
-    type = redraw
-}
-```
 
 # メモ
 
