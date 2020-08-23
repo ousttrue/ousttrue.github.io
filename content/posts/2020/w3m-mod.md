@@ -333,6 +333,26 @@ HttpとBufferローダーを副作用の無い関数に整理できれば再入�
 
 Buffer が多機能なので、Document, HttpResponse, FileInfo とかに分割したい。
 
+# 第４段階
+
+mainloop の再実装。libuv, libevent 等を検討していたのだけど、 c++ との親和性の高い asio を使うことにした。
+`tty read (keyboard input)`, `signal callback (sigint, winresize)`, `alarm` の割り込みを asio 経由にする。
+アプリの終了をloop の終了にして、自然に destructor がコールされるようになる。
+
+# 第５段階(予定)
+
+文字コード変換を簡略化。
+`libwc` から `boehm GC` を除去する作業が重すぎるので日本語専用で簡単なものを自作しようと思う。
+`w3m` が作られた時代から状況が変わって、term の文字コードは `LANG=ja_JP-UTF-8` 一択になった。
+なので、 `content => internal(wtf-8) => term` と３段構えの変換は、
+`content => utf-8` と多くても一回の変換でよいんでないか。
+とりあえず `sjis`, `euc-jp` を用意して後で、 `iso-2022-jp` を用意する。
+自作するのは、 `char8_t` と `std::string_view(std::u8string_view)` を使い勝手を試したいのある。
+絵文字のハンドリング(grapheme cluster)をする前の段階として、
+`utf-8` から `code point` を得て `1col`, `2col` を判定するとこまでやる( `wcwidth` ? )。
+term の cell 管理の interface を考える。
+`grapheme cluster` で１文字が複数コードポイントか成ることがありえることを考慮して、絵文字に備える。
+
 # メモ
 ## モジュールに分割
 
