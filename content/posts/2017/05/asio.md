@@ -1,7 +1,7 @@
 ---
 Title: "boostから独立したasio"
 date: 2017-05-05
-Tags: ['vcpkg']
+Tags: ['vcpkg', 'cpp', 'asio']
 ---
 
 vcpkgを眺めていたらnot boostなasioを発見した。

@@ -1,7 +1,7 @@
 ---
 Title: "MinGW環境"
 date: 2013-06-29
-Tags: []
+Tags: ['cpp']
 ---
 
 MinGW環境
