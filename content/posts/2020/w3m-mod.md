@@ -339,10 +339,31 @@ mainloop の再実装。libuv, libevent 等を検討していたのだけど、 
 `tty read (keyboard input)`, `signal callback (sigint, winresize)`, `alarm` の割り込みを asio 経由にする。
 アプリの終了をloop の終了にして、自然に destructor がコールされるようになる。
 
-# 第５段階(予定)
+# 第５段階
+
+html parse から term へのレンダリング部分の分解。
+やっと解読できて１パス目
+
+* 内部文字コード(wtf-8)に変換
+* tokenize
+* tag をパースして属性取得 => パースに成功したら行バッファに書き戻す。フォームの情報を蓄積する。テーブルのレイアウト
+
+結果として、行のリストと、フォーム情報を得る。
+
+２パス目
+
+* 行のリストを再度パース
+* 非タグ部分をBufferに出力
+* Aタグやフォームを Anchor などに出力
+
+という感じだった。
+１パス目で html 化するときに知らない属性を捨てたり、内部属性を追加したりしている様子。
+この、内部属性がよくわからなくて難しい。
+
+# (予定)
 
 文字コード変換を簡略化。
-`libwc` から `boehm GC` を除去する作業が重すぎるので日本語専用で簡単なものを自作しようと思う。
+`libwc` から `boehm GC` を除去する作業が重すぎるので日本語専用で簡単なものを自作する。
 `w3m` が作られた時代から状況が変わって、term の文字コードは `LANG=ja_JP-UTF-8` 一択になった。
 なので、 `content => internal(wtf-8) => term` と３段構えの変換は、
 `content => utf-8` と多くても一回の変換でよいんでないか。
@@ -352,6 +373,16 @@ mainloop の再実装。libuv, libevent 等を検討していたのだけど、 
 `utf-8` から `code point` を得て `1col`, `2col` を判定するとこまでやる( `wcwidth` ? )。
 term の cell 管理の interface を考える。
 `grapheme cluster` で１文字が複数コードポイントか成ることがありえることを考慮して、絵文字に備える。
+
+## WTF-8
+
+http://simonsapin.github.io/wtf-8/
+
+> superset of UTF-8 that encodes surrogate code points if they are not in a pair
+
+らしい。サロゲートペアの扱いが違う？
+
+
 
 # メモ
 ## モジュールに分割
