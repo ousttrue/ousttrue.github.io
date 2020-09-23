@@ -6,13 +6,15 @@ Tags: ['vcpkg', 'opencv']
 
 Windowsでcmakeを使う場合に外部ライブラリの解決がわりと困難。
 
-cmakeのfind_packageがうまくうごかないのである。Unix系であればCMAKE_INSTALL_PREFIX(/usr/local)にインストールされた依存プロジェクトを発見できるし、足りなければインストールすることもできる。それに、apt-getとかpacmanとかあるので、自分で全部ビルドするということはあまり必要なかったりする今日この頃です。Windowsにはそういうのがなかった(CMAKE_INSTALL_PREFIXはどこなのか)のだけど、最近出てきたvcpkgがそれをやってくれる。
+cmakeのfind_packageがうまくうごかないのである。Unix系であれば `CMAKE_INSTALL_PREFIX(/usr/local)` にインストールされた依存プロジェクトを発見できるし、足りなければインストールすることもできる。それに、`apt-get` とか `pacman` とかあるので、自分で全部ビルドするということはあまり必要なかったりする今日この頃です。Windowsにはそういうのがなかった(CMAKE_INSTALL_PREFIXはどこなのか)のだけど、最近出てきたvcpkgがそれをやってくれる。
+
 ArUcoをvcpkgとcmakeでビルドする
 ということでvcpkgで外部ライブラリを構築し、一部をソースごとプロジェクトにコピーする方法でArUco(OpenCV)のビルドをやってみる。ArUcoのデバッグ版にアタッチしたり改造したりするつもりなので、opencvのモジュール版ArUcoではなく単体の方を使う。環境は、Windows10(64bit)にVisualStudio2017(C++)。
 vcpkgを準備
 
-https://github.com/Microsoft/vcpkg
+* https://github.com/Microsoft/vcpkg
 
+```shell
 > git clone https://github.com/Microsoft/vcpkg.git
 > cd vcpkg
 vcpkg> .\bootstrap-vcpkg.bat
@@ -23,6 +25,7 @@ vcpkg> .\vcpkg.exe install opencv:x64-windows
 vcpkg/installed/x64-windowsにinclude, lib, bin等がインストールされる。
 vcpkgで64bit版のfreeglutをインストール
 vcpkg> .\vcpkg.exe install freeglut:x64-windows
+```
 
 arucoのソースを入手
 OpenCVのモジュール
@@ -37,12 +40,16 @@ https://sourceforge.net/projects/aruco/files/
 aruco-2.0.19.zipを手に入れた。
 とりあえずビルドしてみる
 vcpkgはd:/vcpkgにインストールされている。
+
+```shell
 aruco-2.0.19> mkdir build
 aruco-2.0.19/build> cmake -D CMAKE_INSTALL_PREFIX=d:/vcpkg/installed/x64-windows -D OpenCVDir=d:/vcpkg/installed/x64-windows/share/opencv -D BUILD_GLSAMPLES=1 -G "Visual Studio 15 2017 Win64" ..
-
+```
 
 aruco_test_glとaruco_test_markermap_glのビルドでエラーが出るのでちょっとコードを修正する。
 gl.hより先にWindows.hをincludeしてあげる。
+
+```c++
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 
@@ -54,9 +61,12 @@ gl.hより先にWindows.hをincludeしてあげる。
 #include <GL/gl.h>
 #include <GL/glut.h>
 #endif
+```
 
 あとfreeglutのリンクををdebug, release振り分けのために、
 CMakeLists.txtをちょっと改造。だいたいこういう感じ。
+
+```cmake
 IF (GLUT_FOUND)
 	STRING(REPLACE lib/freeglut.lib debug/lib/freeglutd.lib GLUT_glut_DEBUG_LIBRARY ${GLUT_glut_LIBRARY})
 	MESSAGE(STATUS "GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}")
@@ -67,6 +77,7 @@ IF (GLUT_FOUND)
 		debug ${GLUT_glut_DEBUG_LIBRARY}
 		)
 ENDIF()
+```
 
 この部分と連携する。
 TARGET_LINK_LIBRARIES(aruco_test_gl ${OPENGL_LIBS})
@@ -87,6 +98,8 @@ intrinsics.ymlを省略したり簡略化したい(fovyとaspectratioだけに�
 左手系(DirectXやUnity)に対応
 
 ということで、arucoのソースを含めている。
+
+```shell
 aruco_test
 
   + CMakeLists.txt
@@ -96,9 +109,9 @@ aruco_test
     + aruco_test_gl.cpp(aruco-2.0.19/utils_gl/aruco_test_gl.cppをコピー)
 
   + src(aruco-2.0.19/srcをコピー)
+```
 
-
-CMakeLists.txt
+```CMakeLists.txt
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(aruco)
 
@@ -136,7 +149,7 @@ IF(OPENGL_LIBS)
         aruco_test_gl.cpp
         )
     TARGET_LINK_LIBRARIES(aruco_test_gl ${OPENGL_LIBS})
-
+```
 
 以上で、arucoを例にvcpkgでopencvとfreeglutdを外部管理してcmakeでプロジェクトを取り廻す例を作った。
 作業例。

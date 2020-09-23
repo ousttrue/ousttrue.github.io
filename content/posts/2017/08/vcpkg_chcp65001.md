@@ -6,7 +6,9 @@ Tags: ['vcpkg']
 
 うちの環境では必要。非英語Windowsで散見される。わしも、ロシア？の人の書き込みで分かった。
 
-buildtrees/XXX/config-x86-windows-rel-err.logに以下のようなrules.ninjaを含むメッセージが見つかった場合はこれ。
+`buildtrees/XXX/config-x86-windows-rel-err.log` に以下のような `rules.ninja` を含むメッセージが見つかった場合はこれ。
+
+```shell
 CMake Error at D:/vcpkg/downloads/cmake-3.9.0-win32-x86/share/cmake-3.9/Modules/CMakeTestCCompiler.cmake:51 (message):
   The C compiler "C:/Program Files (x86)/Microsoft Visual
   Studio/2017/Community/VC/Tools/MSVC/14.10.25017/bin/HostX64/x86/cl.exe" is
@@ -43,7 +45,8 @@ CMake Error at D:/vcpkg/downloads/cmake-3.9.0-win32-x86/share/cmake-3.9/Modules/
   CMake will not be able to correctly generate this project.
 Call Stack (most recent call first):
   CMakeLists.txt:25 (project)
+```
 
 対処法はプロンプトの文字コードをutf-8にすること。
-> chcp 65001
 
+`> chcp 65001`

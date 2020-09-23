@@ -360,29 +360,22 @@ html parse から term へのレンダリング部分の分解。
 １パス目で html 化するときに知らない属性を捨てたり、内部属性を追加したりしている様子。
 この、内部属性がよくわからなくて難しい。
 
-# (予定)
+# 文字コード
 
-文字コード変換を簡略化。
-`libwc` から `boehm GC` を除去する作業が重すぎるので日本語専用で簡単なものを自作する。
-`w3m` が作られた時代から状況が変わって、term の文字コードは `LANG=ja_JP-UTF-8` 一択になった。
-なので、 `content => internal(wtf-8) => term` と３段構えの変換は、
-`content => utf-8` と多くても一回の変換でよいんでないか。
-とりあえず `sjis`, `euc-jp` を用意して後で、 `iso-2022-jp` を用意する。
-自作するのは、 `char8_t` と `std::string_view(std::u8string_view)` を使い勝手を試したいのある。
-絵文字のハンドリング(grapheme cluster)をする前の段階として、
-`utf-8` から `code point` を得て `1col`, `2col` を判定するとこまでやる( `wcwidth` ? )。
-term の cell 管理の interface を考える。
-`grapheme cluster` で１文字が複数コードポイントか成ることがありえることを考慮して、絵文字に備える。
-
-## WTF-8
-
+`content-charset` => `wtf` => `DisplayCharset` と文字コードを変換して動作していることがわかった。
+試しに、`utf-8` であることが分かっている `html` で `wtf` 変換を飛ばしてみたところ表示が壊れた。
+`wtf` は `utf-8` と互換性がないらしい。
 http://simonsapin.github.io/wtf-8/
+なのかと思ったのだが、違う独自形式かもしれない。
 
-> superset of UTF-8 that encodes surrogate code points if they are not in a pair
+w3m は、この `wtf` エンコーディングで、html タグのパース、文字のバイト幅の判定、文字のカラム幅の判定をしているのだが、
+`utf-8` では、文字のバイト幅、カラム幅の判定が狂う。
+ということで、 `utf-8` でのバイト幅判定を自作して `wcwidth` を組み合わせてみた。
+`*#12345;` 形式の `unicode` 埋め込みに対応するために、追加で `unicode` => `utf-8` 変換も作った。
+正しく表示することができた。
 
-らしい。サロゲートペアの扱いが違う？
-
-
+ということで、`euc-jp` と `shift-jis` と `iso-2022-jp` から `utf-8` への変換を作れば日本語は対応できそう。
+`std::string_view`, `char32_t`, `char8_t` あたりの新しい型を使った `\0` 終端に頼らないライブラリを作ってみる。
 
 # メモ
 ## モジュールに分割
