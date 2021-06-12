@@ -7,8 +7,10 @@ Tags: ['cpp']
 msgpack-rpcのasio版を作成中
 連休から始めていたmsgpack-rpcのバックエンドをasioに置き換えてWindowsでも動くようにする試みがやっと目処が立った。
 
-[https://github.com/ousttrue/msgpack-asiorpc\](https://github.com/ousttrue/msgpack-asiorpc)
+https://github.com/ousttrue/msgpack-asiorpc
+
 改め
+
 https://github.com/ousttrue/msgpack-rpc-asio
 
 当初はmsgpack-rpcのバックエンドのmpioにasioのkernelを追加することで乗り切ろうとしたのだが、わりとすぐに頓挫した。
@@ -20,7 +22,9 @@ mpioのファイルディスクリプタでIOを管理するAPIがasioと合わ�
 で、上記の反省を踏まえてasioでmsgpack-rpcを自由に実装することにした。
 バイナリデータとmsgpack-rpcの変換部分にmsgpack-rpcのコードを借用して、
 ネットワーク通信部分はasioで普通に作成した。
-だいたいこんな感じのAPIになる予定。 ```c++ #include #include
+だいたいこんな感じのAPIになる予定。 
+
+```c++ #include #include
 static int server_method(int a, int b) { return a+b; }
 int main(int argc, char **argv) { int port=18080;
 // server
@@ -55,6 +59,7 @@ return 0;
 
 }
 ```
+
 原型はだいたいできてWindowsでも動いたので続きを作りこんで行きたい。
 今のうちにmsgpack::asiorpcのネームスペースを変えたいような気もするがどうしようかね。
 msgpack::rpc::asioとかか？うぅむ。

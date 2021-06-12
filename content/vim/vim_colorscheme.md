@@ -20,5 +20,5 @@ hi MatchParen ctermbg=239
 
 ## 参考
 
-* [https://thinca.hatenablog.com/entry/I_expect_to_colorscheme]()
+* https://thinca.hatenablog.com/entry/I_expect_to_colorscheme
 * [Vim のカラースキームが微妙に気に食わないときの対処法](http://cohama.hateblo.jp/entry/2013/08/11/020849)
