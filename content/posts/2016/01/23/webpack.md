@@ -1,7 +1,7 @@
 ---
 title: "WebPackやってみる"
 date: 2016-01-23
-Tags: []
+taxonomies: {tags: []}
 ---
 
 gulpだけでいっぱいいっぱいだったので敬遠していたwebpackをやってみる。

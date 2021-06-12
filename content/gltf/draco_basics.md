@@ -1,7 +1,7 @@
 ---
 Title: "dracoの基本"
 date: 2017-12-12
-Tags: ["gltf"]
+taxonomies: {tags: ["gltf"]}
 ---
 
 Googleのメッシュ圧縮ライブラリDracoの使い方を調査中。

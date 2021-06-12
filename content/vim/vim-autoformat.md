@@ -1,6 +1,6 @@
 +++
 date = 2019-04-21T13:00:17+09:00
-tags = ['nvim']
+taxonomies.tags = ['nvim']
 draft = true
 +++
 

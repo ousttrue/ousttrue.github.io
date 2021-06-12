@@ -1,7 +1,7 @@
 ---
 title: "Octopress整備"
 date: 2013-03-11
-Tags: []
+taxonomies: {tags: []}
 ---
 
 Octopress整備

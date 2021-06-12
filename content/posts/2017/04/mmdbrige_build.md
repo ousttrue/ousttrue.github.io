@@ -1,7 +1,7 @@
 ---
 title: "MmdBridgeのビルドスクリプトを作った"
 date: 2017-04-24
-Tags: []
+taxonomies: {tags: []}
 ---
 
 MmdBridgeのビルド手順をまとめたpythonスクリプトを作った。

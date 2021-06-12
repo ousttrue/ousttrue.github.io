@@ -1,7 +1,7 @@
 ---
 Title: Vimのカラースキーム
 date: 2019-08-25
-Tags: ["vim"]
+taxonomies: {tags: ["vim"]}
 ---
 
 ## カッコのハイライト

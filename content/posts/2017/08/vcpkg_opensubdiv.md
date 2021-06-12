@@ -1,7 +1,7 @@
 ---
 title: "vcpkgのOpenSubdivパッケージを作ってみる"
 date: 2017-08-31
-Tags: ['vcpkg']
+taxonomies: {tags: ['vcpkg']}
 ---
 
 CEDEC2017のセッションを聞いてUSDビルドする気が戻ってきた。部品のひとつ、OpenSubdivのvcpkg版ビルドに取り組んでみる。

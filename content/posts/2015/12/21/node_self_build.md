@@ -1,7 +1,7 @@
 ---
 title: "node.js(Windows版)を自前ビルドする"
 date: 2015-12-21
-Tags: []
+taxonomies: {tags: []}
 ---
 
 謎のクラッシュ(FFIでネイティブプラグインがアクセス違反で死ぬ)を追跡するため、

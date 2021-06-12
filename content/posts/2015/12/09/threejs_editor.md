@@ -1,7 +1,7 @@
 ---
 title: "Three.jsのEditor"
 date: 2015-12-09
-Tags: []
+taxonomies: {tags: []}
 ---
 
 Three.js本家のサイトにeditor (beta)というリンクあるのだけどこれ面白いなぁ。

@@ -1,7 +1,7 @@
 ---
 title: "HoloToolkitのInputManager"
 date: 2017-02-18
-Tags: ["hololens"]
+taxonomies: {tags: ["hololens"]}
 ---
 
 HololensのInputManagerの動きを読んでみた

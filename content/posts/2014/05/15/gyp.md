@@ -1,7 +1,7 @@
 ---
 title: "python製のビルドツールgypを使ってみる"
 date: 2014-05-15
-Tags: ['gyp']
+taxonomies: {tags: ['gyp']}
 ---
 
 python製のビルドツールgypを使ってみる

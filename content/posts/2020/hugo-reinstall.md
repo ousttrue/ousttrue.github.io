@@ -1,7 +1,7 @@
 ---
 title: "Hugo再インストール"
 date: 2020-07-25T22:50:27+09:00
-tags: ["hugo"]
+taxonomies: {tags: ["hugo"]}
 ---
 
 再びサイトジェネレーターを `hugo` に戻した。

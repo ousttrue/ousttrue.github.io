@@ -1,7 +1,7 @@
 ---
 Title: "Python27のbuild_extで新しいVCを使う"
 date: 2017-10-08
-Tags: ["python", "cpp"]
+taxonomies: {tags: ["python", "cpp"]}
 ---
 
 python2.7のnativeモジュールをビルドするのにMSVC9(VisualStudio2008)ではなく、

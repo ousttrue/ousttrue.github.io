@@ -1,7 +1,7 @@
 ---
 title: "大きさ基準が必要だ"
 date: 2013-06-28
-Tags: []
+taxonomies: {tags: []}
 ---
 
 大きさ基準が必要だ

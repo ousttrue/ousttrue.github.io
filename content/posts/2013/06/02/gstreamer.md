@@ -1,7 +1,7 @@
 ---
 title: "Gstreamerを始めてみた"
 date: 2013-06-11
-Tags: []
+taxonomies: {tags: []}
 ---
 
 動画プログラムでもしてみようということでGstreamerをはじめた。
@@ -320,4 +320,4 @@ int main(int argc, char *argv[])
 }
 
 .. categories:: programming
-.. tags:: cpp, gstreamer
+.. taxonomies: {tags: : cpp, gstreamer}

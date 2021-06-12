@@ -1,7 +1,7 @@
 ---
 title: "PixarのUniversal Scene Descriptionをビルドしてみる"
 date: 2017-08-14
-Tags: []
+taxonomies: {tags: []}
 ---
 
 20170902。実はビルドスクリプトがあって、簡単になっていた。

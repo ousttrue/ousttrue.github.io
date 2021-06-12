@@ -1,7 +1,7 @@
 ---
 title: "Three.jsのJSONモデルフォーマット"
 date: 2015-12-07
-Tags: ['threejs']
+taxonomies: {tags: ['threejs']}
 ---
 
 source

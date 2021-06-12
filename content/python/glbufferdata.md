@@ -1,7 +1,7 @@
 ---
 Title: "PyOpenGLのglBufferDataにはどんなデータが渡せるのか"
 date: 2017-08-01
-Tags: ["python", "opengl"]
+taxonomies: {tags: ["python", "opengl"]}
 ---
 
 glBufferDataに数字のlistを渡す場合以下のように渡せるがどうゆう実装なのか。

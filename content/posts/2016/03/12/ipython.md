@@ -1,7 +1,7 @@
 ---
 title: "IPythonことはじめ"
 date: 2016-03-12
-Tags: []
+taxonomies: {tags: []}
 ---
 
 「IPythonデーターサイエンスクックブック」を買ってきたのでやってみる。

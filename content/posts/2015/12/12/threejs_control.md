@@ -1,7 +1,7 @@
 ---
 title: "Three.jsのトランスフォームコントロールでメッシュをマウスで移動"
 date: 2015-12-12
-Tags: []
+taxonomies: {tags: []}
 ---
 
 

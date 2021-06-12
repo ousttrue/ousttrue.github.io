@@ -1,7 +1,7 @@
 ---
 title: "long型のサイズ"
 date: 2013-03-27
-Tags: []
+taxonomies: {tags: []}
 ---
 
 long型のサイズ

@@ -1,7 +1,7 @@
 ---
 title: "Holotoolkit-unityでMSBuild-15.0(VS2017)を使う"
 date: 2017-04-16
-Tags: []
+taxonomies: {tags: []}
 ---
 
 VS2017からレジストリの構成が変わっている。

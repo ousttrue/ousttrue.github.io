@@ -1,7 +1,7 @@
 ---
 title: "README.func"
 date: 2003-09-23
-tags: ["w3m"]
+taxonomies: {tags: ["w3m"]}
 ---
 
 ```

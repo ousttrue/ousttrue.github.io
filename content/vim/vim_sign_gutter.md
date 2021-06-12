@@ -1,6 +1,6 @@
 +++
 date = 2019-05-12T21:25:03+09:00
-tags = ['vim']
+taxonomies.tags = ['vim']
 +++
 
 # Vimのgutter表示

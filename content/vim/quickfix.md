@@ -1,6 +1,6 @@
 +++
 date = 2019-05-06T15:09:02+09:00
-tags = ['vim']
+taxonomies.tags = ['vim']
 +++
 
 # QuickFixとLocationList周り

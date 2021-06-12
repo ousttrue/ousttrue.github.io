@@ -1,7 +1,7 @@
 ---
 title: "MongoDBでCRUD"
 date: 2015-11-21
-Tags: []
+taxonomies: {tags: []}
 ---
 
 “シングルページWebアプリケーション”に説明されている

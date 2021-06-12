@@ -1,7 +1,7 @@
 ---
 Title: "Boost.PythonのPython3でのstd::string、std::wstringのふるまい"
 date: 2017-08-10
-Tags: ["cpp", "python"]
+taxonomies: {tags: ["cpp", "python"]}
 ---
 
 ちょっと気になったので確認。

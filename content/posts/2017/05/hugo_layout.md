@@ -1,7 +1,7 @@
 ---
 title: "Hugoのレイアウトとコンテントの関係"
 date: 2017-05-22
-Tags: ["hugo"]
+taxonomies: {tags: ["hugo"]}
 ---
 
 

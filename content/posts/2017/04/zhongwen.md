@@ -1,7 +1,7 @@
 ---
 title: "中国語"
 date: 2017-04-16
-Tags: []
+taxonomies: {tags: []}
 ---
 
 昔かじった中国語を再開。

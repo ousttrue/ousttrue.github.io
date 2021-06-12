@@ -1,6 +1,6 @@
 +++
 date = 2019-04-18T01:00:00+09:00
-tags = ['vim']
+taxonomies.tags = ['vim']
 +++
 # vim on Windows
 

@@ -1,7 +1,7 @@
 ---
 title: "Geek向けアイコンフォントfont-mfizz"
 date: 2017-05-06
-Tags: []
+taxonomies: {tags: []}
 ---
 
 bootstrap入れたのでfontawesomeも取り入れてみたのだが、よりgeek向けのアイコンフォントを見つけた。

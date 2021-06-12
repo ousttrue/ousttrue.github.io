@@ -1,7 +1,7 @@
 ---
 Title: vim で LSP
 date: 2019-04-20T01:32:35+09:00
-Tags: ['vim', 'lsp']
+taxonomies: {tags: ['vim', 'lsp']}
 ---
 
 ## vim lsp client

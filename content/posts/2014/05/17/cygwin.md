@@ -1,7 +1,7 @@
 ---
 title: "cygwinの導入とgit最新版のビルドまで"
 date: 2014-05-17
-Tags: []
+taxonomies: {tags: []}
 ---
 
 cygwinの導入とgit最新版のビルドまで

@@ -1,7 +1,7 @@
 ---
 Title: "pyopengl"
 date: 2019-08-24
-Tags: ["python", "opengl"]
+taxonomies: {tags: ["python", "opengl"]}
 ---
 
 久しぶりのpyopengl

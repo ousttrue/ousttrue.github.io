@@ -1,7 +1,7 @@
 ---
 title: "cmakeで実行ファイルを作成する例"
 date: 2017-05-28
-Tags: ['cmake']
+taxonomies: {tags: ['cmake']}
 ---
 
 

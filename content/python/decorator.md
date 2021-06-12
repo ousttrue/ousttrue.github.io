@@ -1,7 +1,7 @@
 ---
 Title: pythonのdecorator
 date: 2019-05-06T13:14:23+09:00
-Tags: ['python']
+taxonomies: {tags: ['python']}
 ---
 
 引数付きのdecorator

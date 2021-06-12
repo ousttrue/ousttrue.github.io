@@ -1,7 +1,7 @@
 ---
 title: "Gentoo再構築"
 date: 2013-05-20
-Tags: ['linux']
+taxonomies: {tags: ['linux']}
 ---
 
 Gentoo再構築

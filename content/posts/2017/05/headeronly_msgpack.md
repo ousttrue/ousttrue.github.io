@@ -1,7 +1,7 @@
 ---
 title: "Header-OnlyのMessagePack実装とmsgpack-rpc-asioの更新"
 date: 2017-05-28
-Tags: ['cpp']
+taxonomies: {tags: ['cpp']}
 ---
 
 車輪の再発明的だけどmessagepackのc++実装をまた作った。

@@ -1,7 +1,7 @@
 ---
 title: "Blenderで揺れ物"
 date: 2017-05-06
-Tags: []
+taxonomies: {tags: []}
 ---
 
 MmdUtilityでmmdモデルをインポートして物理を取り入れるべく、Blenderの物理で揺れ物をセットアップする方法を調べている。

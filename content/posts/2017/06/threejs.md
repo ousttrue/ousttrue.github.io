@@ -1,7 +1,7 @@
 ---
 title: "threejs再始動"
 date: 2017-06-06
-Tags: []
+taxonomies: {tags: []}
 ---
 
 前のサイトはgulpを使ってtypescriptでthreejs.jsしていたのだけど、hugoで生成している今サイトでは素のjavascriptかなぁ。

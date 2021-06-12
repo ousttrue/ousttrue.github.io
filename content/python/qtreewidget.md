@@ -1,7 +1,7 @@
 ---
 Title: "PyQtのTreeWidget"
 date: 2017-10-14
-Tags: ["python", "qt"]
+taxonomies: {tags: ["python", "qt"]}
 ---
 
 QTreeWigetの使い方

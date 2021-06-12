@@ -1,7 +1,7 @@
 ---
 title: "octopress調整中"
 date: 2013-03-01
-Tags: ['linux']
+taxonomies: {tags: ['linux']}
 ---
 
 octopress調整中

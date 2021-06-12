@@ -1,6 +1,6 @@
 ---
 date: 2019-04-18T16:10:34+09:00
-Tags: ['clang', 'python', 'cpp', 'dlang', 'com']
+taxonomies: {tags: ['clang', 'python', 'cpp', 'dlang', 'com']}
 Title: pythonモジュール clang で C++ ヘッダーを変換する
 ---
 

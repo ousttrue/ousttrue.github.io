@@ -1,7 +1,7 @@
 ---
 Title: wyam のテーマをカスタマイズする
 date: 2019-08-17
-Tags: ['wyam']
+taxonomies: {tags: ['wyam']}
 ---
 cssとかの調整。
 

@@ -1,7 +1,7 @@
 ---
 title: "SharpDXでHololens"
 date: 2017-07-05
-Tags: ['csharp', 'd3d', 'hololens']
+taxonomies: {tags: ['csharp', 'd3d', 'hololens']}
 ---
 
 SharpDXでHololensできないかやってみる。

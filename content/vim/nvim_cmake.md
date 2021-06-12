@@ -1,6 +1,6 @@
 +++
 date = 2019-04-19T00:14:08+09:00
-tags = ['vim', 'cpp']
+taxonomies.tags = ['vim', 'cpp']
 draft = true
 +++
 # nvim で CMake

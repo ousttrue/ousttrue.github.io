@@ -1,7 +1,7 @@
 ---
 title: "MediaSinkでDXVA"
 date: 2017-08-28
-Tags: []
+taxonomies: {tags: []}
 ---
 
 MediaSinkでDXVAを使うには。

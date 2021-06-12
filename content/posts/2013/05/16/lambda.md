@@ -1,7 +1,7 @@
 ---
 title: "lambdaの引数の型を得たい"
 date: 2013-05-16
-Tags: []
+taxonomies: {tags: []}
 ---
 
 lambdaの引数の型を得たい

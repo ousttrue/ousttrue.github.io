@@ -1,7 +1,7 @@
 ---
 title: "QTableViewとQAbstractTableModel"
 date: 2013-01-04
-Tags: []
+taxonomies: {tags: []}
 ---
 
 ディレクトリ表示をする専用のウィジェットがあったような気がするが、練習のため実装。

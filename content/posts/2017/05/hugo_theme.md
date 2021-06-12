@@ -1,7 +1,7 @@
 ---
 title: "Hugoのテーマ作り"
 date: 2017-05-05
-Tags: ["hugo"]
+taxonomies: {tags: ["hugo"]}
 ---
 
 hugoの仕組みも気になることだし作ってみることにした。
@@ -67,7 +67,7 @@ http://text.baldanders.info/hugo/categories-and-tags-list/
 
 付ける
 frontmatterに
-tags = ["hugo"]
+taxonomies.tags = ["hugo"]
 
 のように書く。よくわからないがアルファベットの大文字は避けた方がよさげ。マルチバイト文字はOKぽい。
 single

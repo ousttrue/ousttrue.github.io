@@ -1,6 +1,6 @@
 +++
 date = 2019-04-28T19:47:41+09:00
-tags = ['python']
+taxonomies.tags = ['python']
 +++
 
 # python で process を起動して PIPE 通信する

@@ -1,7 +1,7 @@
 ---
 title: "xorgインストール"
 date: 2013-05-21
-Tags: ['linux']
+taxonomies: {tags: ['linux']}
 ---
 
 xorgインストール

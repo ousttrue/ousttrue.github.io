@@ -1,7 +1,7 @@
 ---
 title: "gulpで静的サイト生成"
 date: 2015-11-12
-Tags: []
+taxonomies: {tags: []}
 ---
 
 gulpで静的サイト生成

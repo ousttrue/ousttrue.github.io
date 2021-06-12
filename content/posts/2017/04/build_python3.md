@@ -1,7 +1,7 @@
 ---
 title: "Windows上でPython3.5をビルドする"
 date: 2017-04-20
-Tags: []
+taxonomies: {tags: []}
 ---
 
 VisualStudio2015でPython3.5(64bit Debug)をビルドする。

@@ -1,7 +1,7 @@
 ---
 Title: "BlenderのAddOnを、VSCodeでデバッグする"
 date: 2017-11-23
-Tags: ["blender", "vscode"]
+taxonomies: {tags: ["blender", "vscode"]}
 ---
 
 VSCodeのリモートデバッグを利用してBlenderのPythonにデバッガをアタッチする。

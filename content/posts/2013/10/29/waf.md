@@ -1,7 +1,7 @@
 ---
 title: "pythonによるビルドスクリプトwafを使い始めた"
 date: 2013-10-29
-Tags: []
+taxonomies: {tags: []}
 ---
 
 pythonによるビルドスクリプトwafを使い始めた

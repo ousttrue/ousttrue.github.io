@@ -1,7 +1,7 @@
 ---
 title: "QtでOpenGLを使う"
 date: 2013-03-27
-Tags: []
+taxonomies: {tags: []}
 ---
 
 QtでOpenGLを使う

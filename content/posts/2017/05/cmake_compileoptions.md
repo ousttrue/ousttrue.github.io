@@ -1,7 +1,7 @@
 ---
 title: "cmakeチートシート"
 date: 2017-05-28
-Tags: ['cmake']
+taxonomies: {tags: ['cmake']}
 ---
 
 すぐ忘れるのでここをチートシート化しよう。

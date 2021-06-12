@@ -1,7 +1,7 @@
 ---
 title: "Jadeを入れてみる"
 date: 2015-11-20
-Tags: []
+taxonomies: {tags: []}
 ---
 
 練習用に入手してきた”HTML5/CSS3 モダンコーディング”を写経しながらjadeを取り入れてみる。

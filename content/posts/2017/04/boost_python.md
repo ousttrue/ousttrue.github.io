@@ -1,7 +1,7 @@
 ---
 title: "Boost.Pythonのリンク周り"
 date: 2017-04-22
-Tags: ['python', 'cpp']
+taxonomies: {tags: ['python', 'cpp']}
 ---
 
 mmdbridgeのビルドで必要になったBoost.Python周り。

@@ -1,7 +1,7 @@
 ---
 title: "国際化/マルチリンガル化 w3m"
 date: 2011-01-04
-tags: ["w3m"]
+taxonomies: {tags: ["w3m"]}
 ---
 
 国際化/マルチリンガル化 w3m 

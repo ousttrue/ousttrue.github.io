@@ -1,7 +1,7 @@
 ---
 Title: "WRLを使った最近のComプログラミング"
 date: 2017-09-08
-Tags: ["cpp", "com"]
+taxonomies: {tags: ["cpp", "com"]}
 ---
 
 古のATLのWindows8以降？版のWRLを使ってみる。

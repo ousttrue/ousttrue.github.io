@@ -1,7 +1,7 @@
 ---
 title: "hugoのfrontmatter"
 date: 2017-06-05
-Tags: ["hugo"]
+taxonomies: {tags: ["hugo"]}
 ---
 
 hugo newで新しく記事を作成した時のfrontmatterをカスタマイズするには。
@@ -13,7 +13,7 @@ https://gohugo.io/content/archetypes/
 archetypes/default.md
 にfrontmatterのみの記事を作ればよいらしい。
 +++
-tags = []
+taxonomies.tags = []
 draft = true
 +++
 

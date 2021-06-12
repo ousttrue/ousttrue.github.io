@@ -1,7 +1,7 @@
 ---
 title: "hugo"
 date: 2020-07-24
-tags: ["hugo"]
+taxonomies: {tags: ["hugo"]}
 ---
 
 hugo メモ。

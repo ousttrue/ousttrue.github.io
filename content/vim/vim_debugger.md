@@ -1,6 +1,6 @@
 +++
 date = 2019-04-27T19:00:26+09:00
-tags = ['vim']
+taxonomies.tags = ['vim']
 +++
 
 # vim で DebugAdapterProtocol する

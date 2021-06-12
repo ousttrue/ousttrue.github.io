@@ -1,7 +1,7 @@
 ---
 title: "Three.jsのBuild"
 date: 2015-12-08
-Tags: []
+taxonomies: {tags: []}
 ---
 
 骨入りモデルとかやってみようかと思ったのだけど、その前にThree.jsのソースを見やすい状態で作業したい。
