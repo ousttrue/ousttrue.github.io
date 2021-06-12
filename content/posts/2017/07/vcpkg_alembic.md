@@ -1,5 +1,5 @@
 ---
-Title: "vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"
+title: "vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"
 date: 2017-07-18
 Tags: ['vcpkg', 'cg']
 ---

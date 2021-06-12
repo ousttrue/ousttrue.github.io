@@ -1,5 +1,5 @@
 ---
-Title: "node.js(Windows版)を自前ビルドする"
+title: "node.js(Windows版)を自前ビルドする"
 date: 2015-12-21
 Tags: []
 ---

@@ -1,5 +1,5 @@
 ---
-Title: "c++でHololens"
+title: "c++でHololens"
 date: 2017-07-09
 Tags: ['cpp', 'hololens']
 ---

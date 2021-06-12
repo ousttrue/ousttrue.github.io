@@ -1,5 +1,5 @@
 ---
-Title: "pythonによるビルドスクリプトwafを使い始めた"
+title: "pythonによるビルドスクリプトwafを使い始めた"
 date: 2013-10-29
 Tags: []
 ---

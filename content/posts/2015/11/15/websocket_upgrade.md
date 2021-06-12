@@ -1,5 +1,5 @@
 ---
-Title: "BrowserSyncのws設定を知らなかったせいでWebSocketのUpgradeがうまくいかなくてはまる"
+title: "BrowserSyncのws設定を知らなかったせいでWebSocketのUpgradeがうまくいかなくてはまる"
 date: 2015-11-15
 Tags: []
 ---

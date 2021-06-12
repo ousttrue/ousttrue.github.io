@@ -1,5 +1,5 @@
 ---
-Title: "QtでOpenGLを使う"
+title: "QtでOpenGLを使う"
 date: 2013-03-27
 Tags: []
 ---

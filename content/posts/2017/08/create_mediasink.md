@@ -1,5 +1,5 @@
 ---
-Title: "MediaSinkを実装する"
+title: "MediaSinkを実装する"
 date: 2017-08-27
 Tags: ['d3d', 'mediafoundation']
 ---

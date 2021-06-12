@@ -1,5 +1,5 @@
 ---
-Title: "gvimのためにcygwinでxorg導入"
+title: "gvimのためにcygwinでxorg導入"
 date: 2014-05-21
 Tags: []
 ---

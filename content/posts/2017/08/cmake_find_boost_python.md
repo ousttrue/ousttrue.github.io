@@ -1,5 +1,5 @@
 ---
-Title: "CMakeでBoost.Pythonを使う"
+title: "CMakeでBoost.Pythonを使う"
 date: 2017-08-09
 Tags: ['cmake', 'boost', 'python']
 ---

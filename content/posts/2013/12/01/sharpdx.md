@@ -1,5 +1,5 @@
 ---
-Title: "SharpDX事始め"
+title: "SharpDX事始め"
 date: 2013-12-01
 Tags: []
 ---

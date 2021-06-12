@@ -1,5 +1,5 @@
 ---
-Title: "IPythonことはじめ"
+title: "IPythonことはじめ"
 date: 2016-03-12
 Tags: []
 ---

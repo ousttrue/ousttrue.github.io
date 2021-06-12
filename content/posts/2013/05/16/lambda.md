@@ -1,5 +1,5 @@
 ---
-Title: "lambdaの引数の型を得たい"
+title: "lambdaの引数の型を得たい"
 date: 2013-05-16
 Tags: []
 ---

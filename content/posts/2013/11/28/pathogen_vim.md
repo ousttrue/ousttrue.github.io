@@ -1,5 +1,5 @@
 ---
-Title: "vim環境整備"
+title: "vim環境整備"
 date: 2013-11-28
 Tags: []
 ---

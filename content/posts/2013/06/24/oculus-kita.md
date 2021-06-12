@@ -1,5 +1,5 @@
 ---
-Title: "Oculus来たー"
+title: "Oculus来たー"
 date: 2013-06-24
 Tags: []
 ---

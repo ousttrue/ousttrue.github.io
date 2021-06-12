@@ -1,5 +1,5 @@
 ---
-Title: "FPSカメラにOculus回転を仕込んだ"
+title: "FPSカメラにOculus回転を仕込んだ"
 date: 2013-06-26
 Tags: []
 ---

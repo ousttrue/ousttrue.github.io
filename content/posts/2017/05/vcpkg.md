@@ -1,5 +1,5 @@
 ---
-Title: "vc向けのメタビルドツールvcpkgを発見"
+title: "vc向けのメタビルドツールvcpkgを発見"
 date: 2017-05-04
 Tags: ['vcpkg']
 ---

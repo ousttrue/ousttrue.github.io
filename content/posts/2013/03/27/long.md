@@ -1,5 +1,5 @@
 ---
-Title: "long型のサイズ"
+title: "long型のサイズ"
 date: 2013-03-27
 Tags: []
 ---

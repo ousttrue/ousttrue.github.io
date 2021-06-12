@@ -1,5 +1,5 @@
 ---
-Title: "Geek向けアイコンフォントfont-mfizz"
+title: "Geek向けアイコンフォントfont-mfizz"
 date: 2017-05-06
 Tags: []
 ---

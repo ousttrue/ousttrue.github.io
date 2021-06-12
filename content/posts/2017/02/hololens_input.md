@@ -1,5 +1,5 @@
 ---
-Title: "HoloToolkitのInputManager"
+title: "HoloToolkitのInputManager"
 date: 2017-02-18
 Tags: ["hololens"]
 ---

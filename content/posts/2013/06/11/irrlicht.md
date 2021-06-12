@@ -1,5 +1,5 @@
 ---
-Title: "Oculusぽちった"
+title: "Oculusぽちった"
 date: 2013-06-11
 Tags: []
 ---

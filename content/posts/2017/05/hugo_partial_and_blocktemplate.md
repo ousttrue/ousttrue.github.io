@@ -1,5 +1,5 @@
 ---
-Title: "PartialとBlockTemplate"
+title: "PartialとBlockTemplate"
 date: 2017-05-23
 Tags: ["hugo"]
 ---

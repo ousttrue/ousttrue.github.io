@@ -1,5 +1,5 @@
 ---
-Title: "TypeScriptでThree.jsことはじめ"
+title: "TypeScriptでThree.jsことはじめ"
 date: 2015-12-06
 Tags: []
 ---

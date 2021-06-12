@@ -1,5 +1,5 @@
 ---
-Title: "cmakeチートシート"
+title: "cmakeチートシート"
 date: 2017-05-28
 Tags: ['cmake']
 ---

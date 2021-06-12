@@ -1,5 +1,5 @@
 ---
-Title: "FontAwesomeを取り入れる"
+title: "FontAwesomeを取り入れる"
 date: 2015-12-11
 Tags: []
 ---

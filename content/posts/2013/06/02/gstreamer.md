@@ -1,5 +1,5 @@
 ---
-Title: "Gstreamerを始めてみた"
+title: "Gstreamerを始めてみた"
 date: 2013-06-11
 Tags: []
 ---
@@ -8,8 +8,9 @@ Tags: []
 
 #Hello world
 まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。
+
 Basic
-tutorials <http://docs.gstreamer.com/display/GstSDK/Basic+tutorials>__\ をやってみる
+tutorials http://docs.gstreamer.com/display/GstSDK/Basic+tutorials をやってみる
 
 最初のコードをc++に改造しやすいようにちょっと変更。
 

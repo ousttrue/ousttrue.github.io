@@ -1,5 +1,5 @@
 ---
-Title: "SimpleAbcViewerをビルドしてみる"
+title: "SimpleAbcViewerをビルドしてみる"
 date: 2017-07-28
 Tags: ['vcpkg', 'cg']
 ---

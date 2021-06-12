@@ -1,5 +1,5 @@
 ---
-Title: "Tinkererに引越し"
+title: "Tinkererに引越し"
 date: 2013-10-21
 Tags: []
 ---

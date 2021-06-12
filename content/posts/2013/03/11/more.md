@@ -1,5 +1,5 @@
 ---
-Title: "Octopress整備"
+title: "Octopress整備"
 date: 2013-03-11
 Tags: []
 ---

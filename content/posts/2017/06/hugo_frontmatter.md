@@ -1,5 +1,5 @@
 ---
-Title: "hugoのfrontmatter"
+title: "hugoのfrontmatter"
 date: 2017-06-05
 Tags: ["hugo"]
 ---

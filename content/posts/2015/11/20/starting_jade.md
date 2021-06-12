@@ -1,5 +1,5 @@
 ---
-Title: "Jadeを入れてみる"
+title: "Jadeを入れてみる"
 date: 2015-11-20
 Tags: []
 ---

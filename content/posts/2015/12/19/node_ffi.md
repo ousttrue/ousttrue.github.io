@@ -1,5 +1,5 @@
 ---
-Title: "node-ffiでstdcallが使いたい(頓挫)"
+title: "node-ffiでstdcallが使いたい(頓挫)"
 date: 2015-12-19
 Tags: []
 ---

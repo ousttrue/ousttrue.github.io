@@ -1,5 +1,5 @@
 ---
-Title: "Windows Creators UPDATEが来たしWSL環境を整備"
+title: "Windows Creators UPDATEが来たしWSL環境を整備"
 date: 2017-04-14
 Tags: ['linux', 'wsl']
 ---

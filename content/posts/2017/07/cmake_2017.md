@@ -1,5 +1,5 @@
 ---
-Title: "vcpkgでopencvの開発環境を作る"
+title: "vcpkgでopencvの開発環境を作る"
 date: 2017-07-01
 Tags: ['vcpkg', 'opencv']
 ---

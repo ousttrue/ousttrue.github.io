@@ -1,5 +1,5 @@
 ---
-Title: "hugoでmapを使ってpartialに追加の変数を渡す"
+title: "hugoでmapを使ってpartialに追加の変数を渡す"
 date: 2017-05-14
 Tags: ["hugo"]
 ---

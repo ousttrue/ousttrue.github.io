@@ -1,5 +1,5 @@
 ---
-Title: "Mir"
+title: "Mir"
 date: 2013-03-06
 Tags: []
 ---

@@ -1,5 +1,5 @@
 ---
-Title: "Hugoに乗り換え"
+title: "Hugoに乗り換え"
 date: 2017-02-17
 Tags: ["hugo"]
 ---

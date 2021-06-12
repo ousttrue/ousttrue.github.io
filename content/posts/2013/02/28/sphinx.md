@@ -1,5 +1,5 @@
 ---
-Title: "sphinxも入れてみる"
+title: "sphinxも入れてみる"
 date: 2013-02-28
 Tags: []
 ---

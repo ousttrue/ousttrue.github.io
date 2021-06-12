@@ -1,5 +1,5 @@
 ---
-Title: "cmakeを使ってみる(Windowsかつコマンドラインで)"
+title: "cmakeを使ってみる(Windowsかつコマンドラインで)"
 date: 2013-12-08
 Tags: ['cmake']
 ---

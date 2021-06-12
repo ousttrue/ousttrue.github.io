@@ -1,5 +1,5 @@
 ---
-Title: "dat-guiを試してみる"
+title: "dat-guiを試してみる"
 date: 2015-12-12
 Tags: []
 ---

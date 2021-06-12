@@ -1,5 +1,5 @@
 ---
-Title: "PixarのUniversal Scene Descriptionをビルドしてみる"
+title: "PixarのUniversal Scene Descriptionをビルドしてみる"
 date: 2017-08-14
 Tags: []
 ---

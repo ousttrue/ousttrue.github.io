@@ -1,5 +1,5 @@
 ---
-Title: "WindowsでPyAlembicできるのか"
+title: "WindowsでPyAlembicできるのか"
 date: 2017-08-07
 Tags: ['python', 'cg', 'cmake']
 ---

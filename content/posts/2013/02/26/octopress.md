@@ -1,5 +1,5 @@
 ---
-Title: "更にoctopressに引越し"
+title: "更にoctopressに引越し"
 date: 2013-02-26
 Tags: []
 ---

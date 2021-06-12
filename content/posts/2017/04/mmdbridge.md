@@ -1,5 +1,5 @@
 ---
-Title: "MmdBridgeをビルドしてみる"
+title: "MmdBridgeをビルドしてみる"
 date: 2017-04-21
 Tags: []
 ---

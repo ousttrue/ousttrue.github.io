@@ -1,5 +1,5 @@
 ---
-Title: "Hugoのテーマ作り"
+title: "Hugoのテーマ作り"
 date: 2017-05-05
 Tags: ["hugo"]
 ---

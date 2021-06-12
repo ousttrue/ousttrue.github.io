@@ -1,5 +1,5 @@
 ---
-Title: "msbuildとcmakeの在りか"
+title: "msbuildとcmakeの在りか"
 date: 2017-05-28
 Tags: ['cmake']
 ---

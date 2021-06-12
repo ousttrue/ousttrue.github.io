@@ -1,5 +1,5 @@
 ---
-Title: "Windows上でPython3.5をビルドする"
+title: "Windows上でPython3.5をビルドする"
 date: 2017-04-20
 Tags: []
 ---

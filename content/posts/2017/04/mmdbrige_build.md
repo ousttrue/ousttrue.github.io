@@ -1,5 +1,5 @@
 ---
-Title: "MmdBridgeのビルドスクリプトを作った"
+title: "MmdBridgeのビルドスクリプトを作った"
 date: 2017-04-24
 Tags: []
 ---

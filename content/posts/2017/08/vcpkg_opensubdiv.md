@@ -1,5 +1,5 @@
 ---
-Title: "vcpkgのOpenSubdivパッケージを作ってみる"
+title: "vcpkgのOpenSubdivパッケージを作ってみる"
 date: 2017-08-31
 Tags: ['vcpkg']
 ---

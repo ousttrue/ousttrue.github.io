@@ -1,5 +1,5 @@
 ---
-Title: "Holotoolkit-unityでMSBuild-15.0(VS2017)を使う"
+title: "Holotoolkit-unityでMSBuild-15.0(VS2017)を使う"
 date: 2017-04-16
 Tags: []
 ---
