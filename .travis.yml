@@ -2,14 +2,15 @@ dist: xenial
 sudo: false
 
 env:
-  - HUGO_VERSION=0.74.2
+  - ZOLA_URL=https://github.com/ousttrue/zola/releases/download/v0.13.0.a/zola.xz
 
 before_script:
-  - wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_Linux-64bit.deb
-  - sudo dpkg -i hugo_extended_${HUGO_VERSION}_Linux-64bit.deb
+  - wget ${ZOLA_URL}
+  - xz -d `basename ${ZOLA_URL}`
+  - sudo mv zola /usr/local/bin/zola
 
 script:
-  - hugo -v
+  - zola build
 deploy:
   provider: pages
   skip_cleanup: true
@@ -18,4 +19,4 @@ deploy:
   target_branch: master
   local_dir: public
   on:
-    branch: hugo
+    branch: zola
