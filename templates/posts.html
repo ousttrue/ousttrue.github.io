@@ -1,12 +1,20 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
+<div class="content">
+  <h1 class="title">{{ section.title }}</h1>
+  {% if section.content %} {{ section.content }} {% endif %} {# {{ $names :=
+  (slice $this.Path) }} {{ range $pages }} {{ $names = $names | append .Path }}
+  {{ end }} #} {# {{ $tag := .Name }} {{ range index $site.Taxonomies.tags
+  (replace (lower $tag) " " "-") }} {{ if not (in $names .Path) }} {{ $pages =
+  $pages | append . }} {{ $names = $names | append .Path }} {{ end }} {{ end }}
+  #} {# {{ partial "contents.html" $pages }} #}
 
-{% block content %}
-<h1 class="title">
-  {{ section.title }}
-</h1>
-<ul>  
-  {% for page in section.pages %}
-  <li><a href="{{ page.permalink | safe }}">{{ page.title }}</a></li>
-  {% endfor %}
+<ul class="content">
+    {% for page in section.pages %}
+    {# <li><a href="{{ page.permalink | safe }}">{{ page.title }}</a></li> #}
+    {% include "item_headline.html" %}
+    {% endfor %}
 </ul>
+
+</div>
+
 {% endblock content %}

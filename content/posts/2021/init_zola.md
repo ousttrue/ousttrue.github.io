@@ -9,13 +9,17 @@ taxonomies.tags = ["zola", "rust"]
 
 https://www.getzola.org/
 
-## hugo のからの引っ越し手順
+# hugo のからの引っ越し
 
-### config.toml を hugo 版から zola 版に書き換える。
+## zola インストール
 
-base_url だけ設定すれば十分。
+## 初期化
 
-### プレビューしてみる
+## config.toml を hugo 版から zola 版に書き換える。
+
+最低限 base_url。
+
+## プレビューしてみる
 
 ```
 $ zola serve
@@ -37,36 +41,61 @@ $ zola check
 の方がデバッグ向け。
 いくつかなおしたら、エラーは出なくなった。
 
-### テンプレートを用意する
+# テンプレートを用意する
 
 https://www.getzola.org/documentation/getting-started/overview/
 
 に従って基本的なテンプレートを作成。
 
-content のフォルダ構成が
+# zola の content 構成
+
+section(フォルダ) に page が所属するという構成みたい。
+section とうのは単なるフォルダではなくて、folder/index.md もしくは folder/_index.md をさす。
 
 * section
     * _index.md (セクションになる)
     * page1.md
     * page2.md
-    * subsection
+    * subsection (_index.md が無いのでセクションでは無い)
         * page3.md (orphan page)
         * page4.md (orphan page)
 
+セクションに所属しない page は orphan page となり、 `section.pages` のように列挙することができなくなる。
 すべてのフォルダに `_index.md` を配置してセクション化するという設計思想のようだ。
 
-zola を改造してみた。
+セクションが木構造になっていて、page が leaf になる。
 
+* section
+    * subsections
+    * pages
+
+が再帰的に続く。
+
+## zola を改造してみた。
+
+orphan page が section.pages に入るようになる。
 https://github.com/ousttrue/zola/commit/7842d0b2d05eb15400dbe20b20791b57af077de1
 
-これで hugo からの最低限の引っ越しができた。
-css とか整備する。
+# zola 設定 config.toml
+https://www.getzola.org/documentation/getting-started/configuration/
 
-## zola 感想
+# Tera テンプレート
+https://tera.netlify.app/docs
 
-hugo に比べて template の構成がシンプルですぐに理解できた。
-プログラムも git clone してデバッガをアタッチしたら動きがだいたいわかった。
-[Tera](https://tera.netlify.app/docs/) も使い方を覚えておけば、
-rust でコード生成するときに役立てられそうである。
+## extends
+別ファイルを部分的に override する
+https://tera.netlify.app/docs/#inheritance
 
-テンプレートの作り込みに進む。
+## include
+別ファイルの部品を読み込む
+https://tera.netlify.app/docs/#include
+
+## date format
+https://tera.netlify.app/docs/#include
+
+# とりあえずメンテナンス中・・・
+
+hugo に比べて template の構成がシンプルでわかりやすいような気がする
+(hugo に慣れているせいかもしれない)。
+そもそも hugo の時点でちゃんと管理してなかったので、
+ぼちぼち続きをやる。
