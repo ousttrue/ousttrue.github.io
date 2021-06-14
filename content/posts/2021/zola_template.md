@@ -14,10 +14,9 @@ taxonomies.tags = ["zola", "css"]
 
 ## 共通
 
-* [ ] title
-* [ ] 日付
-* [ ] 見出しの見た目
-* [ ] どっかに powered by zola
+* [x] title
+* [x] 日付
+* [x] 見出しの見た目
 
 ## Page
 
