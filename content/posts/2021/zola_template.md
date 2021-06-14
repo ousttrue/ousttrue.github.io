@@ -4,7 +4,7 @@ date = 2021-06-14
 taxonomies.tags = ["zola", "css"]
 +++
 
-サイト整備のメモ
+サイト整備のメモ。共通化して部品を少なくした。
 
 * zola 設定
 * template 構築
@@ -12,14 +12,16 @@ taxonomies.tags = ["zola", "css"]
 
 ## Index
 
+## 共通
+
+* [ ] title
+* [ ] 日付
+* [ ] 見出しの見た目
+* [ ] どっかに powered by zola
+
 ## Page
 
-* [ ] 見出しの見た目
 * [ ] 目次
-
-## Tags
-
-* [ ] css 適用
 
 ## Markdown
 

@@ -1,5 +1,5 @@
 ---
-Title: LongText
+title: LongText
 date: 2000-01-01
 taxonomies: {tags: ["w3m"]}
 ---

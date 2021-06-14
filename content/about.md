@@ -1,5 +1,5 @@
 ---
-Title: About Me
+title: About Me
 date: 2021-06-12
 taxonomies: {tags:[]}
 ---
