@@ -10,10 +10,6 @@ taxonomies.tags = ["zola", "css"]
 * template 構築
 * 場合によっては zola の改造
 
-## template
-
-* [ ] index.html, page.html で再帰的に木構造をレンダリングする。
-
 ## Index
 
 ## Page

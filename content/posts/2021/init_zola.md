@@ -46,19 +46,22 @@ $ zola check
 https://www.getzola.org/documentation/getting-started/overview/
 
 に従って基本的なテンプレートを作成。
+index.html, section.html, page.html の3種類のテンプレートがサーチされる。
+section.html と page.html は、section のフロントマター、 `template`, `page_template` で変更できる。
 
 # zola の content 構成
 
 section(フォルダ) に page が所属するという構成みたい。
 section とうのは単なるフォルダではなくて、folder/index.md もしくは folder/_index.md をさす。
 
-* section
-    * _index.md (セクションになる)
-    * page1.md
-    * page2.md
-    * subsection (_index.md が無いのでセクションでは無い)
-        * page3.md (orphan page)
-        * page4.md (orphan page)
+* root => index.html
+    * section
+        * _index.md (セクションになる) => section.html
+        * page1.md => page.html
+        * page2.md => page.html
+        * subsection (_index.md が無いのでセクションでは無い) => レンダリングされない
+            * page3.md (orphan page) => page.html
+            * page4.md (orphan page) => page.html
 
 セクションに所属しない page は orphan page となり、 `section.pages` のように列挙することができなくなる。
 すべてのフォルダに `_index.md` を配置してセクション化するという設計思想のようだ。
