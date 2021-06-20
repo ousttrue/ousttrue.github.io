@@ -7,6 +7,7 @@ taxonomies.tags = ["mdbook"]
 * https://github.com/ousttrue/cmake_book
 
 gh-pages
+
 * https://ousttrue.github.io/cmake_book/
 
 
@@ -56,3 +57,11 @@ jobs:
 `SUMMARY.md` にページ構成を先に記述して章立てを作ってから中身を記述していくのが面白い。
 この仕組みが合うものは、 `zola` より `mdbook` の方がサクサク作れそう。
 よく使う Scrapbox 上にあるメモを整理するかもしれない。
+
+* [cmake_book](https://ousttrue.github.io/cmake_book/)
+* [rust練習帳](https://ousttrue.github.io/rust_exercise_book/)
+
+作った。
+あと、 `blender の addon 作成メモ` とか `Unity のカスタムエディターメモ` とか作るかも。
+
+
