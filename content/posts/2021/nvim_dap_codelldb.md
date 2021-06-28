@@ -1,5 +1,5 @@
 +++
-title = "nvim-dap coldelldb 難航"
+title = "nvim-dap で coldelldb 動いた"
 date = 2021-06-27
 taxonomies.tags = ["nvim", "dap"]
 +++
@@ -89,16 +89,15 @@ local function run_adapter(adapter, configuration, opts)
   elseif adapter.type == 'server' then
     lazy.progress.report('Running: ' .. name)
     M.attach(adapter.host, adapter.port, configuration, opts)
-  elseif adapter.type == 'executable_server' then
+  elseif adapter.type == 'executable_server' then -- 👈これを追加した
     lazy.progress.report('Running: ' .. name)
     -- local session = M.launch(adapter, configuration, opts)
     local stdin, stdout, stderr = executable_server(adapter, opts)
-    -- たぶん schedule_wrap でメインスレッドで実行するという意味
-    -- E5560: vimL function must not be called in a lua
+    -- `Error executing luv callback: vimL function must not be called in a lua loop callback`
     vim.loop.read_start(stdout, vim.schedule_wrap(function(err, data)
+      -- codelldb の出力から port を得る
       -- Lisening on port xxxxx
       local port = string.match(data , "Listening on port (%d+)" )
-      -- print(data, port)
       M.attach(nil, port, configuration, opts)
     end))
   else
@@ -131,7 +130,48 @@ function executable_server(adapter, opts)
 
   return stdin, stdout, stderr
 end
+
+function M.attach(host, port, config, opts)
+  if session then
+    session:close()
+  end
+  if not config.request then
+    print('config needs the `request` property which must be one of `attach` or `launch`')
+    return
+  end
+  -- initialize が早すぎるので config を connect 引数に
+  session = require('dap.session'):connect(host, port, opts, config)
+  return session
+end
+
+function Session:connect(host, port, opts, config)
+  local session = session_defaults(opts or {})
+  setmetatable(session, self)
+  self.__index = self
+
+  local client = uv.new_tcp()
+  session.client = {
+    write = function(line) 
+        client:write(line) 
+    end;
+    close = function()
+      client:shutdown()
+      client:close()
+    end;
+  }
+  client:connect(host or '127.0.0.1', tonumber(port), function(err)
+    if (err) then print(err) end
+    client:read_start(rpc.create_read_loop(function(body)
+      session:handle_body(body)
+    end))
+
+    -- connect が成立してから initialize を送る
+    session:initialize(config)
+
+  end)
+  return session
+end
 ```
 
-`Error executing luv callback: vimL function must not be called in a lua loop callback`
+動いた。 PR 作ろう。
 
