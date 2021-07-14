@@ -1,7 +1,7 @@
 +++
 title = "VS2019 向けに hererocks を修正(vswhere を使う)"
 date = 2021-07-15
-taxonomies.tags = ["python", "lua", "vim"]
+taxonomies.tags = ["python", "lua", "nvim"]
 +++
 
 hererocks が VS2019BuildTools を検知して動作するように改造してみた。
