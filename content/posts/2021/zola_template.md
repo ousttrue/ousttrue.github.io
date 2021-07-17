@@ -18,15 +18,17 @@ taxonomies.tags = ["zola", "css"]
 * [x] 日付
 * [x] 見出しの見た目
 
-## Page
-
-* [ ] 目次
-
 ## Markdown
 
-* [ ] url 文字列を自動でリンクにしたい。設定？
+* [x] url 文字列を自動でリンクにしたい。markdownで `<url>` と記述するべし
 
 ## 20210716: masonry 入れてみた
 
 <https://masonry.desandro.com/>
+
+## 20210717: TOC
+
+* [x] 目次
+だいたいできた。
+github が増えすぎてカオスなので不要なものを整理せねば・・・
 
