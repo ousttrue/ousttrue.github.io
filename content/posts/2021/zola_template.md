@@ -25,3 +25,8 @@ taxonomies.tags = ["zola", "css"]
 ## Markdown
 
 * [ ] url 文字列を自動でリンクにしたい。設定？
+
+## 20210716: masonry 入れてみた
+
+<https://masonry.desandro.com/>
+
