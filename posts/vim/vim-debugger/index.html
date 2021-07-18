@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;vim&#x2F;vim-debugger&#x2F;"> vim で DebugAdapterProtocol する </a>
+  <div>
+    <ul class="tags">
+      <li class="headline_date">2019-04-27</li>
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;vim&#x2F;">vim</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>vimで <code>breakpoint</code> を設置してステップ実行できるようなデバッガを調べた。</p>
+<h2 id="vim-shang-nodebatuga">vim 上のデバッガ</h2>
+<h3 id="lldb-nvim">lldb.nvim</h3>
+<ul>
+<li>https://github.com/dbgx/lldb.nvim</li>
+</ul>
+<h3 id="vim-vebugger">vim-vebugger</h3>
+<ul>
+<li>https://github.com/idanarye/vim-vebugger</li>
+</ul>
+<p>なんか動きそうなのだが、 <code>vimproc</code> を使っていたので動かせなかった
+kaoriya 版の Vim を使うなどしてみたがよくわからず。</p>
+<h3 id="pyclewn">pyclewn</h3>
+<ul>
+<li>https://github.com/Mistobaan/pyclewn</li>
+</ul>
+<p>gdb と pdb のvimフロントエンド？</p>
+<h3 id="pubd">pubd</h3>
+<p>pythonのpdb.</p>
+<ul>
+<li>https://github.com/inducer/pudb</li>
+</ul>
+<h3 id="vim-breakpts">vim-breakpts</h3>
+<p>vim スクリプト用？</p>
+<ul>
+<li>https://github.com/albfan/vim-breakpts</li>
+</ul>
+<h2 id="vimspector">vimspector</h2>
+<ul>
+<li>https://github.com/puremourning/vimspector</li>
+</ul>
+<p>VSCodeの <code>DebugAdapterProtocol</code> を使うものらしい。</p>
+<blockquote>
+<p>While Language Server Protocol is well known, the Debug Adapter Protocol is less well known, but achieves a similar goal: language agnostic API abstracting debuggers from clients.</p>
+</blockquote>
+<p>動かし方よくわからず。</p>
+<h3 id="debugadapterprotocol">DebugAdapterProtocol</h3>
+<ul>
+<li><a href="https://code.visualstudio.com/blogs/2018/08/07/debug-adapter-protocol-website">DebugAdapterProtocol</a>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-debugadapter-node">旧サイト・リポジトリ</a></li>
+</ul>
+</li>
+</ul>
+<p>読む。</p>
+<blockquote>
+<p>The &quot;deep understanding of a language&quot; is surfaced by the Language Server Protocol (LSP) and the &quot;debugging support&quot; by the Debug Adapter Protocol (DAP).</p>
+</blockquote>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">editor &lt;=&gt; adapter &lt;=&gt; gdb</span><span style="color:#c0c5ce;">
+              ||</span><span style="color:#c0c5ce;">
+              ++=====&gt; pdb</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>adapterでラップして同じに見えるようにする。</p>
+<p>adapterの起動設定は、 <code>.vscode/launch.json</code> にというわけか。</p>
+<blockquote>
+<p>The Debug Adapter Protocol is not tied to VS Code and can be used as the foundation for a generic debugger UI in other development tools.</p>
+</blockquote>
+<p>新サイトで仕様を公開していくで、って書いてあるね。</p>
+<ul>
+<li>新サイト https://microsoft.github.io/debug-adapter-protocol/
+<ul>
+<li>新リポジトリ https://github.com/Microsoft/debug-adapter-protocol</li>
+</ul>
+</li>
+</ul>
+<p>読む。</p>
+<ul>
+<li>https://microsoft.github.io/debug-adapter-protocol/overview</li>
+</ul>
+<blockquote>
+<p>single session mode: in this mode, the development tool starts a debug adapter as a standalone process and communicates with it through stdin and stdout.</p>
+</blockquote>
+<blockquote>
+<p>multi session mode: in this mode, the development tool does not start the debug adapter but assumes that it is already running and that it listens on a specific port for connections attempts.</p>
+</blockquote>
+<h3 id="dapnoshi-yang">DAPの仕様</h3>
+<ul>
+<li>https://microsoft.github.io/debug-adapter-protocol/specification</li>
+</ul>
+<h3 id="dapnoshi-zhuang">DAPの実装</h3>
+<ul>
+<li>https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/</li>
+</ul>
+<p>ネイティブコンパイルするタイプは言語ごとではなく、ネイティブコンパイルの様式ごとに違うものになる。例えば、 <code>vc</code> , <code>gcc</code> , <code>llvm</code> のように。</p>
+<p>となるとVMタイプのものは、 <code>.Net</code>, <code>Mono</code>, <code>java</code> といった分類になるのだろうか。
+<code>C#</code>, <code>F#</code> が両方デバッグできたりしそうではある。</p>
+<p>インタープリター型はそれぞれの言語ごとになる。</p>
+<p>あとは、リモートデバッグの事情を調べる。</p>
+<h4 id="native-debug">native debug</h4>
+<p>c++やd, rustなんかのnativeコードを出力するものをまとめて面倒見れるという理解であったいるのかな。ビルド形式とデバッグビルドに付加される情報のフォーマットに対応してデバッガを選択する必要があると。</p>
+<ul>
+<li>https://github.com/Microsoft/vscode-cpptools</li>
+</ul>
+<p>LLVM</p>
+<ul>
+<li>https://github.com/vadimcn/vscode-lldb</li>
+</ul>
+<h4 id="net">.Net</h4>
+<blockquote>
+<p>Mono debugging is not supported.</p>
+</blockquote>
+<p>ILは互換性があるにしても、VMのデバッグインタフェースは互換性が無いということなのかな。</p>
+<ul>
+<li>https://github.com/OmniSharp/omnisharp-vscode</li>
+</ul>
+<h4 id="mono">Mono</h4>
+<ul>
+<li>https://github.com/Microsoft/vscode-mono-debug</li>
+</ul>
+<h4 id="unity">Unity</h4>
+<ul>
+<li>https://github.com/Unity-Technologies/vscode-unity-debug</li>
+</ul>
+<p>UnityEditorにアタッチできるらしい。
+Unity版のMonoにアタッチできるということかしら。</p>
+<h4 id="lua-ravi">lua / ravi</h4>
+<ul>
+<li>https://github.com/dibyendumajumdar/ravi-vscode-debugger</li>
+</ul>
+<p>こんなのあるのか・・・</p>
+<h4 id="powershell">powershell</h4>
+<ul>
+<li>https://github.com/PowerShell/vscode-powershell</li>
+</ul>
+<h4 id="python">python</h4>
+<ul>
+<li>https://github.com/Microsoft/vscode-python</li>
+</ul>
+<h3 id="vimspectornoshi-zhuang">vimspectorの実装</h3>
+<ul>
+<li>https://github.com/puremourning/vimspector</li>
+</ul>
+<p>読む。</p>
+<p><code>.\install_gadget.py</code></p>
+<p>を実行することで、 <code>VSCode</code> の <code>extension</code> を <code>download</code> する。
+<code>extension</code> に、 <code>DAP</code> が含まれているのでこれを使う。</p>
+<p><code>autoload/vimspector.vim</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-vim" data-lang="vim"><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">vimspector#Launch</span><span style="color:#c0c5ce;">() abort</span><span style="color:#c0c5ce;">
+  py</span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;"> _vimspector_session</span><span style="color:#b48ead;">.</span><span style="color:#8fa1b3;">Start</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">endfunction</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p><code>python3/vimspector/debug_session.py</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-py" data-lang="py"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">DebugSession</span><span style="color:#eff1f5;">:</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">Start</span><span style="color:#c0c5ce;">():</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">pass</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p><code>vim.bindeval</code> を使っているので、 <code>vim8</code> 専用。
+<code>nvim</code> では回避する必要がある。</p>
+<p><code>.vimspector.json</code> </p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">{</span><span style="color:#c0c5ce;">
+    &quot;</span><span style="color:#a3be8c;">adapters</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+    },</span><span style="color:#c0c5ce;">
+    &quot;</span><span style="color:#a3be8c;">configurations</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+    }</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>の <code>configurations</code> からデバッグセッションの起動方法を取得して、
+デバッグアダプターを <code>vim</code> の <code>job</code> か <code>channel</code> 経由で起動する。
+<code>configurations</code> が <code>.vscode/launch.json</code> に相当するようだ。
+<code>adapters</code> は、インストールされている <code>DebugAdapter</code> のリスト。</p>
+<p><code>call vimspector#Launch()</code> <code>simple_python - launch</code> <code>/Users/ousttrue</code> と入力することでjobが、アダプター開始するところまでできた。
+しかし、アダプターがすぐに死んでいる様子。</p>
+<p>アダプターを手動起動してみる。</p>
+<p><code>node .\.vscode\extensions\ms-python.python-2019.4.11987\out\client\debugger\debugAdapter\main.js</code></p>
+<p><code>.vimspector.json</code> に書いてあるのとバージョンが違う。
+<code>file not found</code> か。</p>
+<p><code>path</code> をなおしたら動いた😃</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">-          &quot;$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js&quot;</span><span style="color:#c0c5ce;">
++          &quot;$HOME/.vscode/extensions/ms-python.python-2019.4.11987/out/client/debugger/debugAdapter/Main.js&quot;</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p><code>neovim</code> の <code>rplugin</code> での構成を考えてみようか。</p>
+<h2 id="python3-de-adapter-woqi-dong-sitemiru">python3 で Adapter を起動してみる</h2>
+<p><code>AdapterAdapter</code> というか <code>AdapterBridge</code> という感じになりそうだけど、
+<code>vim</code> で込み入った実装をするのは手に余るので、可能な限り <code>python</code> で事を進めよう。
+pythonでprotocl実験。</p>
+<p>https://github.com/ousttrue/daplauncher</p>
+<ul>
+<li>http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html</li>
+<li>https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/</li>
+<li>https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/</li>
+</ul>
+<p>launchRequestの後で固まると思ったら、サイトに記述されていないパラメーターがあった。
+<code>console</code> どこに書いてあるのか・・・</p>
+<p>https://github.com/Microsoft/vscode-debugadapter-node/blob/master/debugProtocol.json</p>
+<p>https://github.com/Microsoft/vscode-python/issues/3762</p>
+<p>わかった。</p>
+<p>https://github.com/Microsoft/vscode-go/issues/219</p>
+<p>vscodeの <code>.vscode/launch.json</code> の起動設定を <code>launch</code> の引数に合体するのだ。</p>
+<p>https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes</p>
+<p>書いとけよー。</p>
+
+</div>
+
+<nav class="toc">
+
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#vim-shang-nodebatuga">vim 上のデバッガ</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#lldb-nvim">lldb.nvim</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#vim-vebugger">vim-vebugger</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#pyclewn">pyclewn</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#pubd">pubd</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#vim-breakpts">vim-breakpts</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#vimspector">vimspector</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#debugadapterprotocol">DebugAdapterProtocol</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#dapnoshi-yang">DAPの仕様</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#dapnoshi-zhuang">DAPの実装</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#vimspectornoshi-zhuang">vimspectorの実装</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/vim/vim-debugger/#python3-de-adapter-woqi-dong-sitemiru">python3 で Adapter を起動してみる</a>
+            
+        </li>
+    
+</ul>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a></footer>
+
+  </body>
+</html>

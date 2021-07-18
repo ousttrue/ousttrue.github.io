@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;06&#x2F;cpp11-rpc&#x2F;"> C++でMessagePack-RPCを実装する </a>
+  <div>
+    <ul class="tags">
+      <li class="headline_date">2017-06-03</li>
+      
+
+    </ul>
+  </div>
+</div>
+ <p>最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。</p>
+<p>基本設計
+MessagePack-RPCの仕様をおさらいすると以下の通り。</p>
+<h1 id="request">request</h1>
+<p>[type, msgid, method, params]
+(0)   (int)  (str)   (array)</p>
+<h1 id="response">response</h1>
+<p>[type, msgid, error, result]
+(1)   (int)  (any)  (any)</p>
+<p>msgpackのバイト列を受け取って、msgpackのバイト列を返す関数として一般化する。
+typedef std::vector<a href="std::uint8_t">std::uint8_t</a> bytes;
+// msgpackのバイト列を引数にとり、msgpackのバイト列を返す
+typedef std::function&lt;bytes(const &amp;bytes)&gt; procedurecall;</p>
+<p>任意の関数呼び出しからprocedurecallを作り出せるようにして、MessagePack-RPCシステムの部品として使えるようにする。
+簡単な例
+例として
+static int add(int a, int b){ return a+b; }</p>
+<p>をprocedurecallに変換してみる。
+procedurecall make_procedurecall(int(*f)(int, int))
+{
+// request -&gt; response ではなくparams -&gt; result
+return [f](const bytes&amp; src)-&gt;bytes
+{
+// unpack args
+auto parser = msgpackpp::parser(src);
+std::tuple&lt;int, int&gt; args;
+parser &gt;&gt; args;</p>
+<pre style="background-color:#2b303b;">
+<code>    // call
+    auto r = f(std::get&lt;0&gt;(args), std::get&lt;1&gt;(args));
+
+    // pack result
+    msgpackpp::packer packer;
+    packer &lt;&lt; r;
+    return packer.get_payload();
+};
+</code></pre>
+<p>}</p>
+<p>int add(int, int)をprocedurecallに変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。
+procedurecallの使い方は以下の通り。
+// register
+auto proc = msgpackpp::rpc::make_procedurecall(&amp;add);</p>
+<p>// call
+auto packer = msgpackpp::packer();
+packer &lt;&lt; std::make_tuple(1, 2);
+auto result = proc(packer.get_payload());</p>
+<p>// result
+REQUIRE(3 == msgpackpp::parser(result).get_number<int>());</p>
+<p>とりあえず動いたが、関数を増やすたびにこれだけのコードを記述するのはやってられませぬ。
+以下のような理想形を目指して作りこんでゆく。
+REQUIRE(3 == msgpack_procedurecall([](int a, int b){ return a+b; }, 1, 2));</p>
+<p>lambdaが動けば他も動くようにできるので、lambdaを第一に実装する。
+実装
+ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。
+make_procedurecall
+template&lt;typename F, typename R, typename C, typename ...AS, std::size_t... IS&gt;
+procedurecall _make_procedurecall(const F &amp;f
+, R(C::*)(AS...)const // template引数R, C, ASを受け付けるためのダミー
+, std::index_sequence&lt;IS...&gt; // template引数ISを受け付けるためのダミー
+)
+{
+// request -&gt; response ではなくparams -&gt; result
+return [f](const bytes&amp; src)-&gt;bytes
+{
+// unpack args
+auto parser = msgpackpp::parser(src);
+std::tuple&lt;AS...&gt; args;
+parser &gt;&gt; args;</p>
+<pre style="background-color:#2b303b;">
+<code>    // call
+    auto r = f(std::get&lt;IS&gt;(args)...); // 可変長テンプレート引数を展開できる。ISと...が離れていることに注意
+
+    // pack result
+    msgpackpp::packer packer;
+    packer &lt;&lt; r;
+    return packer.get_payload();
+};
+</code></pre>
+<p>}</p>
+<p>template&lt;typename F, typename R, typename C, typename ...AS&gt;
+procedurecall _make_procedurecall(F f
+, R(C::*)(AS...)const // template引数R, C, ASを受け付けるためのダミー
+)
+{
+return _make_procedurecall(f
+, &amp;decltype(f)::operator() // lambdaの返り値と引数の型を次のテンプレートに渡す
+, std::index_sequence_for&lt;AS...&gt;{} // std::get呼び出しのためにindex_sequenceを作る。
+);
+}</p>
+<p>//
+// あらゆる型のlambdaを受け付けるようにした
+//
+template<typename F>
+procedurecall make_procedurecall(F f)
+{
+return _make_procedurecall(f
+, &amp;decltype(f)::operator() // lambdaの返り値と引数の型を次のテンプレートに渡す
+);
+}</p>
+<p>msgpack_call
+template&lt;typename F, typename R, typename C, typename ...AS&gt;
+decltype(auto) _msgpack_call(F f
+, R(C::*)(AS...)const // template引数R, C, ASを受けるためのダミー
+, AS... args)
+{
+auto proc = msgpackpp::rpc::make_procedurecall(f);</p>
+<pre style="background-color:#2b303b;">
+<code>// call
+msgpackpp::packer packer;
+packer &lt;&lt; std::make_tuple(args...); // 可変長テンプレート引数を展開できる
+auto result = proc(packer.get_payload());
+
+// unpack result
+R value;
+msgpackpp::parser(result) &gt;&gt; value;
+return value;
+</code></pre>
+<p>}</p>
+<p>template&lt;typename F, typename ...AS&gt;
+decltype(auto) msgpack_call(F f, AS... args) // 返り値の型はreturnから型推論
+{
+return _msgpack_call(f
+, &amp;decltype(f)::operator() // lambdaの返り値と引数の型をテンプレート引数に渡す
+, args...
+);
+}</p>
+<p>使う。
+REQUIRE(3==msgpack_call([](int a, int b) { return a + b; }, 1, 2));
+REQUIRE(-1==msgpack_call([](int a, int b) { return a - b; }, 1, 2));</p>
+<p>valiadic templateおそるべし。
+従来であれば、1引数、２引数・・・と引数の個数ごとに手作業でバージョンを増やさねばならなかったものが、わりとさくっと書けるな。</p>
+
+</div>
+
+<nav class="toc">
+
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/06/cpp11-rpc/#request">request</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/06/cpp11-rpc/#response">response</a>
+            
+        </li>
+    
+</ul>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;05&#x2F;19&#x2F;call-with-tuple&#x2F;"> msgpack-rpc-asioの関数登録と実行 </a>
+  <div>
+    <ul class="tags">
+      <li class="headline_date">2013-05-19</li>
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>msgpack-rpc-asioの関数登録と実行
+msgpack-rpcのリクエストは、によると
+[type, msgid, method, params]</p>
+<p>という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。
+これをサーバ側で如何に呼び出すかについて。
+単純な実装だと以下のようにメソッド名をキーにして分岐することになる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-int);" data-lang="int);"><span style="color:#c0c5ce;">class dispatcher { void dispatch(int msgid, const std::string &amp;method,
+const msgpack::object &amp;params) { if(method==“add”){ // 引数展開
+std::tuple t; params.convert(&amp;t);
+// 関数実行
+int result=add(std::get&lt;0&gt;(t), std::get&lt;1&gt;(t));
+
+// 結果のパッキング
+// response [type, msgid, error, result]
+msgpack::sbuffer response;
+msgpack::packer&lt;msgpack::sbuffer&gt; pk(&amp;response);
+pk.pack_array(4)
+pk.pack(1);
+pk.pack(msgid);
+pk.pack_nil();
+pk.pack(result);
+
+// responseを送り返す
+
+
+} else{ throw “unknown func”; }
+
+}
+引数展開、関数呼び出し、結果のパッキングと一連の操作を定型処理として括りだすと下記のように書ける。c++
+// ２引数展開用 class dispatcher { // 実行 void dispatcher::dispatch(int
+msgid, const std::string &amp;method, const msgpack::object &amp;params) {
+if(method==“add”){ msgpack::sbuffer response=unpack_exec_pack(msgid,
+add, params);
+// responseを送り返す
+
+
+} else{ throw “unknown func”; }
+
+}
+// ヘルパー template msgpack::sbuffer unpack_exec_pack(int msgid,
+R(*f)(A1, A2), const msgpack::object &amp;params) { // 引数展開 std::tuple
+t; params.convert(&amp;t);
+// 関数実行
+R result=add(std::get&lt;0&gt;(t), std::get&lt;1&gt;(t));
+
+// 結果のパッキング
+// response [type, msgid, error, result]
+msgpack::sbuffer response;
+msgpack::packer&lt;msgpack::sbuffer&gt; pk(&amp;response);
+pk.pack_array(4)
+pk.pack(1);
+pk.pack(msgid);
+pk.pack_nil();
+pk.pack(result);
+
+return response;
+
+}
+</span></code></pre>
+<p>１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。
+さらに 関数の登録と実行を分けるべく次のように拡張した。 ```c++ class
+dispatcher { std::map m_map;
+// 実行 void dispatch(int msgid, const std::string &amp;method, const
+msgpack::object &amp;params) { std::function f=m_map.find(method);
+if(f!=m_map.end()){ // 関数実行 msgpack::sbuffer resonse=f(msgid,
+params);
+// responseを送り返す</p>
+<p>} else{ throw “unknown func”; }</p>
+<p>}
+// 登録 template void add_handler(const std::string &amp;method, R(*f)(A1,
+A2)) {
+m_map[method]=f-&gt;msgpack::sbuffer{
+// 引数展開
+std::tuple&lt;A1, A2&gt; t;
+params.convert(&amp;t);</p>
+<p>// 実行
+R result=f(std::get&lt;0&gt;(t), std::get&lt;1&gt;(t));</p>
+<p>// 結果のパッキング
+// response [type, msgid, error, result]
+msgpack::sbuffer response;
+msgpack::packer<a href="msgpack::sbuffer">msgpack::sbuffer</a> pk(&amp;response);
+pk.pack_array(4)
+pk.pack(1);
+pk.pack(msgid);
+pk.pack_nil();
+pk.pack(result);</p>
+<p>return response;</p>
+<p>};</p>
+<p>}
+``msgpack-&gt;引数展開-&gt;c++関数呼び出し-&gt;msgpackへの一連の操作を 同一のシグネチャのstd::function`に
+封じ込めることができる。
+次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。
+まず、std::functionから実装。
+c++   // std::function用   template&lt;typname R, typename A1, typename A2&gt;   void add_handler(contt std::string &amp;method, std::function&lt;R(A1, A2)&gt; f)   {     // 中身同じ   }
+呼び出し時にstd::functionを経由するようにすればあらゆる関数呼び出しを登録できる。
+例えば、ラムダ関数も以下のように登録できる。
+c++ // ラムダ登録 dispatcher d; d.add_handler(&quot;add&quot;,      std::function&lt;int(int, int)&gt;(       [](int a, int b)-&gt;int{          return a+b;        }));
+しかし、どうせなら
+c++ dispatcher d; d.add_handler(&quot;add&quot;,      [](int a, int b)-&gt;int{        return a+b;      });
+と書きたい。
+となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。
+c++   // ラムダの登録   template<typname F>   void add_handler(const std::string &amp;method, F f)   {     // 型がわからぬ   }
+ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-F f" data-lang="F f"><span style="color:#c0c5ce;">R(C::*)(A1, A2)const) { // 中身同じ }
+// ラムダの登録 // std::functionも受けられる // std::bindは無理だった //
+operator()がひとつしかない関数オブジェクトを受け付けられる？ template
+void add_handler(const std::string &amp;method, F f) { //
+上の関数で型推論させる add_handler(method, f, &amp;F::operator()); } ```
+これでめでたくラムダも直接登録できるようになった。
+ただし、operator()のオーバーロードが解決できないらしくstd::bindが登録できない。
+std::bindに関しては、ラムダで代用できるしstd::functionでラップできるのでおいておくことにした。
+</span></code></pre>
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a></footer>
+
+  </body>
+</html>

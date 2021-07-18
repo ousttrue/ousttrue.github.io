@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;05&#x2F;26&#x2F;gentoo-eth0&#x2F;"> Gentooでネットワークインターフェースがeth0にならない件 </a>
+  <div>
+    <ul class="tags">
+      <li class="headline_date">2013-05-26</li>
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;linux&#x2F;">linux</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>Gentooでネットワークインターフェースがeth0にならない件
+最近インストールしたAMDのオンボードEtherと、MacBookAirのUsb
+Etherが共にeth0にならなかった。
+AMD機では、/etc/init.d/net.eth0 startが失敗するのでなんでかと思ったら違う名前になっていた。</p>
+<h1 id="ifconfig-a">ifconfig -a</h1>
+<p>enp3s0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</p>
+<p>eth0ではないので/etc/init.d/net.eth0ではなく/etc/init.d/net.enp3s0とする必要があった。
+/etc/conf.d/netも書き換え。
+MacBookAirでも違う名前になっていた。</p>
+<h1 id="ifconfig-a-1">ifconfig -a</h1>
+<p>enp0s29f7u1u1: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</p>
+<p>とりあえずシンボリックリンク/etc/init.d/net.enp0s29f7u1u1を作って接続することはできたがちょっと調べてみることにした。
+udevinfo
+なんかudevinfoが見つからぬ。
+http://www.gossamer-threads.com/lists/gentoo/user/174113
+によるとudevadmになったらしい。</p>
+<h1 id="udevadm-info-a-sys-class-net-enp3s0">udevadm info -a /sys/class/net/enp3s0</h1>
+<p>で情報をとれた。
+参考:http://www.ice.is.kit.ac.jp/~umehara/misc/comp/20060408.html
+gentooのudev設定
+http://www.gentoo.gr.jp/transdocs/udevrules/udevrules.html#example-iface
+/etc/udev/rules.d/myether
+SUBSYTEM=&quot;net&quot;, ATTR{address}==&quot;XX:XX:XX:XX:XX:XX&quot;, NAME=&quot;eth0&quot;</p>
+<p>書いてみた。最近のudevではSYSFSはATTRになったぽい。
+test</p>
+<h1 id="udevadm-test-sys-class-net-enp3s0">udevadm test /sys/class/net/enp3s0</h1>
+<p>うまくいかぬ・・・</p>
+<h1 id="cd-etc-udev-rules-d">cd /etc/udev/rules.d</h1>
+<h1 id="mv-myether-50-ether-rules">mv myether 50-ether.rules</h1>
+<p>有効なファイル名が決まっていた。
+test</p>
+<h1 id="udevadm-test-sys-class-net-enp3s0-1">udevadm test /sys/class/net/enp3s0</h1>
+<p>unknown key 'SUBSYTEM' in /etc/udev/rules.d/50-ether.rules:1
+invalid rule '/etc/udev/rules.d/50-ether.rules:1'</p>
+<p>書き方がよろしくないらしい
+SUBSYSTEM==&quot;net&quot;, ATTR{address}==&quot;XX:XX:XX:XX:XX:XX&quot;, NAME=&quot;eth0&quot;</p>
+<p>タイポを修正
+changing net interface name from 'enp3s0' to 'eth0'</p>
+<p>うまくいった。
+反映</p>
+<h1 id="cd-etc-int-d">cd /etc/int.d</h1>
+<h1 id="rc-update-delete-net-enp3s0">rc-update delete net.enp3s0</h1>
+<h1 id="mv-net-enp3s0-net-eth0">mv net.enp3s0 net.eth0</h1>
+<h1 id="rc-update-add-net-eth0-defalt">rc-update add net.eth0 defalt</h1>
+<h1 id="vim-etc-conf-d-net">vim /etc/conf.d/net</h1>
+<h1 id="reboot">reboot</h1>
+
+</div>
+
+<nav class="toc">
+
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#ifconfig-a">ifconfig -a</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#ifconfig-a-1">ifconfig -a</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#udevadm-info-a-sys-class-net-enp3s0">udevadm info -a &#x2F;sys&#x2F;class&#x2F;net&#x2F;enp3s0</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#udevadm-test-sys-class-net-enp3s0">udevadm test &#x2F;sys&#x2F;class&#x2F;net&#x2F;enp3s0</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#cd-etc-udev-rules-d">cd &#x2F;etc&#x2F;udev&#x2F;rules.d</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#mv-myether-50-ether-rules">mv myether 50-ether.rules</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#udevadm-test-sys-class-net-enp3s0-1">udevadm test &#x2F;sys&#x2F;class&#x2F;net&#x2F;enp3s0</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#cd-etc-int-d">cd &#x2F;etc&#x2F;int.d</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#rc-update-delete-net-enp3s0">rc-update delete net.enp3s0</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#mv-net-enp3s0-net-eth0">mv net.enp3s0 net.eth0</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#rc-update-add-net-eth0-defalt">rc-update add net.eth0 defalt</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#vim-etc-conf-d-net">vim &#x2F;etc&#x2F;conf.d&#x2F;net</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/#reboot">reboot</a>
+            
+        </li>
+    
+</ul>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a></footer>
+
+  </body>
+</html>

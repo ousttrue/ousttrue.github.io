@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;python&#x2F;moldstamp&#x2F;"> 静的サイト生成器 MoldStamp </a>
+  <div>
+    <ul class="tags">
+      <li class="headline_date">2019-04-18</li>
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;python&#x2F;">python</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>ディスククラッシュで <code>hugo</code> の管理リポジトリがロストしたので、
+新しく自分で作ってみることにした。</p>
+<p><a href="https://github.com/ousttrue/moldstamp">moldstamp</a> と名付ける。</p>
+<p>途中まで作ってみた感じだとサイトの構成面に関しては、既存のツールを使うより自作した方がはるかに簡単。ファイルが変換される法則とか、それをカスタマイズする方法をgoogle先生に聞くのではなく自分で作るだけなので。当然、機能は少ないし見た目はしょぼいのだけど、必要最低限を満たすのは難しくなかったり。</p>
+<p>以下、開発メモ</p>
+<h2 id="ji-shi">記事</h2>
+<h3 id="thinking-huorudagou-cheng">🤔 フォルダ構成</h3>
+<p>検討中</p>
+<p>src</p>
+<ul>
+<li>root
+<ul>
+<li>articles
+<ul>
+<li>xxx.md: htmlに変換してコピー</li>
+<li>xxx.jpg,png: など。そのままコピー</li>
+</ul>
+</li>
+<li>templates
+<ul>
+<li>index.html: jinja2 temlate</li>
+<li>article.html: jinja2 temlate</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>dst</p>
+<ul>
+<li>github.io
+<ul>
+<li>/index.html</li>
+<li>/post/xxx.html</li>
+</ul>
+</li>
+</ul>
+<h3 id="full-moon-with-face-frontmatter">🌝 Frontmatter</h3>
+<p>hugo風にtomlで。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-toml" data-lang="toml"><span style="background-color:#bf616a;color:#2b303b;">+++</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">date </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">2012-04-06</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#bf616a;">taxonomies</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">tags </span><span style="color:#c0c5ce;">= [&#39;</span><span style="color:#a3be8c;">nvim</span><span style="color:#c0c5ce;">&#39;, &#39;</span><span style="color:#a3be8c;">python</span><span style="color:#c0c5ce;">&#39;]
++++
+</span></code></pre><h3 id="hammer-draftnoxi-i">🔨 draftの扱い</h3>
+<h3 id="hammer-ge-tagmei-noji-shi-yi-lan">🔨 各tag毎の記事一覧</h3>
+<h3 id="hammer-ge-ji-shi-notong-zitagunoji-shi-henorinku">🔨 各記事の同じタグの記事へのリンク</h3>
+<h3 id="hammer-next-prev">🔨 next, prev</h3>
+<h2 id="markdown">markdown</h2>
+<h3 id="hammer-raiburariru-reti-e">🔨 ライブラリ入れ替え？</h3>
+<p><code>makdown2</code> から <code>markdown</code> へ。</p>
+<h3 id="hammer-link-pattern">🔨 link-pattern</h3>
+<ul>
+<li>https://github.com/trentm/python-markdown2/wiki/link-patterns</li>
+</ul>
+<p>わりと誤判定する。</p>
+<ul>
+<li>https://docs.python.org/ja/3/library/html.parser.html</li>
+</ul>
+<p>で作り直す</p>
+<h3 id="full-moon-with-face-toc">🌝 toc</h3>
+<h3 id="full-moon-with-face-syntax-highlight">🌝 syntax highlight</h3>
+<p>pygmentsを使う</p>
+<ul>
+<li>🌝 markdownのコード部分をシンタックスハイライトする</li>
+<li>🌝 cssを生成する</li>
+</ul>
+<h2 id="jinja2">jinja2</h2>
+<ul>
+<li>🌝 index</li>
+<li>🌝 article</li>
+</ul>
+<h3 id="hammer-inheritance">🔨 inheritance</h3>
+<p>ヘッダとフッタを分離するなど</p>
+<ul>
+<li>http://jinja.pocoo.org/docs/2.10/templates/#template-inheritance</li>
+</ul>
+<h2 id="css">css</h2>
+<h3 id="hammer-h1-h2-h3">🔨 h1, h2, h3...</h3>
+<h3 id="hammer-yin-yong">🔨 引用</h3>
+<h3 id="hammer-ul-li">🔨 ul, li</h3>
+<p>インデントが深すぎる</p>
+<h2 id="local-server">local server</h2>
+<h3 id="full-moon-with-face-livereload">🌝 livereload</h3>
+<p>ローカル実験用のlivereload server</p>
+<h3 id="hammer-livereload-wu-bian-huan-nohuairu-jpgnado">🔨 livereload 無変換のファイル(jpgなど)</h3>
+<h3 id="hammer-livereload-pygmentsnosheng-cheng-huairu-css">🔨 livereload pygmentsの生成ファイル(css)</h3>
+
+</div>
+
+<nav class="toc">
+
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/python/moldstamp/#ji-shi">記事</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#thinking-huorudagou-cheng">🤔 フォルダ構成</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#full-moon-with-face-frontmatter">🌝 Frontmatter</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-draftnoxi-i">🔨 draftの扱い</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-ge-tagmei-noji-shi-yi-lan">🔨 各tag毎の記事一覧</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-ge-ji-shi-notong-zitagunoji-shi-henorinku">🔨 各記事の同じタグの記事へのリンク</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-next-prev">🔨 next, prev</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/python/moldstamp/#markdown">markdown</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-raiburariru-reti-e">🔨 ライブラリ入れ替え？</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-link-pattern">🔨 link-pattern</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#full-moon-with-face-toc">🌝 toc</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#full-moon-with-face-syntax-highlight">🌝 syntax highlight</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/python/moldstamp/#jinja2">jinja2</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-inheritance">🔨 inheritance</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/python/moldstamp/#css">css</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-h1-h2-h3">🔨 h1, h2, h3...</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-yin-yong">🔨 引用</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-ul-li">🔨 ul, li</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/python/moldstamp/#local-server">local server</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#full-moon-with-face-livereload">🌝 livereload</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-livereload-wu-bian-huan-nohuairu-jpgnado">🔨 livereload 無変換のファイル(jpgなど)</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/python/moldstamp/#hammer-livereload-pygmentsnosheng-cheng-huairu-css">🔨 livereload pygmentsの生成ファイル(css)</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+</ul>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a></footer>
+
+  </body>
+</html>
