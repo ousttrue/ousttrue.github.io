@@ -32,3 +32,21 @@ taxonomies.tags = ["zola", "css"]
 だいたいできた。
 github が増えすぎてカオスなので不要なものを整理せねば・・・
 
+## 20210725: 色
+
+作業用に区域ごとに色分けしていたのをやめて、地味な色に変更。
+
+```scss
+@mixin MAIN_COLOR {
+    color: black;
+    background-color white;
+}
+```
+
+のような方法を試してみた。
+
+## 20210725: TOC 固定
+
+```css
+position: fixed;
+```
