@@ -50,3 +50,27 @@ github が増えすぎてカオスなので不要なものを整理せねば・�
 ```css
 position: fixed;
 ```
+
+## 20210725: 画像を入れれるようにしてみた
+
+`page.assets` や `section.assets` に想定した形で入ってこないので、
+無理やりパスを操作したのだが、さすがにこれはちょっと・・・
+
+```html
+  {% if page.extra.image %}
+  {% set s = page.relative_path | split(pat="/") %}
+  {% set len = s | length %}
+  {% set sl = s | slice(start=0, end=len-1) %}
+  {% set j = sl | join(sep="/") %}
+  {% set image_url = resize_image(path=j ~ "/" ~ page.extra.image, width=600, op="fit_width") %}
+  <img src="{{ image_url }}"">
+  {% endif %}
+```
+
+なんか、 `zola` がわりと融通が利かないことが分かってきた。
+`resize_image` で明示的に画像を加工するという設計は理解。なるほど。
+当方、 `md` ファイルと同じフォルダに `png, jpg` を放り込んでそれを記事内で使いたいのです。
+画像を中央の `static` フォルダにまとめて入れておくの嫌なので。
+改造して page.assets に放り込んでしまおう。
+
+`hugo` ほど多機能複雑でなく、 `zola` ほど strict でない、そんなほどほどなツールが望まれる。
