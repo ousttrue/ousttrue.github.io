@@ -1,8 +1,8 @@
----
-title: "Blenderで揺れ物"
-date: 2017-05-06
-taxonomies: {tags: []}
----
++++
+title = "Blenderで揺れ物"
+date = 2017-05-06
+taxonomies.tags = ["Blender"]
++++
 
 MmdUtilityでmmdモデルをインポートして物理を取り入れるべく、Blenderの物理で揺れ物をセットアップする方法を調べている。
 
@@ -17,6 +17,6 @@ Dynamic,  BlenderではActive。
 剛体の動きをボーンに伝えるべく、ポーズボーンにコンストレイントを追加する。child ofで剛体を指定する。この場合、親ボーンと剛体の両方の影響を受けてしまうので親ボーンの影響を切らねばならない。parentにNoneをセットするか、use_inherit_rotation, use_inherit_scale, use_inherit_locationをFalseにするのだけど、そうすると今度はポーズを変えたときについてこなくなる。一筋縄でいかないな・・・。ポーズ変えたときに追随させるスクリプトを用意すべしということか。
 参考
 
-https://github.com/12funkeys/rigid_bodys_gen
-http://mrsoramame.jpn.org/archives/138
+* <https://github.com/12funkeys/rigid_bodys_gen>
+* <http://mrsoramame.jpn.org/archives/138>
 

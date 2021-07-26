@@ -1,7 +1,7 @@
 ---
 title: "PixarのUniversal Scene Descriptionをビルドしてみる"
 date: 2017-08-14
-taxonomies: {tags: []}
+taxonomies: {tags: ['usd']}
 ---
 
 20170902。実はビルドスクリプトがあって、簡単になっていた。
@@ -9,7 +9,7 @@ taxonomies: {tags: []}
 動画でCEDEC2017のセッションを聞いてよさげな気がしたので再度やってみた(ちょっと前に途中までやって放置していた)。
 usdviewが使えるようにするとよいらしい。
 
-Pixar USD の Windows ビルド方法（2017/9 版）
+## Pixar USD の Windows ビルド方法（2017/9 版）
 
 自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
 環境は、Windows10(64bit) + VisualStudio2017 + VisualStudio2015のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)
@@ -36,10 +36,12 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 VS2017しか入っていないとき
 build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラはVS2008(MSVC9.0)らしい。
 
-https://www.microsoft.com/en-us/download/details.aspx?id=44266
+<https://www.microsoft.com/en-us/download/details.aspx?id=44266>
 
 python補足
 Python27以外のPythonが入っているとはまる率が上がる。
+
+```
 D:\work> python -V
 Python 3.6.0 :: Anaconda 4.3.0 (64-bit)
 
@@ -53,9 +55,12 @@ Collecting pyside
     100% |################################| 45.0MB 36kB/s
 Installing collected packages: pyside
 Successfully installed pyside-1.2.4
+```
 
 python使いたるもの２系、３系両方入っていたりするものである。
 cloneしてビルドスクリプトを実行
+
+```
 D:\work> git clone https://github.com/PixarAnimationStudios/USD
 
 D:\work> mkdir USD_build
@@ -82,13 +87,18 @@ build_usd.py: error: too few arguments
 
 D:\work\USD_build> python ..\USD\build_scripts\build_usd.py .
 ERROR: CMake not found -- please install it and adjust your PATH
+```
 
 こんな風に足りないツールのメッセージが出るのでせっせとインストールしてパスを設定する。
+
 > set PATH=D:\Program Files\CMake\bin;%PATH%
 > set PATH=D:\Program Files\NASM;%PATH%
 
 build…
-Alembicとか無しの最小ビルド。
+
+## Alembicとか無しの最小ビルド。
+
+```
 D:\work\USD_build> python ..\USD\build_scripts\build_usd.py .
 
 Building with settings:
@@ -118,6 +128,7 @@ STATUS: Installing TBB...
 STATUS: Installing JPEG...
 STATUS: Installing TIFF...
 STATUS: Installing PNG...
+```
 
 こんな感じに順番にビルドが進んでいく。
 pngのビルドでこけた
@@ -127,6 +138,8 @@ pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が
 CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
 pythonをフルパスで指定したらなんか治った。違うPythonが意図せず使われていたか。
 dos窓は、whichコマンドが無いしよくわからん。
+
+```
 work\USD_build> D:\python27\python ..\USD\build_scripts\build_usd.py . --force png
 
 STATUS: Installing PNG...
@@ -145,9 +158,12 @@ Success! To use USD, please ensure that you have:
   The following in your PATH environment variable:
     D:\dev\_alembic\USD_build\bin
     D:\dev\_alembic\USD_build\lib
+```
 
 ビルドできた。
-Boost.Pythonメモ
+
+## Boost.Pythonメモ
+
 boost_python-vc140-mt-1_61.dllがpython36.dllとか違うのにリンクしてしまう場合。
 最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。
 USD_BUILD/user-conifg.jam

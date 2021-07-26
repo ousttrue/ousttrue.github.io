@@ -1,7 +1,7 @@
 ---
 title: "Unity開始"
 date: 2013-11-26
-taxonomies: {tags: []}
+taxonomies: {tags: ["unity"]}
 ---
 
 仕事の都合もあって、Unityの学習を開始。

@@ -1,5 +1,5 @@
 +++
-title = "imgui の luajit FFI が動くところまで作った"
+title = "imgui の FFI が luajit で動くところまで作った"
 date = 2021-07-25
 taxonomies.tags = ["luajit", "ffi", "imgui"]
 [extra]
@@ -15,7 +15,7 @@ Window System は `GLFW`、3D API は `OpenGL3` を選択。
 
 ということから、楽そうなものを選択したらそうなった。
 
-## ImFont のメンバー関数呼び出し
+# ImFont のメンバー関数呼び出し
 
 `ImFont`, `ImFontAtlas` のみ何故か `c++` 色が強く、メンバ関数呼び出しがあったりするのでなんとかしたい。
 cdecl で FFI 記述できるんだっけ？
@@ -29,9 +29,9 @@ cdecl で FFI 記述できるんだっけ？
 //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 ```
 
-## C++ デフォルト引数
+# C++ デフォルト引数
 
-`ImGui` の `API` は基本的にほぼ C になうように配慮されていて、C++ の昨日は限定的にしか使っていない。
+`ImGui` の `API` は基本的にほぼ C になるように配慮されていて、C++ の機能は限定的にしか使っていない。
 
 * 関数オーバーロード
 * デフォルト引数
@@ -55,13 +55,48 @@ IMGUI_API bool Begin(const char* name, bool* p_open = NULL, ImGuiWindowFlags fla
 FFI 境界の `struct の value 渡し`, `デフォルト引数` は解決できない場合が多いが、
 コード生成側で努力する価値はある。
 
-## ImGui 練習
+ラッパーを自動で生成するようにできた。
 
-これで、 `glTF` アプリを作る準備が整ってきたのだが、次に `ImGui` 自体の練習をやる。
+```lua
+    -- lua では nil と false のみが 偽 である
 
-* Tree
-* Table
-* Docking System
+    Begin = function(name, p_open, flags)
+        -- p_open が供給されない場合、デフォルト nil になり、NULL として解釈される
+        flags = flags or 0
+        return imgui.Begin(name, p_open, flags)
+    end,
 
-この3つをマスターする。
-これが、軌道に乗れば C# の `WindowsForms` で雑アプリを量産していた時の生産性に匹敵するパワーが得られる目論見。
+    Button = function(label, size)
+        size = size or ffi.new('struct ImVec2')
+        return imgui.Button(label, size)
+    end,
+```
+
+引数なしの `ffi.new` は zero 詰めするので `size = ImVec2(0, 0)` の意。
+
+# 可変長引数
+
+```c++
+IMGUI_API void          Text(const char* fmt, ...)
+```
+
+luajit ffi ではそのまま `...` を扱うことができた。
+
+ただし、`%d` のときは、
+`LL` をつけて `integer` を渡す。
+`number` だとうまくいかない。
+
+```lua
+local count = 1LL -- 64bit int. UL もある
+imgui.Text("counter = %d", counter)
+```
+
+`LL` と `UL` は luajit の拡張らしい。
+<https://luajit.org/ext_ffi_api.html>
+> Extensions to the Lua Parser
+>
+> numeric literals with the suffixes LL or ULL as signed or unsigned 64 bit integers
+
+だがしかし、この記法使うと `stylua` がエラーになる。そりゃ、そうだ。
+
+

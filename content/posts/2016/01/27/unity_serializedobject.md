@@ -1,7 +1,7 @@
 ---
 title: "UnityのSerializedObject"
 date: 2016-01-27
-taxonomies: {tags: []}
+taxonomies: {tags: ["unity"]}
 ---
 
 UnityのSerializedObjectのメモ。

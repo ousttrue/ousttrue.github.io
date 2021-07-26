@@ -1,7 +1,7 @@
 ---
 title: "distutilsでcl.exeが見つからない"
 date: 2017-08-06
-taxonomies: {tags: []}
+taxonomies: {tags: ["python"]}
 ---
 
 PythonじゃなくてVisualStudio側の問題のようなのだけど、setup.pyでネイティブモジュールをビルドするときに顕在化したので。
