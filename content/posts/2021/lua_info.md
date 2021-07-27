@@ -22,23 +22,54 @@ taxonomies.tags = ["lua"]
 
 <https://www.lua.org/versions.html>
 
-|        | url                                                                 | memo                                                                                    |
-|--------|---------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| Lua5.1 |                                                                     | 2012。これより古いものを使う理由は無さそう。                                            |
-| Lu15.2 | [since Lua 5.1](https://www.lua.org/manual/5.2/readme.html#changes) | 2015。finalizer                                                                         |
-| Lua5.3 | [since Lua 5.2](https://www.lua.org/manual/5.3/readme.html#changes) | 2020。integers                                                                          |
-| Lua5.4 | [since Lua 5.3](https://www.lua.org/manual/5.4/readme.html#changes) | 2021。const, to-be-closed                                                               |
-| LuaJIT | <https://luajit.org/>                                               | 最終版は `2.1.0-beta3`。`FFI` が強力。拡張書式の `LL` に対応している formatter を探索中 |
-| Luau   | <https://luau-lang.org/>                                            | lua-5.1 の superset。型ヒントなどを拡張                                                 |
+|        | url                                                                | memo                                                     |
+|--------|--------------------------------------------------------------------|----------------------------------------------------------|
+| Lua5.1 |                                                                    | 2012。これより古いものを使う理由は無さそう。             |
+| Lu15.2 | [since Lua5.1](https://www.lua.org/manual/5.2/readme.html#changes) | 2015。finalizer                                          |
+| Lua5.3 | [since Lua5.2](https://www.lua.org/manual/5.3/readme.html#changes) | 2020。integers                                           |
+| Lua5.4 | [since Lua5.3](https://www.lua.org/manual/5.4/readme.html#changes) | 2021。const, to-be-closed                                |
+| LuaJIT | <https://luajit.org/>                                              | Lua5.1base。最終版は `2.1.0-beta3`。高速。`FFI` が強力。 |
+| Luau   | <https://luau-lang.org/>                                           | Lua5.1 の superset。Roblox専用。オープンソースではない。 |
 
 # Translator
 
-* <https://typescripttolua.github.io/>
-* <https://ifritjp.github.io/documents/lunescript/>
-* <https://github.com/teal-language/tl>
+## [moonscript](https://moonscript.org/)
+## [typescripttolua](https://typescripttolua.github.io/)
+
+* 後で出てくる、`local-lua-debugger` はこれで実装されているぽい。
+
+## [lunescript/](https://ifritjp.github.io/documents/lunescript/)
+
+## [teal](https://github.com/teal-language/tl)
 
 # Language server
 
+## [EmmyLua](https://github.com/EmmyLua/EmmyLua-LanguageServer)
+
+* Java製
+* [EmmyLua Annotation](https://emmylua.github.io/annotation.html) に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する
+
+## [lua-language-server](https://github.com/sumneko/lua-language-server)
+
+* ⭐ [EmmyLua Annotation](https://emmylua.github.io/annotation.html) に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する
+
+## [lua-lsp](https://github.com/Alloyed/lua-lsp)
+
 # Debug adapter
 
+
+## [local-lua-debugger-vscode](https://github.com/tomblind/local-lua-debugger-vscode)
+
+* Debugされるスクリプト側に仕込み不要
+* ⭐ luajit 対応
+
+## [lua-debug](https://github.com/actboy168/lua-debug)
+
+* Debugされるスクリプト側に仕込み不要
+* hook が拡張してある。途中で止めたりとかできるぽい
+
 # Formatter
+
+## [stylua](https://github.com/johnnymorganz/stylua)
+
+* ⭐ rust 製でインストールしやすい
