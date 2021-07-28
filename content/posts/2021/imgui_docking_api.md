@@ -43,4 +43,6 @@ image = 'dockbuilder.jpg'
 
 ## Tree
 
+{{ image(path="tree.jpg") }}
+
 ## Table
