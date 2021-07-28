@@ -3,6 +3,7 @@ title = "ImGui の API"
 date = 2021-07-28
 taxonomies.tags = ["imgui"]
 [extra]
+image = 'dockbuilder.jpg'
 +++
 
 ようやく `FFI` の整備ができたので、ImGui の API 調査に進む

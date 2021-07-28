@@ -77,3 +77,7 @@ image = "./lua.png"
 ## [stylua](https://github.com/johnnymorganz/stylua)
 
 * ⭐ rust 製でインストールしやすい
+
+# ソース読み
+
+* [Luaソース読みメモ1](https://sites.google.com/site/aotokage52/home/lua/luasosu-dumimemo1)
