@@ -1,6 +1,6 @@
 +++
 date = 2019-04-22T02:17:20+09:00
-taxonomies.tags = ['vim']
+taxonomies.tags = ['vim', 'lsp']
 draft = true
 title = 'vim の Completion について調べる'
 +++

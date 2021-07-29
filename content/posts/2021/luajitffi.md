@@ -1,7 +1,7 @@
 +++
 title = "libclang で luajit 向けの FFI を生成する"
 date = 2021-07-23
-taxonomies.tags = ["lua", "clang"]
+taxonomies.tags = ["lua", "libclang"]
 +++
 
 lua による imgui 計画の準備として、 `libclang` によるバインディング生成器を `luajit` に移植してみた。

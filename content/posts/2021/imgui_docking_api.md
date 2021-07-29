@@ -1,14 +1,16 @@
 +++
 title = "ImGui の API"
 date = 2021-07-28
-taxonomies.tags = ["imgui"]
+taxonomies.tags = ["imgui", "luajit", "ffi"]
 [extra]
 image = 'dockbuilder.jpg'
 +++
 
+<https://github.com/ousttrue/limgui>
+
 ようやく `FFI` の整備ができたので、ImGui の API 調査に進む
 
-## DockingBuilder
+# DockingBuilder
 
 `imgui_internal.h` に一連の `Docking` 向けの API がある。
 
@@ -40,9 +42,19 @@ image = 'dockbuilder.jpg'
 
 * [PossiblyAShrub/dock_builder_example.cpp](https://gist.github.com/PossiblyAShrub/0aea9511b84c34e191eaa90dd7225969)
 * <https://github.com/ocornut/imgui/issues/2109>
+* [ ] central node
 
-## Tree
+# Tree
+
+libclang のパース結果の `CXCursor` のツリー
 
 {{ image(path="tree.jpg") }}
 
-## Table
+* [ ] selection
+
+# Table
+
+glTF を表示してみた。さくさく書けてよさそう。
+
+{{ image(path="table.jpg") }}
+

@@ -1,7 +1,7 @@
 +++
 title = "luaメモ"
 date = 2021-07-27
-taxonomies.tags = ["lua"]
+taxonomies.tags = ["lua", "luajit", "lsp", "dap"]
 [extra]
 image = "./lua.png"
 +++
@@ -57,6 +57,18 @@ image = "./lua.png"
 
 * ⭐ [EmmyLua Annotation](https://emmylua.github.io/annotation.html) に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する
 
+設定例
+
+```json
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.workspace.preloadFileSize": 10000,
+    "Lua.runtime.path": [
+        "?.lua",
+        "?/init.lua",
+        "?/?.lua",
+    ],
+```
+
 ## [lua-lsp](https://github.com/Alloyed/lua-lsp)
 
 # Debug adapter
@@ -66,11 +78,14 @@ image = "./lua.png"
 
 * Debugされるスクリプト側に仕込み不要
 * ⭐ luajit 対応
+* __tostring でエラーが発生すると固まる
+* 起動時の引数に `\\` が含まれているとエラーになる
 
 ## [lua-debug](https://github.com/actboy168/lua-debug)
 
 * Debugされるスクリプト側に仕込み不要
 * hook が拡張してある。途中で止めたりとかできるぽい
+* 残念ながら luajit では動作しない
 
 # Formatter
 

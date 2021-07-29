@@ -1,37 +1,37 @@
 +++
 date = 2019-04-27T19:00:26+09:00
-taxonomies.tags = ['vim']
+taxonomies.tags = ['vim', 'dap']
 title = 'vim で DebugAdapterProtocol する'
 +++
 
 
 vimで `breakpoint` を設置してステップ実行できるようなデバッガを調べた。
 
-## vim 上のデバッガ
-### lldb.nvim
+# vim 上のデバッガ
+## lldb.nvim
 
 * https://github.com/dbgx/lldb.nvim
 
-### vim-vebugger
+## vim-vebugger
 
 * https://github.com/idanarye/vim-vebugger
 
 なんか動きそうなのだが、 `vimproc` を使っていたので動かせなかった
 kaoriya 版の Vim を使うなどしてみたがよくわからず。
 
-### pyclewn 
+## pyclewn 
 
 * https://github.com/Mistobaan/pyclewn
 
 gdb と pdb のvimフロントエンド？
 
-### pubd
+## pubd
 
 pythonのpdb.
 
 * https://github.com/inducer/pudb
 
-### vim-breakpts 
+## vim-breakpts 
 
 vim スクリプト用？
 
@@ -47,7 +47,7 @@ VSCodeの `DebugAdapterProtocol` を使うものらしい。
 
 動かし方よくわからず。
 
-### DebugAdapterProtocol
+# DebugAdapterProtocol
 
 * [DebugAdapterProtocol](https://code.visualstudio.com/blogs/2018/08/07/debug-adapter-protocol-website)
     * [旧サイト・リポジトリ](https://github.com/Microsoft/vscode-debugadapter-node)
@@ -81,11 +81,11 @@ adapterの起動設定は、 `.vscode/launch.json` にというわけか。
 
 > multi session mode: in this mode, the development tool does not start the debug adapter but assumes that it is already running and that it listens on a specific port for connections attempts.
 
-### DAPの仕様
+## DAPの仕様
 
 * https://microsoft.github.io/debug-adapter-protocol/specification
 
-### DAPの実装
+## DAPの実装
 
 * https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/
 
@@ -98,7 +98,7 @@ adapterの起動設定は、 `.vscode/launch.json` にというわけか。
 
 あとは、リモートデバッグの事情を調べる。
 
-#### native debug
+### native debug
 
 c++やd, rustなんかのnativeコードを出力するものをまとめて面倒見れるという理解であったいるのかな。ビルド形式とデバッグビルドに付加される情報のフォーマットに対応してデバッガを選択する必要があると。
 
@@ -108,7 +108,7 @@ LLVM
 
 * https://github.com/vadimcn/vscode-lldb
 
-#### .Net
+### .Net
 
 > Mono debugging is not supported.
 
@@ -116,32 +116,32 @@ ILは互換性があるにしても、VMのデバッグインタフェースは�
 
 * https://github.com/OmniSharp/omnisharp-vscode
 
-#### Mono
+### Mono
 
 * https://github.com/Microsoft/vscode-mono-debug
 
-#### Unity
+### Unity
 
 * https://github.com/Unity-Technologies/vscode-unity-debug
 
 UnityEditorにアタッチできるらしい。
 Unity版のMonoにアタッチできるということかしら。
 
-#### lua / ravi
+### lua / ravi
 
 * https://github.com/dibyendumajumdar/ravi-vscode-debugger
 
 こんなのあるのか・・・
 
-#### powershell
+### powershell
 
 * https://github.com/PowerShell/vscode-powershell
 
-#### python
+### python
 
 * https://github.com/Microsoft/vscode-python
 
-### vimspectorの実装
+# vimspectorの実装
 
 * https://github.com/puremourning/vimspector
 
@@ -208,7 +208,8 @@ class DebugSession:
 
 `neovim` の `rplugin` での構成を考えてみようか。
 
-## python3 で Adapter を起動してみる
+# python3 で Adapter を起動してみる
+
 `AdapterAdapter` というか `AdapterBridge` という感じになりそうだけど、
 `vim` で込み入った実装をするのは手に余るので、可能な限り `python` で事を進めよう。
 pythonでprotocl実験。
@@ -235,4 +236,3 @@ vscodeの `.vscode/launch.json` の起動設定を `launch` の引数に合体�
 https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes
 
 書いとけよー。
-

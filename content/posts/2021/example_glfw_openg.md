@@ -1,7 +1,7 @@
 +++
 title = "imgui の FFI が luajit で動くところまで作った"
 date = 2021-07-25
-taxonomies.tags = ["luajit", "ffi", "imgui"]
+taxonomies.tags = ["luajit", "ffi", "imgui", "libclang"]
 [extra]
 image = "./imgui_from_luajit.jpg"
 +++
