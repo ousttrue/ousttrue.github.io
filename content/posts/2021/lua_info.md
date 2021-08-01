@@ -35,6 +35,13 @@ image = "./lua.png"
 | LuaJIT | <https://luajit.org/>                                              | Lua5.1base。最終版は `2.1.0-beta3`。neovimもこれ。`FFI` が強力。 |
 | Luau   | <https://luau-lang.org/>                                           | Lua5.1 の superset。Roblox専用。オープンソースではない。         |
 
+
+## 変わり種
+
+LUA に更に埋め込む
+
+* <https://terralang.org/>
+
 # Translator
 
 ## [MoonScript](https://moonscript.org/)
