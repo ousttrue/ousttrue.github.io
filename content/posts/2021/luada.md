@@ -11,7 +11,11 @@ vscode の lua デバッガーに
 `launch.json` の `args` に `\\` が入るとエラーで起動できない。
 Windows で作業しているので、稀によくファイルパスの指定に `\\` が入る。
 
-自前で `DebugAdapter` 作ってみることにした。
+# DebugAdapter を作っていたら、直し方がわかった
+
+ <https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4>
+
+# 自前で `DebugAdapter` 作ってみることにした。
 
 <https://github.com/ousttrue/luada>
 
@@ -199,5 +203,13 @@ $ npx vsce package
 
 # 参考
 
-* <https://github.com/actboy168/lua-debug>
-* <https://github.com/tomblind/local-lua-debugger-vscode>
+## <https://github.com/actboy168/lua-debug>
+
+* vscode.DebugAdapterExecutable
+
+## <https://github.com/tomblind/local-lua-debugger-vscode>
+
+* vscode.DebugAdapterServer
+* TypeScript で vscode.DebugAdapterServer を new
+* vscode と DebugAdapterServer が DAP で通信
+* DebugAdapterServer が lua を spawn もしている
