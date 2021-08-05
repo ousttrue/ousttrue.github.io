@@ -15,6 +15,14 @@ Windows で作業しているので、稀によくファイルパスの指定に
 
  <https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4>
 
+## PR
+
+<https://github.com/tomblind/local-lua-debugger-vscode/pull/37>
+
+Linux では動かんかったらしく、別の方法で修正してくれた。
+
+`0.2.2` かな？
+
 # 自前で `DebugAdapter` 作ってみることにした。
 
 <https://github.com/ousttrue/luada>
