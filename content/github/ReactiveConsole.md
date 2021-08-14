@@ -5,7 +5,7 @@ updated = 2019-01-27 07:36:37+00:00
 taxonomies.tags = ["C#"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 1
 license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https://api.github.com/licenses/mit', 'node_id': 'MDc6TGljZW5zZTEz'}"
 +++
@@ -13,4 +13,3 @@ license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https
 <https://github.com/ousttrue/ReactiveConsole>
 
 Unity WebSocket logger using UniRx
-

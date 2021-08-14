@@ -21,7 +21,7 @@ Windows で作業しているので、稀によくファイルパスの指定に
 
 Linux では動かんかったらしく、別の方法で修正してくれた。
 
-`0.2.2` かな？
+👍 `0.2.2` <https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md>
 
 # 自前で `DebugAdapter` 作ってみることにした。
 

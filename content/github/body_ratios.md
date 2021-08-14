@@ -5,7 +5,7 @@ updated = 2018-11-04 18:03:12+00:00
 taxonomies.tags = ["Python"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/body_ratios>
 
 human armature
-

@@ -5,7 +5,7 @@ updated = 2013-01-28 16:21:11+00:00
 taxonomies.tags = ["C++"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 1
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/dscvd3d>
 
 DirectShow to OpenCV to D3D
-

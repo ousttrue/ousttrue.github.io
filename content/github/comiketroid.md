@@ -5,7 +5,7 @@ updated = 2011-12-23 02:19:30+00:00
 taxonomies.tags = ["Java"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/comiketroid>
 
 comiket catalog viewer for android
-

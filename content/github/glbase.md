@@ -5,7 +5,7 @@ updated = 2012-01-19 19:14:21+00:00
 taxonomies.tags = ["Python"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/glbase>
 
 pyOpenGL utility
-

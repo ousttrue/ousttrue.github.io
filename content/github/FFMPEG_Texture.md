@@ -5,7 +5,7 @@ updated = 2017-10-25 16:09:44+00:00
 taxonomies.tags = ["C#"]
 [extra]
 css = "github"
-start = 12
+star = 12
 forks_count = 6
 license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https://api.github.com/licenses/mit', 'node_id': 'MDc6TGljZW5zZTEz'}"
 +++
@@ -13,4 +13,3 @@ license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https
 <https://github.com/ousttrue/FFMPEG_Texture>
 
 a Unity dynamic texture experiment by FFMPEG on Windows
-

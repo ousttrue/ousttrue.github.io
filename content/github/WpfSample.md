@@ -5,7 +5,7 @@ updated = 2015-03-11 16:01:46+00:00
 taxonomies.tags = ["C#"]
 [extra]
 css = "github"
-start = 3
+star = 3
 forks_count = 1
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/WpfSample>
 
 WPF Application Sample
-

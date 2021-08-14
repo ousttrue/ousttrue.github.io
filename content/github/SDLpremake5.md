@@ -5,7 +5,7 @@ updated = 2016-05-10 02:05:33+00:00
 taxonomies.tags = ["Lua"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 1
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/SDLpremake5>
 
 premake5 scripts for SDL2 build on Windows
-

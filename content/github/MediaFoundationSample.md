@@ -5,11 +5,10 @@ updated = 2017-08-28 09:26:05+00:00
 taxonomies.tags = ["C++"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 1
 license = "None"
 +++
 
 <https://github.com/ousttrue/MediaFoundationSample>
-
 

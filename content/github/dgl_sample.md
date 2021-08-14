@@ -5,7 +5,7 @@ updated = 2016-10-12 22:48:53+00:00
 taxonomies.tags = ["D"]
 [extra]
 css = "github"
-start = 0
+star = 0
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/dgl_sample>
 
 OpenGL sample by dlang
-

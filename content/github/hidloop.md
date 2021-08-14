@@ -5,7 +5,7 @@ updated = 2013-07-16 23:21:34+00:00
 taxonomies.tags = ["C++"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/hidloop>
 
 HID utility for Windows
-

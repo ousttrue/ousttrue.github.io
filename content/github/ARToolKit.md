@@ -5,7 +5,7 @@ updated = 2013-01-26 05:41:39+00:00
 taxonomies.tags = ["C"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 2
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/ARToolKit>
 
 It reorganized for easy to build on windows
-

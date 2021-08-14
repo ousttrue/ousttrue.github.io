@@ -5,7 +5,7 @@ updated = 2018-10-28 14:02:10+00:00
 taxonomies.tags = ["Python"]
 [extra]
 css = "github"
-start = 0
+star = 0
 forks_count = 1
 license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https://api.github.com/licenses/mit', 'node_id': 'MDc6TGljZW5zZTEz'}"
 +++
@@ -13,4 +13,3 @@ license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https
 <https://github.com/ousttrue/iogltf>
 
 jsonschema utility for python-3.7 typing
-

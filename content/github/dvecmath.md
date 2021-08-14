@@ -5,7 +5,7 @@ updated = 2015-05-01 22:47:53+00:00
 taxonomies.tags = ["D"]
 [extra]
 css = "github"
-start = 0
+star = 0
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/dvecmath>
 
 math utility for cg work
-

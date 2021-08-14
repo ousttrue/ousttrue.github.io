@@ -5,7 +5,7 @@ updated = 2012-12-09 20:25:12+00:00
 taxonomies.tags = ["Ruby"]
 [extra]
 css = "github"
-start = 0
+star = 0
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/providence>
 
 local proxy by ruby
-

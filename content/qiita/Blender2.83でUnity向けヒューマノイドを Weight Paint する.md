@@ -9,5 +9,3 @@ css = "qiita"
 
 <https://qiita.com/ousttrue/items/ecb442122af6966dcefd>
 
-
-

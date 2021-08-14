@@ -5,7 +5,7 @@ updated = 2013-07-02 03:07:00+00:00
 taxonomies.tags = ["C++"]
 [extra]
 css = "github"
-start = 4
+star = 4
 forks_count = 2
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/onibi>
 
 A distribution package and python wrapper that contain Irrlicht, a bullet, etc. 
-

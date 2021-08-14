@@ -5,7 +5,7 @@ updated = 2011-06-05 05:55:28+00:00
 taxonomies.tags = ["Lua"]
 [extra]
 css = "github"
-start = 3
+star = 3
 forks_count = 1
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/ccs>
 
 Cross Compile Script
-

@@ -5,7 +5,7 @@ updated = 2015-12-15 13:55:49+00:00
 taxonomies.tags = ["TypeScript"]
 [extra]
 css = "github"
-start = 0
+star = 0
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/sio_sample>
 
 socket.io start up sample
-

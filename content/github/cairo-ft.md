@@ -5,7 +5,7 @@ updated = 2014-07-07 23:09:45+00:00
 taxonomies.tags = ["C"]
 [extra]
 css = "github"
-start = 1
+star = 1
 forks_count = 0
 license = "None"
 +++
@@ -13,4 +13,3 @@ license = "None"
 <https://github.com/ousttrue/cairo-ft>
 
 In order to build for Windows
-
