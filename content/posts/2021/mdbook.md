@@ -1,7 +1,7 @@
 +++
 title = "mdBook もやってみる"
 date = 2021-06-14
-taxonomies.tags = ["mdbook"]
+taxonomies.tags = ["mdbook", "ssg"]
 +++
 
 作ってみた。

@@ -1,7 +1,7 @@
 ---
 title: "lambdaの引数の型を得たい"
 date: 2013-05-16
-taxonomies: {tags: ['c++']}
+taxonomies: {tags: ['cpp', 'msgpack']}
 ---
 
 lambdaの引数の型を得たい

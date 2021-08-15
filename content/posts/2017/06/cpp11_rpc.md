@@ -1,7 +1,7 @@
 ---
 title: "C++でMessagePack-RPCを実装する"
 date: 2017-06-03
-taxonomies: {tags: []}
+taxonomies: {tags: ['cpp', 'msgpack']}
 ---
 
 最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。

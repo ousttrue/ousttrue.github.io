@@ -1,7 +1,7 @@
 ---
 title: "おれおれmsgpack-rpc-pythonを作る"
 date: 2013-05-31
-taxonomies: {tags: ['cpp']}
+taxonomies: {tags: ['cpp', 'msgpack']}
 ---
 
 おれおれmsgpack-rpc-pythonを作る

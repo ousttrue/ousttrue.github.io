@@ -1,7 +1,7 @@
 ---
 title: "可変長テンプレート引数"
 date: 2013-05-17
-taxonomies: {tags: ['cpp']}
+taxonomies: {tags: ['cpp', 'msgpack']}
 ---
 
 可変長テンプレート引数

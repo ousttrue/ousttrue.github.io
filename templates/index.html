@@ -27,12 +27,23 @@
       <a class="item" href="https://github.com/ousttrue" aria-label="github">
         <i class="fab fa-github fa-lg"></i>
       </a>
+      {% if paginator %}
+        {% if paginator.previous %}
+            <a class="item previous" href="{{ paginator.previous }}">‹ Previous</a>
+        {% endif %}
+        <span class="item">{{ paginator.current_index }}</span>
+        {% if paginator.next %}
+            <a class="item next" href="{{ paginator.next }}">Next ›</a>
+        {% endif %}      
+      {% endif %}
+
     </nav>
 
     <main class="main">{% block content %} 
     <script src="{{ get_url(path="masonry.pkgd.min.js", trailing_slash=false) | safe }}"></script>
     <div class="grid" data-masonry='{ "itemSelector": ".headline", "columnWidth": 400 }'>
 
+      {% if paginator.current_index == 1 %}
       {% for page in config.extra.books %}
       <div class="headline book">
         📘<a class="headline_title" href="{{ page.url }}"> {{ page.label }} </a>
@@ -41,9 +52,9 @@
         </ul>
        </div>      
       {% endfor %}
+      {% endif %}
 
-      {% for page in section.pages %} 
-
+      {% for page in paginator.pages %}
       {% include "_item_headline.html" %}
       {% endfor %}
 

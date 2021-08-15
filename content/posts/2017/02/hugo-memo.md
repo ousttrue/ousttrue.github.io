@@ -1,7 +1,7 @@
 ---
 title: "Hugoに乗り換え"
 date: 2017-02-17
-taxonomies: {tags: ["hugo"]}
+taxonomies: {tags: ["hugo", "ssg"]}
 ---
 
 なんとなくまたサイトシステム更新。

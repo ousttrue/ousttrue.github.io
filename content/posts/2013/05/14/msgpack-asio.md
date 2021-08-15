@@ -1,7 +1,7 @@
 ---
 title: "msgpack-rpcのasio版を作成中"
 date: 2013-05-14
-taxonomies: {tags: ['cpp']}
+taxonomies: {tags: ['cpp', 'msgpack']}
 ---
 
 msgpack-rpcのasio版を作成中

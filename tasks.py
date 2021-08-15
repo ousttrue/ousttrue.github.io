@@ -11,6 +11,40 @@ HERE = pathlib.Path(__file__).absolute().parent
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 DOWNLOAD_DIR = HERE / 'downloads'
 
+TAG_MAP = {
+    'blpymeshio': ['python', 'blender'],
+    'bpy_module': ['python', 'blender'],
+    'io_scene_yup': ['python', 'blender'],
+    'pyimpex': ['python', 'blender'],
+    'SampleHumanoidModel': ['blender'],
+    'UnityHumanoidHelper': ['python', 'blender'],
+    #
+    'msgpack-rpc-asio': ['cpp', 'msgpack', 'asio'],
+    'msgpackpp': ['cpp', 'msgpack'],
+    'NMPUtil': ['csharp', 'msgpack'],
+    'pyMsgPack': ['python', 'msgpack'],
+    'refrange': ['cpp', 'msgpack'],
+    'tornado-msgpack': ['python', 'msgpack'],
+    #
+    'cmake_book': ['cmake'],
+    #
+    'usd_cpp_samples': ['cpp', 'usd'],
+    'HydraHost': ['cpp', 'usd'],
+    #
+    'dimgui_sample': ['D', 'imgui'],
+    'imgui_samples': ['cpp', 'imgui'],
+    'limgui': ['lua', 'imgui'],
+    'ManglingImgui': ['csharp', 'imgui'],
+    'SharpImGui': ['csharp', 'imgui'],
+    'SwigImGui': ['python', 'imgui'],
+    #
+    'my_nvim': ['nvim'],
+    'nvim-dx': ['nvim', 'cpp', 'd3d'],
+    'vim_memo': ['nvim'],
+    #
+    'AsioCliSample': ['csharp', 'asio'],
+}
+
 
 def get_github(user: str, dst: pathlib.Path, force: bool):
     if not force and (dst / 'user.json').exists():
@@ -149,39 +183,6 @@ def get_repos(dir: pathlib.Path) -> List[pathlib.Path]:
     return paths
 
 
-tag_map = {
-    'blpymeshio': ['python', 'blender'],
-    'bpy_module': ['python', 'blender'],
-    'io_scene_yup': ['python', 'blender'],
-    'pyimpex': ['python', 'blender'],
-    'SampleHumanoidModel': ['blender'],
-    'UnityHumanoidHelper': ['python', 'blender'],
-    #
-    'msgpack-rpc-asio': ['cpp', 'msgpack'],
-    'msgpackpp': ['cpp', 'msgpack'],
-    'NMPUtil': ['csharp', 'msgpack'],
-    'pyMsgPack': ['python', 'msgpack'],
-    'refrange': ['cpp', 'msgpack'],
-    'tornado-msgpack': ['python', 'msgpack'],
-    #
-    'cmake_book': ['cmake'],
-    #
-    'usd_cpp_samples': ['cpp', 'usd'],
-    'HydraHost': ['cpp', 'usd'],
-    #
-    'dimgui_sample': ['D', 'imgui'],
-    'imgui_samples': ['cpp', 'imgui'],
-    'limgui': ['lua', 'imgui'],
-    'ManglingImgui': ['csharp', 'imgui'],
-    'SharpImGui': ['csharp', 'imgui'],
-    'SwigImGui': ['python', 'imgui'],
-    #
-    'my_nvim': ['nvim'],
-    'nvim-dx': ['nvim', 'cpp', 'd3d'],
-    'vim_memo': ['nvim'],
-}
-
-
 @task
 def repos(c):
     # type: (Context) -> None
@@ -202,8 +203,8 @@ def repos(c):
         if r['fork']:
             continue
         repo = Repo(r)
-        if repo.name in tag_map:
-            repo.language = tag_map[repo.name]
+        if repo.name in TAG_MAP:
+            repo.language = TAG_MAP[repo.name]
         body = repo.format_md().encode('utf-8')
 
         path = dir / f'{repo.name}.md'

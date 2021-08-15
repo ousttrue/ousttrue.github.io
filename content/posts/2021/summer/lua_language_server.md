@@ -33,6 +33,15 @@ Lua 5.4.4  Copyright (C) 1994-2021 Lua.org, PUC-Rio
 
 native モジュールを埋め込んだインタープリター `lua-language-server.exe` で `main.lua` を実行する。
 
+## setting
+
+`.vscode/settings.json`
+
+```json
+     "Lua.runtime.version": "LuaJIT",
+     "Lua.workspace.preloadFileSize": 10000
+```
+
 # LSP
 
 <https://microsoft.github.io/language-server-protocol/>
@@ -72,6 +81,11 @@ lua のコード解析
 
 `ast.init(state)`
 
-* [lpeg](http://www.inf.puc-rio.br/~roberto/lpeg/)
+## LPeg
 
 * script/parser/grammar.lua
+
+* [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg/)
+* [Lua製PEG「LPeg」を触ってみた](https://gist.github.com/tacigar/93b30931c879cd8a9b12380724b956aa)
+* [LPegの使い方 patternその2](https://nymphium.github.io/2015/07/23/lpeg2.html)
+* [LPeg – Parsing Expression Grammars For Luaの使い方](https://sceneryandfish.withnotes.net/blog/2014/07/22-lua-lpeg-how-to-use/)

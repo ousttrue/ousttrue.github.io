@@ -1,7 +1,8 @@
 +++
 title = "zola のテンプレートを整備する"
 date = 2021-06-14
-taxonomies.tags = ["zola", "css"]
+updated = 2021-08-15
+taxonomies.tags = ["zola", "css", "ssg"]
 +++
 
 サイト整備のメモ。共通化して部品を少なくした。
@@ -74,3 +75,14 @@ position: fixed;
 改造して page.assets に放り込んでしまおう。
 
 `hugo` ほど多機能複雑でなく、 `zola` ほど strict でない、そんなほどほどなツールが望まれる。
+
+## 20210815: pagination
+
+<https://www.getzola.org/documentation/templates/pagination/>
+
+ドキュメントよりもソースを読もう w
+5分もかからぬ。
+
+```html
+      {% if paginator.current_index == 1 %}
+```

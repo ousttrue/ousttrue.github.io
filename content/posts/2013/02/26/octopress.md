@@ -1,7 +1,7 @@
 ---
 title: "更にoctopressに引越し"
 date: 2013-02-26
-taxonomies: {tags: []}
+taxonomies: {tags: ["octpress", "ssg"]}
 ---
 
 更にoctopressに引越し

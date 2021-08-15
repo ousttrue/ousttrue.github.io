@@ -1,7 +1,7 @@
 ---
 title: wyam ことはじめ
 date: 2019-08-17
-taxonomies: {tags: ['wyam']}
+taxonomies: {tags: ['wyam', 'ssg']}
 ---
 ソースの方のリポジトリがハードディスククラッシュで失われて
 更新できなくなっていたので、サイトを作りなおし。
