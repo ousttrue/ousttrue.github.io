@@ -102,7 +102,7 @@ InstalledDir: C:\Program Files\LLVM\bin
 #include <asio/write.hpp>
 ```
 
-## co_spawn で awaiable を起動する
+## co_spawn で awaitable を起動する
 
 coroutine は 戻り値の型が `asio::awaitable<T>` である必要がある。この関数の中で `co_await`, `co_yield`, `co_return` が使える。
 coroutine は lambda でもよいので、下記のようにできる。
