@@ -6,27 +6,41 @@ taxonomies: {tags: ['cpp', 'msgpack']}
 
 最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。
 
-基本設計
+# 基本設計
+
 MessagePack-RPCの仕様をおさらいすると以下の通り。
-# request
+
+request
+```
 [type, msgid, method, params]
  (0)   (int)  (str)   (array)
+```
 
-# response
+response
+```
 [type, msgid, error, result]
  (1)   (int)  (any)  (any)
+```
 
 msgpackのバイト列を受け取って、msgpackのバイト列を返す関数として一般化する。
+
+```cpp
 typedef std::vector<std::uint8_t> bytes;
 // msgpackのバイト列を引数にとり、msgpackのバイト列を返す
 typedef std::function<bytes(const &bytes)> procedurecall;
+```
 
 任意の関数呼び出しからprocedurecallを作り出せるようにして、MessagePack-RPCシステムの部品として使えるようにする。
 簡単な例
 例として
+
+```cpp
 static int add(int a, int b){ return a+b; }
+```
 
 をprocedurecallに変換してみる。
+
+```cpp
 procedurecall make_procedurecall(int(*f)(int, int))
 {
     // request -> response ではなくparams -> result
@@ -46,9 +60,13 @@ procedurecall make_procedurecall(int(*f)(int, int))
         return packer.get_payload();
     };
 }
+```
 
-int add(int, int)をprocedurecallに変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。
-procedurecallの使い方は以下の通り。
+`int add(int, int)` を `procedurecall` に変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。
+
+`procedurecall` の使い方は以下の通り。
+
+```cpp
 // register
 auto proc = msgpackpp::rpc::make_procedurecall(&add);
 
@@ -59,14 +77,22 @@ auto result = proc(packer.get_payload());
 
 // result
 REQUIRE(3 == msgpackpp::parser(result).get_number<int>());
+```
 
 とりあえず動いたが、関数を増やすたびにこれだけのコードを記述するのはやってられませぬ。
 以下のような理想形を目指して作りこんでゆく。
-REQUIRE(3 == msgpack_procedurecall([](int a, int b){ return a+b; }, 1, 2));
 
-lambdaが動けば他も動くようにできるので、lambdaを第一に実装する。
-実装
+```cpp
+REQUIRE(3 == msgpack_procedurecall([](int a, int b){ return a+b; }, 1, 2));
+```
+
+`lambda` が動けば他も動くようにできるので、`lambda` を第一に実装する。
+
+# 実装
+
 ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。
+
+```cpp
 make_procedurecall
 template<typename F, typename R, typename C, typename ...AS, std::size_t... IS>
 procedurecall _make_procedurecall(const F &f
@@ -141,10 +167,15 @@ decltype(auto) msgpack_call(F f, AS... args) // 返り値の型はreturnから�
     , args...
     );
 }
+```
 
-使う。
+# 使う。
+
+```cpp
 REQUIRE(3==msgpack_call([](int a, int b) { return a + b; }, 1, 2));
 REQUIRE(-1==msgpack_call([](int a, int b) { return a - b; }, 1, 2));
+```
 
-valiadic templateおそるべし。
+`valiadic template` おそるべし。
 従来であれば、1引数、２引数・・・と引数の個数ごとに手作業でバージョンを増やさねばならなかったものが、わりとさくっと書けるな。
+

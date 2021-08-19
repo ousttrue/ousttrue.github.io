@@ -123,6 +123,13 @@ asio::use_future を使うことで返り値 `std::future` になるので `co_r
 Completion Handler というコールバックなので、 promise に set_value する関数を自前で書いたりしてもよい様子。
 `asio::use_awaitable` で `co_await` するのも可能。
 
+返り値が `std::tuple<asio::error_code, RESULT>` になるハンドラ。
+
+```cpp
+constexpr auto use_nothrow_awaitable =
+    asio::experimental::as_tuple(asio::use_awaitable);
+```
+
 ## client side
 
 * timer
