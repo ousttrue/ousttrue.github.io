@@ -43,6 +43,10 @@ image = "./lua.png"
 
 ## 変わり種
 
+`headeronly`. include するだけで使える。
+
+* <https://github.com/edubart/minilua>
+
 LUA に更に埋め込む
 
 * <https://terralang.org/>
@@ -105,6 +109,16 @@ LUA に更に埋め込む
 
 * ⭐ rust 製でインストールしやすい
 
+stylua.toml
+```toml
+column_width = 120
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 4
+quote_style = "AutoPreferDouble"
+no_call_parentheses = true
+```
+
 # C-API
 
 ```c
@@ -119,7 +133,6 @@ LUA に更に埋め込む
 
 # ソース読み
 
-
 * [The Evolution of Lua](https://www.cs.tufts.edu/comp/250RTS/archive/roberto-ierusalimschy/lua-hopl-iii.pdf)
 * [The Implementation of Lua 5.0](http://www.lua.org/doc/jucs05.pdf)
 * [Luaソース読みメモ1](https://sites.google.com/site/aotokage52/home/lua/luasosu-dumimemo1)
@@ -130,3 +143,4 @@ LUA に更に埋め込む
 ## LuaVM, OpCode, Operand
 * [12 分くらいで知るLuaVM](https://www.slideshare.net/Isoparametric/12-luavm)
 * [Luaのコード生成](https://sites.google.com/site/safxdev/lua_codegen)
+

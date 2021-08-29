@@ -66,7 +66,15 @@ add_executable(${TARGET_NAME} main.cpp)
 target_link_libraries(${TARGET_NAME} PRIVATE asio)
 set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 20) # 必要
 target_compile_options(${TARGET_NAME} PUBLIC $<$<C_COMPILER_ID:MSVC>:/await>) # 必要
-target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要。よくわからない
+target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
+```
+
+```cpp
+#if defined(ASIO_HAS_STD_COROUTINE)
+# include <coroutine>
+#else // defined(ASIO_HAS_STD_COROUTINE)
+# include <experimental/coroutine>
+#endif // defined(ASIO_HAS_STD_COROUTINE)
 ```
 
 ## LLVM-12(うまくいかず。追加のコマンドライン引数か)
@@ -234,8 +242,9 @@ public:
 
 ループ(io_context)が隠蔽されていないのが良いですね。
 
-# 関連
-## io_service to io_context
+# asio api
+
+## io_context
 
 `c++23` の `Networking TS` に向けた変更？
 
@@ -248,49 +257,315 @@ public:
 
 * [Networking TS の Boost.Asio からの変更点 - その 4: Associated Executor](https://amedama1x1.hatenablog.com/entry/2017/12/09/102405)
 
-
-## future/promise
-
-`c++11`
-
-* [futureとpromiseのあれこれ（理論編）](https://yohhoy.hatenadiary.jp/entry/20120131/p1)
-
-* promise 作る
-* promise から future を得る
-* promise は thread に放り込む
-* future::get でブロック
+単純に io_service を io_context に追きかえるだけで動いた。
 
 ```cpp
-std::future<int> async_something()
+#include <asio.hpp>
+
+io_context context;
+
+// 全てのタスクが消化されるまでブロックする。
+context.run();
+
+// スレッド上で実行する例
+std::thread run_thread([&context](){ context.run(); });
+
+// 止める
+context.stop();
+run_thread.join();
+```
+
+## endpoint
+
+ipaddress + port
+
+```cpp
+asip::ip::tcp::endpoint ep(asio::ip::address::from_string("127.0.0.1"), 1234);
+```
+
+## tcp connect
+
+socket
+
+```cpp
+io_context context;
+asio::ip::tcp::socket socket(coontext);
+```
+
+basic
+
+```cpp
+void connect(asio::ip::tcp::socket socket, const asio::ip::tcp::endpoint &ep)
 {
-  std::promise<int> p;
-  auto f = p.get_future();
+  auto on_connect = [](const asio::error_code &ec)
+  {
+    if(ec)
+    {
+      std::cout << "error: " << ec << std::endl;
+    }
+    else{
+      std::cout << "connected" << std::endl;
+    }
+  };
+  socket.async_connect(ep, on_connect);
+}
+```
 
-  // promise はコピーできないのでmoveする
-  // 例えば スレッド に送りこむ
-  std::thread([p = std::move(p)](){
+`c++11 future`
 
-    // 非同期な結果
-    p.set_value(123);
+std::future に対して `continue_with` する手段を用意しないと、これ単体では使いづらい
 
+```cpp
+std::future<void> connect_future(asio::ip::tcp::socket socket, const asio::ip::tcp::endpoint &ep)
+{
+  // move するのが大変な場合があるので手抜き
+  auto p = std::make_shared<std::promise<void>>();
+  auto f = p->get_future();
+
+  socket.async_connect(ep, [p](asio::error_code ec){
+    if(ec)
+    {
+    }
+    else{
+      // future value
+      p->set_value();
+    }
   });
 
   return f;
 }
 ```
 
-## coroutine TS
+`c++20 coroutine`
 
-`c++20`
+有望
+
+```cpp
+asio::awaitable<void> co(asio::io_context &context, const asio::ip::tcp::endpoint &ep)
+{
+  asio::ip::tcp::socket socket(coontext);
+  co_await socket.async_connect(ep, asio::use_awaitable);
+}
+```
+
+## tcp listen
+
+## raed_async
+
+## write_async
+
+# coroutine 詳細
+
+asio の coroutine を学んでいたらできないことが出てきた。
+
+```cpp
+auto result = co_await rpc_call("add", 1, 2);
+```
+
+# 自前の Awaiter が必要？
+
+```cpp
+template<typename R, typename ...AS>
+asio::awaitable<R> rpc_call(const std::string &method, AS... as)
+{
+  asio::io_context context;
+  asio::ip::tcp::socket socket(context);
+
+  asio::ip::tcp::endpoint ep;
+
+  co_await socket.connect_async(ep, asio::use_awaitable);
+
+  // msgpack-rpc
+  std::vector<uint8_t> request = make_request(method, as...);
+  co_await asio::write_async(socket, request, asio::use_awaitable); 
+
+  // ここで実行の流れが切れる
+
+  // ?
+  std::promise<R> p;
+  return p.get_future();
+}
+```
+
+`co_await std::future` できるぽいが, `asio` と混ぜてうまくいくのだろうか。
+
+# c++20 coroutine
 
 * <https://cpprefjp.github.io/lang/cpp20/coroutines.html>
 * <https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html>
+* [C++ でコルーチン (async/await 準備編)](https://qiita.com/tan-y/items/ae54153ec3eb42f80638)
+* [C++ で async/await をする](https://qiita.com/tan-y/items/6033ab9e7298999bf214#await_ready)
 
-template によるダックタイピング的な感じで、適当でも動きそう
+内部で `co_await`, `co_yield`, `co_return` の何れかを使う関数は coroutine になる。
+返り値の型から promise_type を得られるようにする必要がある。
 
-* std::coroutine_handle<promise_type>
+初期化は `promise_type::get_return_object` から始まるぽい。
 
-resume の呼び出しをライブラリ内に隠し持つ感じかな。
+## generator の例
 
-* 例えば iterator に隠ぺいして operator++ で resume を呼び出す
+```cpp
+struct generator {
+  struct promise_type;
+  using handle = std::coroutine_handle<promise_type>;  
+  struct promise_type {
+    auto get_return_object() { return generator{handle::from_promise(*this)}; }
+  };
+  using handle = std::coroutine_handle<promise_type>;
+private:
+  handle coro;
+  generator(handle h) : coro(h) {}
+};
+```
+
+```cpp
+promise_type promise;
+
+// 戻り値型オブジェクトの初期化
+auto result = promise.get_return_object();
+```
+
+# Asio の実装
+
+## asio::awaitable
+`asio::awaitable<T>` が CoroutineTrait の実装。
+
+`include/asio/awaitable.hpp`
+
+```cpp
+template <typename T, typename Executor = any_io_executor>
+class ASIO_NODISCARD awaitable
+{
+public:
+  /// The type of the awaited value.
+  typedef T value_type;
+
+  /// The executor type that will be used for the coroutine.
+  typedef Executor executor_type;
+
+  /// Default constructor.
+  constexpr awaitable() noexcept
+    : frame_(nullptr)
+  {
+  }
+
+  /// Move constructor.
+  awaitable(awaitable&& other) noexcept
+    : frame_(std::exchange(other.frame_, nullptr))
+  {
+  }
+
+  /// Destructor
+  ~awaitable()
+  {
+    if (frame_)
+      frame_->destroy();
+  }
+
+  /// Checks if the awaitable refers to a future result.
+  bool valid() const noexcept
+  {
+    return !!frame_;
+  }
+
+#if !defined(GENERATING_DOCUMENTATION)
+
+  // Support for co_await keyword.
+  bool await_ready() const noexcept
+  {
+    return false;
+  }
+
+  // Support for co_await keyword.
+  template <class U>
+  void await_suspend(
+      detail::coroutine_handle<detail::awaitable_frame<U, Executor>> h)
+  {
+    frame_->push_frame(&h.promise());
+  }
+
+  // Support for co_await keyword.
+  T await_resume()
+  {
+    return awaitable(static_cast<awaitable&&>(*this)).frame_->get();
+  }
+
+#endif // !defined(GENERATING_DOCUMENTATION)
+
+private:
+  template <typename> friend class detail::awaitable_thread;
+  template <typename, typename> friend class detail::awaitable_frame;
+
+  // Not copy constructible or copy assignable.
+  awaitable(const awaitable&) = delete;
+  awaitable& operator=(const awaitable&) = delete;
+
+  // Construct the awaitable from a coroutine's frame object.
+  explicit awaitable(detail::awaitable_frame<T, Executor>* a)
+    : frame_(a)
+  {
+  }
+
+  detail::awaitable_frame<T, Executor>* frame_;
+};
+```
+
+## promise_type
+
+`include/asio/impl/awaitable.hpp`
+
+// promise_type
+
+```cpp
+# if defined(ASIO_HAS_STD_COROUTINE)
+
+namespace std {
+
+template <typename T, typename Executor, typename... Args>
+struct coroutine_traits<asio::awaitable<T, Executor>, Args...>
+{
+  typedef asio::detail::awaitable_frame<T, Executor> promise_type;
+};
+
+} // namespace std
+
+# else // defined(ASIO_HAS_STD_COROUTINE)
+
+namespace std { namespace experimental {
+
+template <typename T, typename Executor, typename... Args>
+struct coroutine_traits<asio::awaitable<T, Executor>, Args...>
+{
+  typedef asio::detail::awaitable_frame<T, Executor> promise_type;
+};
+
+}} // namespace std::experimental
+
+# endif // defined(ASIO_HAS_STD_COROUTINE)
+```
+
+## asio::detail::awaitable_frame
+
+```cpp
+template <typename Executor>
+class awaitable_frame<void, Executor>
+  : public awaitable_frame_base<Executor>
+{
+public:
+  awaitable<void, Executor> get_return_object()
+  {
+    this->coro_ = coroutine_handle<awaitable_frame>::from_promise(*this);
+    return awaitable<void, Executor>(this);
+  };
+
+  void return_void()
+  {
+  }
+
+  void get()
+  {
+    this->caller_ = nullptr;
+    this->rethrow_exception();
+  }
+};
+```
 

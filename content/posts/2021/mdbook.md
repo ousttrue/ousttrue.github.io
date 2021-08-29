@@ -4,7 +4,10 @@ date = 2021-06-14
 taxonomies.tags = ["mdbook", "ssg"]
 +++
 
-作ってみた。
+* <https://rust-lang.github.io/mdBook/>
+* <https://github.com/rust-lang/mdBook>
+
+# 作ってみた
 
 * <https://github.com/ousttrue/cmake_book>
 
@@ -64,6 +67,9 @@ jobs:
 
 `SUMMARY.md` にページ構成を先に記述して章立てを作ってから中身を記述していくのが面白い。
 この仕組みが合うものは、 `zola` より `mdbook` の方がサクサク作れそう。
+`hugo` とかと違って各ページに `frontmatter` が不要なので、
+ページを足したり引いたりするする場合はこちらの方が使いやすい。
+
 Scrapbox 上にあるメモを整理するかもしれない。
 
 作った。
@@ -73,13 +79,13 @@ Scrapbox 上にあるメモを整理するかもしれない。
 
 あと、 `blender の addon 作成メモ` とか `Unity のカスタムエディターメモ` とか作るかも。
 
-# book 初期化手順
+# mdbook を gh-pages で初期化する手順
 
 github に repository を作って gh-pages に公開するところまで
 
 * new repository `https://github.com/GITHUB_USER_NAME/MDBOOK_REPOSITORY_NAME`
-* git clone
-* cd,
+* git clone GIT_REPOSITORY
+* cd GIT_REPOSITORY
 * mdbook init
 * .github/workflows/gh-pages.yml
 
