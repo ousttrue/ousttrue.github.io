@@ -8,6 +8,7 @@ css = "github"
 star = 1
 forks_count = 0
 license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https://api.github.com/licenses/mit', 'node_id': 'MDc6TGljZW5zZTEz'}"
+url = "https://github.com/ousttrue/SwigImGui"
 +++
 
 <https://github.com/ousttrue/SwigImGui>

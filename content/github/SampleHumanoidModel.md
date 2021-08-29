@@ -8,6 +8,7 @@ css = "github"
 star = 0
 forks_count = 1
 license = "None"
+url = "https://github.com/ousttrue/SampleHumanoidModel"
 +++
 
 <https://github.com/ousttrue/SampleHumanoidModel>

@@ -2,12 +2,13 @@
 title = "ShrimpDX"
 date = 2019-05-18 18:15:38+00:00
 updated = 2020-03-10 11:29:35+00:00
-taxonomies.tags = ["C#"]
+taxonomies.tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1
 forks_count = 1
 license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https://api.github.com/licenses/mit', 'node_id': 'MDc6TGljZW5zZTEz'}"
+url = "https://github.com/ousttrue/ShrimpDX"
 +++
 
 <https://github.com/ousttrue/ShrimpDX>

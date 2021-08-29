@@ -8,6 +8,7 @@ css = "github"
 star = 0
 forks_count = 0
 license = "None"
+url = "https://github.com/ousttrue/vim_memo"
 +++
 
 <https://github.com/ousttrue/vim_memo>

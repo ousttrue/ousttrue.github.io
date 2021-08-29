@@ -1,8 +1,8 @@
 +++
 title = "nvim frontend nvy"
 date = 2021-08-07
-updated = 2021-08-15
-taxonomies.tags = ["nvim"]
+updated = 2021-08-29
+taxonomies.tags = ["nvim", "msgpack"]
 [extra]
 image = "nvy.jpg"
 +++
@@ -22,13 +22,11 @@ image = "nvy.jpg"
 
 <https://github.com/ousttrue/Nvy>
 
-* [ ] `<C-/>` できるようにする
-* [x] logger
 * [ ] RenderTarget に対して Nvim をレンダリングする
-* [ ] nvim の IO を <https://think-async.com/Asio/#> にのせる
+* [x] nvim の IO を <https://think-async.com/Asio/#> にのせる
 * [ ] imgui と合体する
 
-## 20210815
+# 20210815
 
 MsgPack-RPC のバックエンドに昔作った
 
@@ -56,3 +54,41 @@ rpc.on_message(&dispatcher);
 ```
 
 のように書けるようにして整理する。
+
+# 20210829
+
+* [x] MsgPack-RPC のバックエンドを置きかえた
+* [x] logger に RPC の内容を JSON 化して表示
+
+だいたいリファクタリングが終わって改造しやすい状態になった。
+
+* [x] `<C-/>` できるようにする。
+
+を実装できた。
+特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。
+
+```cpp
+  case VK_OEM_2:
+    return "";
+```
+
+`[2,"nvim_input",["<C-/>"]]` が送信される。
+
+## 修正が必要
+
+非control時に
+
+`[2,"nvim_input",["</>"]]` が送信される。
+
+```cpp
+  case VK_OEM_2:
+    if (GetKeyState(VK_CONTROL) < 0) {
+      // C-/
+      return "/";
+    }
+```
+
+なるほど。
+
+[NvimTexture](@/posts/2021/summer/nvimtexture.md) へ続く
+

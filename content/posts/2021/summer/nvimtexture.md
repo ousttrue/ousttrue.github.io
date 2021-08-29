@@ -1,7 +1,7 @@
 +++
 title = "NvimTexture開発開始"
 date = 2021-08-22
-taxonomies.tags = ["nvim"]
+taxonomies.tags = ["nvim", "msgpack"]
 +++
 
 `Nvy` の改造をしてだいたい構造を理解した。
@@ -35,4 +35,3 @@ taxonomies.tags = ["nvim"]
 
 * FullWindow
 * imgui と混在させる
-

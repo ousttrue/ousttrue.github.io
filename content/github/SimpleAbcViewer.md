@@ -2,12 +2,13 @@
 title = "SimpleAbcViewer"
 date = 2017-07-27 01:35:55+00:00
 updated = 2017-07-27 01:36:57+00:00
-taxonomies.tags = ["C++"]
+taxonomies.tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 2
 forks_count = 1
 license = "None"
+url = "https://github.com/ousttrue/SimpleAbcViewer"
 +++
 
 <https://github.com/ousttrue/SimpleAbcViewer>

@@ -8,6 +8,7 @@ css = "github"
 star = 27
 forks_count = 9
 license = "None"
+url = "https://github.com/ousttrue/msgpack-rpc-asio"
 +++
 
 <https://github.com/ousttrue/msgpack-rpc-asio>

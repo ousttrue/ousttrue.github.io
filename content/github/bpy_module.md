@@ -8,6 +8,7 @@ css = "github"
 star = 0
 forks_count = 0
 license = "{'key': 'gpl-3.0', 'name': 'GNU General Public License v3.0', 'spdx_id': 'GPL-3.0', 'url': 'https://api.github.com/licenses/gpl-3.0', 'node_id': 'MDc6TGljZW5zZTk='}"
+url = "https://github.com/ousttrue/bpy_module"
 +++
 
 <https://github.com/ousttrue/bpy_module>

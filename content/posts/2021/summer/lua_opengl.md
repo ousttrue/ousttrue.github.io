@@ -12,7 +12,7 @@ imgui bind がだいたいできて軌道に乗ったので、glTF viewer の作
 
 の回転アニメーション以外できた。
 
-## luajit の cdef で頂点配列の定義が捗る
+# luajit の cdef で頂点配列の定義が捗る
 
 ```c++
 static const struct
@@ -48,7 +48,7 @@ local vertices = ffi.new(
 
 などという書き方ができてしまう。luajit ffi 強い。
 
-## ffi.metatype
+# ffi.metatype
 
 luajit を活かした線形代数ライブラリを探索していて、
 
@@ -66,3 +66,24 @@ ffi.metatype(ct, metatable)
 
 線形代数ライブラリは、 `ffi.metatype` を使って自作してみよう(mafにはvec3 と quaternion しかないのもあり)。
 ついでに、lua の unittest を取り入れましょう。
+
+# 20210830
+
+`mat4` を実装してみた。
+
+<https://github.com/ousttrue/limgui/blob/master/lua/mafex.lua>
+
+```C
+    typedef union {
+        struct {
+            float _11, _12, _13, _14;
+            float _21, _22, _23, _24;
+            float _31, _32, _33, _34;
+            float _41, _42, _43, _44;
+        };
+        float array[16];
+    } mat4;
+```
+
+という定義で OpenGL の uniform 変数に直接渡せるので使いやすい。
+

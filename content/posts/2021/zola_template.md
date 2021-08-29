@@ -11,29 +11,27 @@ taxonomies.tags = ["zola", "css", "ssg"]
 * template 構築
 * 場合によっては zola の改造
 
-## Index
-
-## 共通
+# 共通
 
 * [x] title
 * [x] 日付
 * [x] 見出しの見た目
 
-## Markdown
+# Markdown
 
 * [x] url 文字列を自動でリンクにしたい。markdownで `<url>` と記述するべし
 
-## 20210716: masonry 入れてみた
+# 20210716: masonry 入れてみた
 
 <https://masonry.desandro.com/>
 
-## 20210717: TOC
+# 20210717: TOC
 
 * [x] 目次
 だいたいできた。
 github が増えすぎてカオスなので不要なものを整理せねば・・・
 
-## 20210725: 色
+# 20210725: 色
 
 作業用に区域ごとに色分けしていたのをやめて、地味な色に変更。
 
@@ -46,13 +44,13 @@ github が増えすぎてカオスなので不要なものを整理せねば・�
 
 のような方法を試してみた。
 
-## 20210725: TOC 固定
+# 20210725: TOC 固定
 
 ```css
 position: fixed;
 ```
 
-## 20210725: 画像を入れれるようにしてみた
+# 20210725: 画像を入れれるようにしてみた
 
 `page.assets` や `section.assets` に想定した形で入ってこないので、
 無理やりパスを操作したのだが、さすがにこれはちょっと・・・
@@ -76,7 +74,7 @@ position: fixed;
 
 `hugo` ほど多機能複雑でなく、 `zola` ほど strict でない、そんなほどほどなツールが望まれる。
 
-## 20210815: pagination
+# 20210815: pagination
 
 <https://www.getzola.org/documentation/templates/pagination/>
 
@@ -86,3 +84,14 @@ position: fixed;
 ```html
       {% if paginator.current_index == 1 %}
 ```
+
+# 20210829： 内部リンク記法
+
+`.md` の記法。
+
+<https://www.getzola.org/documentation/content/linking/#internal-links>
+
+`[NvimTexture](@/posts/2021/summer/nvimtexture.md)`
+
+`@` と `.md` が必要。
+

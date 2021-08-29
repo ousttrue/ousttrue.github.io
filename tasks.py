@@ -120,7 +120,7 @@ class Repo:
                                                      DATE_FORMAT)
         self.pushed_at = datetime.datetime.strptime(item['pushed_at'],
                                                     DATE_FORMAT)
-        self.language = []
+        self.language = ['repository']
         if item['language']:
             self.language.append(item['language'])
         self.forks_count = item['forks_count']
@@ -158,6 +158,7 @@ css = "github"
 star = {self.star}
 forks_count = {self.forks_count}
 license = "{self.license}"
+url = "{self.url}"
 +++
 
 <{self.url}>
@@ -267,6 +268,7 @@ date = {self.created_at}
 updated = {self.updated_at}
 [extra]
 css = "gist"
+url = "{self.url}"
 +++
 
 <{self.url}>
@@ -283,11 +285,11 @@ def gists(c):
     '''
     generate Gist
     '''
-    dir = HERE / 'gists'
+    dir = HERE / 'content/gists'
     if dir.exists():
         shutil.rmtree(dir, ignore_errors=True)
     dir.mkdir(exist_ok=True, parents=True)
-    gists = sum([json.loads(r.read_bytes()) for r in get_gists(HERE)], [])
+    gists = sum([json.loads(r.read_bytes()) for r in get_gists(DOWNLOAD_DIR)], [])
     for g in gists:
         if not g['public']:
             continue
@@ -309,7 +311,7 @@ class Qiita:
     def __init__(self, item):
         self.title = escape_title(item['title'])
         self.url = item['url']
-        self.tags = [tag['name'] for tag in item['tags']]
+        self.tags = ['qiita'] + [tag['name'] for tag in item['tags']]
         self.created_at = datetime.datetime.fromisoformat(item['created_at'])
         self.updated_at = datetime.datetime.fromisoformat(item['updated_at'])
 
@@ -330,6 +332,7 @@ updated = {self.updated_at}
 taxonomies.tags = {self.tags}
 [extra]
 css = "qiita"
+url = "{self.url}"
 +++
 
 <{self.url}>

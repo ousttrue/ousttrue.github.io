@@ -1,10 +1,21 @@
 <div class="headline{% if page.extra.css %} {{ page.extra.css }} {% endif %}">
   
   {% if page.extra.css %}
-  {% if page.extra.css == "github" %}<i class="fab fa-github fa-lg"></i>{% endif %}
+  {% if page.extra.css == "github" %}
+  <i class="fab fa-github fa-lg"></i>
+  {% endif %}
   {% if page.extra.css == "gist" %}<i class="fab fa-github fa-lg"></i>{% endif %}
   {% endif %}
+
+  {% if page.extra.css and page.extra.css == "github" %}
+  <a class="headline_title" href="{{ page.extra.url }}"> {{ page.title }} 
+  {% elif page.extra.css and page.extra.css == "gist" %}
+  <a class="headline_title" href="{{ page.extra.url }}"> {{ page.title }} 
+  {% elif page.extra.css and page.extra.css == "qiita" %}
+  <a class="headline_title" href="{{ page.extra.url }}"> {{ page.title }} 
+  {% else %}
   <a class="headline_title" href="{{ page.permalink }}"> {{ page.title }} 
+  {% endif %}
 
   {% if page.extra.image %}
   {% set s = page.relative_path | split(pat="/") %}
@@ -15,6 +26,10 @@
   <div class="image_box"><img src="{{ image_url }}"></div>
   {% endif %}
   </a>
+
+  {% if page.extra.star and page.extra.star>0 %}
+  <span class="start">⭐{{page.extra.star}}</span>
+  {% endif %}
 
   <div>
     <ul class="tags">
