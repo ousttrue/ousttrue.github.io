@@ -1,6 +1,7 @@
 +++
 title = "mdBook もやってみる"
 date = 2021-06-14
+updated = 2021-08-31
 taxonomies.tags = ["mdbook", "ssg"]
 +++
 
@@ -15,14 +16,26 @@ gh-pages
 
 * <https://ousttrue.github.io/cmake_book/>
 
-# base_url の設定にはまる
+# config.toml
+
+## base_url の設定にはまる
 
 base_url の設定だけ探し回った。
 gh-pages の url が `https://ousttrue.github.io/cmake_book/` と root フォルダでは無いので必用。
 
-```book.toml
+`book.toml`
+```toml
 [output.html]
 site-url = "https://ousttrue.github.io/cmake_book/"
+```
+
+## github
+
+`book.toml`
+```toml
+[output.html]
+git-repository-url = "https://github.com/rust-lang/mdBook/tree/master/guide"
+edit-url-template = "https://github.com/rust-lang/mdBook/edit/master/guide/{path}"
 ```
 
 # github actions
@@ -119,3 +132,7 @@ jobs:
 * github の settings - pages から gh-pages branch を選んで root を設定する
     * しばらくすると `https://GITHUB_USER_NAME.github.io/MDBOOK_REPOSITORY_NAME/` が有効になる
 
+
+# 参考
+
+<https://o296.com/e/mdbook_as_blog.html>

@@ -5,6 +5,11 @@
     <title>{% block title %}{{ config.title }}{% endblock title %}</title>
 
     {% block script %}
+{% if config.build_search_index %}
+  <script src="{{ get_url(path="plugins/elasticlunr.min.js") | safe }}" defer></script>
+  <script src="{{ get_url(path="search_index." ~ config.default_language ~ ".js") | safe }}" defer></script>
+  <script src="{{ get_url(path="js/search.js") | safe }}" defer></script>
+{% endif %}
     {% endblock %}
 
     {% block css %} 
@@ -37,6 +42,13 @@
         {% endif %}      
       {% endif %}
 
+        {% if config.build_search_index %}
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        {% endif %}
     </nav>
 
     <main class="main">{% block content %} 

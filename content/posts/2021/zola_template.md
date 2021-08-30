@@ -1,7 +1,7 @@
 +++
 title = "zola のテンプレートを整備する"
 date = 2021-06-14
-updated = 2021-08-15
+updated = 2021-08-31
 taxonomies.tags = ["zola", "css", "ssg"]
 +++
 
@@ -85,7 +85,7 @@ position: fixed;
       {% if paginator.current_index == 1 %}
 ```
 
-# 20210829： 内部リンク記法
+# 20210829: 内部リンク記法
 
 `.md` の記法。
 
@@ -95,3 +95,11 @@ position: fixed;
 
 `@` と `.md` が必要。
 
+# 20210831: search
+
+<https://www.getzola.org/documentation/content/search/>
+
+設定は `build_search_index = true` するだけなのだが、
+template 作るのは大変。
+
+<https://github.com/aaranxu/adidoks> から部品を頂いてきた。
