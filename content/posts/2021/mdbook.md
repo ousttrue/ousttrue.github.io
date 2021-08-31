@@ -145,6 +145,12 @@ jobs:
 * github の settings - pages から gh-pages branch を選んで root を設定する
     * しばらくすると `https://GITHUB_USER_NAME.github.io/MDBOOK_REPOSITORY_NAME/` が有効になる
 
+初回にページが表示されるまで何回か push が要るかも。
+
+* repo 作る
+* gh-pages branch に push する
+* 設定で gh-pages を有効にする
+* 再度 push し action を発動させる。この辺でサイトが見れることを確認する
 
 # 参考
 
