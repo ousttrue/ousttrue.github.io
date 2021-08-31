@@ -92,6 +92,9 @@ Scrapbox 上にあるメモを整理するかもしれない。
 
 あと、 `blender の addon 作成メモ` とか `Unity のカスタムエディターメモ` とか作るかも。
 
+* [blender_book](https://ousttrue.github.io/bldner_book/)
+* [unity memo](https://ousttrue.github.io/unity_book/)
+
 # mdbook を gh-pages で初期化する手順
 
 github に repository を作って gh-pages に公開するところまで
@@ -100,6 +103,16 @@ github に repository を作って gh-pages に公開するところまで
 * git clone GIT_REPOSITORY
 * cd GIT_REPOSITORY
 * mdbook init
+
+`book.toml`
+
+```toml
+[output.html]
+site-url = "https://${USER_NAME}.github.io/${REPO_NAME}/"
+git-repository-url = "https://github.com/${USER_NAME}/${REPO_NAME}/tree/master"
+edit-url-template = "https://github.com/${USER_NAME}/${REPO_NAME}/edit/master/{path}"
+```
+
 * .github/workflows/gh-pages.yml
 
 ```yaml
@@ -136,3 +149,4 @@ jobs:
 # 参考
 
 <https://o296.com/e/mdbook_as_blog.html>
+
