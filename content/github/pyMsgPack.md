@@ -2,7 +2,7 @@
 title = "pyMsgPack"
 date = 2017-09-25 14:14:01+00:00
 updated = 2017-10-12 16:55:42+00:00
-taxonomies.tags = ["python", "msgpack"]
+taxonomies.tags = ["repository", "Python", "python", "msgpack"]
 [extra]
 css = "github"
 star = 0

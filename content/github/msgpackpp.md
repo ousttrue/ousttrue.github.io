@@ -2,7 +2,7 @@
 title = "msgpackpp"
 date = 2017-05-27 09:34:56+00:00
 updated = 2018-12-25 04:10:44+00:00
-taxonomies.tags = ["cpp", "msgpack"]
+taxonomies.tags = ["repository", "C++", "cpp", "msgpack"]
 [extra]
 css = "github"
 star = 3

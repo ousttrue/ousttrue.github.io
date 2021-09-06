@@ -2,7 +2,7 @@
 title = "VROverlaySample"
 date = 2020-04-30 01:27:07+00:00
 updated = 2020-04-30 15:23:01+00:00
-taxonomies.tags = ["repository", "C++"]
+taxonomies.tags = ["repository", "C++", "3d", "openvr"]
 [extra]
 css = "github"
 star = 0

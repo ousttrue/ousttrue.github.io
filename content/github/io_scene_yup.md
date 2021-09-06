@@ -2,7 +2,7 @@
 title = "io_scene_yup"
 date = 2018-07-27 16:28:20+00:00
 updated = 2020-10-09 10:37:12+00:00
-taxonomies.tags = ["python", "blender"]
+taxonomies.tags = ["repository", "Python", "python", "blender"]
 [extra]
 css = "github"
 star = 1

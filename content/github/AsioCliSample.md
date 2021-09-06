@@ -2,7 +2,7 @@
 title = "AsioCliSample"
 date = 2015-01-24 07:51:06+00:00
 updated = 2015-01-24 08:09:00+00:00
-taxonomies.tags = ["csharp", "asio"]
+taxonomies.tags = ["repository", "C++", "csharp", "asio"]
 [extra]
 css = "github"
 star = 1

@@ -43,6 +43,13 @@ TAG_MAP = {
     'vim_memo': ['nvim'],
     #
     'AsioCliSample': ['csharp', 'asio'],
+    #
+    'gizmesh': ['3d'],
+    'FunnelPipe': ['3d'],
+    'frame_factory': ['3d'],
+    'VROverlaySample': ['3d', 'openvr'],
+    'gltf_inspector': ['gltf'],
+    'GltfGui': ['gltf'],
 }
 
 
@@ -203,9 +210,11 @@ def repos(c):
             continue
         if r['fork']:
             continue
-        repo = Repo(r)
+        repo = Repo(r)        
         if repo.name in TAG_MAP:
-            repo.language = TAG_MAP[repo.name]
+            if not repo.language:
+                repo.language = []
+            repo.language += TAG_MAP[repo.name]
         body = repo.format_md().encode('utf-8')
 
         path = dir / f'{repo.name}.md'
@@ -289,7 +298,8 @@ def gists(c):
     if dir.exists():
         shutil.rmtree(dir, ignore_errors=True)
     dir.mkdir(exist_ok=True, parents=True)
-    gists = sum([json.loads(r.read_bytes()) for r in get_gists(DOWNLOAD_DIR)], [])
+    gists = sum([json.loads(r.read_bytes()) for r in get_gists(DOWNLOAD_DIR)],
+                [])
     for g in gists:
         if not g['public']:
             continue

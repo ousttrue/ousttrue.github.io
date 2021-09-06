@@ -2,7 +2,7 @@
 title = "pyimpex"
 date = 2020-10-12 10:36:47+00:00
 updated = 2021-02-09 09:31:22+00:00
-taxonomies.tags = ["python", "blender"]
+taxonomies.tags = ["repository", "Python", "python", "blender"]
 [extra]
 css = "github"
 star = 0

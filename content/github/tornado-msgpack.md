@@ -2,7 +2,7 @@
 title = "tornado-msgpack"
 date = 2013-05-31 00:35:57+00:00
 updated = 2013-08-27 10:25:35+00:00
-taxonomies.tags = ["python", "msgpack"]
+taxonomies.tags = ["repository", "Python", "python", "msgpack"]
 [extra]
 css = "github"
 star = 7

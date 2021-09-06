@@ -2,7 +2,7 @@
 title = "NMPUtil"
 date = 2014-09-01 00:20:15+00:00
 updated = 2015-06-02 00:40:44+00:00
-taxonomies.tags = ["csharp", "msgpack"]
+taxonomies.tags = ["repository", "C#", "csharp", "msgpack"]
 [extra]
 css = "github"
 star = 0

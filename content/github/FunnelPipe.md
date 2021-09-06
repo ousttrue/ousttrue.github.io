@@ -2,7 +2,7 @@
 title = "FunnelPipe"
 date = 2020-03-27 09:13:15+00:00
 updated = 2020-07-09 23:19:02+00:00
-taxonomies.tags = ["repository", "C++"]
+taxonomies.tags = ["repository", "C++", "3d"]
 [extra]
 css = "github"
 star = 0

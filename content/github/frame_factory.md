@@ -2,7 +2,7 @@
 title = "frame_factory"
 date = 2021-05-07 10:06:58+00:00
 updated = 2021-07-16 11:41:56+00:00
-taxonomies.tags = ["repository", "Rust"]
+taxonomies.tags = ["repository", "Rust", "3d"]
 [extra]
 css = "github"
 star = 0

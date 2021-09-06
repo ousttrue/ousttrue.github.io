@@ -2,7 +2,7 @@
 title = "blpymeshio"
 date = 2018-04-15 16:14:06+00:00
 updated = 2018-05-02 13:10:06+00:00
-taxonomies.tags = ["python", "blender"]
+taxonomies.tags = ["repository", "Python", "python", "blender"]
 [extra]
 css = "github"
 star = 3
