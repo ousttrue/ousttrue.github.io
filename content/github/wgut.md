@@ -2,7 +2,7 @@
 title = "wgut"
 date = 2020-05-09 01:10:02+00:00
 updated = 2020-07-10 01:32:39+00:00
-taxonomies.tags = ["repository", "C++"]
+taxonomies.tags = ["repository", "C++", "3d"]
 [extra]
 css = "github"
 star = 0

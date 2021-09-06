@@ -44,6 +44,7 @@ TAG_MAP = {
     #
     'AsioCliSample': ['csharp', 'asio'],
     #
+    'wgut': ['3d'],
     'gizmesh': ['3d'],
     'FunnelPipe': ['3d'],
     'frame_factory': ['3d'],
@@ -210,7 +211,7 @@ def repos(c):
             continue
         if r['fork']:
             continue
-        repo = Repo(r)        
+        repo = Repo(r)
         if repo.name in TAG_MAP:
             if not repo.language:
                 repo.language = []
