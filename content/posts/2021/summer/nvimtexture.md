@@ -2,6 +2,8 @@
 title = "NvimTexture開発開始"
 date = 2021-08-22
 taxonomies.tags = ["nvim", "msgpack"]
+[extra]
+image = "nvimtexture.jpg"
 +++
 
 `Nvy` の改造をしてだいたい構造を理解した。
@@ -35,3 +37,8 @@ taxonomies.tags = ["nvim", "msgpack"]
 
 * FullWindow
 * imgui と混在させる
+
+# 20210910
+
+それなりに動くようになった。
+key-logger や msgpack-rpc の通信ログを横に表示できるようにしたい。
