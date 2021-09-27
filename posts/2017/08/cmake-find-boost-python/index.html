@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;08&#x2F;cmake-find-boost-python&#x2F;"> CMakeでBoost.Pythonを使う 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0809</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cmake&#x2F;">cmake</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;boost&#x2F;">boost</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;python&#x2F;">python</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>Windows上のCMakeでFIND_PACKAGE(Boost)する件について。</p>
+<p>Boost.Pythonのビルド
+C:/boost_1_61_0に解凍して、b2 --with-pythonしたとする。
+のようなディレクトリ構成。
+C:/boost_1_61_0
+stage
+lib
+boost_python.lib</p>
+<p>FIND_PACKAGE
+BOOST.Pythonを使う場合は下記の記述をして、-DBOOST_ROOT=C:/boost_1_61_0を指定してやるとcmakeはBoost.Pythonを見つけることができる。
+ただし、検索パスが${BOOST_ROOT}/stage/lib決め打ち。
+FIND_PACKAGE (Boost COMPONENTS PYTHON REQUIRED)
+MESSAGE(STATUS ${Boost_LIBRARIES})</p>
+<p>見つかった
+optimizedD:/lib/boost_1_61_0/stage/lib/boost_python-vc140-mt-1_61.libdebugD:/lib/boost_1_61_0/stage/lib/boost_python-vc140-mt-gd-1_61.lib</p>
+<p>Python3は？
+FIND_PACKAGE (Boost COMPONENTS python3 REQUIRED)
+MESSAGE(STATUS ${Boost_LIBRARIES})</p>
+<p>でいける。
+しかし、警告が出た。
+CMake Warning at D:/Program Files/CMake/share/cmake-3.9/Modules/FindBoost.cmake:1564 (message):
+No header defined for python3; skipping header check
+Call Stack (most recent call first):
+CMakeLists.txt:42 (FIND_PACKAGE)</p>
+<p>3がついてなくても同じだった
+stage/libに出力されているboost_python3.dllとboost_python.dllは同じバイナリぽい。
+static, sharedの呼び分けは？
+後で。
+FindBoost</p>
+<p>https://cmake.org/cmake/help/latest/module/FindBoost.html</p>
+<p>しかし
+FIND_PACKAGEした結果のBoost_LIBRARIESを使うのには注意が必要。
+ネイティブモジュール開発で、デバッグ版にRelease版のPythonをリンクする場合(通常そうする)に、Boost.PytnonもRelease版にリンクするべきなのでここではまりうる(コンパイルは通るが実行時に謎エラーが出る)。LINK_DIRECTORIESを使って、リンク対象はBOOSTのautolink頼りの方が確実かもしれない。</p>
+<p>BOOST_ALL_NO_LIB を定義して Boost_LIBRARIESにリンクする
+Boost_LIBRARIESを使わずに、BoostのAutoLinkに従う</p>
+<p>のいずれかになるが、ネイティブモジュール開発では後者がおすすめか。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

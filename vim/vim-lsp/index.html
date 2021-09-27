@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;vim&#x2F;vim-lsp&#x2F;"> vim で LSP 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2019</div>
+        <div class="md">0420</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;vim&#x2F;">vim</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lsp&#x2F;">lsp</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <h2 id="vim-lsp-client">vim lsp client</h2>
+<p>vimのlspクライアント。</p>
+<h3 id="vim-lsp">vim-lsp</h3>
+<ul>
+<li>https://github.com/prabirshrestha/vim-lsp</li>
+</ul>
+<h4 id="vim-lspjie-du">vim-lsp解読</h4>
+<p>plugin/lsp.vim</p>
+<pre style="background-color:#2b303b;">
+<code class="language-vim" data-lang="vim"><span style="color:#b48ead;">if </span><span style="color:#bf616a;">g:lsp_auto_enable
+    </span><span style="color:#b48ead;">augroup</span><span style="color:#c0c5ce;"> lsp_auto_enable
+        </span><span style="color:#96b5b4;">autocmd</span><span style="color:#c0c5ce;">!
+        </span><span style="color:#96b5b4;">autocmd</span><span style="color:#c0c5ce;"> VimEnter </span><span style="color:#b48ead;">*</span><span style="color:#c0c5ce;"> call </span><span style="color:#8fa1b3;">lsp#enable</span><span style="color:#c0c5ce;">()
+    </span><span style="color:#b48ead;">augroup</span><span style="color:#c0c5ce;"> END
+</span><span style="color:#b48ead;">endif
+</span></code></pre>
+<p>autoload/lsp.vim</p>
+<pre style="background-color:#2b303b;">
+<code class="language-vim" data-lang="vim"><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">lsp#enable</span><span style="color:#c0c5ce;">() abort
+    call </span><span style="color:#8fa1b3;">s:register_events</span><span style="color:#c0c5ce;">()
+</span><span style="color:#b48ead;">endfunction
+
+function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">s:register_events</span><span style="color:#c0c5ce;">() abort
+    call </span><span style="color:#8fa1b3;">s:on_text_document_did_open</span><span style="color:#c0c5ce;">()
+</span><span style="color:#b48ead;">endfunction
+
+function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">s:on_text_document_did_open</span><span style="color:#c0c5ce;">() abort
+</span><span style="color:#b48ead;">endfunction
+
+</span><span style="color:#65737e;">&quot; lspサーバの初期化をするぽい
+&quot; server_nameは &#39;pyls&#39;など
+</span><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">s:ensure_flush</span><span style="color:#c0c5ce;">(buf, server_name, cb) abort
+</span><span style="color:#b48ead;">endfunction
+
+</span><span style="color:#65737e;">&quot; lspサーバープロセスを起動して、stdin, stdout, stderrを接続する
+</span><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">s:lsp_start</span><span style="color:#c0c5ce;">(opts) abort
+
+    </span><span style="color:#96b5b4;">let </span><span style="color:#bf616a;">l:lsp_id</span><span style="color:#c0c5ce;"> = </span><span style="color:#8fa1b3;">lsp#client#start</span><span style="color:#c0c5ce;">({
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;cmd&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">l:cmd</span><span style="color:#c0c5ce;">,
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_stderr&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_stderr&#39;</span><span style="color:#c0c5ce;">, [</span><span style="color:#96b5b4;">a</span><span style="color:#b48ead;">:</span><span style="color:#c0c5ce;">server_name]),
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_exit&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_exit&#39;</span><span style="color:#c0c5ce;">, [</span><span style="color:#96b5b4;">a</span><span style="color:#b48ead;">:</span><span style="color:#c0c5ce;">server_name]),
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_notification&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_notification&#39;</span><span style="color:#c0c5ce;">, [</span><span style="color:#96b5b4;">a</span><span style="color:#b48ead;">:</span><span style="color:#c0c5ce;">server_name]),
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_request&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_request&#39;</span><span style="color:#c0c5ce;">, [</span><span style="color:#96b5b4;">a</span><span style="color:#b48ead;">:</span><span style="color:#c0c5ce;">server_name]),
+        </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;"> })
+
+</span><span style="color:#b48ead;">endfunction
+</span></code></pre>
+<p><code>autoload/lsp/client.vim</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-vim" data-lang="vim"><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">s:lsp_start</span><span style="color:#c0c5ce;">(opts) abort
+</span><span style="color:#65737e;">    &quot; async.vim ライブラリに移る
+    </span><span style="color:#96b5b4;">let </span><span style="color:#bf616a;">l:client_id</span><span style="color:#c0c5ce;"> = </span><span style="color:#8fa1b3;">async#job#start</span><span style="color:#c0c5ce;">(</span><span style="color:#96b5b4;">a</span><span style="color:#b48ead;">:</span><span style="color:#c0c5ce;">opts</span><span style="color:#b48ead;">.</span><span style="color:#c0c5ce;">cmd, {
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_stdout&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_stdout&#39;</span><span style="color:#c0c5ce;">),
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_stderr&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_stderr&#39;</span><span style="color:#c0c5ce;">),
+        </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;on_exit&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#8fa1b3;">function</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&#39;s:on_exit&#39;</span><span style="color:#c0c5ce;">),
+        </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;"> })
+</span><span style="color:#b48ead;">endfunction
+
+</span><span style="color:#65737e;">&quot; stdout を on_notification と on_request に切り出す
+</span><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">! </span><span style="color:#8fa1b3;">s:on_stdout</span><span style="color:#c0c5ce;">(id, </span><span style="color:#96b5b4;">data</span><span style="color:#c0c5ce;">, event) abort
+</span><span style="color:#b48ead;">endfunction
+</span></code></pre>
+<ul>
+<li>https://github.com/prabirshrestha/async.vim</li>
+</ul>
+<p><code>autoload/async/job.vim</code> ファイル一個だけだった。</p>
+<p><code>vim</code> と <code>nvim</code> の違いをラップしているぽい。</p>
+<p><code>vim</code> の <code>job_start</code> と <code>nvim</code> の <code>jobstart</code>。
+なるほど。</p>
+<h4 id="vim-lspnodong-kiwozhui-u-dls">vim-lspの動きを追う(dls)</h4>
+<p><a href="https://github.com/d-language-server/dls">dls</a> だと</p>
+<p>ServerCapabilities </p>
+<p>に</p>
+<p>definitionProvider</p>
+<p>が入ってないな・・・</p>
+<p>Requestにそもそも入っていないのでは</p>
+<p>入れてみた。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-vim" data-lang="vim"><span style="color:#c0c5ce;">        </span><span style="color:#96b5b4;">autocmd</span><span style="color:#c0c5ce;"> User lsp_setup call </span><span style="color:#8fa1b3;">lsp#register_server</span><span style="color:#c0c5ce;">({
+                    </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;name&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">&#39;d&#39;</span><span style="color:#c0c5ce;">,
+                    </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;cmd&#39;</span><span style="color:#c0c5ce;">: {server_info-&gt;[</span><span style="color:#a3be8c;">&#39;root_dls&#39;</span><span style="color:#c0c5ce;">]},
+</span><span style="color:#65737e;">                    &quot;\ &#39;cmd&#39;: {server_info-&gt;[&#39;dub&#39;, &#39;run&#39;, &#39;-q&#39;, &#39;serve-d&#39;]},
+                    </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;root_uri&#39;</span><span style="color:#c0c5ce;">: {server_info-&gt;</span><span style="color:#8fa1b3;">lsp#utils#path_to_uri</span><span style="color:#c0c5ce;">(</span><span style="color:#8fa1b3;">lsp#utils#find_nearest_parent_file_directory</span><span style="color:#c0c5ce;">(</span><span style="color:#8fa1b3;">lsp#utils#get_buffer_path</span><span style="color:#c0c5ce;">(), </span><span style="color:#a3be8c;">&#39;dub.json&#39;</span><span style="color:#c0c5ce;">))},
+                    </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;whitelist&#39;</span><span style="color:#c0c5ce;">: [</span><span style="color:#a3be8c;">&#39;d&#39;</span><span style="color:#c0c5ce;">],
+                    </span><span style="color:#b48ead;">\ </span><span style="color:#a3be8c;">&#39;capabilities&#39;</span><span style="color:#c0c5ce;">: {
+                    </span><span style="color:#b48ead;">\   </span><span style="color:#a3be8c;">&#39;workspace&#39;</span><span style="color:#c0c5ce;">: {
+                    </span><span style="color:#b48ead;">\       </span><span style="color:#a3be8c;">&#39;applyEdit&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">v:true
+                    </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;">   },
+                    </span><span style="color:#b48ead;">\   </span><span style="color:#a3be8c;">&#39;textDocument&#39;</span><span style="color:#c0c5ce;">: { </span><span style="color:#65737e;">&quot; これ
+                    </span><span style="color:#b48ead;">\       </span><span style="color:#a3be8c;">&#39;definition&#39;</span><span style="color:#c0c5ce;">: {
+                    </span><span style="color:#b48ead;">\         </span><span style="color:#a3be8c;">&#39;dynamicRegistration&#39;</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">v:true
+                    </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;">     }
+                    </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;">   }
+                    </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;"> }
+                    </span><span style="color:#b48ead;">\</span><span style="color:#c0c5ce;"> })
+</span></code></pre>
+<p>実際に通信するようになた。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">[&quot;</span><span style="color:#a3be8c;">---&gt;</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">d</span><span style="color:#c0c5ce;">&quot;, {&quot;</span><span style="color:#a3be8c;">method</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">textDocument/definition</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">on_notification</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">---funcref---</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">params</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">textDocument</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">uri</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">file:///home/ousttrue/work/d_hello/source/app.d</span><span style="color:#c0c5ce;">&quot;}, &quot;</span><span style="color:#a3be8c;">position</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">character</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">line</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">14</span><span style="color:#c0c5ce;">}}}]
+</span></code></pre><pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">[&quot;</span><span style="color:#a3be8c;">&lt;---</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">d</span><span style="color:#c0c5ce;">&quot;, {&quot;</span><span style="color:#a3be8c;">response</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">7</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">jsonrpc</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">2.0</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">result</span><span style="color:#c0c5ce;">&quot;: []}, &quot;</span><span style="color:#a3be8c;">request</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">7</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">jsonrpc</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">2.0</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">method</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">textDocument/definition</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">params</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">textDocument</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">uri</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">file:///home/ousttrue/work/d_hello/source/app.d</span><span style="color:#c0c5ce;">&quot;}, &quot;</span><span style="color:#a3be8c;">position</span><span style="color:#c0c5ce;">&quot;: {&quot;</span><span style="color:#a3be8c;">character</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">line</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">14</span><span style="color:#c0c5ce;">}}}}]
+</span></code></pre>
+<p>エラーが <code>Definition not found</code> に変わって
+確かに、 <code>result</code> の中身が空っぽなので <code>not found</code> とサーバーが応答している。</p>
+<p>問題が <code>vim-lsp</code> から <code>dls</code> に移った。</p>
+<h3 id="ale">ale</h3>
+<ul>
+<li>https://github.com/w0rp/ale</li>
+</ul>
+<h3 id="languageclient">LanguageClient</h3>
+<ul>
+<li>https://github.com/autozimu/LanguageClient-neovim</li>
+</ul>
+<p>一部が <code>rust</code> で実装されているぽい。</p>
+<h3 id="vim-lsp-1">vim-lsp</h3>
+<ul>
+<li>https://www.kieranbamforth.me/blog/vim-lsp.html</li>
+</ul>
+<h3 id="built-in">built-in</h3>
+<p>まだ、実装中？</p>
+<h2 id="language-server-protocol">Language Server Protocol</h2>
+<ul>
+<li>https://microsoft.github.io/language-server-protocol/specification</li>
+</ul>
+<p><code>version 3.x</code></p>
+<p>https://github.com/Microsoft/language-server-protocol/blob/master/versions/protocol-2-x.md</p>
+<h3 id="tong-xin-sikensu">通信シーケンス</h3>
+<h4 id="request1-initialize"><code>&lt;-- request1 initialize</code></h4>
+<h4 id="response1"><code>--&gt; response1</code></h4>
+<h4 id="notify-initialized"><code>&lt;-- notify initialized</code></h4>
+<h4 id="notify-textdocument-didopen"><code>&lt;-- notify textDocument/didOpen</code></h4>
+<pre style="background-color:#2b303b;">
+<code class="language-vim" data-lang="vim"><span style="color:#96b5b4;">autocmd </span><span style="color:#c0c5ce;">FileType </span><span style="color:#b48ead;">*</span><span style="color:#c0c5ce;"> call </span><span style="color:#8fa1b3;">wf#lsp#setFileType</span><span style="color:#c0c5ce;">()
+</span></code></pre><h4 id="notify-textdocument-didchange"><code>&lt;-- notify textDocument/didChange</code></h4>
+<h4 id="notify-textdocument-publishdiagnostics"><code>--&gt; notify textDocument/publishDiagnostics</code></h4>
+<h4 id="request2-textdocument-documenthighlight"><code>&lt;-- request2 textDocument/documentHighlight</code></h4>
+<h4 id="response2"><code>--&gt; response2</code></h4>
+<h2 id="log-viewer">log viewer</h2>
+<ul>
+<li>
+<p>https://github.com/Microsoft/language-server-protocol-inspector</p>
+<ul>
+<li>https://microsoft.github.io/language-server-protocol/inspector/</li>
+</ul>
+</li>
+<li>
+<p><a href="https://qiita.com/Rockdoor/items/f5dca558bbc843d8f334">VSCode 用 SystemVerilogの拡張を作る（#7）</a></p>
+</li>
+<li>
+<p>VSCodeでlsp を実行させて通信ログを出力</p>
+</li>
+<li>
+<p>通信ログを見やすく表示</p>
+</li>
+</ul>
+<p>しかし、どうやってログを作るかよくわからん。
+<code>vim-lsp</code> のログを改造して作ってみる。</p>
+<h2 id="ge-yan-yu-nosaba">各言語のサーバー</h2>
+<p>試してみたやつ。</p>
+<h3 id="python">python</h3>
+<h4 id="pyls">pyls</h4>
+<p>Linux, Windows 共に動いた。</p>
+<h3 id="dlang">dlang</h3>
+<h4 id="serve-d">serve-d</h4>
+<p>うまくいかなかったので、調べている・・・</p>
+<h4 id="dls">dls</h4>
+<p>うまくいかなかったので、調べている・・・</p>
+<h3 id="c">c++</h3>
+<p>Linuxで動いた。</p>
+<h4 id="cquery">cquery</h4>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-lsp/#vim-lsp-client">vim lsp client</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#vim-lsp">vim-lsp</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#ale">ale</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#languageclient">LanguageClient</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#vim-lsp-1">vim-lsp</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#built-in">built-in</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-lsp/#language-server-protocol">Language Server Protocol</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#tong-xin-sikensu">通信シーケンス</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-lsp/#log-viewer">log viewer</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-lsp/#ge-yan-yu-nosaba">各言語のサーバー</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#python">python</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#dlang">dlang</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-lsp/#c">c++</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2015&#x2F;12&#x2F;08&#x2F;threejs-05&#x2F;"> Three.jsのBuild 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2015</div>
+        <div class="md">1208</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>骨入りモデルとかやってみようかと思ったのだけど、その前にThree.jsのソースを見やすい状態で作業したい。
+結合前のThree.jsを自前ビルドしながら運用する方法を調べてみる。
+build.py, or how to generate a compressed three.js file
+と本家に書いてある。python使うんか。gulpでやりてぇな。
+全部concatしてuglifyしたらいいんじゃないか。
+やってみよう。
+とりあえずbowerで導入したthree.js関連を削除。
+threejs.srcフォルダを作ってthree.jsソースのsrcディレクトリの中身を展開した。
+gulp.task('bowerjs', function () {</p>
+<pre style="background-color:#2b303b;">
+<code>var files = [
+    './bower_components/jquery/dist/jquery.js',
+    './bower_components/highlightjs/highlight.pack.js',
+    './bower_components/stats.js/build/stats.min.js',
+    './lib/**/*.js', // &lt;-- 中にthree.jsのsrcをコピーした
+];
+gulp.src(files)
+    .pipe($.plumber({ errorHandler: $.notify.onError('&lt;%= error.message %&gt;') }))
+    .pipe($.debug({ title: 'bowerjs files:' }))
+    .pipe($.sourcemaps.init())
+    //.pipe($.uglify())
+    .pipe($.concat('all.min.js'))
+    .pipe($.sourcemaps.write('./', {
+        sourceMappingURL: function (file) {
+            return file.relative + '.map';
+        }
+    }))
+    .pipe(gulp.dest('build/js'))
+    .pipe(browser.reload({ stream: true }))
+;
+</code></pre>
+<p>});</p>
+<p>これで作ったall.min.jsではエラーが出てだめですね。
+単にsrcをconcatするだけではだめだ。本家のドキュメントを読み始める。
+/three.js/utils/build/</p>
+<p>でビルドできるよって書いてあります。python関係ないみたいだ。</p>
+<blockquote>
+<p>npm install
+node build.js --include common --include extras</p>
+</blockquote>
+<p>なるほどbuild.jsを見てみよう。
+includeってなんだろうと調べてみると
+/three.js/utils/build/includes</p>
+<p>にjsonファイルがあり中にjsファイルがリストされている。
+なるほど。src下を全部concatするのではなくここに書いてあるものを、書いてある順でconcatすればいいんでないか。
+// 
+gulp.task('threejs:build', function(){
+var common=JSON.parse(fs.readFileSync('three.js/includes/common.json')).map(function(v, i){ return 'three.js/'+v; });
+gulp.src(common)
+.pipe($.concat('three.js'))
+.pipe(gulp.dest('./lib'))
+;
+});</p>
+<p>gulp.task('bowerjs', ['threejs:build'], function () {
+// 前と同じ
+}</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">
+これで実行するとそれっぽいthree.jsが出てくるが、まだエラーが出る。
+でエラー行に飛ぶとifdefがある。なんだこれは。
+
+```glsl
+#ifdef USE_ALPHAMAP
+
+    diffuseColor.a *= texture2D( alphaMap, vUv ).g;
+
+#endif
+
+glslだ・・・。
+確かに、build.js内で拡張子がglslのファイルだけ別処理になっている。
+if( file.indexOf( &#39;.glsl&#39;) &gt;= 0 ) {
+
+    contents = &#39;THREE.ShaderChunk[ \&#39;&#39; +
+        path.basename( file, &#39;.glsl&#39; ) + &#39;\&#39; ] =&#39; +
+        JSON.stringify( contents ) + &#39;;\n&#39;;
+
+}
+
+ちょっとgulpのフィルタを作りますか。
+three.shaderchunk.js
+var through = require(&#39;through2&#39;);
+var gutil = require(&#39;gulp-util&#39;);
+var fs = require(&#39;fs&#39;);
+var path = require(&#39;path&#39;);
+
+module.exports = function () {
+
+    return through.obj(function (file, enc, cb) {
+
+        if (file.isStream()) {
+            cb(new gutil.PluginError(&#39;three.shadechunk&#39;, &#39;Streaming not supported&#39;));
+            return;
+        }
+
+        if (path.extname(file.path).toLowerCase() == &#39;.glsl&#39;) {
+            var contents = &#39;THREE.ShaderChunk[ \&#39;&#39; +
+                path.basename(file.path, &#39;.glsl&#39;) + &#39;\&#39; ] =&#39; +
+                JSON.stringify(file.contents.toString()) + &#39;;\n&#39;;
+            file.contents = new Buffer(contents);
+            file.path = file.path + &quot;.js&quot;;
+        }
+
+        this.push(file);
+
+        cb();
+    });
+}
+
+gulpファイルの呼び出しの方。これでthree.js/srcからthree.jsを作成できた。
+あとは、sourcemapが付くようにした。
+gulpfile.js
+gulp.task(&#39;threejs:build&#39;, function(){
+    var common=JSON.parse(fs.readFileSync(&#39;three.js/includes/common.json&#39;))
+    .map(function(v, i){ return &#39;three.js/&#39;+v; });
+    var extras=JSON.parse(fs.readFileSync(&#39;three.js/includes/extras.json&#39;))
+    .map(function(v, i){ return &#39;three.js/&#39;+v; });
+    gulp.src(common.concat(extras))
+        .pipe(threeShaderchunk())
+        .pipe($.concat(&#39;three.js&#39;))
+        .pipe(gulp.dest(&#39;./lib&#39;))
+        ;
+});
+
+FireFoxでブレイクポイントを仕掛けてステップ実行できた。
+これで、Loaderの自作とかが捗るぞ。
+</span></code></pre>
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

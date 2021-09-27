@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;04&#x2F;mmdbridge&#x2F;"> MmdBridgeをビルドしてみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0421</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>MmdBridgeがよさげなのでビルドしてみる。</p>
+<p>最初はプロジェクトと同じPython-3.4 + VS2010でがんばったのだが、 Windows10(64bit)でVS2010(64bit)環境を作るのが困難であることがわかった。ちょっと違うがPython-3.5 + VS2015でやってみる。
+Python3.5のビルド(不要)
+Debug版でもBoost.PythonがRelease版のPython.dllにリンクするとわかった。
+普通のインストーラーでインストールするとデバッグ版が手に入らぬ。せっかくなので自前ビルド。</p>
+<p>Windows上でPython3.5をビルドする
+Boost.PythonのデバッグビルドがリンクするPython.dll</p>
+<p>Boost.Python
+手元のboost-1.61.0を使う。
+$HOME/user-config.jam
+using python
+: 3.5.3
+: D:\usr\src\Python-3.5.3\PCBuild\python # cmd-or-prefix
+: D:\usr\src\Python-3.5.3\include
+: D:\usr\src\Python-3.5.3\PCBuild\amd64
+;</p>
+<p>memo: Jamroot.jam
+boost_1_61_0&gt; bootstrap.bat
+boost_1_61_0&gt; b2 -j2 --with-python3 address-model=64 toolset=msvc-14.0 threading=multi variant=debug,release link=static runtime-link=static,shared --stagedir=stage/x86_64 include=D:\usr\src\Python-3.5.3\PC </p>
+<p>include=D:\usr\src\Python-3.5.3\PCはpyconfig.hの場所。user-config.jamに2個目のincludeパスを記述する方法がわからなかったのでコマンドライン投入。
+DXSDK_Jun10のインストール
+d3dx9のあるDirectXはダウンロードしてインストールする必要がある。 April 2006を使っているそうなのだけどネット上に見つからなかったので手に入ったバージョンを使った。ビルド時にエラーが出るので下記の記事に沿ってd3dx9core.hを修正する。</p>
+<p>https://gist.github.com/t-mat/1540248</p>
+<p>VS2015
+premake5でVS2015向けにプロジェクトを作ってビルドしたところkンパイルエラーになった。VS2015固有の問題のようなのでコードを修正。</p>
+<p>VS 2015 で std::codecvt_utf8 がリンクできない場合の対処法
+src/umbase/UMStringUtil.h</p>
+<p>動作確認する</p>
+<p>Mmdを展開する
+mmdBridgeのd3d9.dllとd3dx9_43.dllをMmdディレクトリにコピーする(ビルド結果)
+mmdBridgeのpythonスクリプトをMmdディレクトリにコピーする(mmdbridge/Release/Win32フォルダにある)
+python.dllをMmdディレクトリにコピーする。もしくはパスを通す(普通にインストールしたPython3でよい)
+Mmdディレクトリにoutディレクトリを作成する</p>
+<p>以上で、mmdbridge_vmd.pyの動作を確認できた。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

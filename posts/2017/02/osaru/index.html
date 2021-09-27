@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;02&#x2F;osaru&#x2F;"> Unity向けのJSON Parserを作成中 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0227</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;unity&#x2F;">unity</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>いつもJSONUtilやMiniJson+JsonNodeを使うのだけど数値周りのcastで苦しんだので自前でつくることにした。</p>
+<p>https://github.com/ousttrue/JsonSan~
+https://github.com/ousttrue/Osaru</p>
+<p>UnityのJSON
+UnityのJsonUtilityみたいなシリアライザ・デシリアライザと不可分のものは使いづらい。例えば、以下のようなjsonでpositionだけをデシリアライズしたい場合。
+{
+&quot;action&quot;: &quot;hoge&quot;,
+&quot;params&quot;: {
+&quot;power&quot;: 9.8,
+&quot;position&quot;: [0, 1, 2]
+}
+}</p>
+<p>下記のように使いたい。
+string json;</p>
+<p>var parsed=Json.Parse(json);
+var x=(float)parsed[&quot;params&quot;][&quot;position&quot;][0];</p>
+<p>MiniJson</p>
+<p>MiniJson
+MiniJsonをちょっと楽にするスクリプト</p>
+<p>MiniJsonはパースした時にObjectの入れ物としてDictionary[string, object]、Arrayの入れ物としてList[object]を使っている。ここから値を取り出すにはキャストを使うのだがこれがわりとはまる。
+int64 n=1234;
+var no=(object)n;
+var i=(int)no; // boxingされたint64型の値はobjectから直接intにキャストできない</p>
+<p>上記のような、ある数をobject型に代入してそれを違う型として取りだすようなときに面倒すぎだった。
+// こうすればできる
+var i=(int)(int64)no;</p>
+<p>ということで自作してみた。
+JsonSan Osaru
+JSON, Util, Parse, Reader, Deserializer|Serializerあたりの組み合わせが使い尽くされていたのでリポジトリ名がすごい適当になった。JSONさん。さらにMessagePackと統合してObjectStructure改めOsaruにした</p>
+<p>https://github.com/ousttrue/Osaru</p>
+<p>JSONの仕様を見ながらごりごりテストドリブンで実装した。</p>
+<p>http://www.json.org/json-ja.html</p>
+<p>JSONは、ObjectのキーがString限定なのに初めて気づいたり。Stackoverflowで「JavascriptのObjectリテラルとJSONは違うのだよ」というのを見たが、まぁそうですね。コメントとかキーのクォート省略とか。
+実装
+JSON文字列をパーサーに入力したらパース済みのノードとして結果を得る。
+var json=&quot;[ &quot;json&quot; ]&quot;;
+var node=Node.Parse(json);</p>
+<p>ノードはJSONの定義に沿った型をenumで知っていて、GetNumber(), GetString(), GetBoolean()等が実装してあるので適当に値を取り出せる。MiniJsonでのはまりを反省してNumber型はdouble決め打ちにした。
+public enum ValueType
+{
+Unknown,</p>
+<pre style="background-color:#2b303b;">
+<code>String,
+Number,
+Object,
+Array,
+Boolean,
+</code></pre>
+<p>}</p>
+<p>Debug.Log(node.ValueType); // ValueType.String
+node.GetString();</p>
+<p>nodeがObjectかArrayの場合がミソでパースした時点では”{“または”[“までしか読まないことにした。IEnumerable[Node]の発動で子要素への要求が来て中に読み進む。使い方によっては軽量。Count()を使ったりすると遅くなるであろう。
+foreach(var child in node)
+{
+Debug.Log(child.GetString());
+}</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;summer&#x2F;lua-language-server&#x2F;"> Lua Language Server 解読 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0806</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lua&#x2F;">lua</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;luajit&#x2F;">luajit</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lsp&#x2F;">lsp</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p><a href="https://github.com/sumneko/lua-language-server">lua-language-server</a> が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
+<code>ffi.cdef</code> を読めるようにすればよいのでは。
+ということで、lua-language-server を探ってみる。</p>
+<h1 id="gou-cheng">構成</h1>
+<p><a href="https://github.com/sumneko/lua-language-server/wiki/Command-line">https://github.com/sumneko/lua-language-server/wiki/Command-line</a></p>
+<p><code>BINRARY/lua-language-server LUA_LANGUAGE_SERVER/main.lua --logpath=D:/log --metapath=D:/meta --locale=en-us --configpath=&quot;config.json&quot;</code></p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">&gt; .\bin\Windows\lua-language-server.exe --help</span><span style="color:#c0c5ce;">
+lua-language-server.exe:unrecognized option &#39;--help&#39;usage: C:\Users\oustt\ghq\github.com\sumneko\lua-language-server\bin\Windows\lua-language-server.exe [options] [script [args]]</span><span style="color:#c0c5ce;">
+Available options are:</span><span style="color:#c0c5ce;">
+  -e stat  execute string &#39;stat&#39;</span><span style="color:#c0c5ce;">
+  -i       enter interactive mode after executing &#39;script&#39;</span><span style="color:#c0c5ce;">
+  -l name  require library &#39;name&#39; into global &#39;name&#39;</span><span style="color:#c0c5ce;">
+  -v       show version information</span><span style="color:#c0c5ce;">
+  -E       ignore environment variables</span><span style="color:#c0c5ce;">
+  -W       turn warnings on</span><span style="color:#c0c5ce;">
+  --       stop handling options</span><span style="color:#c0c5ce;">
+  -        stop handling options and execute stdin</span><span style="color:#c0c5ce;">
+&gt; .\bin\Windows\lua-language-server.exe -v    </span><span style="color:#c0c5ce;">
+Lua 5.4.4  Copyright (C) 1994-2021 Lua.org, PUC-Rio  </span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>native モジュールを埋め込んだインタープリター <code>lua-language-server.exe</code> で <code>main.lua</code> を実行する。</p>
+<h2 id="setting">setting</h2>
+<p><code>.vscode/settings.json</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">     &quot;</span><span style="color:#a3be8c;">Lua.runtime.version</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">LuaJIT</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+     &quot;</span><span style="color:#a3be8c;">Lua.workspace.preloadFileSize</span><span style="color:#c0c5ce;">&quot;: </span><span style="color:#d08770;">10000</span><span style="color:#c0c5ce;">
+</span></code></pre><h1 id="lsp">LSP</h1>
+<p><a href="https://microsoft.github.io/language-server-protocol/">https://microsoft.github.io/language-server-protocol/</a></p>
+<ul>
+<li><a href="https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_signatureHelp">signatureHelp</a></li>
+</ul>
+<h1 id="main-lua">main.lua</h1>
+<ul>
+<li>main.lua
+<ul>
+<li>script/service/service.lua</li>
+</ul>
+</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#b48ead;">function </span><span style="color:#bf616a;">m</span><span style="color:#c0c5ce;">.</span><span style="color:#8fa1b3;">start</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">util</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">enableCloseFunction</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">await</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">setErrorHandle</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">log</span><span style="color:#c0c5ce;">.error)</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">pub</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">recruitBraves</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">)</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    </span><span style="color:#65737e;">-- transport</span><span style="color:#65737e;">
+    </span><span style="color:#bf616a;">proto</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">listen</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">m</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">report</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">m</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">pulse</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">m</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">reportStatus</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">m</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">testVersion</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    </span><span style="color:#96b5b4;">require </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">provider</span><span style="color:#c0c5ce;">&#39;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">m</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">startTimer</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">end</span><span style="color:#c0c5ce;">
+</span></code></pre><h1 id="script-parser">script/parser</h1>
+<p>lua のコード解析</p>
+<ul>
+<li>script/parser/parse.lua</li>
+</ul>
+<p><code>ast.init(state)</code></p>
+<h2 id="lpeg">LPeg</h2>
+<ul>
+<li>
+<p>script/parser/grammar.lua</p>
+</li>
+<li>
+<p><a href="http://www.inf.puc-rio.br/%7Eroberto/lpeg/">LPeg</a></p>
+</li>
+<li>
+<p><a href="https://gist.github.com/tacigar/93b30931c879cd8a9b12380724b956aa">Lua製PEG「LPeg」を触ってみた</a></p>
+</li>
+<li>
+<p><a href="https://nymphium.github.io/2015/07/23/lpeg2.html">LPegの使い方 patternその2</a></p>
+</li>
+<li>
+<p><a href="https://sceneryandfish.withnotes.net/blog/2014/07/22-lua-lpeg-how-to-use/">LPeg – Parsing Expression Grammars For Luaの使い方</a></p>
+</li>
+</ul>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/lua-language-server/#gou-cheng">構成</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/summer/lua-language-server/#setting">setting</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/lua-language-server/#lsp">LSP</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/lua-language-server/#main-lua">main.lua</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/lua-language-server/#script-parser">script&#x2F;parser</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/summer/lua-language-server/#lpeg">LPeg</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

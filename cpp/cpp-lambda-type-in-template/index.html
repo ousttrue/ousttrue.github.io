@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;cpp&#x2F;cpp-lambda-type-in-template&#x2F;"> lambdaの引数の型を得たい 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0516</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>(記事復旧のついでに少し修正)</p>
+<p>msgpack-rpcの関数登録の都合上、 lambda関数から引数の型を得たい。 下記のような書き方をしたい。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A1, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A2&gt;
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">register_func </span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;</span><span style="color:#bf616a;">func_name</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(*handler)(A1, A2))
+{
+    </span><span style="color:#65737e;">// 関数登録
+</span><span style="color:#c0c5ce;">}
+
+</span><span style="color:#b48ead;">static int </span><span style="color:#8fa1b3;">Add</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">a</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">)
+{
+    </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> a+b;
+}
+
+</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">()
+{
+    </span><span style="color:#65737e;">// 関数ポインタは受けれる
+    </span><span style="color:#bf616a;">register_func</span><span style="color:#c0c5ce;">(“add”, &amp;Add);
+
+    </span><span style="color:#65737e;">// lambdaを受けることはできない
+    </span><span style="color:#bf616a;">register_func</span><span style="color:#c0c5ce;">(“add”, [](</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> a,  </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> b)-&gt;</span><span style="color:#bf616a;">int</span><span style="color:#c0c5ce;">{ </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> a+b; });
+    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">;
+}
+
+</span></code></pre>
+<p>上記の書き方では普通の関数ポインタを受けることはできるのだが、 std::functionやlambdaは受けられない。</p>
+<p>std::functionを受けるには下記のようにすることでできた。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A1, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A2&gt;
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">register_func</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;</span><span style="color:#bf616a;">func_name</span><span style="color:#c0c5ce;">, std::function&lt;R(A1, A2) handler</span><span style="background-color:#bf616a;color:#2b303b;">)</span><span style="color:#c0c5ce;"> {
+    </span><span style="color:#65737e;">//
+</span><span style="color:#c0c5ce;">}
+</span></code></pre>
+<p>残り、lambdaを受けられる記述方法を知りたいのだがどうしたらよいものか。 下記のような手はうまくいかなかった・・・</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A1, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A2&gt;
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">add_handler</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;</span><span style="color:#bf616a;">method</span><span style="color:#c0c5ce;">, F </span><span style="color:#bf616a;">handler</span><span style="color:#c0c5ce;">)
+{
+    std::function&lt;R(A1, A2)&gt; </span><span style="color:#bf616a;">f</span><span style="color:#c0c5ce;">(handler);
+    </span><span style="color:#65737e;">//add_handler
+</span><span style="color:#c0c5ce;">}
+
+</span></code></pre>
+<p><a href="http://d.hatena.ne.jp/osyo-manga/20121205/1354674180">lambda expression を 関数ポインタ型へと変換する</a> こちらのサイトから decltypeを使ったらなんかできそうな感じがしたので粘っていたのだが、</p>
+<p>目的そのものの記事を発見した。 http://stackoverflow.com/questions/6512019/can-we-get-the-type-of-a-lambda-argument</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#65737e;">// 2019/08 元記事のコードがよくわからなかったので書き直し。
+
+// decltypeから得たメンバ関数へのポインタを触媒にして型を得る
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> C, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A1, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> A2&gt;
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">_register_func</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;</span><span style="color:#bf616a;">func_name</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(C::*m)(A1 a1, A2 a2)</span><span style="color:#bf616a;">const</span><span style="color:#c0c5ce;">) </span><span style="color:#65737e;">// constに注意
+</span><span style="color:#c0c5ce;">{
+    </span><span style="color:#65737e;">// R: 返り値の型
+    // A1, A2: 引数の型
+    // C: lambdaオブジェクトの型を受ける
+</span><span style="color:#c0c5ce;">}
+
+</span><span style="color:#65737e;">// まずあらゆる引数を受け付けられるtemplateでlambdaオブジェクトを受ける(functor)
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F&gt;
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">register_func</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;</span><span style="color:#bf616a;">func_name</span><span style="color:#c0c5ce;">, F </span><span style="color:#bf616a;">f</span><span style="color:#c0c5ce;">)
+{
+    </span><span style="color:#bf616a;">_register_func</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;func_name, f, </span><span style="color:#b48ead;">decltype</span><span style="color:#c0c5ce;">(f)::</span><span style="color:#bf616a;">operator</span><span style="color:#c0c5ce;">());
+</span><span style="background-color:#bf616a;color:#2b303b;">)</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>F で関数ポインタ、lambda、std::function等を受けられるようになった。 decltypeなんかすごいな。</p>
+<p>関連して、<a href="https://qiita.com/ousttrue/items/6b207e1d431cf20e04d9">C++でメンバー関数を、thisを第１引数にとる関数ポインタに変換する</a>。
+メンバ関数へのポインタは意外と使い道がある。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

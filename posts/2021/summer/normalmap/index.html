@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;summer&#x2F;normalmap&#x2F;"> 法線マップやってみる 
+  
+
+  
+  
+  
+  
+  
+    
+  <div class="image_box"><img src="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;processed_images&#x2F;74b7c42b59a2afee00.jpg"></div>
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0905</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;opengl&#x2F;">OpenGL</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>glTFViewerの実装がてら法線マップの実装をやってみる。
+<code>OpenGL 4.0 Shading Language Cookbook</code> を参考に進めた。</p>
+<h1 id="fa-xian-maptotangentwogong-gei-suru">法線mapとTangentを供給する</h1>
+<p><a href="https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet">https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet</a> をサンプルモデルとした。</p>
+<p><code>glActiveTexture</code> がうまくいかず難航する。
+以下のようにして、無理やり解決。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-glsl" data-lang="glsl"><span style="color:#b48ead;">#version</span><span style="color:#c0c5ce;"> 400</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">#extension </span><span style="color:#a3be8c;">GL_ARB_shading_language_420pack </span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">enable</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(binding = </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">uniform sampler2D</span><span style="color:#c0c5ce;"> Tex0;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(binding = </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">uniform sampler2D</span><span style="color:#c0c5ce;"> Tex1;</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>すべての sampler2D が 0 にバインディングされる挙動だった。
+<code>#version 420</code> はうまくいかなかったので断念。
+エラーは出ないが、何もレンダリングされなくなった。</p>
+<h1 id="tangent-gage-na-sareteinainodesheng-cheng-suru">Tangent が格納されていないので生成する</h1>
+<p><a href="https://github.com/KhronosGroup/glTF/tree/master/specification/2.0">https://github.com/KhronosGroup/glTF/tree/master/specification/2.0</a> に以下のよう書いてある。</p>
+<blockquote>
+<p>Implementation note: When tangents are not specified, client implementations should calculate tangents using default MikkTSpace algorithms. For best results, the mesh triangles should also be processed using default MikkTSpace algorithms.</p>
+</blockquote>
+<p><a href="https://github.com/mmikk/MikkTSpace">https://github.com/mmikk/MikkTSpace</a></p>
+<p>さくっと dll を作成して、 luajit から呼びだしてみた。
+<code>indices</code> <code>POSITION</code> <code>NORMAL</code> <code>TEXCOORD0</code> を入力して <code>TANGENT</code> を出力する。
+わりと適当で動く <code>luajit ffi</code> 恐るべし。
+さすがに C の方に呼びだし回数を減らすラッパーを作ったほうが速そうだが、動かすだけなら問題なし。</p>
+<h1 id="shader">Shader</h1>
+<p><code>OpenGL 4.0 Shading Language Cookbook</code> の phong shading を省略して法線だけ確認。
+<code>2倍して1引く</code> を補った。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-glsl" data-lang="glsl"><span style="color:#b48ead;">#version</span><span style="color:#c0c5ce;"> 400</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">uniform mat4</span><span style="color:#c0c5ce;"> MVP;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">uniform mat4</span><span style="color:#c0c5ce;"> ModelViewMatrix;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">uniform mat3</span><span style="color:#c0c5ce;"> NormalMatrix;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">uniform vec3</span><span style="color:#c0c5ce;"> LightDirection;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(location = </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">in vec3</span><span style="color:#c0c5ce;"> VertexPosition;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(location = </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">in vec3</span><span style="color:#c0c5ce;"> VertexNormal;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(location = </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">in vec2</span><span style="color:#c0c5ce;"> VertexTexCoord;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(location = </span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">in vec4</span><span style="color:#c0c5ce;"> VertexTangent;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">out vec3</span><span style="color:#c0c5ce;"> LightDir;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">out vec3</span><span style="color:#c0c5ce;"> ViewDir;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">out vec2</span><span style="color:#c0c5ce;"> TexCoord;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">out vec3</span><span style="color:#c0c5ce;"> Debug;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;"> normal = </span><span style="color:#96b5b4;">normalize</span><span style="color:#c0c5ce;">(NormalMatrix * VertexNormal);</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;"> tangent = </span><span style="color:#96b5b4;">normalize</span><span style="color:#c0c5ce;">(NormalMatrix * </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;">(VertexTangent));</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;"> binormal = </span><span style="color:#96b5b4;">normalize</span><span style="color:#c0c5ce;">(</span><span style="color:#96b5b4;">cross</span><span style="color:#c0c5ce;">(normal, tangent)) * VertexTangent.</span><span style="color:#bf616a;">w</span><span style="color:#c0c5ce;">;</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">mat3</span><span style="color:#c0c5ce;"> toObjectLocal =</span><span style="color:#c0c5ce;">
+      </span><span style="color:#b48ead;">mat3</span><span style="color:#c0c5ce;">(tangent.</span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">, binormal.</span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">, normal.</span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">, tangent.</span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">, binormal.</span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">, normal.</span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">,</span><span style="color:#c0c5ce;">
+           tangent.</span><span style="color:#bf616a;">z</span><span style="color:#c0c5ce;">, binormal.</span><span style="color:#bf616a;">z</span><span style="color:#c0c5ce;">, normal.</span><span style="color:#bf616a;">z</span><span style="color:#c0c5ce;">);</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;"> pos = </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;">(ModelViewMatrix * </span><span style="color:#b48ead;">vec4</span><span style="color:#c0c5ce;">(VertexPosition, </span><span style="color:#d08770;">1.0</span><span style="color:#c0c5ce;">));</span><span style="color:#c0c5ce;">
+  LightDir = </span><span style="color:#96b5b4;">normalize</span><span style="color:#c0c5ce;">(toObjectLocal * LightDirection);</span><span style="color:#c0c5ce;">
+  ViewDir = toObjectLocal * </span><span style="color:#96b5b4;">normalize</span><span style="color:#c0c5ce;">(-pos);</span><span style="color:#c0c5ce;">
+  TexCoord = VertexTexCoord;</span><span style="color:#c0c5ce;">
+  Debug = </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;">(VertexTangent);</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+  </span><span style="color:#bf616a;">gl_Position </span><span style="color:#c0c5ce;">= MVP * </span><span style="color:#b48ead;">vec4</span><span style="color:#c0c5ce;">(VertexPosition, </span><span style="color:#d08770;">1.0</span><span style="color:#c0c5ce;">);</span><span style="color:#c0c5ce;">
+};</span><span style="color:#c0c5ce;">
+</span></code></pre><pre style="background-color:#2b303b;">
+<code class="language-glsl" data-lang="glsl"><span style="color:#b48ead;">#version</span><span style="color:#c0c5ce;"> 400</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">#extension </span><span style="color:#a3be8c;">GL_ARB_shading_language_420pack </span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">enable</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(binding = </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">uniform sampler2D</span><span style="color:#c0c5ce;"> Tex0;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">layout</span><span style="color:#c0c5ce;">(binding = </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">uniform sampler2D</span><span style="color:#c0c5ce;"> Tex1;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">in vec3</span><span style="color:#c0c5ce;"> LightDir;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">in vec3</span><span style="color:#c0c5ce;"> ViewDir;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">in vec2</span><span style="color:#c0c5ce;"> TexCoord;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">in vec3</span><span style="color:#c0c5ce;"> Debug;</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">out vec4</span><span style="color:#c0c5ce;"> FragColor;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec4</span><span style="color:#c0c5ce;"> texColor = </span><span style="color:#96b5b4;">texture2D</span><span style="color:#c0c5ce;">(Tex0, TexCoord);</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec4</span><span style="color:#c0c5ce;"> normal = </span><span style="color:#96b5b4;">texture2D</span><span style="color:#c0c5ce;">(Tex1, TexCoord);</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+  </span><span style="color:#65737e;">// FragColor = vec4(Debug, 1);</span><span style="color:#65737e;">
+</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">float</span><span style="color:#c0c5ce;"> intensity = </span><span style="color:#96b5b4;">max</span><span style="color:#c0c5ce;">(</span><span style="color:#96b5b4;">dot</span><span style="color:#c0c5ce;">(LightDir, (normal.</span><span style="color:#bf616a;">xyz </span><span style="color:#c0c5ce;">* </span><span style="color:#d08770;">2 </span><span style="color:#c0c5ce;">- </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">)), </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">);</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;"> color = </span><span style="color:#b48ead;">vec3</span><span style="color:#c0c5ce;">(intensity);</span><span style="color:#c0c5ce;">
+  FragColor = </span><span style="color:#b48ead;">vec4</span><span style="color:#c0c5ce;">(color, </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">);</span><span style="color:#c0c5ce;">
+};</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>glTF の シェーダー では、 <code>mat3</code> を fragment shader に送りこんでいた。</p>
+<p><a href="https://github.com/bwasty/gltf-viewer/tree/master/src/shaders">https://github.com/bwasty/gltf-viewer/tree/master/src/shaders</a></p>
+<p>tangent space でライティングするという概念は同じらしい。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/normalmap/#fa-xian-maptotangentwogong-gei-suru">法線mapとTangentを供給する</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/normalmap/#tangent-gage-na-sareteinainodesheng-cheng-suru">Tangent が格納されていないので生成する</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/normalmap/#shader">Shader</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

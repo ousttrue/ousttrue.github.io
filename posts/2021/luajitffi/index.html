@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;luajitffi&#x2F;"> libclang で luajit 向けの FFI を生成する 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0723</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lua&#x2F;">lua</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;libclang&#x2F;">libclang</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>lua による imgui 計画の準備として、 <code>libclang</code> によるバインディング生成器を <code>luajit</code> に移植してみた。</p>
+<p><a href="https://github.com/ousttrue/luajitffi">https://github.com/ousttrue/luajitffi</a></p>
+<p><code>libclang</code> に対してはだいだい動くようになって、自身で生成した <code>FFI</code> で動作するところまでできた。
+また、 <code>EmmyLua Annotation</code> もある程度付与できた。</p>
+<p><a href="https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua">https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua</a></p>
+<p>こいつで、 <code>imgui.h</code> から luajit FFI を生成する。</p>
+<h2 id="libclang">libclang</h2>
+<p>c(c++)ヘッダーを <code>clang_visitChildren</code> により、カーソルのTree としてパースする。
+今回は、 <code>CXChildVisit_Recurse</code> で全部のカーソルをパースすることにした。</p>
+<ul>
+<li>同じカーソルが複数個所に現れうる</li>
+<li>循環しうる(Link List ？)</li>
+</ul>
+<p>がありうることを考慮しておく。
+<code>clang-c/Index.h</code> は 6000 カーソルくらいなので問題ないが、 <code>Windows.h</code> とかは 150000 カーソルとか爆発する。</p>
+<h2 id="waritose-nnatokorodexing-ganesutositeiteturai">わりと色んなところで型がネストしていてつらい</h2>
+<ul>
+<li>struct の中は namespace なので何でもあり</li>
+<li>anonymous な union や struct のその場定義</li>
+<li>typedef struct などのその場定義</li>
+<li>関数ポインタのその場定義</li>
+</ul>
+<p>要するに、Cのコードの書き方によってどのようなカーソル構造になるかのパターンを知っている必要があって、
+パターン毎に分岐して情報を収集する必要がある。
+ある型のメンバーの情報を集めていると、ネストした別の型情報が現れる場合があるので切り分ける。</p>
+<h2 id="ji-ben-de-napatan">基本的なパターン</h2>
+<p>FFI では、対象となる関数を起点にその関数が使用するすべての型の定義を取り込む。
+カーソルはCのTranslationUnitの木構造をあらわしていて、型をあらわしていない。
+カーソルから頑張って型を得る。
+型を得られるカーソルは決まっていて、<code>CXCursorType</code> が宣言Declの系列となる。</p>
+<p>TODO</p>
+<h3 id="kasoru-functiondecl">カーソル FunctionDecl</h3>
+<h3 id="kasoru-enumdecl">カーソル EnumDecl</h3>
+<h3 id="kasoru-typedefdecl">カーソル TypedefDecl</h3>
+<h3 id="kasoru-structdecl">カーソル StructDecl</h3>
+<h3 id="type-pointer">Type Pointer</h3>
+<h3 id="type-array">Type Array</h3>
+<h3 id="type-elaborated">Type Elaborated</h3>
+<h3 id="type-record">Type Record</h3>
+<h3 id="type-functionproto-guan-shu-pointa-pointer-functionproto">Type FunctionProto 関数ポインタ pointer =&gt; functionproto</h3>
+<h3 id="union">union</h3>
+<h3 id="typedef-struct">typedef struct</h3>
+<h3 id="c-name-mangling">c++ name mangling</h3>
+<h3 id="makurotonozhan-i">マクロとの戦い</h3>
+<h2 id="luajit-ffi">luajit ffi</h2>
+<p><code>ffi.cdef</code> に素直に定義すればいいので、他の言語の FFI に比べて簡単。</p>
+<p>はまり。</p>
+<ul>
+<li><code>ffi.load</code> の返り値が GC されると関数ポインタが死ぬ</li>
+<li>pointer は <code>ffi.new('TYPE[1]')</code> のようにサイズ１の array で運用する</li>
+<li>tostring と ffi.string は違う</li>
+<li>nullptr は nil ?</li>
+</ul>
+<p>だいたいよきに計らってくれるので、 <code>rust</code> の FFI に比べて簡単なのであった。</p>
+<p>ひとつだけはまりがあって、 <code>struct</code> の値渡しができない場合がある。</p>
+<p><a href="http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs">http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs</a></p>
+<p>そういえば、 <code>rust</code> でも <code>struct</code> の値渡しではまった記憶が。</p>
+<p><a href="https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org">https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org</a></p>
+<p>rust の場合は、 <code>struct</code> の値返しが動かなかった。
+これ、C の方で pointer 経由で値を返すラッパーを定義する必要があって回避方法はなかった。</p>
+<p><code>ImVec2 ImGui::GetContentRegionAvail()</code></p>
+<p>luajit ffi でもできるか注意が必要だな。</p>
+<h2 id="lfs-henoyi-cun-wo-ffi-sita-windows-api-dezhi-kihuan-eru">lfs への依存を FFI した Windows API で置き換える</h2>
+<p>現状、ファイル操作 <code>isExists</code>, <code>mkDir</code> のために lfs を使っているのだけど、
+FFI で Windows API にアクセスできるようにしたら lfs 無しにできそう。
+となれば luarocks も無しにできるので、 必要なのは luajit.exe だけになる。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#libclang">libclang</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#waritose-nnatokorodexing-ganesutositeiteturai">わりと色んなところで型がネストしていてつらい</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#ji-ben-de-napatan">基本的なパターン</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#kasoru-functiondecl">カーソル FunctionDecl</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#kasoru-enumdecl">カーソル EnumDecl</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#kasoru-typedefdecl">カーソル TypedefDecl</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#kasoru-structdecl">カーソル StructDecl</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#type-pointer">Type Pointer</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#type-array">Type Array</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#type-elaborated">Type Elaborated</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#type-record">Type Record</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#type-functionproto-guan-shu-pointa-pointer-functionproto">Type FunctionProto 関数ポインタ pointer =&gt; functionproto</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#union">union</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#typedef-struct">typedef struct</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#c-name-mangling">c++ name mangling</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#makurotonozhan-i">マクロとの戦い</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#luajit-ffi">luajit ffi</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luajitffi/#lfs-henoyi-cun-wo-ffi-sita-windows-api-dezhi-kihuan-eru">lfs への依存を FFI した Windows API で置き換える</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;05&#x2F;cmake-exe&#x2F;"> msbuildとcmakeの在りか 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0528</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cmake&#x2F;">cmake</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>bat作るときにたまに使う
+cmake.exeとmsbuild.exeの在りかについて</p>
+<p>VisualStudio2017内のcmake.exe
+VisualStudio2017に同梱されるようになったcmakeのパスについて。
+以下のパスに存在する。
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe
+version確認
+PS&gt; &amp;&quot;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot; --version
+cmake version 3.6.20160606-g0391f-MSVC</p>
+<p>CMake suite maintained and supported by Kitware (kitware.com/cmake).</p>
+<p>レジストリからパスを得る
+システムドライブの容量節約のためVSのインストールパスを変更している場合に必要だった。
+regコマンドでコマンドラインで値を得る。</p>
+<blockquote>
+<p>reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;</p>
+</blockquote>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7
+15.0    REG_SZ    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community</p>
+<p>cmake呼び出しbat
+cmake_vs2017.bat
+@echo off
+FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;') DO IF &quot;%%A&quot;==&quot;15.0&quot; SET VSPATH=%%C
+@echo on</p>
+<p>set CMAKE=&quot;%VSPATH%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot;
+set BUILD_DIR=&quot;build_vs2017&quot;</p>
+<p>if not exist %BUILD_DIR% mkdir %BUILD_DIR%
+pushd %BUILD_DIR%
+%CMAKE% -D CMAKE_INSTALL_PREFIX=%VCPKG_DIR%/installed/x64-windows -D OpenCVDir=%VCPKG_DIR%/installed/x64-windows/share/opencv .. -G &quot;Visual Studio 15 2017 Win64&quot;
+popd</p>
+<p>使用例</p>
+<p>https://github.com/ousttrue/msgpackpp/blob/master/cmake_vs2017.bat</p>
+<p>VisualStudio2017内のmsbuild
+C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/MSBuild/15.0/Bin/msbuild.exe
+なので</p>
+<blockquote>
+<p>reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;</p>
+</blockquote>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7
+15.0    REG_SZ    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community</p>
+<p>と組み合わせると得られる。
+@echo off
+FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;') DO IF &quot;%%A&quot;==&quot;15.0&quot; SET VSPATH=%%C
+@echo on</p>
+<p>set MSBUILD=&quot;%VSPATH%\MSBuild\15.0\Bin\msbuild.exe&quot;</p>
+<p>VisualStudio2015内のmsbuild</p>
+<p>https://github.com/Microsoft/HoloToolkit-Unity/blob/master/Assets/HoloToolkit/Build/Editor/BuildDeployTools.cs#L72</p>
+<p>レジストリ
+HKLM\Software\Microsoft\MSBuild\ToolsVersions\14.0
+から得ることができる。
+@echo off
+FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSBuild\ToolsVersions&quot; /v &quot;14.0&quot;') DO IF &quot;%%A&quot;==&quot;14.0&quot; SET MSBUILDPATH=%%C
+@echo on</p>
+<p>set MSBUILD=&quot;%MSBUILDPATH%\msbuild.exe&quot;</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

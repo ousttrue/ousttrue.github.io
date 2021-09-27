@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;summer&#x2F;nvy&#x2F;"> nvim frontend nvy 
+  
+
+  
+  
+  
+  
+  
+    
+  <div class="image_box"><img src="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;processed_images&#x2F;502ba86a8e936a6500.jpg"></div>
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0807</div>
+      </li>
+      
+      <li class="headline_date updated">
+        <div class="year">2021</div>
+        <div class="md">0829</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;nvim&#x2F;">nvim</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;msgpack&#x2F;">msgpack</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>よさげなレポジトリを発見した。</p>
+<p><a href="https://github.com/RMichelsen/Nvy">https://github.com/RMichelsen/Nvy</a></p>
+<p>だいぶ前に作ろうとして頓挫した</p>
+<p><a href="https://github.com/ousttrue/nvim-dx">https://github.com/ousttrue/nvim-dx</a></p>
+<p>の完成形。
+どこがうまくいかなかったのか忘れてしまったが。</p>
+<h2 id="gai-zao">改造</h2>
+<p><a href="https://github.com/ousttrue/Nvy">https://github.com/ousttrue/Nvy</a></p>
+<ul>
+<li><input disabled="" type="checkbox"/>
+RenderTarget に対して Nvim をレンダリングする</li>
+<li><input disabled="" type="checkbox" checked=""/>
+nvim の IO を <a href="https://think-async.com/Asio/#">https://think-async.com/Asio/#</a> にのせる</li>
+<li><input disabled="" type="checkbox"/>
+imgui と合体する</li>
+</ul>
+<h1 id="20210815">20210815</h1>
+<p>MsgPack-RPC のバックエンドに昔作った</p>
+<p><a href="https://github.com/ousttrue/msgpack-rpc-asio">https://github.com/ousttrue/msgpack-rpc-asio</a></p>
+<p>におきかえる。</p>
+<p>さらに、これのシリアライザーを自前の <a href="https://github.com/ousttrue/msgpackpp">https://github.com/ousttrue/msgpackpp</a> におきかえる。</p>
+<ul>
+<li>CMake 化</li>
+<li>RPC を <code>c++20</code> 化 (co_await)</li>
+</ul>
+<p>で、最初の nvim 初期化を</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> api_info = co_await rpc.</span><span style="color:#bf616a;">request</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">nvim_get_api_info</span><span style="color:#c0c5ce;">&quot;);</span><span style="color:#c0c5ce;">
+rpc.</span><span style="color:#bf616a;">notity</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">nvim_set_var</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">nvy</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">);</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> path = co_await rpc.</span><span style="color:#bf616a;">request</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">nvim_eval</span><span style="color:#c0c5ce;">&quot;,&quot;</span><span style="color:#a3be8c;">stdpath(&#39;config&#39;)</span><span style="color:#c0c5ce;">&quot;);</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">// initialize</span><span style="color:#65737e;">
+</span><span style="color:#c0c5ce;">
+rpc.</span><span style="color:#bf616a;">notify</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">nvim_ui_attach</span><span style="color:#c0c5ce;">&quot;);</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+rpc.</span><span style="color:#bf616a;">on_message</span><span style="color:#c0c5ce;">(&amp;dispatcher);</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>のように書けるようにして整理する。</p>
+<h1 id="20210829">20210829</h1>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+MsgPack-RPC のバックエンドを置きかえた</li>
+<li><input disabled="" type="checkbox" checked=""/>
+logger に RPC の内容を JSON 化して表示</li>
+</ul>
+<p>だいたいリファクタリングが終わって改造しやすい状態になった。</p>
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+<code>&lt;C-/&gt;</code> できるようにする。</li>
+</ul>
+<p>を実装できた。
+特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">  </span><span style="color:#b48ead;">case</span><span style="color:#c0c5ce;"> VK_OEM_2:</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">&quot;&quot;;</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p><code>[2,&quot;nvim_input&quot;,[&quot;&lt;C-/&gt;&quot;]]</code> が送信される。</p>
+<h2 id="xiu-zheng-gabi-yao">修正が必要</h2>
+<p>非control時に</p>
+<p><code>[2,&quot;nvim_input&quot;,[&quot;&lt;/&gt;&quot;]]</code> が送信される。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">  </span><span style="color:#b48ead;">case</span><span style="color:#c0c5ce;"> VK_OEM_2:</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">GetKeyState</span><span style="color:#c0c5ce;">(VK_CONTROL) &lt; </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">) {</span><span style="color:#c0c5ce;">
+      </span><span style="color:#65737e;">// C-/</span><span style="color:#65737e;">
+      </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">/</span><span style="color:#c0c5ce;">&quot;;</span><span style="color:#c0c5ce;">
+    }</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>なるほど。</p>
+<p><a href="https://ousttrue.github.io/posts/2021/summer/nvimtexture/">NvimTexture</a> へ続く</p>
+<h1 id="20210829-tai-zi-gazureru">20210829  太字がずれる？</h1>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/nvy/#gai-zao">改造</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/nvy/#20210815">20210815</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/nvy/#20210829">20210829</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/summer/nvy/#xiu-zheng-gabi-yao">修正が必要</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/summer/nvy/#20210829-tai-zi-gazureru">20210829  太字がずれる？</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

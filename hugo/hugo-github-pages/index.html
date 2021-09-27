@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;hugo&#x2F;hugo-github-pages&#x2F;"> Github Pages の種類 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2020</div>
+        <div class="md">0720</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;hugo&#x2F;">hugo</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;ssg&#x2F;">ssg</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>https://docs.github.com/ja/github/working-with-github-pages/about-github-pages</p>
+<h2 id="puroziekutosaito-gh-pages">プロジェクトサイト (gh-pages)</h2>
+<p>各プロジェクトに作れる。</p>
+<p>URLは、<code>http(s)://&lt;user&gt;.github.io/&lt;repository&gt;</code></p>
+<p>各リポジトリの、 <code>gh-pages</code> ブランチでサイトをホストする。
+hugo で運用するなら、
+<code>master</code> ブランチに hugo project を commit する。
+hugo のビルド結果を <code>gh-pages</code> に commit する。
+手間を省くために <code>master</code> への push をトリガーに <code>travis-CI</code> 等で自動でビルドして、結果を gh-pages に push する。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-yml" data-lang="yml"><span style="color:#65737e;"># .travis.yml
+</span><span style="color:#bf616a;">deploy</span><span style="color:#c0c5ce;">:
+  </span><span style="color:#bf616a;">provider</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">pages
+  skip_cleanup</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">true
+  </span><span style="color:#bf616a;">github_token</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">$GITHUB_TOKEN  </span><span style="color:#65737e;"># Set in the settings page of your repository, as a secure variable
+  </span><span style="color:#bf616a;">keep_history</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">true
+  </span><span style="color:#bf616a;">target_branch</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">gh-pages </span><span style="color:#65737e;"># default
+  </span><span style="color:#bf616a;">local-dir</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">public
+  </span><span style="color:#d08770;">on</span><span style="color:#c0c5ce;">:
+    </span><span style="color:#bf616a;">branch</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">master </span><span style="color:#65737e;"># master branch が push されたのをトリガーに public フォルダを gh-pages ブランチに pushする
+</span></code></pre><h2 id="yuzasaito">ユーザーサイト</h2>
+<p>ユーザー毎にひとつだけ作ることのできるリポジトリ。</p>
+<p>URLは、<code>http(s)://&lt;user&gt;.github.io</code> 。</p>
+<p>これ、<code>gh-pages</code> と URL が重複するときがありそうな。</p>
+<p>repository <code>${user_name}.github.io</code> の場合 <code>master</code> が <code>gh-pages</code> の役割を果たす。
+この名前にすると、サイトをホストする用の特殊なリポジトリになる様子。</p>
+<p>hugo で運用するなら <code>gh-pages</code> ブランチ運用と逆になる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-yml" data-lang="yml"><span style="color:#bf616a;">deploy</span><span style="color:#c0c5ce;">:
+  </span><span style="color:#bf616a;">provider</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">pages
+  skip_cleanup</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">true
+  </span><span style="color:#bf616a;">github_token</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">$GITHUB_TOKEN  </span><span style="color:#65737e;"># Set in the settings page of your repository, as a secure variable
+  </span><span style="color:#bf616a;">keep_history</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">true
+  </span><span style="color:#bf616a;">target_branch</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">master
+  local_dir</span><span style="color:#c0c5ce;">: </span><span style="color:#bf616a;">public
+  </span><span style="color:#d08770;">on</span><span style="color:#c0c5ce;">:
+    </span><span style="color:#bf616a;">branch</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">hugo </span><span style="color:#65737e;"># hugo branch が push されたのをトリガーに public フォルダを master ブランチにpushする
+</span></code></pre>
+<p>default branch を hugo の方に変えてから、git clone すると作業しやすい。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/hugo/hugo-github-pages/#puroziekutosaito-gh-pages">プロジェクトサイト (gh-pages)</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/hugo/hugo-github-pages/#yuzasaito">ユーザーサイト</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

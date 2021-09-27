@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2014&#x2F;05&#x2F;17&#x2F;cygwin&#x2F;"> cygwinの導入とgit最新版のビルドまで 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2014</div>
+        <div class="md">0517</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>cygwinの導入とgit最新版のビルドまで
+しばらくWindows上のメインのshellをmsysgitのbashにしていたのだが、
+久しぶりにcygwinに回帰した。
+知らない間に環境が良くなっているじゃないの、ということで初期導入手順メモ。
+既存のcygwinを掃除
+“C:/cygwin”にインストール済みだが、
+download済みのパッケージくらいは置いておこうということで以下のファイル/ディレクトリ
+以外を削除した。
+c:/cygwin
++ setup-x86.exe
++ http%3a%2f%2f... (パッケージのダウンロードディレクトリ)
++ etc/</p>
+<p>あとetc/setupも削除。 これでクリーンな状態になるっぽい。
+以降、 http://tar.blogru.me/entry/2014/03/20/004156
+の通りにgitのビルドまで遂行。
+cygwinセットアップ
+setup-x86.exeを実行。wgetとgitを追加インストール。
+apt-cyg導入
+$ mkdir -p /usr/local/src
+$ cd /usr/local/src
+$ git clone https://github.com/transcode-open/apt-cyg.git
+$ cp apt-cyg/apt-cyg /usr/local/bin/</p>
+<p>最新版gitのビルド
+ビルドに必要なもの
+install.sh
+set -x
+apt-cyg install gcc-core
+apt-cyg install make patch vim
+apt-cyg install libncurses-devel openssl-devel readline libsqlite3-devel libxml2-devel libxslt-devel
+apt-cyg install autoconf zlib zlib-devel libiconv python openssh tcl
+apt-cyg install gettext-devel
+apt-cyg install curl libcurl-devel</p>
+<p>ビルド
+$ cd /usr/local/src
+$ git clone git://github.com/git/git.git
+$ cd git
+$ make configure
+$ ./configure --prefix=/usr/local --with-curl --with-expat
+$ make all &amp; make install</p>
+<p>トラブルシューティング
+“make install”で
+make: execvp: install: Permission denied cygwin</p>
+<p>というエラーが出てはまる。どうやらgitに含まれるINSTALLがmake
+installのターゲットに 誤認されるという現象っぽい。
+INSTALLを撤去したらうまく動いた。
+$ rm INSTALL gitweb/INSTALL</p>
+<p>別のマシンでは起きなかったのだがなんだこれは。
+トラブルシューティング2
+Windows8固有の問題のようだがmake中のforkに失敗する件について。
+対策は、”rebaseall”ではなく
+$ export LANG=C</p>
+<p>とすることだった。
+windows8-上で-cygwin-版の-git-で-pullpushfetch-に失敗するhttp://kamiyn.wordpress.com/2012/10/18/windows8-%E4%B8%8A%E3%81%A7-cygwin-%E7%89%88%E3%81%AE-git-%E3%81%A7-pullpushfetch-%E3%81%AB%E5%A4%B1%E6%95%97%E3%81%99%E3%82%8B/
+のコメントに書いてあった。
+かくして、gitが最新版になった。
+$ git --version
+git version 2.0.0.rc3.4.g6308767.dirty</p>
+<p>思えば、cygwinをやめたのはgitがうまく動かなかったのを解決できなかったのが原因だった
+ような気がするので、最新版がさくっとビルドできるのはありがたい。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

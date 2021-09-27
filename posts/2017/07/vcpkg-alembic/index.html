@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;07&#x2F;vcpkg-alembic&#x2F;"> vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0718</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;vcpkg&#x2F;">vcpkg</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cg&#x2F;">cg</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>mmdbridgeのvcpkgを使ったビルド手順を作ったついでにAlembicのvcpkg向けパッケージを作ってみる。</p>
+<p>情報収集</p>
+<ul>
+<li>https://github.com/Microsoft/vcpkg/blob/master/docs/examples/packaging-zlib.md</li>
+</ul>
+<p>読んだ。</p>
+<p><code>vcpkg create url</code> で雛形が作れる。</p>
+<p>実験</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">.\vcpkg.exe create alembic https://github.com/alembic/alembic/archive/1.7.1.tar.gz
+CMake Error at scripts/ports.cmake:101 (message):
+  Portfile already exists: &#39;D:\vcpkg\ports\alembic\portfile.cmake&#39;
+</span></code></pre>
+<p>すでにあるだと！？
+最近できたらしい。</p>
+<ul>
+<li>https://github.com/Microsoft/vcpkg/tree/master/ports/alembic</li>
+</ul>
+<p>しかし、hdf非対応みたいなので作ってみる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">.\vcpkg.exe create alembic-hdf https://github.com/alembic/alembic/archive/1.7.1.tar.gz
+
+VCPKG_DIR
+    ports
+        alembic-hdf
+            CONTROL
+            portfile.cmake
+</span></code></pre>
+<p>ができた。
+簡単なCONTROLから。
+こっちはパッケージ情報を決めるだけなのでさくっと。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">Source: alembic-hdf
+Version: 1.7.1
+Description: alembic with hdf5
+Build-Depends: hdf5
+</span></code></pre>
+<p>本題のportfile.cmake。
+そのままだとエラーになるの。最低限以下が必要なようだ。
+アーカイブを展開パスの指定。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#96b5b4;">set</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">SOURCE_PATH </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_BUILDTREES_DIR</span><span style="color:#c0c5ce;">}/src/1.7.1)
+
+</span><span style="color:#65737e;"># ↓ 修正する
+
+</span><span style="color:#96b5b4;">set</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">SOURCE_PATH </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_BUILDTREES_DIR</span><span style="color:#c0c5ce;">}/src/alembic-1.7.1)
+</span></code></pre>
+<p>実行してみる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">&gt; ./vcpkg install alembic-hdf:x64-windows
+The following packages will be built and installed:
+    alembic-hdf:x64-windows
+Building package alembic-hdf:x64-windows...
+-- CURRENT_INSTALLED_DIR=D:/vcpkg/installed/x64-windows
+-- DOWNLOADS=D:/vcpkg/downloads
+-- CURRENT_PACKAGES_DIR=D:/vcpkg/packages/alembic-hdf_x64-windows
+-- CURRENT_BUILDTREES_DIR=D:/vcpkg/buildtrees/alembic-hdf
+-- CURRENT_PORT_DIR=D:/vcpkg/ports/alembic-hdf/.
+-- Using cached D:/vcpkg/downloads/1.7.1.tar.gz
+-- Testing integrity of cached file...
+-- Testing integrity of cached file... OK
+-- Extracting done
+-- Configuring x64-windows-rel
+-- Configuring x64-windows-rel done
+-- Configuring x64-windows-dbg
+PS D:\vcpkg&gt; .\vcpkg.exe install alembic-hdf:x64-windows
+The following packages will be built and installed:
+    alembic-hdf:x64-windows
+Building package alembic-hdf:x64-windows...
+-- CURRENT_INSTALLED_DIR=D:/vcpkg/installed/x64-windows
+-- DOWNLOADS=D:/vcpkg/downloads
+-- CURRENT_PACKAGES_DIR=D:/vcpkg/packages/alembic-hdf_x64-windows
+-- CURRENT_BUILDTREES_DIR=D:/vcpkg/buildtrees/alembic-hdf
+-- CURRENT_PORT_DIR=D:/vcpkg/ports/alembic-hdf/.
+-- Using cached D:/vcpkg/downloads/1.7.1.tar.gz
+-- Testing integrity of cached file...
+-- Testing integrity of cached file... OK
+-- Extracting done
+-- Configuring x64-windows-rel
+-- Configuring x64-windows-rel done
+-- Configuring x64-windows-dbg
+-- Configuring x64-windows-dbg done
+-- Package x64-windows-rel
+-- Package x64-windows-rel done
+-- Package x64-windows-dbg
+-- Package x64-windows-dbg done
+-- Performing post-build validation
+Include files should not be duplicated into the /debug/include directory. If this cannot be disabled in the project cmake, use
+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+The /lib/cmake folder should be merged with /debug/lib/cmake and moved to /share/alembic-hdf/cmake.
+The following cmake files were found outside /share/alembic-hdf. Please place cmake files in /share/alembic-hdf.
+
+    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicConfig.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicConfigVersion.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicTargets-release.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicTargets.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicConfig.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicConfigVersion.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicTargets-debug.cmake
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicTargets.cmake
+
+The /debug/lib/cmake folder should be merged with /lib/cmake into /share/alembic-hdf
+
+The following dlls were found in /lib or /debug/lib. Please move them to /bin or /debug/bin, respectively.
+
+    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/Alembic.dll
+
+
+The following dlls were found in /lib or /debug/lib. Please move them to /bin or /debug/bin, respectively.
+
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/Alembic.dll
+
+The software license must be available at ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/copyright
+
+    file(COPY ${CURRENT_BUILDTREES_DIR}/src/alembic-1.7.1/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/alembic-hdf)
+    file(RENAME ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/LICENSE.txt ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/copyright)
+The following EXEs were found in /bin or /debug/bin. EXEs are not valid distribution targets.
+
+    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcdiff.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcecho.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcechobounds.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcls.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcstitcher.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abctree.exe
+
+The following EXEs were found in /bin or /debug/bin. EXEs are not valid distribution targets.
+
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcdiff.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcecho.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcechobounds.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcls.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcstitcher.exe
+    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abctree.exe
+
+Found 9 error(s). Please correct the portfile:
+    D:\vcpkg\ports\alembic-hdf\portfile.cmake
+-- Performing post-build validation done
+Error: Building package alembic-hdf:x64-windows failed with: POST_BUILD_CHECKS_FAILED
+Please ensure you&#39;re using the latest portfiles with `.\vcpkg update`, then
+submit an issue at https://github.com/Microsoft/vcpkg/issues including:
+  Package: alembic-hdf:x64-windows
+  Vcpkg version: 0.0.81-144d3718c4197b101c7d61ee6a258200371fb1ab
+
+Additionally, attach any relevant sections from the log files above.
+</span></code></pre>
+<p>という感じになった。
+エラーメッセージがすごく親切。
+あと、NINJAビルド速い。
+エラーにはなるがビルド結果は以下のように出力された。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">VCPKG_DIR/packages/alembic-hdf_x64-windows
+│  BUILD_INFO
+│
+├─bin
+│      abcdiff.exe
+│      abcecho.exe
+│      abcechobounds.exe
+│      abcls.exe
+│      abcstitcher.exe
+│      abctree.exe
+│
+├─debug
+│  ├─bin
+│  │      abcdiff.exe
+│  │      abcecho.exe
+│  │      abcechobounds.exe
+│  │      abcls.exe
+│  │      abcstitcher.exe
+│  │      abctree.exe
+│  │
+│  ├─include
+│  │  └─Alembic
+│  │      ├─Abc
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcCollection
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcCoreAbstract
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcCoreFactory
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcCoreLayer
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcCoreOgawa
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcGeom
+│  │      │      *.h
+│  │      │
+│  │      ├─AbcMaterial
+│  │      │      *.h
+│  │      │
+│  │      └─Util
+│  │              *.h
+│  │
+│  └─lib
+│      │  Alembic.dll
+│      │  Alembic.lib
+│      │
+│      └─cmake
+│          └─Alembic
+│                  AlembicConfig.cmake
+│                  AlembicConfigVersion.cmake
+│                  AlembicTargets-debug.cmake
+│                  AlembicTargets.cmake
+│
+├─include
+│  └─Alembic
+│      ├─Abc
+│      │      *.h
+│      │
+│      ├─AbcCollection
+│      │      *.h
+│      │
+│      ├─AbcCoreAbstract
+│      │      *.h
+│      │
+│      ├─AbcCoreFactory
+│      │      *.h
+│      │
+│      ├─AbcCoreLayer
+│      │      *.h
+│      │
+│      ├─AbcCoreOgawa
+│      │      *.h
+│      │
+│      ├─AbcGeom
+│      │      *.h
+│      │
+│      ├─AbcMaterial
+│      │      *.h
+│      │
+│      └─Util
+│              *.h
+│
+└─lib
+    │  Alembic.dll
+    │  Alembic.lib
+    │
+    └─cmake
+        └─Alembic
+                AlembicConfig.cmake
+                AlembicConfigVersion.cmake
+                AlembicTargets-release.cmake
+                AlembicTargets.cmake
+</span></code></pre>
+<p>ここから不要なものを削除したり、場所の違うものを移動したりすることで完成できそう。
+エラーメッセージに沿って修正してみる</p>
+<p><code>debug/include</code> 不要</p>
+<p>エラーメッセージに含まれるとおりに。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">REMOVE_RECURSE </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/include)
+
+</span><span style="color:#bf616a;">lib</span><span style="color:#c0c5ce;">/cmake/Alembic/*.cmakeをshare/alembic-hdfに移動するべし
+debug/lib/cmake/Alembicを統合するべし。
+vcpkg_fixup_cmake_targets(</span><span style="color:#bf616a;">CONFIG_PATH </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">lib/cmake/Alembic</span><span style="color:#c0c5ce;">&quot;)
+</span></code></pre>
+<p>ぽい。 <code>alembic/portfile.cmake</code> を参考にした</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#bf616a;">lib</span><span style="color:#c0c5ce;">/Alembic.dllをbin/Alembic.dllに移動せよ
+debug/lib/Alembic.dllも。
+file(</span><span style="color:#bf616a;">RENAME </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/lib/Alembic.dll ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/bin/Alembic.dll)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">RENAME </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/lib/Alembic.dll ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/bin/Alembic.dll)
+</span></code></pre>
+<p><code>alembic/portfile.cmake</code> を参考にした</p>
+<p>ライセンスファイルをコピーせよ
+エラーメッセージに含まれるとおりに。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">COPY </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_BUILDTREES_DIR</span><span style="color:#c0c5ce;">}/src/alembic-1.7.1/LICENSE.txt </span><span style="color:#bf616a;">DESTINATION </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/share/alembic-hdf)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">RENAME </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/share/alembic-hdf/LICENSE.txt ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/share/alembic-hdf/copyright)
+</span></code></pre>
+<p>exeを削除せよ</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">GLOB </span><span style="color:#c0c5ce;">EXE ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/bin/*.exe)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">GLOB </span><span style="color:#c0c5ce;">DEBUG_EXE ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/bin/*.exe)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">REMOVE </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">EXE</span><span style="color:#c0c5ce;">})
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">REMOVE </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">DEBUG_EXE</span><span style="color:#c0c5ce;">})
+</span></code></pre>
+<p>alembic/portfile.cmakeを参考にした
+おまけ: debug用にpdbをコピー
+alembic/portfile.cmakeを参考にした
+vcpkg_copy_pdbs()</p>
+<p>vcpkg_install_cmakeより下を抜粋。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#bf616a;">vcpkg_install_cmake</span><span style="color:#c0c5ce;">()
+
+</span><span style="color:#65737e;"># Remove debug/include
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">REMOVE_RECURSE </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/include)
+</span><span style="color:#65737e;"># fix *.cmake
+</span><span style="color:#bf616a;">vcpkg_fixup_cmake_targets</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">CONFIG_PATH </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">lib/cmake/Alembic</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#65737e;"># Rename dll
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">RENAME </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/lib/Alembic.dll ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/bin/Alembic.dll)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">RENAME </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/lib/Alembic.dll ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/bin/Alembic.dll)
+</span><span style="color:#65737e;"># Handle copyright
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">COPY </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_BUILDTREES_DIR</span><span style="color:#c0c5ce;">}/src/alembic-1.7.1/LICENSE.txt </span><span style="color:#bf616a;">DESTINATION </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/share/alembic-hdf)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">RENAME </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/share/alembic-hdf/LICENSE.txt ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/share/alembic-hdf/copyright)
+</span><span style="color:#65737e;"># Remove exe files
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">GLOB </span><span style="color:#c0c5ce;">EXE ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/bin/*.exe)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">GLOB </span><span style="color:#c0c5ce;">DEBUG_EXE ${</span><span style="color:#bf616a;">CURRENT_PACKAGES_DIR</span><span style="color:#c0c5ce;">}/debug/bin/*.exe)
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">REMOVE </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">EXE</span><span style="color:#c0c5ce;">})
+</span><span style="color:#96b5b4;">file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">REMOVE </span><span style="color:#c0c5ce;">${</span><span style="color:#bf616a;">DEBUG_EXE</span><span style="color:#c0c5ce;">})
+</span><span style="color:#65737e;"># Copy pdb
+</span><span style="color:#bf616a;">vcpkg_copy_pdbs</span><span style="color:#c0c5ce;">()
+</span></code></pre>
+<p>再度ビルド。</p>
+<p><code>&gt; vcpkg install alembic-hdf:x64-windows</code></p>
+<p>うまくいった。
+USE_HDF5を有効にする
+portfileの修正
+CONTROLに依存追加。
+Build-Depends: ilmbase, hdf5</p>
+<p>USE_HDF5を有効に。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#bf616a;">vcpkg_configure_cmake</span><span style="color:#c0c5ce;">(
+    SOURCE_PATH ${</span><span style="color:#bf616a;">SOURCE_PATH</span><span style="color:#c0c5ce;">}
+    PREFER_NINJA </span><span style="color:#65737e;"># Disable this option if project cannot be built with Ninja
+</span><span style="color:#c0c5ce;">    OPTIONS -DUSE_HDF5=ON
+    </span><span style="color:#65737e;"># OPTIONS_RELEASE -DOPTIMIZE=1
+    # OPTIONS_DEBUG -DDEBUGGABLE=1
+</span><span style="color:#c0c5ce;">)
+</span></code></pre>
+<p>ビルドあんどエラー
+ビルドしてみるがエラーになる。</p>
+<p><code>VCPKG_DIR\buildtrees\alembic-hdf\package-x64-windows-rel-out.log</code> を見て原因を探る。</p>
+<p>hdf5に対するlinkが無くて、hdf5関連のシンボルが見つからん。
+パッチ
+alembic-1.7.1/lib/Alembic/CMakeLists.txtを修正したいのでやり方を調べる。
+パッチの当て方</p>
+<p>portfile.cmakeに記述する。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cmake" data-lang="cmake"><span style="color:#bf616a;">vcpkg_extract_source_archiveよりあと</span><span style="color:#c0c5ce;">、vcpkg_install_cmakeより前。
+vcpkg_apply_patches(
+    SOURCE_PATH ${</span><span style="color:#bf616a;">SOURCE_PATH</span><span style="color:#c0c5ce;">}
+    PATCHES ${</span><span style="color:#bf616a;">CMAKE_CURRENT_LIST_DIR</span><span style="color:#c0c5ce;">}/fix-hdf5link.patch
+)
+</span></code></pre>
+<p>パッチの作り方</p>
+<p>https://github.com/Microsoft/vcpkg/blob/master/docs/examples/patching-libpng.md#patching-the-code-to-improve-compatibility</p>
+<p>なるほど。
+gitを準備して・・・</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">vcpkg&gt; cd ./buildtrees/alembic-hdf/src/alembic-1.7.1/
+vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1&gt; git init
+vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1&gt; git add .
+vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1&gt; git commit -m &quot;temp&quot;
+</span></code></pre>
+<p>修正
+alembic-1.7.1/lib/Alembic/CMakeLists.txtを修正。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-diff" data-lang="diff"><span style="color:#a3be8c;">&gt; git diff
+</span><span style="color:#bf616a;">--git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt
+</span><span style="color:#c0c5ce;">index 5028c91..1f81d50 100644
+--- a/lib/Alembic/CMakeLists.txt
++++ b/lib/Alembic/CMakeLists.txt
+@@ -49,6 +49,12 @@ </span><span style="color:#8fa1b3;">ADD_SUBDIRECTORY(AbcMaterial)
+</span><span style="color:#c0c5ce;"> ADD_SUBDIRECTORY(Ogawa)
+
+ ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})
+</span><span style="color:#a3be8c;">+IF (USE_HDF5)
++    TARGET_LINK_LIBRARIES(Alembic
++        ${HDF5_LIBRARIES}
++        )
++    ADD_DEFINITIONS(-DH5_BUILT_AS_DYNAMIC_LIB)
++ENDIF()
+
+</span><span style="color:#c0c5ce;"> TARGET_INCLUDE_DIRECTORIES(Alembic
+     PUBLIC
+</span></code></pre>
+<p>gitでpatchを作成</p>
+<p><code>&gt; git diff | out-file -enc ascii ..\..\..\..\ports\alembic-hdf\fix-hdf5link.patch</code></p>
+<p>ビルド</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">&gt; .\vcpkg.exe install alembic-hdf:x64-windows
+Installing package alembic-hdf:x64-windows... done
+</span></code></pre>
+<p>VCPKG_DIR/installed/x64-windows/bin/Alembic.dllをdependencywalkerで見てみるとばっちりhdf5.dllへのリンクが含まれている。作業完了。
+はじめてで調べながらでもわりとさくさく作業が進んだ。エラーメッセージの出し方とか、フォルダの構成とかvcpkgなかなかレベルが高いな。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-shell" data-lang="shell"><span style="color:#c0c5ce;">ports
+ports/alembic-hdf/CONTROL
+Source: alembic-hdf
+Version: 1.7.1
+Description: alembic with hdf5
+Build-Depends: ilmbase, hdf5
+</span></code></pre><pre style="background-color:#2b303b;">
+<code class="language-ports/alembic-hdf/portfile.cmake" data-lang="ports/alembic-hdf/portfile.cmake"><span style="color:#c0c5ce;"># Common Ambient Variables:
+#   CURRENT_BUILDTREES_DIR    = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}
+#   CURRENT_PACKAGES_DIR      = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}
+#   CURRENT_PORT_DIR          = ${VCPKG_ROOT_DIR}\ports\${PORT}
+#   PORT                      = current port name (zlib, etc)
+#   TARGET_TRIPLET            = current triplet (x86-windows, x64-windows-static, etc)
+#   VCPKG_CRT_LINKAGE         = C runtime linkage type (static, dynamic)
+#   VCPKG_LIBRARY_LINKAGE     = target library linkage type (static, dynamic)
+#   VCPKG_ROOT_DIR            = &lt;C:\path\to\current\vcpkg&gt;
+#   VCPKG_TARGET_ARCHITECTURE = target architecture (x64, x86, arm)
+#
+
+include(vcpkg_common_functions)
+set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/alembic-1.7.1)
+vcpkg_download_distfile(ARCHIVE
+    URLS &quot;https://github.com/alembic/alembic/archive/1.7.1.tar.gz&quot;
+    FILENAME &quot;1.7.1.tar.gz&quot;
+    SHA512 89e30b681a76eaf79b20ebeff62c495971b0eb64b28f249a14bbcf3bdb40df7eda93b0ede299dd5511bd4587a2cc2d4ebd851fb89bf999fdccc31fee3cffbba2
+)
+vcpkg_extract_source_archive(${ARCHIVE})
+
+vcpkg_apply_patches(
+    SOURCE_PATH ${SOURCE_PATH}
+    PATCHES ${CMAKE_CURRENT_LIST_DIR}/fix-hdf5link.patch
+)
+
+vcpkg_configure_cmake(
+    SOURCE_PATH ${SOURCE_PATH}
+    PREFER_NINJA # Disable this option if project cannot be built with Ninja
+    OPTIONS -DUSE_HDF5=ON
+    # OPTIONS_RELEASE -DOPTIMIZE=1
+    # OPTIONS_DEBUG -DDEBUGGABLE=1
+)
+
+vcpkg_install_cmake()
+
+# Remove debug/include
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+# fix *.cmake
+vcpkg_fixup_cmake_targets(CONFIG_PATH &quot;lib/cmake/Alembic&quot;)
+# Rename dll
+file(RENAME ${CURRENT_PACKAGES_DIR}/lib/Alembic.dll ${CURRENT_PACKAGES_DIR}/bin/Alembic.dll)
+file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/Alembic.dll ${CURRENT_PACKAGES_DIR}/debug/bin/Alembic.dll)
+# Handle copyright
+file(COPY ${CURRENT_BUILDTREES_DIR}/src/alembic-1.7.1/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/alembic-hdf)
+file(RENAME ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/LICENSE.txt ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/copyright)
+# Remove exe files
+file(GLOB EXE ${CURRENT_PACKAGES_DIR}/bin/*.exe)
+file(GLOB DEBUG_EXE ${CURRENT_PACKAGES_DIR}/debug/bin/*.exe)
+file(REMOVE ${EXE})
+file(REMOVE ${DEBUG_EXE})
+# Copy pdb
+vcpkg_copy_pdbs()
+</span></code></pre><pre style="background-color:#2b303b;">
+<code class="language-ports/alembic-hdf/fix-hdf5link.patch" data-lang="ports/alembic-hdf/fix-hdf5link.patch"><span style="color:#c0c5ce;">diff --git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt
+index 5028c91..1f81d50 100644
+--- a/lib/Alembic/CMakeLists.txt
++++ b/lib/Alembic/CMakeLists.txt
+@@ -49,6 +49,12 @@ ADD_SUBDIRECTORY(AbcMaterial)
+ ADD_SUBDIRECTORY(Ogawa)
+ 
+ ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})
++IF (USE_HDF5)
++    TARGET_LINK_LIBRARIES(Alembic 
++        ${HDF5_LIBRARIES}
++        )
++    ADD_DEFINITIONS(-DH5_BUILT_AS_DYNAMIC_LIB)
++ENDIF()
+ 
+ TARGET_INCLUDE_DIRECTORIES(Alembic
+     PUBLIC
+</span></code></pre>
+<p>vcpkgにPR送った
+採用されたので上記の作業は必要なくなったのが、cmake-3.9.0の更新でFindHDF5が壊れるという事態が発生したので対応中…。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

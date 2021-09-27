@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;06&#x2F;17&#x2F;irrlicht-msgpackrpc&#x2F;"> IrrlichtにMsgPackRPCを仕込む 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0617</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>IrrlichtにMsgPackRPCを仕込む
+Oculusの通販ステータスが早くもProcessingに変わって届くのが楽しみな今日この頃。
+レンダリングエンジンにはIrrlichtを選択したのであるが、
+そのままだとシーンを構築するとか諸々の作業がC++直叩きになる。
+これだとさすがに大変なのでMsgPackRPCでラップして外部のツールから
+操作しようと構想しておったのだが始めてみると早速問題に突き当たった。
+オブジェクトを生成してそのメソッドをコールするのにどうすればいいのか。
+こういう場合だ。
+IMesh *mesh=CreateMesh(&quot;miku.pmd&quot;);
+mesh-&gt;SetPosition(0, 0, 5);</p>
+<p>MsgPackRPC経由だと以下のような感じか。</p>
+<h1 id="pythontokasouiuno">pythonとかそういうの</h1>
+<p>client=msgpac.rpc.client()
+mesh=client.call(&quot;CreateMesh&quot;, &quot;miku.pmd&quot;)
+client.call(&quot;Mesh_SetPosition&quot;, mesh, 0, 0, 5)</p>
+<p>1つめのCreateMeshはグローバル関数かシングルトン的オブジェクトのメソッド呼び出しになるので特に問題は無い。
+2つめはSetPositionのthisとしてmeshを送ってやる必要がある。
+ここでmsgpack的にはIMesh*をシリアライズ/デシリアライズすることが必要になる。
+案１ ポインタを整数値としてキャストすればいいじゃない
+template <typename Stream>
+inline packer<Stream>&amp; operator&lt;&lt; (packer<Stream>&amp; o, IMesh *v)
+{
+// ポインタをintにキャスト
+o.pack((int)v);
+return o;
+}</p>
+<p>inline IMesh <em>v operator&gt;&gt; (object o, IMesh</em> v)
+{
+unsigned int p;
+o.convert(&amp;p):</p>
+<pre style="background-color:#2b303b;">
+<code>// intをポインタにキャスト
+v=(IMesh*)p;
+
+return v;
+</code></pre>
+<p>}</p>
+<p>さすがにワイルドすぎる。というかポインタが既に開放されている場合になすすべが無いので没
+案２ 適当にユニークなIDを振る
+template <typename Stream>
+inline packer<Stream>&amp; operator&lt;&lt; (packer<Stream>&amp; o, IMesh *v)
+{
+// ポインタのuid値
+o.pack(v-&gt;uid());
+return o;
+}</p>
+<p>inline IMesh <em>v operator&gt;&gt; (object o, IMesh</em> v)
+{
+unsigned int uid;
+o.convert(&amp;uid):</p>
+<pre style="background-color:#2b303b;">
+<code>// uid値からポインタを得る
+v=IMesh::get_from_uid(uid);
+
+return v;
+</code></pre>
+<p>}</p>
+<p>Irrlichtだと本体側に改造が要るけどこれでいってみるか。
+template<typename T>
+class IDGenerator
+{
+unsigned int m_uid;</p>
+<p>public:
+IDGenerator():m_uid(generate_uid())
+{
+m_uid_map.insert(std::make_pair(m_uid, this));
+}</p>
+<pre style="background-color:#2b303b;">
+<code>unsigned int uid()const 
+{
+    return m_uid;
+}
+</code></pre>
+<p>////////////////////
+// static
+////////////////////
+private:
+static unsigned int m_next_uid=1;
+static std::hash_map&lt;unsigned int, T*&gt; m_uid_map;
+public:
+static unsigned int generate_uid(){ 
+return m_next_uid++; 
+}</p>
+<pre style="background-color:#2b303b;">
+<code>statc T* get_from_uid(unsigned int uid){
+    auto found=m_uid_map.find(uid);
+    if(found==m_uid_map.end()){
+        return 0;
+    }
+    return found-&gt;second;
+}
+</code></pre>
+<p>};</p>
+<p>// 継承階層のIReferenceCountedの下あたりにこんな感じで介入する予定
+class IMesh : public virtual IReferenceCounted, public IDGenerator<IMesh>
+{
+};</p>
+<p>うまくいくかやってみるとしよう。
+書いてみた
+自由に書いてみたらこうなった。templateクラスのスタティックメンバ変数の書き方を学んだ。
+http://d.hatena.ne.jp/higepon/20100803/1280834422
+template<typename T>
+class IDGenerator
+{
+struct Deleter{
+unsigned int m_uid;</p>
+<pre style="background-color:#2b303b;">
+<code>    Deleter(unsigned int uid): m_uid(uid){}
+    ~Deleter(){ remove_from_map(m_uid); }
+};
+Deleter m_deleter;
+unsigned int m_uid;
+</code></pre>
+<p>public:
+IDGenerator():m_uid(generate_uid()), m_deleter(m_uid)
+{
+s_uid_map[m_uid]=this;
+}</p>
+<pre style="background-color:#2b303b;">
+<code>unsigned int uid()const 
+{
+    return m_uid;
+}
+
+////////////////////
+// static
+////////////////////
+</code></pre>
+<p>private:
+static core::map&lt;unsigned int, IDGenerator*&gt; s_uid_map;
+public:
+static unsigned int generate_uid(){ 
+static unsigned int next_uid=1;
+return next_uid++; 
+}</p>
+<pre style="background-color:#2b303b;">
+<code>static T* get_from_uid(unsigned int uid){
+    return s_uid_map.find(uid);
+}
+
+static void remove_from_map(unsigned int uid){
+    s_uid_map.remove(uid);
+}
+</code></pre>
+<p>};
+template <typename T> core::map&lt;unsigned int, IDGenerator<T>*&gt; IDGenerator<T>::s_uid_map;</p>
+<p>しかし、この設計だとstaticメンバがdll境界を越えて２つ存在してうまくいかない罠があった。没
+案3 適当にユニークなIDを振る(非テンプレート)
+irr::IReferenceCountedを改造する。
+小賢しいtemplateをやめてべたにグローバル変数を隠蔽する方式を導入した。
+class IReferenceCounted
+{
+public:</p>
+<pre style="background-color:#2b303b;">
+<code>//! Constructor.
+IReferenceCounted()
+    : DebugName(0), ReferenceCounter(1), UID(get_uid())
+{
+    register_uid(UID, this);
+}
+
+u32 uid(){ return UID; }
+
+//! Destructor.
+virtual ~IReferenceCounted()
+{
+    unregister_uid(UID);
+}
+</code></pre>
+<p>// 省略</p>
+<p>};</p>
+<p>#include &quot;IDGenerator.h&quot;
+#include &quot;IReferenceCounted.h&quot;
+#include &quot;irrMap.h&quot;</p>
+<p>namespace irr {</p>
+<pre style="background-color:#2b303b;">
+<code>extern &quot;C&quot; IRRLICHT_API u32 get_uid()
+{
+    static u32 uid=1;
+    return uid++;
+}
+
+static core::map&lt;u32, IReferenceCounted*&gt; g_map;
+
+extern &quot;C&quot; IRRLICHT_API void register_uid(u32 uid, IReferenceCounted *p)
+{
+    g_map.set(uid, p);
+}
+
+extern &quot;C&quot; IRRLICHT_API void unregister_uid(u32 uid)
+{
+    auto found=g_map.remove(uid);
+}
+
+extern &quot;C&quot; IRRLICHT_API IReferenceCounted* get_from_uid(u32 uid)
+{
+    auto found=g_map.find(uid);
+    if(!found){
+        return 0;
+    }
+    return found-&gt;getValue();
+}
+</code></pre>
+<p>}</p>
+<p>動作確認できた。
+ここまでの作業でMsgPackRPCを使ったIrrlichtエクスポートについて見通しを得ることができた。
+PythonやLuaから使えるようにするのと同じような作業でリモートから関数をコールできるようになるのでいい感じだ。
+呼び出し側にPythonのMsgPackRPCを使えば違う言語からでも呼び出せるので一石二鳥というもの。
+ということで引き続き作業を進める。
+MsgPackRPCのリモート呼び出しを利用したシーンエディタを作りながら表示できるものを増やしていく。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/06/17/irrlicht-msgpackrpc/#pythontokasouiuno">pythonとかそういうの</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;11&#x2F;28&#x2F;pathogen-vim&#x2F;"> vim環境整備 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">1128</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>vim環境整備
+Windows8でコーディングができるようにvim回りを整備する。
+コマンドライン環境としてPowerShellを採用してそこからvim(gvim)する方向性。
+前の日記を整理して書き直し。
+PowerShellを使えるようにしてvimとgitをインストールする
+PowerShellを管理者権限で実行して以下のように実行する。
+powershell&gt; Set-ExecutionPolicy RemoteSigned</p>
+<p>パッケージ管理として Chocolatey
+をインストール。dos窓で以下のように実行する。
+dos&gt; @powershell -NoProfile -ExecutionPolicy unrestricted -Command &quot;iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))&quot; &amp;&amp; SET PATH=%PATH%;%systemdrive%\chocolatey\bin</p>
+<p>powershellの設定ファイル作成する。shellの.profileに相当するファイル。</p>
+<p>C:/Users/<em>USER_NAME</em>/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1</p>
+<p>とりあえずwhichコマンド的な関数を書いておく
+function which([string] $command=$(throw &quot;need command name&quot;)){
+$Env:Path.Split(&quot;;&quot;) | %{ ls $_  2&gt; $null } | ?{ $<em>.Name -match &quot;^$command&quot; } | % { $</em>.FullName }
+} </p>
+<p>改めてPowerShellを起動してchocolateyでvimをインストールする
+powershell&gt; cinst vim</p>
+<p>gitも入れる。
+powershell&gt; cinst git</p>
+<p>cinstの実行直後はいろいろPathが通っていなかったりして使えない場合があるのでその場合はpowershellを再起動。
+vimを整備する
+NerdTreeを入れようと思ったらpathogen.vim使えと書いてあったのでpathogen.vim入れる。
+powershell&gt; cd $HOME
+powershell&gt; mkdir vimfiles
+powershell&gt; cd vimfiles
+powershell&gt; mkdir autoload, bundle
+powershell&gt; git init</p>
+<p>pathogen.vim
+を入れる。downloadしてvimfiles/autoload/pathogen.vimに保存する。
+powershell&gt; git add .
+powershell&gt; git commit -m init</p>
+<p>とりあえずgitに登録した。
+_vimrc
+execute pathogen#infect()
+syntax on
+filetype plugin indent on</p>
+<p>colorscheme darkblue</p>
+<p>set hidden
+set nobackup</p>
+<p>_gvimrc
+colorscheme desert</p>
+<p>set iminsert=0
+set imsearch=-1
+set visualbell t_vb=</p>
+<p>set columns=100
+set lines=56</p>
+<p>NerdTree
+NerdTree をgit
+submoduleとしてインストールする。
+powershell&gt; cd vimfiles/bundle
+powershell&gt; git submodule add https://github.com/scrooloose/nerdtree.git</p>
+<p>以上でvim環境が始動した。
+追記
+WindowsだとNerdTreeの[m]キーのメニューにcopyが出ない問題があったがstackoverflowに
+原因と解決方法が書いてあった。
+http://stackoverflow.com/questions/11269926/nerdtree-copy-command-in-windows-7</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

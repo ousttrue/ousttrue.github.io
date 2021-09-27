@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;luv&#x2F;"> luv 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0729</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lua&#x2F;">lua</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>main loop がブロックするので luv を取り入れてみる。</p>
+<p><a href="https://github.com/luvit/luv">https://github.com/luvit/luv</a></p>
+<h1 id="cmake-de-build">cmake で build</h1>
+<p>luv に CMake が付属しており簡単。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">$ cmake -S {LUV_DIR} -B {BUILD_DIR}</span><span style="color:#c0c5ce;">
+$ cmake --build {BUILD_DIR} --config Release</span><span style="color:#c0c5ce;">
+</span></code></pre><h1 id="main-loop-wo-idle-he">main loop を idle へ</h1>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#65737e;">-- Main loop</span><span style="color:#65737e;">
+</span><span style="color:#b48ead;">while </span><span style="color:#bf616a;">app</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">new_frame</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">do</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">gui</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">update</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">app</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">render</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">gui</span><span style="color:#c0c5ce;">.clear_color)</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">end</span><span style="color:#c0c5ce;">
+</span></code></pre><pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#b48ead;">local </span><span style="color:#bf616a;">uv </span><span style="color:#c0c5ce;">= </span><span style="color:#96b5b4;">require</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">luv</span><span style="color:#c0c5ce;">&quot;)</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">-- Main loop</span><span style="color:#65737e;">
+</span><span style="color:#b48ead;">local </span><span style="color:#bf616a;">idle </span><span style="color:#c0c5ce;">= </span><span style="color:#bf616a;">uv</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">new_idle</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">idle</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">start</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">function</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">not </span><span style="color:#bf616a;">app</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">new_frame</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">then</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">idle</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">stop</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">end</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">gui</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">update</span><span style="color:#c0c5ce;">()</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">app</span><span style="color:#c0c5ce;">:</span><span style="color:#bf616a;">render</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">gui</span><span style="color:#c0c5ce;">.clear_color)</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">end</span><span style="color:#c0c5ce;">)</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">uv</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">run</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">default</span><span style="color:#c0c5ce;">&quot;)</span><span style="color:#c0c5ce;">
+</span></code></pre><h1 id="zhong-ichu-li-wo-thread-he">重い処理を thread へ</h1>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">local </span><span style="color:#bf616a;">ctx </span><span style="color:#c0c5ce;">= </span><span style="color:#bf616a;">uv</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">new_work</span><span style="color:#c0c5ce;">(</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">on_thread</span><span style="color:#c0c5ce;">, </span><span style="color:#65737e;">--work,in threadpool</span><span style="color:#65737e;">
+        </span><span style="color:#bf616a;">on_end </span><span style="color:#65737e;">--after work, in loop thread</span><span style="color:#65737e;">
+    </span><span style="color:#c0c5ce;">)</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">uv</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">queue_work</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">ctx</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">mp</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">pack</span><span style="color:#c0c5ce;">({ </span><span style="color:#d08770;">... </span><span style="color:#c0c5ce;">}))</span><span style="color:#c0c5ce;">
+</span></code></pre><pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">Error: thread arg not support type &#39;table&#39; at 2Error: thread arg not support type table at 1Uncaught Error: attempt to call a nil value</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>あ</p>
+<h1 id="thread-jian-deshou-kedu-sinodekiruxing">thread 間で受け渡しのできる型</h1>
+<ul>
+<li><a href="https://github.com/luvit/luv/blob/master/docs.md#pseudo-types">https://github.com/luvit/luv/blob/master/docs.md#pseudo-types</a></li>
+</ul>
+<blockquote>
+<p>threadargs: variable arguments (...) of type nil, boolean, number, string, or userdata</p>
+</blockquote>
+<p>nvim ではそこで messagepack なわけか。</p>
+<p><a href="https://tullio.hatenablog.com/entry/20121112/1352732239">Kyoto Tycoon+Lua-JIT拡張+MessagePack=無敵</a> 経由で <a href="https://gist.github.com/catwell/2971290">The state of MessagePack in Lua</a> をたどり着く。</p>
+<blockquote>
+<p>If you want pure LuaJIT -&gt; luajit-msgpack-pure</p>
+</blockquote>
+<p>たしかに、これだ。</p>
+<p><a href="https://github.com/catwell/luajit-msgpack-pure">https://github.com/catwell/luajit-msgpack-pure</a></p>
+<ul>
+<li>Windows なので <code>malloc</code>, <code>free</code>, <code>realloc</code> が cdef できなかったのを修正</li>
+<li><code>function</code> と <code>cdata</code> を nil にしてスキップする処理を追加してみた</li>
+</ul>
+<p>結果、巨大なテーブルの pack/unpack でブロックしてしまう。
+あとスレッド側のエラーハンドリングをしてないので、デバッガはアタッチできないし、何もわからない。
+<code>pcall</code> などでエラーメッセージを取得して、失敗した場合はエラーメッセージを投げるようにしてあげる必要がある。</p>
+<p>なんとなく、使い方はわかった。
+後で、アニメーションシステムを実装するときのインフラにも使えるかもしれない。
+OpenGL のレンダースレッドと、シーン更新を分離する。</p>
+<h1 id="guan-lian">関連</h1>
+<ul>
+<li><a href="https://kimitok.hateblo.jp/entry/2014/04/16/223643">node.jsを支えるlibuvのチュートリアル&quot;uvbook&quot; :スレッド</a></li>
+<li><a href="https://nikhilm.github.io/uvbook/threads.html">https://nikhilm.github.io/uvbook/threads.html</a></li>
+</ul>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luv/#cmake-de-build">cmake で build</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luv/#main-loop-wo-idle-he">main loop を idle へ</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luv/#zhong-ichu-li-wo-thread-he">重い処理を thread へ</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luv/#thread-jian-deshou-kedu-sinodekiruxing">thread 間で受け渡しのできる型</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luv/#guan-lian">関連</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;06&#x2F;02&#x2F;gstreamer&#x2F;"> Gstreamerを始めてみた 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0611</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>動画プログラムでもしてみようということでGstreamerをはじめた。</p>
+<p>#Hello world
+まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。</p>
+<p>Basic
+tutorials http://docs.gstreamer.com/display/GstSDK/Basic+tutorials をやってみる</p>
+<p>最初のコードをc++に改造しやすいようにちょっと変更。</p>
+<p>::
+#include &lt;gst/gst.h&gt;</p>
+<p>int main(int argc, char *argv[]) 
+{
+gst_init (&amp;argc, &amp;argv);</p>
+<pre style="background-color:#2b303b;">
+<code>{
+    GstElement *pipeline = gst_parse_launch (
+            &quot;playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm&quot;, 
+            NULL);
+
+    gst_element_set_state (pipeline, GST_STATE_PLAYING);
+    {
+        GstBus *bus = gst_element_get_bus (pipeline);
+        {
+            GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, 
+                    static_cast&lt;GstMessageType&gt;(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+            if (msg != NULL){
+                gst_message_unref (msg);
+            }
+        }
+        gst_object_unref (bus);
+    }
+
+    gst_element_set_state (pipeline, GST_STATE_NULL);
+    gst_object_unref (pipeline);
+}
+
+return 0;
+</code></pre>
+<p>}</p>
+<p>build $ gcc 'pkg-config gstreamer-0.10 --cflags --libs' main.c
+動いた。
+gstreamermmでやってみる</p>
+<p>https://developer.gnome.org/gstreamermm/0.10/</p>
+<p>::
+#include &lt;gstreamermm.h&gt;</p>
+<p>int main(int argc, char *argv[]) 
+{
+Gst::init();</p>
+<pre style="background-color:#2b303b;">
+<code>{
+    auto pipeline = Gst::Parse::launch (
+            &quot;playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm&quot;);
+
+    pipeline-&gt;set_state(Gst::STATE_PLAYING);
+    {
+        auto bus = pipeline-&gt;get_bus();
+        auto msg = bus-&gt;pop(Gst::CLOCK_TIME_NONE, 
+                static_cast&lt;Gst::MessageType&gt;(
+                    Gst::MESSAGE_ERROR 
+                    | Gst::MESSAGE_EOS));
+    }
+    pipeline-&gt;set_state(Gst::STATE_NULL);
+}
+
+return 0;
+</code></pre>
+<p>}</p>
+<p>build
+$ g++ -std=c++0x 'pkg-config gstreamermm-0.10 --cflags --libs' main.cpp
+unrefが省略できるのと、method呼び出しの記述方法がかわるのでコードがシンプルになる。
+C版から翻訳するのに少し手間がかかるが、ほぼ機械的に変更するだけなのでこちらでいってみる。
+2
+::
+#include &lt;gstreamermm.h&gt;</p>
+<p>int main(int argc, char *argv[]) 
+{
+Gst::init();</p>
+<pre style="background-color:#2b303b;">
+<code>auto source = Gst::ElementFactory::create_element(&quot;videotestsrc&quot;, &quot;source&quot;);
+auto sink = Gst::ElementFactory::create_element(&quot;autovideosink&quot;, &quot;sink&quot;);
+auto pipeline = Gst::Pipeline::create(&quot;test-pipeline&quot;);
+if (!pipeline || !source || !sink) {
+    g_printerr (&quot;Not all elements could be created.\n&quot;);
+    return -1;
+}
+auto filter=Gst::ElementFactory::create_element(&quot;vertigotv&quot;, &quot;vertigotv_filter&quot;);
+if(!filter){
+    return -1;
+}
+auto filter2=Gst::ElementFactory::create_element(&quot;ffmpegcolorspace&quot;, &quot;color_filter&quot;);
+if(!filter2){
+    return -1;
+}
+
+/* Build the pipeline */
+pipeline-&gt;add(source);
+pipeline-&gt;add(sink);
+pipeline-&gt;add(filter);
+pipeline-&gt;add(filter2);
+if(!source-&gt;link(filter)){
+    g_printerr (&quot;Elements could not be linked.\n&quot;);
+    return -1;
+}
+if(!filter-&gt;link(filter2)){
+    g_printerr (&quot;Elements could not be linked.\n&quot;);
+    return -1;
+}
+if(!filter2-&gt;link(sink)){
+    g_printerr (&quot;Elements could not be linked.\n&quot;);
+    return -1;
+}
+
+/* Modify the source's properties */
+source-&gt;set_property(&quot;pattern&quot;, 0);
+
+/* Start playing */
+if (!pipeline-&gt;set_state(Gst::STATE_PLAYING)) {
+    g_printerr (&quot;Unable to set the pipeline to the playing state.\n&quot;);
+    return -1;
+}
+
+/* Wait until error or EOS */
+auto bus = pipeline-&gt;get_bus ();
+auto msg = bus-&gt;pop(Gst::CLOCK_TIME_NONE, 
+        Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);
+
+/* Parse message */
+if (msg) {
+
+    switch (msg-&gt;get_message_type()) {
+        case Gst::MESSAGE_ERROR:
+            {
+                Glib::Error err;
+                std::string debug_info;
+                Gst::MessageError(msg-&gt;gobj_copy()).parse(err, debug_info);
+                g_printerr (&quot;Error received from element %s: %s\n&quot;, 
+                        msg-&gt;get_source()-&gt;get_name().c_str(), 
+                        err.what().c_str());
+                g_printerr (&quot;Debugging information: %s\n&quot;, debug_info.c_str());
+            }
+            break;
+
+        case Gst::MESSAGE_EOS:
+            g_print (&quot;End-Of-Stream reached.\n&quot;);
+            break;
+
+        default:
+            /* We should not reach here because we only asked for ERRORs and EOS */
+            g_printerr (&quot;Unexpected message received.\n&quot;);
+            break;
+    }
+}
+
+pipeline-&gt;set_state(Gst::STATE_NULL);
+
+return 0;
+</code></pre>
+<p>}</p>
+<p>3
+::
+#include &lt;gstreamermm.h&gt;</p>
+<p>struct CustomData 
+{
+Glib::RefPtr&lt; Gst::Pipeline &gt; pipeline;
+Glib::RefPtr&lt; Gst::Element &gt; source;
+Glib::RefPtr&lt; Gst::Element &gt; convert;
+Glib::RefPtr&lt; Gst::Element &gt; sink;
+};</p>
+<p>// Handler for the pad-added signal
+static void pad_added_handler (
+const Glib::RefPtr<a href="Gst::Pad">Gst::Pad</a> &amp;new_pad, 
+CustomData *data)
+{
+auto sink_pad = data-&gt;convert-&gt;get_static_pad(&quot;sink&quot;);</p>
+<pre style="background-color:#2b303b;">
+<code>g_print (&quot;Received new pad '%s'\n&quot;, 
+        new_pad-&gt;get_name().c_str());
+
+/* If our converter is already linked, we have nothing to do here */
+if (sink_pad-&gt;is_linked ()) {
+    g_print (&quot;  We are already linked. Ignoring.\n&quot;);
+    return;
+}
+
+/* Check the new pad's type */
+auto new_pad_caps = new_pad-&gt;get_caps ();
+auto new_pad_struct = new_pad_caps-&gt;get_structure (0);
+std::string new_pad_type = new_pad_struct.get_name();
+if (new_pad_type.find(&quot;audio/x-raw&quot;)==std::string::npos) {
+    g_print (&quot;  It has type '%s' which is not raw audio. Ignoring.\n&quot;, 
+            new_pad_type.c_str());
+    return;
+}
+
+/* Attempt the link */
+if (!new_pad-&gt;link(sink_pad)) {
+    g_print (&quot;  Type is '%s' but link failed.\n&quot;, new_pad_type.c_str());
+} 
+else {
+    g_print (&quot;  Link succeeded (type '%s').\n&quot;, new_pad_type.c_str());
+}
+</code></pre>
+<p>}</p>
+<p>int main(int argc, char *argv[]) 
+{
+Gst::init();</p>
+<pre style="background-color:#2b303b;">
+<code>CustomData data;
+data.source = Gst::ElementFactory::create_element (&quot;uridecodebin&quot;, &quot;source&quot;);
+data.convert = Gst::ElementFactory::create_element (&quot;audioconvert&quot;, &quot;convert&quot;);
+data.sink = Gst::ElementFactory::create_element (&quot;autoaudiosink&quot;, &quot;sink&quot;);
+data.pipeline = Gst::Pipeline::create (&quot;test-pipeline&quot;);
+
+if (!data.pipeline || !data.source || !data.convert || !data.sink) {
+    g_printerr (&quot;Not all elements could be created.\n&quot;);
+    return -1;
+}
+
+/* Build the pipeline. Note that we are NOT linking the source at this
+ *    * point. We will do it later. */
+data.pipeline-&gt;add(data.source);
+data.pipeline-&gt;add(data.convert);
+data.pipeline-&gt;add(data.sink);
+if (!data.convert-&gt;link(data.sink)) {
+    g_printerr (&quot;Elements could not be linked.\n&quot;);
+    return -1;
+}
+
+/* Set the URI to play */
+data.source-&gt;set_property(
+        &quot;uri&quot;, 
+        Glib::ustring(&quot;http://docs.gstreamer.com/media/sintel_trailer-480p.webm&quot;)
+        );
+
+/* Connect to the pad-added signal */
+data.source-&gt;signal_pad_added().connect([&amp;data](
+            const Glib::RefPtr&lt;Gst::Pad&gt; &amp;pad)
+        {
+        pad_added_handler(pad, &amp;data);
+        });
+
+/* Start playing */
+if (!data.pipeline-&gt;set_state(Gst::STATE_PLAYING)) {
+    g_printerr (&quot;Unable to set the pipeline to the playing state.\n&quot;);
+    return -1;
+}
+
+/* Listen to the bus */
+auto bus = data.pipeline-&gt;get_bus();
+gboolean terminate = FALSE;
+do {
+    auto msg = bus-&gt;pop(Gst::CLOCK_TIME_NONE,
+            Gst::MESSAGE_STATE_CHANGED | Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);
+
+    /* Parse message */
+    if (msg) {
+
+        switch (msg-&gt;get_message_type()) {
+            case Gst::MESSAGE_ERROR:
+                {
+                    Glib::Error err;
+                    std::string debug_info;
+                    Gst::MessageError(msg-&gt;gobj_copy()).parse(err, debug_info);
+                    g_printerr (&quot;Error received from element %s: %s\n&quot;, 
+                            msg-&gt;get_source()-&gt;get_name().c_str(),
+                            err.what().c_str());
+                    g_printerr (&quot;Debugging information: %s\n&quot;, debug_info.c_str());
+                    terminate = TRUE;
+                }
+                break;
+
+            case Gst::MESSAGE_EOS:
+                g_print (&quot;End-Of-Stream reached.\n&quot;);
+                terminate = TRUE;
+                break;
+
+            case Gst::MESSAGE_STATE_CHANGED:
+                /* We are only interested in state-changed messages from the pipeline */
+                if (msg-&gt;get_source() == data.pipeline) {
+                    Gst::State old_state;
+                    Gst::State new_state;
+                    Gst::State pending_state;
+                    Gst::MessageStateChanged(msg-&gt;gobj_copy()).parse(
+                            old_state, new_state, pending_state);
+                    g_print (&quot;Pipeline state changed from %s to %s:\n&quot;,
+                            typeid(old_state).name(),
+                            typeid(new_state).name());
+                }
+                break;
+            default:
+                /* We should not reach here */
+                g_printerr (&quot;Unexpected message received.\n&quot;);
+                break;
+        }
+    }
+} while (!terminate);
+
+/* Free resources */
+data.pipeline-&gt;set_state(Gst::STATE_NULL);
+return 0;
+</code></pre>
+<p>}</p>
+<p>.. categories:: programming
+.. taxonomies: {tags: : cpp, gstreamer}</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

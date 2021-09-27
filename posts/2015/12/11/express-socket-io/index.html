@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2015&#x2F;12&#x2F;11&#x2F;express-socket-io&#x2F;"> Socket.IOな実験環境 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2015</div>
+        <div class="md">1211</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>Socket.IOを実験する環境のメモ。</p>
+<p>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
+coffee-scriptは無しでES6要素をなるべく入れる
+Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</p>
+<p>https://github.com/ousttrue/sio_sample
+Project生成</p>
+<blockquote>
+<p>mkdir sio_sample
+cd sio_sample
+sio_sample&gt; npm init -y
+sio_sample&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D
+sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</p>
+</blockquote>
+<p>vscodeでes6を使えるように
+jsconifg.json
+{
+&quot;compilerOptions&quot;: {
+&quot;target&quot;: &quot;ES6&quot;
+}
+}</p>
+<p>後で拡張できるように以下のようなディレクトリ構成にする。
+build &lt;- srcから(加工して)コピーされる</p>
+<p>src &lt;- 加工前のファイル置き場
++ server
++ app.js
++ client
++ index.html
++ index.js</p>
+<p>src/server/app.js
+&quot;use strict&quot;;</p>
+<p>const http = require('http');
+const express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+.use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+const socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+console.log('a client connected %s', socket);
+socket.on('disconnect', () =&gt; {
+console.log('a client disconnected');
+});
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.html</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="index.js"></script>
+</head>
+<body>
+    <div id="target"></div>
+</body>
+</html>
+<p>src/client/index.js
+&quot;use strict&quot;;</p>
+<p>function setup(target) {
+const div = document.createElement('div');
+div.appendChild(document.createTextNode('onLoad'));
+target.appendChild(div);
+}</p>
+<p>window.onload = () =&gt; {</p>
+<pre style="background-color:#2b303b;">
+<code>setup(document.getElementById('target'));
+</code></pre>
+<p>};</p>
+<p>srcからbuildに展開するgulp
+gulpfile.js
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();</p>
+<p>const config = {
+server_src: './src/server/<strong>/*',
+server_dst: './build',
+client_src: './src/client/</strong>/*',
+client_dst: './build/public'
+};</p>
+<p>gulp.task('server', () =&gt; {
+gulp.src(config.server_src)
+.pipe(gulp.dest(config.server_dst));
+});</p>
+<p>gulp.task('client', () =&gt; {
+gulp.src(config.client_src)
+.pipe(gulp.dest(config.client_dst));
+});</p>
+<p>gulp.task('default', ['server', 'client']);</p>
+<p>build
+sio_sample&gt; gulp</p>
+<p>ブラウザで動いた。
+browserSync導入
+gulpfile.js。browserSync
+const config = { // 追加分
+app_entry: './build/app.js',
+app_port: 5000,<br />
+};</p>
+<p>const browserSync = require('browser-sync').create();
+gulp.task('serve', ()=&gt;{
+$.nodemon({
+script: config.app_entry,
+exp: 'js',
+ignore: [],
+env: {
+port: config.app_port
+}
+})
+.on('readable', ()=&gt;{
+this.stdout.on('data', (chunk)=&gt;{
+if (/^start /.test(chunk)){
+console.log('reloading...');
+browserSync.reload();
+}
+process.stdout.write(chunk)
+});
+});
+});</p>
+<p>gulp.task('browser-sync', ['serve'], ()=&gt;{
+browserSync.init({
+proxy: 'localhost:' + config.app_port,
+port: 3000,
+ws: true
+})
+});</p>
+<p>gulpfile.js。watchタスク追加
+gulp.task('server', () =&gt; {
+gulp.src(config.server_src)
+.pipe(gulp.dest(config.server_dst))
+.pipe(browserSync.stream())
+;
+});</p>
+<p>gulp.task('client', () =&gt; {
+gulp.src(config.client_src)
+.pipe(gulp.dest(config.client_dst))
+.pipe(browserSync.stream())
+;
+});</p>
+<p>gulp.task('build', ['server', 'client']);</p>
+<p>gulp.task('watch', ['build', 'browser-sync'], ()=&gt;{
+gulp.watch(config.server_src, ['server']);
+gulp.watch(config.client_src, ['client']);
+});</p>
+<p>gulp.task('default', ['watch']);</p>
+<p>git
+いったんgitに登録しよう。
+.gitignore
+/node_modules/
+/build/</p>
+<p>Socket.IOの疎通</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>    
+    <script src="index.js"></script>
+</head>
+<body>
+    <div id="target"></div>
+</body>
+</html>
+<p>&quot;use strict&quot;;</p>
+<p>function setup(target) {
+const div = document.createElement('div');
+div.appendChild(document.createTextNode('hello'));
+target.appendChild(div);</p>
+<pre style="background-color:#2b303b;">
+<code>this.socket = io.connect();
+</code></pre>
+<p>}</p>
+<p>window.onload = () =&gt; {
+setup(document.getElementById('target'));
+};</p>
+<p>typescript導入
+sio_sample&gt; tsc --init</p>
+<p>tsconfig.json
+{
+&quot;compilerOptions&quot;: {
+&quot;module&quot;: &quot;commonjs&quot;,
+&quot;target&quot;: &quot;es5&quot;,
+&quot;noImplicitAny&quot;: true,
+&quot;outDir&quot;: &quot;.&quot;,
+&quot;rootDir&quot;: &quot;.&quot;,
+&quot;sourceMap&quot;: false
+},
+&quot;exclude&quot;: [
+&quot;node_modules&quot;
+]
+}</p>
+<p>sio_sample&gt; npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D
+sio_sample&gt; cd src
+sio_sample/src&gt; tsd init
+sio_sample/src&gt; tsd query node express socket.io -rosa install</p>
+<p>gulpfile.js。typescriptのコンパイルを追加
+const path = require('path');
+const tsconfig = require('./tsconfig.json');
+const isTypescript = (file) =&gt; {
+const ext = path.extname(file.path).toLowerCase();
+return ext === '.ts';
+}</p>
+<p>gulp.task('server', () =&gt; {
+gulp.src(config.server_src)
+.pipe($.plumber())
+.pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+.pipe($.debug('server'))
+.pipe(gulp.dest(config.server_dst))
+.pipe(browserSync.stream())
+;
+});</p>
+<p>gulp.task('client', () =&gt; {
+gulp.src(config.client_src)
+.pipe($.plumber())
+.pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+.pipe($.debug('client'))
+.pipe(gulp.dest(config.client_dst))
+.pipe(browserSync.stream())
+;
+});</p>
+<p>src/server/app.jsをapp.tsにリネーム
+/// <reference path="../typings/tsd.d.ts" />
+&quot;use strict&quot;;</p>
+<p>import http = require('http');
+import express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+.use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+var clientAddress=socket.client.conn.remoteAddress;
+console.log('connected: %s', clientAddress);
+socket.on('disconnect', () =&gt; {
+console.log('disconnected: %s', clientAddress);
+});
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.jsをindex.tsにリネーム
+/// <reference path="../typings/tsd.d.ts" />
+&quot;use strict&quot;;</p>
+<p>declare module io {
+export function connect(): SocketIO.Socket;
+}</p>
+<p>function setup(target: Element) {
+const div = document.createElement('div');
+div.appendChild(document.createTextNode('hello socket.io'));
+target.appendChild(div);</p>
+<pre style="background-color:#2b303b;">
+<code>this.socket = io.connect();
+</code></pre>
+<p>}</p>
+<p>window.onload = () =&gt; {</p>
+<pre style="background-color:#2b303b;">
+<code>setup(document.getElementById('target'));
+</code></pre>
+<p>};</p>
+<p>メッセージをやり取り
+src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行
+// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+var clientAddress = socket.client.conn.remoteAddress;
+console.log('connected: %s', clientAddress);
+socket.on('disconnect', () =&gt; {
+console.log('disconnected: %s', clientAddress);
+});</p>
+<pre style="background-color:#2b303b;">
+<code>socket.on('client-message', (data: any) =&gt; {
+    socket.emit('server-message', 'server clicked message');
+});
+</code></pre>
+<p>});</p>
+<p>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画
+/// <reference path="../typings/tsd.d.ts" />
+&quot;use strict&quot;;</p>
+<p>declare module io {
+export function connect(): SocketIO.Socket;
+}</p>
+<p>class Client {
+socket: SocketIO.Socket;</p>
+<pre style="background-color:#2b303b;">
+<code>constructor() {
+    this.socket = io.connect();
+}
+
+setup(target: Element) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello socket.io'));
+    target.appendChild(div);
+    
+    this.socket.on('server-message', (data: any)=&gt;{
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(data.toString()));
+        target.appendChild(div);
+    });
+    
+    const button=document.createElement('button');
+    button.appendChild(document.createTextNode('send'));
+    button.onclick=(ev: MouseEvent)=&gt;{
+        this.socket.emit('client-message', 'clicked');
+    };
+    target.appendChild(button);
+}
+</code></pre>
+<p>}
+var client=new Client();</p>
+<p>window.onload = () =&gt; {</p>
+<pre style="background-color:#2b303b;">
+<code>client.setup(document.getElementById('target'));
+</code></pre>
+<p>};</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

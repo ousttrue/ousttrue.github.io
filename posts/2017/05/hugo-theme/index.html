@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;05&#x2F;hugo-theme&#x2F;"> Hugoのテーマ作り 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0505</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;hugo&#x2F;">hugo</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>hugoの仕組みも気になることだし作ってみることにした。</p>
+<p>Hugoのテーマを何個か作ったので知見をまとめてみる
+https://gohugo.io/tutorials/creating-a-new-theme/</p>
+<p>新しくテーマを作る
+$ hugo new theme hoge</p>
+<p>themes/hogeにテーマのテンプレートが作成される。
+３つのテンプレート
+layout/index.html</p>
+<!DOCTYPE html>
+<html>
+<body>
+  {{- range first 10 .Data.Pages }}
+    <h4><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
+  {{- end }}
+</body>
+</html>
+<p>layout/_default/single.html</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ .Title }}</title>
+</head>
+<body>
+  <h1>{{ .Title }}</h1>
+  <h6>{{ .Date.Format "Mon, Jan 2, 2006" }}</h6>
+  {{ .Content }}
+  <h4><a href="{{ .Site.BaseURL }}">Home</a></h4>
+</body>
+</html>
+<p>layout/_default/list.html</p>
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Articles</h1>
+  {{- range first 10 .Data.Pages }}
+    <h4><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
+  {{- end }}
+  <h4><a href="{{ .Site.BaseURL }}">Home</a></h4>
+</body>
+</html>
+<p>partial導入
+layout/_default/header.html
+layout/_default/footer.html
+bootstrap</p>
+<p>http://getbootstrap.com/</p>
+<p>2column
+sticky-footer
+tags</p>
+<p>http://text.baldanders.info/hugo/section/
+http://text.baldanders.info/hugo/categories-and-tags-list/</p>
+<p>付ける
+frontmatterに
+taxonomies.tags = [&quot;hugo&quot;]</p>
+<p>のように書く。よくわからないがアルファベットの大文字は避けた方がよさげ。マルチバイト文字はOKぽい。
+single
+.Params.tagsに格納されているので以下のようにして使う
+{{ range .Params.tags }}
+<a href="/tags/{{ . | urlize }}/">{{ . }}</a>
+{{ end }}</p>
+<p>list
+.Data.Pagesを列挙して中から取り出せる
+{{ range .Data.Pages }}
+<hr>
+{{ range .Params.tags }}
+<a href="/tags/{{ . | urlize }}/">{{ . }}</a>
+{{ end }}
+{{ end}}</p>
+<p>サイトのタグ一覧</p>
+<p>Hugoでwebサイト構築(12) タグの列挙
+https://gohugo.io/taxonomies/ordering/</p>
+<p>{{ range $name, $value := $.Site.Taxonomies.Alphabetical }}
+<li>
+<a href="{{ $.Site.BaseURL }}/tags/{{ $name }}/">
+<div><span class="badge">{{ .Count }}</span>{{ $name }}</div>
+</a>
+</li>
+{{ end }}</p>
+<p>pagination</p>
+<p>http://wdkk.co.jp/note/2015/0915-hugo-pagination/
+https://gohugo.io/extras/pagination/</p>
+<p>more</p>
+<p>https://gohugo.io/content/summaries/</p>
+<p>目次</p>
+<p>https://gohugo.io/extras/toc/</p>
+<p>syntax highlight</p>
+<p>https://gohugo.io/extras/highlighting/</p>
+<p>prev/next</p>
+<p>http://qiita.com/y_hokkey/items/f9d8b66b3770a82d4c1c#%E5%89%8D%E3%81%AE%E8%A8%98%E4%BA%8B%E6%AC%A1%E3%81%AE%E8%A8%98%E4%BA%8B%E3%81%B8%E3%81%AE%E3%83%8A%E3%83%93%E3%82%B2%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3</p>
+<p>作業中
+あまりかっこよくならんね…。
+とりあえず読めるようにはなってきた。
+まぁ、見易さ優先で。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

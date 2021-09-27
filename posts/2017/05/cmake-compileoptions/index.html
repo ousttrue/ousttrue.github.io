@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;05&#x2F;cmake-compileoptions&#x2F;"> cmakeチートシート 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0528</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cmake&#x2F;">cmake</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>すぐ忘れるのでここをチートシート化しよう。</p>
+<p>構成
+solution
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(hello) # .sln</p>
+<p>subdirectory</p>
+<p>https://cmake.org/cmake/help/latest/command/add_subdirectory.html</p>
+<p>ADD_SUBDIRECTORY(src)</p>
+<h1 id="mosikuha">もしくは</h1>
+<p>SUBDIRS(FOO BAR HOGE FUGA)</p>
+<p>target
+exe</p>
+<p>https://cmake.org/cmake/help/latest/command/add_executable.html</p>
+<p>ADD_EXECUTABLE(hello
+main.cpp
+renderer.cpp
+scene.cpp
+)</p>
+<p>fileを集める例
+FILE(GLOB SRC
+*.cpp
+*.h
+)
+ADD_EXECUTABLE(hello
+${SRC}
+)</p>
+<h1 id="fo-winmain">fo winmain</h1>
+<p>ADD_EXECUTABLE(hello_windows WIN32
+${SRC}
+)</p>
+<p>static lib</p>
+<p>https://cmake.org/cmake/help/latest/command/add_library.html</p>
+<p>ADD_LIBRARY(renderer STATIC
+renderer.cpp
+)</p>
+<p>dll
+ADD_LIBRARY(renderer SHARED
+renderer.cpp
+)</p>
+<p>compile
+compiler options
+全体
+SET(CMAKE_CXX_FLAGS &quot;-Wall&quot;)</p>
+<p>ターゲット指定
+TARGET_COMPILE_OPTIONS(foo PUBLIC &quot;$&lt;$<a href="CONFIG:DEBUG">CONFIG:DEBUG</a>:${MY_DEBUG_OPTIONS}&gt;&quot;)
+TARGET_COMPILE_OPTIONS(foo PUBLIC &quot;$&lt;$<a href="CONFIG:RELEASE">CONFIG:RELEASE</a>:${MY_RELEASE_OPTIONS}&gt;&quot;)</p>
+<p>include path
+全体
+以降のADD_XXXに対して有効になる
+INCLUDE_DIRECTORIES(libpath/include)</p>
+<p>ターゲット指定
+PUBLICの部分はよくわからぬ。
+TARGET_INCLUDE_DIRECTORIES(HELLO PUBLIC
+${BOOST_DIR}
+)</p>
+<p>define
+全体
+以降のADD_XXXに対して有効になる
+ADD_DEFINITIONS(-DWITH_OPENCV2)</p>
+<p>ターゲット指定
+PUBLICの部分はよくわからぬ。</p>
+<h1 id="dnasi">-Dなし</h1>
+<p>TARGET_COMPILE_DEFINITIONS(TARGET PUBLIC
+WITH_OPENCV2=1
+)</p>
+<p>link
+link path
+LINK_DIRECTORIES(libpath/lib)</p>
+<p>x86とx64で違うパスにしたい時は？
+LINK_LIBRARIES
+TARGET_LINK_LIBRARIES
+TARGET_LINK_LIBRARIES(MediaSessionPlaybackExample
+Mf
+Mfplat
+Mfuuid
+strmiids
+)</p>
+<p>Debug Releaseの切り分け
+TARGET_LINK_LIBRARIES(Fuga
+DEBUG hoge_d
+OPTIMIZE hoge
+)</p>
+<p>変数
+ソース
+cmake -G CMAKE_SOURCE_DIR
+CMAKE_SOURCE_DIR</p>
+<p>ビルドディレクトリ
+cmake -G CMAKE_SOURCE_DIRを実行したディレクトリ
+CMAKE_BINARY_DIR</p>
+<p>The path to the top level of the build tree</p>
+<p>出力ディレクトリ
+exeとdllの出力先。
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)</p>
+<p>example
+CMakeLists.txt
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(hello) # hello.sln
+ADD_EXECUTABLE(hello main.cpp) # hello.vcxproj</p>
+<p>set(CMAKE_CXX_FLAGS &quot;/WD4096&quot;)
+set(CMAKE_C_FLAGS &quot;/WD4096&quot;)
+include_directories(libpath/include)
+add_definitions(
+-DUNICODE
+-D_UNICODE
+)</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/05/cmake-compileoptions/#mosikuha">もしくは</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/05/cmake-compileoptions/#fo-winmain">fo winmain</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/05/cmake-compileoptions/#dnasi">-Dなし</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

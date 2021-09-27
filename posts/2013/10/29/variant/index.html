@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;10&#x2F;29&#x2F;variant&#x2F;"> wafでdebugとreleaseの設定を記述する(variant) 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">1029</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>wafでdebugとreleaseの設定を記述する(variant)
+wafでdebug版とrelease版の出力を分けるにはvariantなる機能を使う。
++hello
++hello.cpp
++waf
++wscript</p>
+<p>と前回と同様のプロジェクト。 wscriptを以下のように記述する。</p>
+<h1 id="coding-utf-8">coding: utf-8</h1>
+<p>APPNAME='hello'
+VERSION='1.0.0'</p>
+<p>def configure(conf):
+# config 'debug'を作る
+conf.setenv('debug')
+# debugの設定
+conf.env['MSVC_TARGETS'] = ['x86']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']
+# PDBやNDEBUG等の設定をきっちり書く必要がある</p>
+<pre style="background-color:#2b303b;">
+<code># config 'release'を作る。debugの設定は引き継がない
+conf.setenv('release')
+# releaseの設定
+conf.env['MSVC_TARGETS'] = ['x86']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']
+</code></pre><h1 id="buildcontextnoshe-ding">BuildContextの設定</h1>
+<p>def build(bld):
+bld.program(
+source='hello.cpp',
+target=APPNAME
+)</p>
+<p>from waflib.Build import BuildContext</p>
+<h1 id="buildcontextwoshi-ukomando">BuildContextを使うコマンド</h1>
+<p>class BuildDebug(BuildContext):
+# config 'debug' を使うvariant
+# 出力ディレクトリがbuild/debugに変わる
+variant = &quot;debug&quot;
+# 呼び出しコマンドはbuild_debug
+cmd = &quot;build_debug&quot;</p>
+<h1 id="buildcontextwoshi-ukomando-1">BuildContextを使うコマンド</h1>
+<p>class BuildRelease(BuildContext):
+# config 'release' を使うvariant
+# 出力ディレクトリがbuild/releaseに変わる
+variant = &quot;release&quot;
+# 呼び出しコマンドはbuild_release
+cmd = &quot;build_release&quot;</p>
+<p>variantという概念を使う。
+http://docs.waf.googlecode.com/git/book_17/single.html の 6.2.2.
+Changing the output directory Configuration sets for variants
+に記述がある。
+使う</p>
+<blockquote>
+<p>python waf --help
+waf [commands] [options]</p>
+</blockquote>
+<p>Main commands (example: ./waf build -j4)
+build        : executes the build
+build_debug  :
+build_release:
+:
+:
+省略</p>
+<p>という感じでbuild_debug, build_releaseが増える。</p>
+<blockquote>
+<p>python waf build_debug
+Waf: Entering directory <code>C:\work\_waf\debug_release\build\debug' [1/2] cxx: hello.cpp -&gt; build\debug\hello.cpp.1.o hello.cpp [2/2] cxxprogram: build\debug\hello.cpp.1.o -&gt; build\debug\hello.exe build\debug\hello.exe.manifest Waf: Leaving directory </code>C:\work_waf\debug_release\build\debug'
+'build_debug' finished successfully (0.487s)</p>
+</blockquote>
+<p>素のビルドはエラーになった。たぶん対象になる名無しのconfigが存在しないため。</p>
+<blockquote>
+<p>python waf build
+Waf: Entering directory <code>C:\work\_waf\debug_release\build' [1/2] cxx: hello.cpp -&gt; build\hello.cpp.1.o Waf: Leaving directory </code>C:\work_waf\debug_release\build'
+Build failed
+:
+:
+省略</p>
+</blockquote>
+<p>ということで素のビルドの時にメッセージを表示して止めるようにする。
+buildメソッドの先頭にwaf book通りの記述を入れる。</p>
+<h1 id="buildcontextnoshe-ding-1">BuildContextの設定</h1>
+<p>def build(bld):
+if not bld.variant:
+bld.fatal('call &quot;waf build_debug&quot; or &quot;waf build_release&quot;, and try &quot;waf --help&quot;')
+bld.program(
+source='hello.cpp',
+target=APPNAME
+)</p>
+<blockquote>
+<p>python waf build
+Waf: Entering directory `C:\work_waf\debug_release\build'
+call &quot;waf build_debug&quot; or &quot;waf build_release&quot;, and try &quot;waf --help&quot;
+python waf clean
+call &quot;waf build_debug&quot; or &quot;waf build_release&quot;, and try &quot;waf --help&quot;</p>
+</blockquote>
+<p>build以外にもbuildメソッド(BuildContext)を使うコマンドがあって、
+http://docs.waf.googlecode.com/git/book_17/single.html の 12.1.2.
+Context classes のクラス図によると ListContext, CleanContext,
+StepContext, InstallContext, UninstallContext
+がBuildContextを継承しているのでこれに対応するコマンド
+それぞれにdebug版、release版を定義してやる必要がある。
+waf bookに書いてあるようにコマンドclassの記述を変える。
+from waflib.Build import BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext</p>
+<p>CONTEXTS=[BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext]
+VARIANTS=['debug', 'release']</p>
+<p>for context in CONTEXTS:
+for variant_name in VARIANTS:
+name = context.<strong>name</strong>.replace('Context','').lower()
+class tmp(context):
+cmd = name + '_' + variant_name
+variant = variant_name</p>
+<p>helpを見ると大量に定義したコマンドが増える。</p>
+<blockquote>
+<p>python waf --help
+waf [commands] [options]</p>
+</blockquote>
+<p>Main commands (example: ./waf build -j4)
+build            : executes the build
+build_debug      :
+build_release    :
+clean            : cleans the project
+clean_debug      :
+clean_release    :
+configure        : configures the project
+dist             : makes a tarball for redistributing the sources
+distcheck        : checks if the project compiles (tarball from 'dist')
+distclean        : removes the build directory
+install          : installs the targets on the system
+install_debug    :
+install_release  :
+list             : lists the targets to execute
+list_debug       :
+list_release     :
+step             : executes tasks in a step-by-step fashion, for debugging
+step_debug       :
+step_release     :
+uninstall        : removes the targets installed
+uninstall_debug  :
+uninstall_release:
+update           : updates the plugins from the <em>waflib/extras</em> directory
+:
+:
+省略</p>
+<blockquote>
+<p>python waf clean_debug build_debug
+'clean_debug' finished successfully (0.087s)
+Waf: Entering directory <code>C:\work\_waf\debug_release\build\debug' [1/2] cxx: hello.cpp -&gt; build\debug\hello.cpp.1.o hello.cpp [2/2] cxxprogram: build\debug\hello.cpp.1.o -&gt; build\debug\hello.exe build\debug\hello.exe.manifest Waf: Leaving directory </code>C:\work_waf\debug_release\build\debug'
+'build_debug' finished successfully (0.451s)</p>
+</blockquote>
+<p>これでdebug, releaseの使い分けはできるようになった。
+variantを追加する
+64bitビルドや、gccのvariantを追加してみた。</p>
+<h1 id="coding-utf-8-1">coding: utf-8</h1>
+<p>APPNAME='hello'
+VERSION='1.0.0'</p>
+<p>VARIANTS=[
+'vc_debug', 'vc_release', 'vc64_debug', 'vc64_release',
+'gcc_debug', 'gcc_release',
+]</p>
+<p>def configure(conf):
+# config 'debug'を作る
+conf.setenv('debug')
+# debugの設定
+conf.env['MSVC_VERSIONS'] = ['msvc 10.0']
+conf.env['MSVC_TARGETS'] = ['x86']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']
+# PDBやNDEBUG等の設定をきっちり書く必要がある</p>
+<pre style="background-color:#2b303b;">
+<code># config 'release'を作る。debugの設定は引き継がない
+conf.setenv('release')
+# releaseの設定
+conf.env['MSVC_VERSIONS'] = ['msvc 10.0']
+conf.env['MSVC_TARGETS'] = ['x86']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']
+
+# config 'debug'を作る
+conf.setenv('vc64_debug')
+# debugの設定
+conf.env['MSVC_VERSIONS'] = ['msvc 10.0']
+conf.env['MSVC_TARGETS'] = ['x64']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']
+# PDBやNDEBUG等の設定をきっちり書く必要がある
+
+# config 'release'を作る。debugの設定は引き継がない
+conf.setenv('vc64_release')
+# releaseの設定
+conf.env['MSVC_VERSIONS'] = ['msvc 10.0']
+conf.env['MSVC_TARGETS'] = ['x64']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']
+
+# config 'debug'を作る
+conf.setenv('gcc_debug')
+# debugの設定
+conf.load('gxx')
+conf.env.CXXFLAGS = ['-g']
+conf.env.LINKFLAGS = ['-g']
+
+# config 'release'を作る。debugの設定は引き継がない
+conf.setenv('gcc_release')
+# releaseの設定
+conf.load('gxx')
+conf.env.CXXFLAGS = ['-O2']
+</code></pre><h1 id="buildcontextnoshe-ding-2">BuildContextの設定</h1>
+<p>def build(bld):
+if not bld.variant:
+bld.fatal('call &quot;waf build_debug&quot; or &quot;waf build_release&quot;, and try &quot;waf --help&quot;')
+bld.program(
+source='hello.cpp',
+target=APPNAME
+)</p>
+<p>from waflib.Build import BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext</p>
+<p>CONTEXTS=[BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext]</p>
+<p>for context in CONTEXTS:
+for variant_name in VARIANTS:
+name = context.<strong>name</strong>.replace('Context','').lower()
+class tmp(context):
+cmd = name + '_' + variant_name
+variant = variant_name</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#coding-utf-8">coding: utf-8</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#buildcontextnoshe-ding">BuildContextの設定</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#buildcontextwoshi-ukomando">BuildContextを使うコマンド</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#buildcontextwoshi-ukomando-1">BuildContextを使うコマンド</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#buildcontextnoshe-ding-1">BuildContextの設定</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#coding-utf-8-1">coding: utf-8</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/10/29/variant/#buildcontextnoshe-ding-2">BuildContextの設定</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

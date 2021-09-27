@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;05&#x2F;19&#x2F;call-with-tuple&#x2F;"> msgpack-rpc-asioの関数登録と実行 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0519</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;msgpack&#x2F;">msgpack</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>msgpack-rpc-asioの関数登録と実行
+msgpack-rpcのリクエストは、によると</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">[type, msgid, method, params]
+</span></code></pre>
+<p>という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。
+これをサーバ側で如何に呼び出すかについて。
+単純な実装だと以下のようにメソッド名をキーにして分岐することになる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">int </span><span style="color:#c0c5ce;">and(</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">);
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">dispatcher </span><span style="color:#eff1f5;">{ </span><span style="color:#b48ead;">void </span><span style="color:#bf616a;">dispatch</span><span style="color:#eff1f5;">(</span><span style="color:#b48ead;">int</span><span style="color:#eff1f5;"> msgid, </span><span style="color:#b48ead;">const</span><span style="color:#eff1f5;"> std::string </span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">method,
+</span><span style="color:#b48ead;">const</span><span style="color:#eff1f5;"> msgpack::object </span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">params) { </span><span style="color:#b48ead;">if</span><span style="color:#eff1f5;">(method</span><span style="color:#c0c5ce;">==</span><span style="color:#eff1f5;">“add”){ </span><span style="color:#65737e;">// 引数展開
+</span><span style="color:#eff1f5;">std::tuple t; params.</span><span style="color:#bf616a;">convert</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">t);
+</span><span style="color:#65737e;">// 関数実行
+</span><span style="color:#b48ead;">int</span><span style="color:#eff1f5;"> result</span><span style="color:#c0c5ce;">=</span><span style="color:#bf616a;">add</span><span style="color:#eff1f5;">(std::</span><span style="color:#bf616a;">get</span><span style="color:#eff1f5;">&lt;</span><span style="color:#d08770;">0</span><span style="color:#eff1f5;">&gt;(t), std::</span><span style="color:#bf616a;">get</span><span style="color:#eff1f5;">&lt;</span><span style="color:#d08770;">1</span><span style="color:#eff1f5;">&gt;(t));
+
+</span><span style="color:#65737e;">// 結果のパッキング
+// response [type, msgid, error, result]
+</span><span style="color:#eff1f5;">msgpack::sbuffer response;
+msgpack::packer&lt;msgpack::sbuffer&gt; </span><span style="color:#bf616a;">pk</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">response);
+pk.</span><span style="color:#bf616a;">pack_array</span><span style="color:#eff1f5;">(</span><span style="color:#d08770;">4</span><span style="color:#eff1f5;">)
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#eff1f5;">(</span><span style="color:#d08770;">1</span><span style="color:#eff1f5;">);
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#eff1f5;">(msgid);
+pk.</span><span style="color:#bf616a;">pack_nil</span><span style="color:#eff1f5;">();
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#eff1f5;">(result);
+
+</span><span style="color:#65737e;">// responseを送り返す
+
+
+</span><span style="color:#eff1f5;">} </span><span style="color:#b48ead;">else</span><span style="color:#eff1f5;">{ </span><span style="color:#b48ead;">throw</span><span style="color:#eff1f5;"> “unknown func”; }
+
+}
+</span></code></pre>
+<p>引数展開、関数呼び出し、結果のパッキングと一連の操作を定型処理として括りだすと下記のように書ける。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#65737e;">// ２引数展開用 class dispatcher { // 実行 void dispatcher::dispatch(int
+</span><span style="color:#c0c5ce;">msgid, </span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;method, </span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> msgpack::object &amp;params</span><span style="background-color:#bf616a;color:#2b303b;">)</span><span style="color:#c0c5ce;"> {
+</span><span style="color:#b48ead;">if</span><span style="color:#c0c5ce;">(method==“add”){ msgpack::sbuffer response=</span><span style="color:#bf616a;">unpack_exec_pack</span><span style="color:#c0c5ce;">(msgid,
+add, params);
+</span><span style="color:#65737e;">// responseを送り返す
+
+
+</span><span style="color:#c0c5ce;">} </span><span style="color:#b48ead;">else</span><span style="color:#c0c5ce;">{ </span><span style="color:#b48ead;">throw</span><span style="color:#c0c5ce;"> “unknown func”; }
+
+}
+</span><span style="color:#65737e;">// ヘルパー template msgpack::sbuffer unpack_exec_pack(int msgid,
+</span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(*f)(A1, A2), </span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> msgpack::object &amp;params</span><span style="background-color:#bf616a;color:#2b303b;">)</span><span style="color:#c0c5ce;"> { </span><span style="color:#65737e;">// 引数展開 std::tuple
+</span><span style="color:#c0c5ce;">t; params.</span><span style="color:#bf616a;">convert</span><span style="color:#c0c5ce;">(&amp;t);
+</span><span style="color:#65737e;">// 関数実行
+</span><span style="color:#c0c5ce;">R result=</span><span style="color:#bf616a;">add</span><span style="color:#c0c5ce;">(std::</span><span style="color:#bf616a;">get</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">&gt;(t), std::</span><span style="color:#bf616a;">get</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">&gt;(t));
+
+</span><span style="color:#65737e;">// 結果のパッキング
+// response [type, msgid, error, result]
+</span><span style="color:#c0c5ce;">msgpack::sbuffer response;
+msgpack::packer&lt;msgpack::sbuffer&gt; </span><span style="color:#bf616a;">pk</span><span style="color:#c0c5ce;">(&amp;response);
+pk.</span><span style="color:#bf616a;">pack_array</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">)
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">);
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#c0c5ce;">(msgid);
+pk.</span><span style="color:#bf616a;">pack_nil</span><span style="color:#c0c5ce;">();
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#c0c5ce;">(result);
+
+</span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> response;
+
+}
+</span></code></pre>
+<p>１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。
+さらに 関数の登録と実行を分けるべく次のように拡張した。 </p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">class
+</span><span style="color:#ebcb8b;">dispatcher </span><span style="color:#eff1f5;">{ std::map </span><span style="color:#bf616a;">m_map</span><span style="color:#eff1f5;">;
+</span><span style="color:#65737e;">// 実行 void dispatch(int msgid, const std::string &amp;method, const
+</span><span style="color:#eff1f5;">msgpack::object </span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">params</span><span style="background-color:#bf616a;color:#2b303b;">)</span><span style="color:#eff1f5;"> { std::function f</span><span style="color:#c0c5ce;">=</span><span style="color:#bf616a;">m_map</span><span style="color:#eff1f5;">.</span><span style="color:#bf616a;">find</span><span style="color:#eff1f5;">(method);
+</span><span style="color:#b48ead;">if</span><span style="color:#eff1f5;">(f</span><span style="color:#c0c5ce;">!=</span><span style="color:#bf616a;">m_map</span><span style="color:#eff1f5;">.</span><span style="color:#bf616a;">end</span><span style="color:#eff1f5;">()){ </span><span style="color:#65737e;">// 関数実行 msgpack::sbuffer resonse=f(msgid,
+</span><span style="color:#eff1f5;">params</span><span style="background-color:#bf616a;color:#2b303b;">)</span><span style="color:#eff1f5;">;
+</span><span style="color:#65737e;">// responseを送り返す
+
+
+</span><span style="color:#eff1f5;">} </span><span style="color:#b48ead;">else</span><span style="color:#eff1f5;">{ </span><span style="color:#b48ead;">throw</span><span style="color:#eff1f5;"> “unknown func”; }
+
+}
+</span><span style="color:#65737e;">// 登録 template void add_handler(const std::string &amp;method, R(*f)(A1,
+</span><span style="color:#eff1f5;">A2</span><span style="background-color:#bf616a;color:#2b303b;">))</span><span style="color:#eff1f5;"> {
+</span><span style="color:#bf616a;">m_map</span><span style="color:#eff1f5;">[method]</span><span style="color:#c0c5ce;">=</span><span style="color:#eff1f5;">f-&gt;</span><span style="color:#bf616a;">msgpack</span><span style="color:#eff1f5;">::</span><span style="color:#bf616a;">sbuffer</span><span style="color:#eff1f5;">{
+</span><span style="color:#65737e;">// 引数展開
+</span><span style="color:#eff1f5;">std::tuple&lt;A1, A2&gt; t;
+params.</span><span style="color:#bf616a;">convert</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">t);
+
+</span><span style="color:#65737e;">// 実行
+</span><span style="color:#eff1f5;">R result</span><span style="color:#c0c5ce;">=</span><span style="color:#bf616a;">f</span><span style="color:#eff1f5;">(std::</span><span style="color:#bf616a;">get</span><span style="color:#eff1f5;">&lt;</span><span style="color:#d08770;">0</span><span style="color:#eff1f5;">&gt;(t), std::</span><span style="color:#bf616a;">get</span><span style="color:#eff1f5;">&lt;</span><span style="color:#d08770;">1</span><span style="color:#eff1f5;">&gt;(t));
+
+</span><span style="color:#65737e;">// 結果のパッキング
+// response [type, msgid, error, result]
+</span><span style="color:#eff1f5;">msgpack::sbuffer response;
+msgpack::packer&lt;msgpack::sbuffer&gt; </span><span style="color:#bf616a;">pk</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&amp;</span><span style="color:#eff1f5;">response);
+pk.</span><span style="color:#bf616a;">pack_array</span><span style="color:#eff1f5;">(</span><span style="color:#d08770;">4</span><span style="color:#eff1f5;">)
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#eff1f5;">(</span><span style="color:#d08770;">1</span><span style="color:#eff1f5;">);
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#eff1f5;">(msgid);
+pk.</span><span style="color:#bf616a;">pack_nil</span><span style="color:#eff1f5;">();
+pk.</span><span style="color:#bf616a;">pack</span><span style="color:#eff1f5;">(result);
+
+</span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> response;
+
+
+};
+
+}
+</span></code></pre>
+<p><code>msgpack-&gt;引数展開-&gt;c++関数呼び出し-&gt;msgpack</code> への一連の操作を 同一のシグネチャの <code>std::function</code> に封じ込めることができる。
+次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。
+まず、std::functionから実装。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">c++   // std::function用   template&lt;typname R, typename A1, typename A2&gt;   void add_handler(contt std::string &amp;method, std::function&lt;R(A1, A2)&gt; f)   {     // 中身同じ   }
+</span></code></pre>
+<p>呼び出し時にstd::functionを経由するようにすればあらゆる関数呼び出しを登録できる。
+例えば、ラムダ関数も以下のように登録できる。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">c++ // ラムダ登録 dispatcher d; d.add_handler(&quot;add&quot;,      std::function&lt;int(int, int)&gt;(       [](int a, int b)-&gt;int{          return a+b;        }));
+</span></code></pre>
+<p>しかし、どうせなら</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">c++ dispatcher d; d.add_handler(&quot;add&quot;,      [](int a, int b)-&gt;int{        return a+b;      });
+</span></code></pre>
+<p>と書きたい。
+となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。
+c++   // ラムダの登録   template<typname F>   void add_handler(const std::string &amp;method, F f)   {     // 型がわからぬ   }
+ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">template void </span><span style="color:#bf616a;">add_handler</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;method, F f,
+</span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(C::*)(A1, A2)</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;">) { </span><span style="color:#65737e;">// 中身同じ }
+// ラムダの登録 // std::functionも受けられる // std::bindは無理だった //
+</span></code></pre>
+<p>operator()がひとつしかない関数オブジェクトを受け付けられる？ </p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">template
+void </span><span style="color:#bf616a;">add_handler</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;method, F f) { 
+</span><span style="color:#65737e;">// 上の関数で型推論させる 
+</span><span style="color:#bf616a;">add_handler</span><span style="color:#c0c5ce;">(method, f, &amp;F::</span><span style="color:#bf616a;">operator</span><span style="color:#c0c5ce;">()); } 
+</span></code></pre>
+<p>これでめでたくラムダも直接登録できるようになった。
+ただし、operator()のオーバーロードが解決できないらしくstd::bindが登録できない。
+std::bindに関しては、ラムダで代用できるしstd::functionでラップできるのでおいておくことにした。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

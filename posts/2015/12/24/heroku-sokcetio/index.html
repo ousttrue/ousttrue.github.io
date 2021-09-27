@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2015&#x2F;12&#x2F;24&#x2F;heroku-sokcetio&#x2F;"> Node.jsでSocket.IOなアプリをHerokuにデプロイ 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2015</div>
+        <div class="md">1224</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>Socket.IOサーバーとしてHerokuを使ってみよう。
+実験中
+https://shielded-caverns-4913.herokuapp.com/
+Heroku練習
+以前作ったユーザーが生きていたので改めてチュートリアルを実践。</p>
+<p>Getting Started with Node.js on Heroku</p>
+<p>gulpでexpressなサーバを作る
+普通にnpmなプロジェクトを作る。</p>
+<blockquote>
+<p>mkdir bvh_sio
+cd bvh_sio
+npm init
+mkdir src
+mkidr src/server
+mkdir src/client
+cd src
+tsd init
+tsd query node -rosa install
+tsd query express -rosa install
+tsd query serve-static -rosa install
+tsd query socket.io -rosa install</p>
+</blockquote>
+<p>Herokuにデプロイする場合はでdevDependenciesじゃなくてdependenciesに書くらしいのでそのようにした。
+package.json
+{
+&quot;name&quot;: &quot;bvh_sio&quot;,
+&quot;version&quot;: &quot;1.0.0&quot;,
+&quot;description&quot;: &quot;&quot;,
+&quot;main&quot;: &quot;build/app.js&quot;,
+&quot;scripts&quot;: {
+&quot;start&quot;: &quot;node build/app.js&quot;
+},
+&quot;author&quot;: &quot;ousttrue&quot;,
+&quot;license&quot;: &quot;ISC&quot;,
+&quot;dependencies&quot;: {
+&quot;express&quot;: &quot;^4.13.3&quot;,
+&quot;gulp&quot;: &quot;^3.9.0&quot;,
+&quot;gulp-if&quot;: &quot;^2.0.0&quot;,
+&quot;gulp-load-plugins&quot;: &quot;^1.1.0&quot;,
+&quot;gulp-run-sequence&quot;: &quot;^0.3.2&quot;,
+&quot;gulp-typescript&quot;: &quot;^2.10.0&quot;,
+&quot;serve-static&quot;: &quot;^1.10.0&quot;,
+&quot;socket.io&quot;: &quot;^1.3.7&quot;,
+&quot;tsd&quot;: &quot;^0.6.5&quot;
+}
+}</p>
+<p>serve-staticで静的なファイルをホストするexpress。後でsocket.ioを追加する。
+src/server/app.ts
+/// <reference path="../typings/tsd.d.ts" /></p>
+<p>import http = require('http');
+import express = require('express');
+const port = process.env.PORT || 3000; // &lt;- Herokuで必要!
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+.use(servestatic(serve_dir))
+;</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>こいつをtypescriptでコンパイルしてbuildディレクトリに展開したい。
+gulpfile.js
+'use strict';</p>
+<p>const path = require('path');
+const execSync = require('child_process').execSync;
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();</p>
+<p>const config = {
+server_src: './src/server/**/<em>.</em>',
+server_dst: './build',</p>
+<pre style="background-color:#2b303b;">
+<code>client_src: './src/client/**/*.*',
+client_dst: './build/public'
+</code></pre>
+<p>};
+const tsconfig = require('./tsconfig.json');</p>
+<p>function pushd(dst, callback) {
+const cwd = process.cwd();
+process.chdir(dst);
+callback();
+process.chdir(cwd);
+}</p>
+<p>gulp.task('tsd:install', () =&gt; {
+pushd('./src', ()=&gt;execSync('tsd install'));
+});</p>
+<p>gulp.task('server', () =&gt; {
+gulp.src(config.server_src)
+.pipe($.if((file) =&gt; path.extname(file.path).toLowerCase() === '.ts'
+, $.typescript(tsconfig.compilerOptions)))
+.pipe(gulp.dest(config.server_dst))
+;
+});</p>
+<p>gulp.task('client', () =&gt; {
+gulp.src(config.client_src)
+.pipe($.if((file) =&gt; path.extname(file.path).toLowerCase() === '.ts'
+, $.typescript(tsconfig.compilerOptions)))
+.pipe(gulp.dest(config.client_dst))
+;
+});</p>
+<p>gulp.task('build', ['server', 'client']);</p>
+<p>gulp.task('install', (cb) =&gt; {
+$.runSequence('tsd:install', 'build', cb);
+});</p>
+<p>gulp.task('default', ['build']);</p>
+<p>tsconfig.json
+{
+&quot;compilerOptions&quot;: {
+&quot;module&quot;: &quot;commonjs&quot;,
+&quot;target&quot;: &quot;es5&quot;,
+&quot;noImplicitAny&quot;: true,
+&quot;outDir&quot;: &quot;.&quot;,
+&quot;rootDir&quot;: &quot;.&quot;,
+&quot;sourceMap&quot;: false,
+&quot;removeComments&quot;: true
+},
+&quot;exclude&quot;: [
+&quot;node_modules&quot;
+]
+}</p>
+<p>jsconfig.json
+{
+&quot;compilerOptions&quot;: {
+&quot;module&quot;: &quot;commonjs&quot;,
+&quot;target&quot;: &quot;es6&quot;
+}
+}</p>
+<p>src/client/index.html</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Hello</h1>
+</body>
+</html>
+<p>プロジェクトをHeroku化してデプロイ
+Herokuでビルドしたりbuild結果だけをpushするなどの方式があるようだが、Heroku上でgulpする方式にしてみた(git苦手w)。
+git push時に実行するコマンドをpackage.jsonに記述できる。
+package.json
+&quot;scripts&quot;: {
+&quot;postinstall&quot;: &quot;gulp install&quot;, // &lt;- 追加する
+&quot;start&quot;: &quot;node build/app.js&quot;
+},</p>
+<p>サーバー実行コマンド。
+Procfile
+web: node build/app.js</p>
+<p>herokuにデプロイ。</p>
+<h1 id="yi-hui-dakeshi-xing-suru">一回だけ実行する</h1>
+<blockquote>
+<p>heroku create</p>
+</blockquote>
+<h1 id="herokuwogeng-xin">herokuを更新</h1>
+<blockquote>
+<p>git push heroku master</p>
+</blockquote>
+<h1 id="eragachu-tarazhi-su-npm-installnado">エラーが出たら直す。npm installなど</h1>
+<h1 id="herokusaitowoburauzadekai-ku">herokuサイトをブラウザで開く</h1>
+<blockquote>
+<p>heroku open</p>
+</blockquote>
+<h1 id="eragachu-tarazhi-su-npm-installnado-1">エラーが出たら直す。npm installなど</h1>
+<p>heroku側でgulp-typescriptするように作ってみたけどうまくいった。
+socket.ioを追加
+websocketじゃなくてajax pollingらしいけどSocket.IOがよきに計らってくれる。
+src/server/app.tsに追加
+// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+var clientAddress = socket.client.conn.remoteAddress;
+console.log('connected: %s from %s', socket.id, clientAddress);</p>
+<pre style="background-color:#2b303b;">
+<code>function recTimer(interval: number, callback: Function)
+{
+    setTimeout(()=&gt;recTimer(interval, callback), interval);
+    callback();
+}
+recTimer(3000, ()=&gt;socket.emit('time', Date.now()));
+</code></pre>
+<p>});</p>
+<p>src/client/index.html</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+    <h1>Hello</h1>
+<pre style="background-color:#2b303b;">
+<code>&lt;div id='content'&gt;&lt;/div&gt;
+</code></pre></body>
+</html>
+<p>src/client/index.ts
+/// <reference path="../typings/tsd.d.ts" /></p>
+<p>declare module io {
+export function connect(): SocketIO.Socket;
+}</p>
+<p>window.onload = () =&gt; {
+const socket = io.connect();</p>
+<pre style="background-color:#2b303b;">
+<code>const content=document.getElementById('content');
+
+socket.on('connect', ()=&gt;{
+    content.innerHTML='connected!';
+});
+
+socket.on('time', (message: any)=&gt;{
+    content.innerHTML+='&lt;br&gt;'+message;
+});
+</code></pre>
+<p>}</p>
+<p>bvh
+準備が整ったので、node.js側でパースしたbvhを適当にjson化してsocket.ioにemitするサーバーを作る。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2015/12/24/heroku-sokcetio/#yi-hui-dakeshi-xing-suru">一回だけ実行する</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2015/12/24/heroku-sokcetio/#herokuwogeng-xin">herokuを更新</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2015/12/24/heroku-sokcetio/#eragachu-tarazhi-su-npm-installnado">エラーが出たら直す。npm installなど</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2015/12/24/heroku-sokcetio/#herokusaitowoburauzadekai-ku">herokuサイトをブラウザで開く</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2015/12/24/heroku-sokcetio/#eragachu-tarazhi-su-npm-installnado-1">エラーが出たら直す。npm installなど</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

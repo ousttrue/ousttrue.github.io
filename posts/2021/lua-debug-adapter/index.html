@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;lua-debug-adapter&#x2F;"> lua の DebugAdapter を書いてみた 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0713</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lua&#x2F;">lua</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;dap&#x2F;">dap</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>nvim の nvim-dap で lua をデバッグするべく自分で書いてみた。
+手頃なのが見つからなかったので。</p>
+<p><a href="https://github.com/ousttrue/my_nvim/blob/master/luada.lua">https://github.com/ousttrue/my_nvim/blob/master/luada.lua</a></p>
+<p><a href="https://microsoft.github.io/debug-adapter-protocol/">https://microsoft.github.io/debug-adapter-protocol/</a> の自前実装。</p>
+<p><code>request</code> のうち <code>initialize</code>, <code>launch</code>, <code>setBreakpoints</code>, <code>configurationDone</code>, <code>threads</code>, <code>stackTrace</code>, <code>scopes</code>, <code>variables</code>, <code>continue</code>, <code>next</code> を実装した。
+<code>event</code> のうち <code>initialized</code>, <code>exited</code>, <code>stopped(breakpoint, step)</code> を実装した。</p>
+<p>これで最低限の breakpoint を設定して止める、ステップ実行、変数表示までできた。</p>
+<p>ログレベルを設定して</p>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#96b5b4;">require</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">dap</span><span style="color:#c0c5ce;">&#39;).</span><span style="color:#bf616a;">set_log_level</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">trace</span><span style="color:#c0c5ce;">&#39;)</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>nvim の <code>:lua print(vim.fn.stdpath &quot;cache&quot;)</code> に配置される <code>dap.log</code> を観察したらだいたいできた。</p>
+<p>nvim-dap の設定は以下。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#b48ead;">local </span><span style="color:#bf616a;">dap </span><span style="color:#c0c5ce;">= </span><span style="color:#96b5b4;">require</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">dap</span><span style="color:#c0c5ce;">&quot;)</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">local </span><span style="color:#bf616a;">luada </span><span style="color:#c0c5ce;">= </span><span style="color:#bf616a;">vim</span><span style="color:#c0c5ce;">.api.</span><span style="color:#bf616a;">nvim_get_var</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">my_nvim_root</span><span style="color:#c0c5ce;">&quot;) .. &quot;</span><span style="color:#a3be8c;">/luada.lua</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">-- luada adapter を登録</span><span style="color:#65737e;">
+</span><span style="color:#bf616a;">dap</span><span style="color:#c0c5ce;">.adapters.luada = {</span><span style="color:#c0c5ce;">
+	</span><span style="color:#65737e;">-- debug用のスクリプトを lua で実行し、標準入出力で DAP 通信(JSON-RPC)を開始する</span><span style="color:#65737e;">
+	</span><span style="color:#a3be8c;">type </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">executable</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+	</span><span style="color:#a3be8c;">command </span><span style="color:#c0c5ce;">= </span><span style="color:#bf616a;">vim</span><span style="color:#c0c5ce;">.api.</span><span style="color:#bf616a;">nvim_get_var</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">my_nvim_root</span><span style="color:#c0c5ce;">&quot;) .. &quot;</span><span style="color:#a3be8c;">/neovim/.deps/usr/bin/luajit.exe</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+	</span><span style="color:#a3be8c;">args </span><span style="color:#c0c5ce;">= { </span><span style="color:#bf616a;">luada </span><span style="color:#c0c5ce;">},</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">-- filetype lua のときに luada を使用する。launch の引数</span><span style="color:#65737e;">
+</span><span style="color:#bf616a;">dap</span><span style="color:#c0c5ce;">.configurations.lua = {</span><span style="color:#c0c5ce;">
+	{</span><span style="color:#c0c5ce;">
+		</span><span style="color:#a3be8c;">name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">lua debug adapter</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+		</span><span style="color:#a3be8c;">type </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">luada</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+		</span><span style="color:#a3be8c;">request </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">launch</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+		</span><span style="color:#a3be8c;">program </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">${fileDirname}</span><span style="color:#96b5b4;">\\</span><span style="color:#a3be8c;">${file}</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+		</span><span style="color:#a3be8c;">args </span><span style="color:#c0c5ce;">= { &quot;</span><span style="color:#a3be8c;">a</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">b</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">c</span><span style="color:#c0c5ce;">&quot; },</span><span style="color:#c0c5ce;">
+	},</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span></code></pre><pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">+---------+    DAP       +--------------------+</span><span style="color:#c0c5ce;">
+| nvim dap|-------&gt;stdin |luajit.exe luada.lua|</span><span style="color:#c0c5ce;">
+|         |&lt;-------stdout|                    |</span><span style="color:#c0c5ce;">
++---------+              +--------------------+</span><span style="color:#c0c5ce;">
+                                              +==&gt; loadscript(target_lua_script)</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>入出力を DAP で占有してしまうので、それでも大丈夫なスクリプトしかデバッグできない。
+(print 関数は、stderr に出力するように退避したので、<code>dap.log</code> には出る)</p>
+<p>素の standalone の lua interpreter で簡単にできる範囲で実装する方針。</p>
+<h2 id="hamaripointo">はまりポイント</h2>
+<h3 id="windows-ban-ha-io-stdout-de-cr-ga-crlf-nibian-huan-sarerunowohui-bi-dekinai">Windows 版 は、<code>io.stdout</code> で <code>CR</code> が <code>CRLF</code> に変換されるのを回避できない。</h3>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#bf616a;">setmode</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">_fileno</span><span style="color:#c0c5ce;">(stdout),_O_BINARY);</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>を lua で呼び出す手段が無い。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">Content-Leght: 123\n\n</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>と出力して変換されるのに任せることにした。</p>
+<h3 id="debug-sethook-nei-de-coroutine-yield-dekinai">debug.sethook 内で coroutine.yield できない</h3>
+<p><a href="https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working">https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working</a></p>
+<p>breakpoint 等によるスクリプト中断を <code>coroutine.yield</code> で実装しようとしたのだけど断念した。
+(yield すると <code>suspend</code> にならずに <code>dead</code> になる)</p>
+<p><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a> は、coroutine で実装しているような気がするのだが・・・。</p>
+<p>yield する代わりに main.loop をネストさせてそこで通信待機させることにした、</p>
+<h3 id="launch-dekai-shi-surutozao-sugiru">launch で開始すると早すぎる</h3>
+<p>これは、 <code>nvim-dap</code> の実装の問題のような気がするが、
+capabilities に以下を設定して、 <code>configurationDone</code> リクエストで自開始する。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#bf616a;">supportsConfigurationDoneRequest </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">,</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="todo">ToDo</h2>
+<p>luada リポジトリを作って vscode 拡張としてリリースする。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-debug-adapter/#hamaripointo">はまりポイント</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/lua-debug-adapter/#windows-ban-ha-io-stdout-de-cr-ga-crlf-nibian-huan-sarerunowohui-bi-dekinai">Windows 版 は、io.stdout で CR が CRLF に変換されるのを回避できない。</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/lua-debug-adapter/#debug-sethook-nei-de-coroutine-yield-dekinai">debug.sethook 内で coroutine.yield できない</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/lua-debug-adapter/#launch-dekai-shi-surutozao-sugiru">launch で開始すると早すぎる</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-debug-adapter/#todo">ToDo</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

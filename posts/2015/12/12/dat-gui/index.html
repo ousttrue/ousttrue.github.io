@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2015&#x2F;12&#x2F;12&#x2F;dat-gui&#x2F;"> dat-guiを試してみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2015</div>
+        <div class="md">1212</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>view typescript
+view javascript</p>
+<p>たまにthree.jsのデモと連動して使われているGUIライブラリdat-guiを試してみる。</p>
+<p>https://code.google.com/p/dat-gui/
+http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+https://stemkoski.github.io/Three.js/#gui</p>
+<p>ライブラリを導入</p>
+<blockquote>
+<p>bower install dat.gui
+tsd query dat-gui -rosa install</p>
+</blockquote>
+<p>dat.GuiControllerのnameプロパティがtypings/dat-gui/dat-gui.d.tsで未定義だった。
+bower_components/dat.gui/dat.gui.jsでは定義されていた。
+/**
+* The name of <code>GUI</code>. Used for folders. i.e
+* a folder's name
+* @type String
+*/
+name: {
+get: function() {
+return params.name;
+},
+set: function(v) {
+// TODO Check for collisions among sibling folders
+params.name = v;
+if (title_row_name) {
+title_row_name.innerHTML = params.name;
+}
+}
+},</p>
+<p>既存のd.tsにプロパティを追加する(C# partial class的な)方法があるかどうかわからないので、
+dat-gui.d.tsを改造することにした。
+dat-gui.d.tsにnameプロパティを追加
+declare module dat {</p>
+<pre style="background-color:#2b303b;">
+<code>// 省略
+
+export class Controller { // &lt;- dat.gui.jsに合わせて名前変えてみた
+    destroy(): void;
+    fire(): Controller;
+    getValue(): any;
+    isModified(): boolean;
+    listen(): Controller;
+    min(n: number): Controller;
+    remove(target: Controller): void;
+    setValue(value: any): Controller;
+    step(n: number): Controller;
+    updateDisplay(): void;
+    name(newName?: string): string; // &lt;- これ追加した
+    onChange: (value?: any) =&gt; void;
+    onFinishChange: (value?: any) =&gt; void;
+}
+</code></pre>
+<p>}</p>
+<p>サンプルコードを元にtypescript化してみる
+https://stemkoski.github.io/Three.js/GUI-Controller.html
+をベースにした。
+javscriptのコードをまるっとtsファイルにコピーして淡々と型を指定していく。
+dat.guiの場所調整の件</p>
+<p>http://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown</p>
+<p>autoPlace: falseがポインツ。そのうえでdomにposition:abusolute
+var  gui = new dat.GUI( { autoPlace: false } );</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

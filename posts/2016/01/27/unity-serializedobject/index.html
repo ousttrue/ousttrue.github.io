@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2016&#x2F;01&#x2F;27&#x2F;unity-serializedobject&#x2F;"> UnityのSerializedObject 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2016</div>
+        <div class="md">0127</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;unity&#x2F;">unity</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>UnityのSerializedObjectのメモ。</p>
+<p>PropertyDrawers have two uses:</p>
+<ul>
+<li>Customize the GUI of every instance of a Serializable class.</li>
+<li>Customize the GUI of script members with custom PropertyAttributes.</li>
+</ul>
+<p>できることは２つ。
+Serializeable classのPropertyDrawerを定義する。
+PropertyAttributeを定義して既存のSerializable classのPropertyDrawerを差し替える。
+Not Serializableなclassに対してPropertyDrawerを定義することはできぬ(TimeSpanとかね)。
+PropertyDrawerを定義してみる
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif</p>
+<p>public class SampleAttribute : PropertyAttribute
+{
+}</p>
+<p>#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(SampleAttribute))]
+public class SampleDrawer : PropertyDrawer
+{
+public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+{
+var sampleAttribute = (SampleAttribute)attribute;
+Debug.Log(property);
+EditorGUI.PropertyField(position, property, new GUIContent(&quot;Hoge&quot;));
+}
+}
+#endif</p>
+<p>public class SampleBehaviour : MonoBehaviour
+{
+[Sample]
+public int Value;
+}</p>
+<p>property.Path
+(x:14.00, y:154.00, width:266.00, height:16.00) path: Value</p>
+<p>OnGUIでデバッグプリント
+Debug.LogFormat(&quot;{0} path: {1}&quot;, position, property.propertyPath);</p>
+<p>なるほど。次のプロパティではどうか。
+[Sample]
+public List<int> ValueArray;</p>
+<pre style="background-color:#2b303b;">
+<code>[Sample]
+public List&lt;int&gt; ValueList;
+</code></pre>
+<p>OnGUIが呼ばれぬ。プリミティブ型以外はだめなのか？
+かと思いきや中身に対して呼ばれることが分かった。
+配列、Listの中身に対してPropertyDrawerが呼ばれる。
+(x:14.00, y:208.00, width:258.00, height:16.00) path: ValueArray.Array.data[0]
+(x:14.00, y:262.00, width:258.00, height:16.00) path: ValueList.Array.data[0]</p>
+<p>Serializable class
+public enum IngredientUnit { Spoon, Cup, Bowl, Piece }</p>
+<p>// Custom serializable class
+[Serializable]
+public class Ingredient
+{
+[Sample]
+public string name;</p>
+<pre style="background-color:#2b303b;">
+<code>[Sample]
+public int amount = 1;
+
+[Sample]
+public IngredientUnit unit;
+</code></pre>
+<p>}</p>
+<pre style="background-color:#2b303b;">
+<code>public Ingredient ingredient;
+
+public List&lt;Ingredient&gt; ingredientList;
+</code></pre>
+<p>(x:14.00, y:298.00, width:258.00, height:16.00) path: ingredient.name
+(x:14.00, y:406.00, width:258.00, height:16.00) path: ingredientList.Array.data[0].name</p>
+<p>CustomEditor
+デフォルトと同じ挙動。DrawDefaultInspector()の前後にボタンを追加したりできる。
+[CustomEditor(typeof(SampleBehaviour))]
+public class ObjectGeneratorEditor : Editor
+{
+public override void OnInspectorGUI()
+{
+DrawDefaultInspector();
+}
+}</p>
+<p>SerializedObjectのPropertyを列挙してみる
+public override void OnInspectorGUI()
+{
+serializedObject.Update();</p>
+<pre style="background-color:#2b303b;">
+<code>    var it = serializedObject.GetIterator();
+    bool hasNext = it.NextVisible(true);
+    while(hasNext)
+    {
+        //Debug.Log(it.propertyPath);
+        var expand = EditorGUILayout.PropertyField(it, false);
+        hasNext=it.NextVisible(expand);
+    }
+
+    serializedObject.ApplyModifiedProperties();
+}
+</code></pre>
+<p>EditorGUIの関数はpositionが必要
+EditorGUILayoutはposition無用。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

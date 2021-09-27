@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;05&#x2F;21&#x2F;xorg&#x2F;"> xorgインストール 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0521</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;linux&#x2F;">linux</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>xorgインストール
+gentooにxorgをインストールする
+The X Server Configuration HOWTO
+http://www.gentoo.org/doc/en/xorg-config.xml
+/etc/portage/make.conf
+INPUT_DEVICES=&quot;evdev&quot;</p>
+<h1 id="echo-x11-base-xorg-server-udev-etc-portage-package-use">echo &quot;x11-base/xorg-server udev&quot; &gt;&gt; /etc/portage/package.use</h1>
+<h1 id="emerge-av-xorg-server">emerge -av xorg-server</h1>
+<h1 id="env-update">env-update</h1>
+<h1 id="source-etc-profile">source /etc/profile</h1>
+<p>fglrx
+http://wiki.gentoo.org/wiki/Fglrx
+AMD A10 向けにfglrxドライバ</p>
+<h1 id="cat-proc-cpuinfo-grep-model">cat /proc/cpuinfo | grep model</h1>
+<p>model name      : AMD A10-5700 APU with Radeon(tm) HD Graphics</p>
+<h1 id="lspci-grep-i-vga">lspci | grep -i vga</h1>
+<p>00:01.0 VGA compatible controller: Advanced Micro Devices [AMD] nee ATI Trinity [Radeon HD 7660D]</p>
+<p>kernel作り直し [Direct Rendering Manager]を無効にする。</p>
+<h1 id="genkernel-lvm2-menuconfig-no-clean-all">genkernel --lvm2 --menuconfig --no-clean all</h1>
+<p>VIDEO_CARDS=&quot;fglrx&quot;</p>
+<h1 id="emerge-xorg-drivers">emerge xorg-drivers</h1>
+<h1 id="aticonfig-initial">aticonfig --initial</h1>
+<h1 id="eselect-opengl-set-ati">eselect opengl set ati</h1>
+<p>intel
+VIDEO_CARDS=&quot;intel&quot;</p>
+<p>Desktop
+gnomeとかをいれずにopenboxを素で使う。lxdeぽい感じ。</p>
+<h1 id="emerge-av-xterm-xmodmap">emerge -av xterm xmodmap</h1>
+<p>Window Manager</p>
+<h1 id="emerge-av-openbox-openbox-menu">emerge -av openbox openbox-menu</h1>
+<p>メニュー設定
+./config/openbox/menu.xml</p>
+<p>Display Manager</p>
+<h1 id="emerge-av-lxdm">emerge -av lxdm</h1>
+<h1 id="vim-etc-conf-d-xdm">vim /etc/conf.d/xdm</h1>
+<h1 id="etc-init-d-xdm-start">/etc/init.d/xdm start</h1>
+<h1 id="rc-update-add-xdm-default">rc-update add xdm default</h1>
+<p>IME</p>
+<h1 id="emerge-av-scim-anthy">emerge -av scim-anthy</h1>
+<p>Font</p>
+<h1 id="emerge-av-ricty">emerge -av ricty</h1>
+<p>Term</p>
+<h1 id="emerge-av-xfce4-terminal">emerge -av xfce4-terminal</h1>
+<p>Taskbar</p>
+<h1 id="emerge-av-tint2">emerge -av tint2</h1>
+<p>Filer</p>
+<h1 id="pcmanfm-av-pcmanfm">pcmanfm -av pcmanfm</h1>
+<p>Desktop関連のデーモン
+USEにconsolekit, dbus追加</p>
+<h1 id="emerge-ask-changed-use-deep-world">emerge --ask --changed-use --deep @world</h1>
+<h1 id="rc-update-add-consolekit-default">rc-update add consolekit default</h1>
+<h1 id="rc-update-add-dbus-default">rc-update add dbus default</h1>
+<p>CapsキーをControlに変更。
+.Xmodmap
+!!
+!! Caps_Lock to Control
+!!
+remove Lock = Caps_Lock
+add Control = Caps_Lock
+keysym Caps_Lock = Control_L</p>
+<p>セッション
+~/.xsession
+xmodmap .Xmodmap</p>
+<p>export LANG=ja_JP.UTF-8</p>
+<h1 id="ri-ben-yu-ru-li-zhou-ri">日本語入力周り</h1>
+<p>export XMODIFIERS=&quot;@im=SCIM&quot;
+export GTK_IM_MODULE=&quot;scim-bridge&quot;
+export QT_IM_MODULE=&quot;scim-bridge&quot;
+scim -d &amp;</p>
+<p>exec ck-launch-session openbox-session</p>
+<p>TouchPad
+http://wiki.gentoo.org/wiki/Synaptics
+/etc/portage/make.conf
+INPUT_DEVICES=&quot;synaptics&quot;</p>
+<p>emerge --ask --changed-use --deep world</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#echo-x11-base-xorg-server-udev-etc-portage-package-use">echo &quot;x11-base&#x2F;xorg-server udev&quot; &gt;&gt; &#x2F;etc&#x2F;portage&#x2F;package.use</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-xorg-server">emerge -av xorg-server</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#env-update">env-update</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#source-etc-profile">source &#x2F;etc&#x2F;profile</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#cat-proc-cpuinfo-grep-model">cat &#x2F;proc&#x2F;cpuinfo | grep model</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#lspci-grep-i-vga">lspci | grep -i vga</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#genkernel-lvm2-menuconfig-no-clean-all">genkernel --lvm2 --menuconfig --no-clean all</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-xorg-drivers">emerge xorg-drivers</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#aticonfig-initial">aticonfig --initial</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#eselect-opengl-set-ati">eselect opengl set ati</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-xterm-xmodmap">emerge -av xterm xmodmap</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-openbox-openbox-menu">emerge -av openbox openbox-menu</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-lxdm">emerge -av lxdm</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#vim-etc-conf-d-xdm">vim &#x2F;etc&#x2F;conf.d&#x2F;xdm</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#etc-init-d-xdm-start">&#x2F;etc&#x2F;init.d&#x2F;xdm start</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#rc-update-add-xdm-default">rc-update add xdm default</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-scim-anthy">emerge -av scim-anthy</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-ricty">emerge -av ricty</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-xfce4-terminal">emerge -av xfce4-terminal</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-av-tint2">emerge -av tint2</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#pcmanfm-av-pcmanfm">pcmanfm -av pcmanfm</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#emerge-ask-changed-use-deep-world">emerge --ask --changed-use --deep @world</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#rc-update-add-consolekit-default">rc-update add consolekit default</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#rc-update-add-dbus-default">rc-update add dbus default</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/21/xorg/#ri-ben-yu-ru-li-zhou-ri">日本語入力周り</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

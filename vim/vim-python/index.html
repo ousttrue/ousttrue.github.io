@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;vim&#x2F;vim-python&#x2F;"> vim の python plugin 関連 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2019</div>
+        <div class="md">0428</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;vim&#x2F;">vim</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;python&#x2F;">python</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>phthon2は使わないのでスルーで。</p>
+<h2 id="vimzu-miip-mi">vim組み込み</h2>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">vim</span><span style="color:#c0c5ce;">
+</span></code></pre><h3 id="plugin-root-python3-pasu"><code>PLUGIN_ROOT/python3</code> パス</h3>
+<p>モジュールとして自動で <code>import</code> されるぽい。
+リロードは？
+開発不便なのでは。</p>
+<h3 id="py3file-komando">py3file コマンド</h3>
+<p><code>so%</code> などを経由してリロードできる。</p>
+<h3 id="py3-komando">py3 コマンド</h3>
+<p>インポート済みの関数呼び出しなど短い処理にとどめた方がよいと思う。</p>
+<h2 id="rimotopuraguin">リモートプラグイン</h2>
+<p><code>nvim</code> の機能で <code>msgpack-rpc</code> を通した別プロセスでの実行。</p>
+<p>vim8 への移植版。 https://github.com/roxma/nvim-yarp</p>
+<h3 id="plugin-root-rplugin-python3"><code>PLUGIN_ROOT/rplugin/python3</code></h3>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">neovim </span><span style="color:#65737e;"># msgpack-rpc で vim と通信する</span><span style="color:#65737e;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+@neovim.</span><span style="color:#bf616a;">plugin</span><span style="color:#eff1f5;">
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">RemotePlugin</span><span style="color:#eff1f5;">:</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">def </span><span style="color:#96b5b4;">__init__</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">nvim</span><span style="color:#c0c5ce;">):</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.nvim = nvim</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    @neovim.</span><span style="color:#bf616a;">command</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">HogeCommand</span><span style="color:#c0c5ce;">&#39;) </span><span style="color:#65737e;"># vimのコマンドとして実行可能になる</span><span style="color:#65737e;">
+    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">hogee</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">):</span><span style="color:#c0c5ce;">
+        </span><span style="color:#b48ead;">pass</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="bi-betemiruto">比べてみると</h2>
+<p><code>vim</code> もしくは <code>neovim</code> とやり取りする部分は、単体実行ができないような。
+なるほど。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">GUIやVIM</span><span style="color:#c0c5ce;">
++--------+     これを単体で開発する</span><span style="color:#c0c5ce;">
+|vim     |     +--------------+</span><span style="color:#c0c5ce;">
+|もしくは|----&gt;|使うモジュール|</span><span style="color:#c0c5ce;">
+|neovim  |     +--------------+</span><span style="color:#c0c5ce;">
+|をimport|</span><span style="color:#c0c5ce;">
++--------+</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="rimotopuraguin-gui">リモートプラグイン(GUI)</h2>
+<p>これは、<code>msgpack-rpc</code> を使うのだけど <code>GUI</code> から <code>nvim</code> を特定の作法で起動して <code>GUIイベントを受け取る</code> というものでちょっと違う。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-python/#vimzu-miip-mi">vim組み込み</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-python/#plugin-root-python3-pasu">PLUGIN_ROOT&#x2F;python3 パス</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-python/#py3file-komando">py3file コマンド</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-python/#py3-komando">py3 コマンド</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-python/#rimotopuraguin">リモートプラグイン</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/vim/vim-python/#plugin-root-rplugin-python3">PLUGIN_ROOT&#x2F;rplugin&#x2F;python3</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-python/#bi-betemiruto">比べてみると</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/vim/vim-python/#rimotopuraguin-gui">リモートプラグイン(GUI)</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

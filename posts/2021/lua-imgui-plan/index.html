@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;lua-imgui-plan&#x2F;"> lua による imgui 計画 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0717</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lua&#x2F;">lua</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;imgui&#x2F;">imgui</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <h2 id="rust-de-d3d11-rendarawojin-metekitaga">rust で D3D11 レンダラを進めてきたが・・・</h2>
+<p>当初 <code>rust</code> で <code>d3d11</code> のレンダラーを作ろうとして作業を進めていた。
+<code>imgui</code> を組み込んで、 <code>glTF</code> をロードして <code>unlit</code> で描画するところまで作ったが、
+<code>GUI</code> の作りこみが大変そうな感じだった。
+<code>rust</code> は関数オーバーロードが無いので　<code>imgui</code> のラッパーの使い勝手が <code>c++</code> より落ちるなど。
+ポインターを渡せるのは素敵なのだが。</p>
+<h2 id="nvim-0-5-haomosiroi">nvim-0.5 はおもしろい</h2>
+<p>ここで寄り道して、 <code>nvim</code> をいじり始めた。
+ちょうどバージョン <code>0.5</code> がリリースされるタイミングで、<code>0.5</code> になると lua サポートが強化されて、設定が lua で書けるとのこと。</p>
+<ul>
+<li><a href="https://zenn.dev/hituzi_no_sippo/articles/871c06cdbc45b53181e3">NeovimとLua</a></li>
+</ul>
+<p>ということで Windows 向けのソースからのビルドシステムを作って <code>nvim</code> 環境を整備してみた。
+lua で記述された plugin をなるべく採用。</p>
+<p><a href="https://github.com/ousttrue/my_nvim">https://github.com/ousttrue/my_nvim</a></p>
+<p>最近常用していた、 <code>vscode</code> の便利さにどこまで追いつけるか。</p>
+<ul>
+<li>Language Server Protocol。nvim-0.5 から nvim-lsp (luaで書いてある) がある。組み込み</li>
+<li>Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。<a href="https://github.com/mfussenegger/nvim-dap">https://github.com/mfussenegger/nvim-dap</a></li>
+</ul>
+<p>vscode から <code>lsp</code> と <code>dap</code> という重要な資産を持ってこれるので慣れればいけそうである。
+調べたところ下記のようだった。</p>
+<ul>
+<li>codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた <a href="https://github.com/ousttrue/nvim-dap">https://github.com/ousttrue/nvim-dap</a></li>
+<li>rust-analyzer 動いた</li>
+<li>python: lsp, dap ともに動きそう</li>
+<li>lua: lsp, dap ともに動きそう</li>
+<li>csharp: lsp, dap ともに動きそう(Unityはうまくいかず)</li>
+</ul>
+<p>nvim-lsp も nvim-dap も lua で簡単に記述されているので、コードを読めば、たぶんわかる。
+あとは、タスクランナーを整備すれば開発環境に使えそう。</p>
+<h2 id="luarocks-no-windows-yun-yong">luarocks の Windows 運用</h2>
+<p>lua で記述された nvim のパッケージマネージャー <a href="https://github.com/wbthomason/packer.nvim">https://github.com/wbthomason/packer.nvim</a> を採用したのだが、
+Windows で luarocks 機能が動かなかった。<a href="https://luarocks.org/">https://luarocks.org/</a> は <code>lua</code> のパッケージマネージャー。
+ちょっと、古め(vc2017より前)の vc でないとだめぽい。
+改造した。</p>
+<ul>
+<li>https://github.com/ousttrue/packer.nvim</li>
+<li>https://github.com/ousttrue/hererocks</li>
+</ul>
+<p>hererocks は、luarocks のインストーラー。
+<code>LUA_PATH</code> <code>package.path</code> を理解した。</p>
+<h2 id="sutandoaronno-lua-intapuritaniyorupuroziekuto">スタンドアロンの lua インタプリタによるプロジェクト</h2>
+<p>luarocks が無事に Windows で運用できるようになったので、プロジェクトローカルに必要なライブラリをインストールして、
+スタンドアロンの lua インタープリターを起点にしたアプリ開発ができないか探ってみた。
+lua インタプリタがアプリ組み込みだと dap の運用がしづらい(port 開けて attach とかになる)のでスタンドアロンの lua インタープリターを推す。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;"># フォルダ構成</span><span style="color:#c0c5ce;">
+project_root</span><span style="color:#c0c5ce;">
+  + lua(.gitignore) # hererocks でローカルビルドする</span><span style="color:#c0c5ce;">
+  + main.lua</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>これで、 <code>lsp</code> と <code>dap</code> が利用できれば快適になるのではないか。</p>
+<h3 id="lua-no-languageserver">lua の LanguageServer</h3>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">https://marketplace.visualstudio.com/items?itemName=sumneko.lua</a>
+<ul>
+<li><a href="https://github.com/sumneko/lua-language-server">https://github.com/sumneko/lua-language-server</a></li>
+</ul>
+</li>
+</ul>
+<p>がしっかり動き、<code>EmmyLua</code> の型ヒントを活用できることが分かった。</p>
+<p><a href="https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua">https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua</a> に例があって、</p>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#96b5b4;">require</span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">lspconfig</span><span style="color:#c0c5ce;">&#39;.sumneko_lua.</span><span style="color:#bf616a;">setup </span><span style="color:#c0c5ce;">{</span><span style="color:#c0c5ce;">
+  </span><span style="color:#a3be8c;">settings </span><span style="color:#c0c5ce;">= {</span><span style="color:#c0c5ce;">
+    </span><span style="color:#a3be8c;">Lua </span><span style="color:#c0c5ce;">= {</span><span style="color:#c0c5ce;">
+      </span><span style="color:#a3be8c;">workspace </span><span style="color:#c0c5ce;">= {</span><span style="color:#c0c5ce;">
+        </span><span style="color:#65737e;">-- Make the server aware of Neovim runtime files</span><span style="color:#65737e;">
+        </span><span style="color:#a3be8c;">library </span><span style="color:#c0c5ce;">= {</span><span style="color:#c0c5ce;">
+          [</span><span style="color:#bf616a;">vim</span><span style="color:#c0c5ce;">.fn.</span><span style="color:#bf616a;">expand</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">$VIMRUNTIME/lua</span><span style="color:#c0c5ce;">&#39;)] = </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">, </span><span style="color:#65737e;">-- lua標準の型定義がある</span><span style="color:#65737e;">
+          </span><span style="color:#c0c5ce;">[</span><span style="color:#bf616a;">vim</span><span style="color:#c0c5ce;">.fn.</span><span style="color:#bf616a;">expand</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">$VIMRUNTIME/lua/vim/lsp</span><span style="color:#c0c5ce;">&#39;)] = </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">, </span><span style="color:#65737e;">-- Vimの型定義がある</span><span style="color:#65737e;">
+        </span><span style="color:#c0c5ce;">},</span><span style="color:#c0c5ce;">
+      },</span><span style="color:#c0c5ce;">
+    },</span><span style="color:#c0c5ce;">
+  },</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>インテリセンスが効くし、組み込み関数の型ヒントも追加できる。</p>
+<h3 id="lua-no-debugadapter">lua の DebugAdapter</h3>
+<p>DebugAdapter も問題なく動いた。
+luajit の場合は対応しているものを使うべし。</p>
+<h4 id="lua-debug">Lua Debug</h4>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug">https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug</a>
+<ul>
+<li><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></li>
+</ul>
+</li>
+</ul>
+<p><a href="https://github.com/actboy168/bee.lua">https://github.com/actboy168/bee.lua</a> の</p>
+<ul>
+<li>Add error hook (for debugger)</li>
+<li>Add resume/yield hook (for debugger)</li>
+</ul>
+<p>謎の機能で実装されているぽい。</p>
+<h4 id="local-lua-debugger">Local Lua Debugger</h4>
+<ul>
+<li>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a></p>
+<ul>
+<li><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></li>
+</ul>
+</li>
+<li>
+<p>luajit でも動く</p>
+</li>
+<li>
+<p>TypeScriptToLua で書かれている</p>
+</li>
+</ul>
+<h2 id="lua-de-3d">lua で 3D</h2>
+<p>ちょっと試したところ、 luajit の <a href="https://luajit.org/ext_ffi.html">FFI</a> を使うのが有望そうという感触を得た。
+d3d は lua でやっている人があまりいなかった。</p>
+<ul>
+<li><a href="https://github.com/sonoro1234/LuaJIT-GLFW">https://github.com/sonoro1234/LuaJIT-GLFW</a></li>
+<li><a href="https://github.com/sonoro1234/LuaJIT-ImGui">https://github.com/sonoro1234/LuaJIT-ImGui</a></li>
+</ul>
+<p>最新の luajit-2.1.0-beta3(lua-5.1仕様) でいく。</p>
+<h2 id="imgui-no-ffi">imgui の ffi</h2>
+<p><code>cimgui</code> ではなく 素の <code>imgui</code> の luajit ffi できるか実験した。</p>
+<p><a href="https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi">https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi</a></p>
+<pre style="background-color:#2b303b;">
+<code class="language-lua" data-lang="lua"><span style="color:#bf616a;">ffi</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">cdef</span><span style="color:#c0c5ce;">[[</span><span style="color:#a3be8c;">
+void Test1_Method1(void) asm(&quot;_ZN5Test17Method1Ev&quot;);</span><span style="color:#a3be8c;">
+</span><span style="color:#c0c5ce;">]]</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>のように mangling に対応すればできそう。</p>
+<h2 id="libclang-niyoru-kodosheng-cheng">libclang による コード生成</h2>
+<p>ということで、 <code>luajit</code> + <code>FFI</code> を中心に <code>imgui</code> ラッパーを作ってレンダラーというか 3D ツールのインフラとなる、
+簡単なレンダラーと <code>Gizmo</code> に対応したツールキットを作るという方向になってきた。</p>
+<p><code>imgui</code> の <code>luajit</code> <code>FFI</code> の使い勝手が重要。</p>
+<p><a href="https://github.com/ousttrue/limgui">https://github.com/ousttrue/limgui</a></p>
+<ul>
+<li><input disabled="" type="checkbox"/>
+libclang で <code>imgui.h</code> をパースして、luajit FFI 生成と <code>lsp</code> への EmmyLua アノテーション生成を同時にやるツール。</li>
+</ul>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#rust-de-d3d11-rendarawojin-metekitaga">rust で D3D11 レンダラを進めてきたが・・・</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#nvim-0-5-haomosiroi">nvim-0.5 はおもしろい</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#luarocks-no-windows-yun-yong">luarocks の Windows 運用</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#sutandoaronno-lua-intapuritaniyorupuroziekuto">スタンドアロンの lua インタプリタによるプロジェクト</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#lua-no-languageserver">lua の LanguageServer</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#lua-no-debugadapter">lua の DebugAdapter</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#lua-de-3d">lua で 3D</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#imgui-no-ffi">imgui の ffi</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/lua-imgui-plan/#libclang-niyoru-kodosheng-cheng">libclang による コード生成</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

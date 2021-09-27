@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2012&#x2F;12&#x2F;26&#x2F;customdelegate&#x2F;"> カスタムデリゲート 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2012</div>
+        <div class="md">1226</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>C++のQt4と平行してPyQt4を使い始めた。大概の用途にはこっちで十分な気がする。</p>
+<p>pyqtのチュートリアルには、</p>
+<p>http://zetcode.com/tutorials/pyqt4/</p>
+<p>がいい。wxWidgetsとかgtkでも世話になったが、ここのチュートリアルはサンプルが小さいので助かる。
+ビューのアイテム表示をカスタマイズするデリゲートについて調査中。</p>
+<h1 id="usr-bin-python">!/usr/bin/python</h1>
+<h1 id="coding-utf-8">-<em>- coding: utf-8 -</em>-</h1>
+<p>import sys from PyQt4 import QtGui, QtCore from random import randint</p>
+<p>class CustomDelegate(QtGui.QItemDelegate):</p>
+<p>def __init__(self, parent = None):</p>
+<p>:   super(CustomDelegate, self).__init__(parent) self.editor
+= QtGui.QSpinBox()</p>
+<h2 id="bian-ji-shi"># 編集時</h2>
+<p># create widget def createEditor(self, parent, styleOption, index):
+editor = QtGui.QSpinBox(parent) return editor</p>
+<p># model to editor def setEditorData(self, editor, index):
+data=index.model().data(index, QtCore.Qt.EditRole)
+editor.setValue(data.toInt()[0])</p>
+<p># editor to model def setModelData(self, editor, model, index):
+model.setData(index, editor.value())</p>
+<p>def updateEditorGeometry(self, editor, option, index):</p>
+<p>:   editor.setGeometry(option.rect)</p>
+<h2 id="tong-chang-shi"># 通常時</h2>
+<p># item render def paint(self, painter, option, index): widget =
+QtGui.QLabel() #widget = QtGui.QSpinBox()
+data=index.model().data(index, QtCore.Qt.EditRole)
+widget.setText(data.toString()[0])
+#widget.setValue(data.toInt()[0]) widget.setGeometry(option.rect)
+# border ? point=QtCore.QPoint(option.rect.left()+2,
+option.rect.top()+2) widget.render(painter, point)</p>
+<h2 id="itemyi-ge-fen-noda-kisa"># item一個分の大きさ</h2>
+<p>def sizeHint(self, option, index):</p>
+<p>:   self.editor.setGeometry(option.rect)
+return self.editor.sizeHint()</p>
+<p>def main():</p>
+<p>:   app = QtGui.QApplication(sys.argv)</p>
+<pre style="background-color:#2b303b;">
+<code>\# setup model model = QtGui.QStandardItemModel() for n in
+range(10): item = QtGui.QStandardItem('%s' % randint(1, 100))
+model.appendRow(item)
+
+view = QtGui.QListView()
+view.setModel(model) view.setItemDelegate(CustomDelegate())
+view.show()
+
+sys.exit(app.exec\_())
+</code></pre>
+<p>if __name__ == '__main__':</p>
+<p>:   main()</p>
+<p>QItemDelegateは非編集時のアイテム描画にpaintメソッドを使い、編集時の描画にcreateEditor,
+setEditorData, setModelData,
+updateEditorGeometryを使う。カスタムデリゲートにするとアイテムの大きさが変わりそうなのでsizeHintも実装するとよさげ。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#usr-bin-python">!&#x2F;usr&#x2F;bin&#x2F;python</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#coding-utf-8">-- coding: utf-8 --</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#bian-ji-shi"># 編集時</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#tong-chang-shi"># 通常時</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#itemyi-ge-fen-noda-kisa"># item一個分の大きさ</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

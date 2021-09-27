@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;08&#x2F;pybullet&#x2F;"> PyBulletを使ってみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0814</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>BulletPhysicsの公式Pythonバインディングが出てたので使ってみる。</p>
+<p>Windows10(64bit) + Python3.6
+pip</p>
+<blockquote>
+<p>C:\Python36\Scripts\pip.exe install pybullet</p>
+</blockquote>
+<p>cl.exe not found的な
+msvc-14.0なコンパイラがインストールされているにも関わらず出るなら
+これ
+かもしれない
+C:\Python36\Lib\distutils_msvccompiler.pyを修正すればいけるかも。
+try:
+out = subprocess.check_output(
+'cmd /u /c &quot;{}&quot; {} &amp;&amp; set'.format(vcvarsall, plat_spec),
+stderr=subprocess.STDOUT,
+).decode('utf-16le', errors='replace')
+#######################################################################
+if out.startswith(&quot;Error in script usage&quot;):
+out = subprocess.check_output(
+'cmd /u /c &quot;{}&quot; {} &amp;&amp; set'.format(&quot;C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot;, plat_spec),
+stderr=subprocess.STDOUT,
+).decode('utf-16le', errors='replace')
+#######################################################################
+except subprocess.CalledProcessError as exc:
+log.error(exc.output)
+raise DistutilsPlatformError(&quot;Error executing {}&quot;
+.format(exc.cmd))</p>
+<p>utf-8がどうこう的な
+いい加減WindowsはCP932を使うのやめて欲しいのだけど。
+chcp65001</p>
+<p>インストールできた。
+使ってみる</p>
+<p>pybullet quickstart guide</p>
+<p>日付が2017で思ったより新しい。むしろ、記述中くらいか。
+hello pybullet
+import pybullet as p
+physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
+p.setGravity(0,0,-10)
+planeId = p.loadURDF(&quot;plane.urdf&quot;)
+cubeStartPos = [0,0,1]
+cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
+boxId = p.loadURDF(&quot;r2d2.urdf&quot;,cubeStartPos, cubeStartOrientation)
+p.stepSimulation()
+cubePos, cubeOrn = p.getBasePositionAndOrientation(boxId)
+print(cubePos,cubeOrn)
+p.disconnect()</p>
+<p>plane.urdfはどこにあるのか。
+bullet3のソースの中にあった。bullet3/build/data/plane.urdf</p>
+<?xml version="0.0" ?>
+<robot name="plane">
+  <link name="planeLink">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value=".0"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+                <mesh filename="plane.obj" scale="1 1 1"/>
+      </geometry>
+       <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 -5"/>
+      <geometry>
+        <box size="30 30 10"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>
+<p>なるほどー。
+ちょっとhelloを改造
+import os
+os.chdir('D:/dev/_python/bullet3/build/data') # urdfのあるところに移動</p>
+<p>import pybullet as p
+physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
+p.setGravity(0,0,-10)
+planeId = p.loadURDF(&quot;plane.urdf&quot;)
+cubeStartPos = [0,0,1]
+cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
+boxId = p.loadURDF(&quot;r2d2.urdf&quot;,cubeStartPos, cubeStartOrientation)</p>
+<p>while True: # とりあえずpythonを抜けないように
+p.stepSimulation()
+cubePos, cubeOrn = p.getBasePositionAndOrientation(boxId)
+print(cubePos,cubeOrn)</p>
+<p>p.disconnect()</p>
+<p>面白そう。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

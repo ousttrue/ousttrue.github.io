@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;cpp&#x2F;com-wrl&#x2F;"> WRLを使った最近のComプログラミング 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0908</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;com&#x2F;">com</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>古のATLのWindows8以降？版のWRLを使ってみる。</p>
+<h2 id="ixmlhttprequest2woshi-usanpurukodowobesuniwrlhua-sitemiru">IXMLHTTPRequest2を使うサンプルコードをベースにWRL化してみる。</h2>
+<p>ComPtr
+何はともあれComPtrを取り入れる。
+Before</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">Msxml6.h</span><span style="color:#c0c5ce;">&gt;
+</span><span style="color:#b48ead;">#pragma</span><span style="color:#c0c5ce;"> comment(lib, &quot;msxml6.lib&quot;)
+
+</span><span style="color:#b48ead;">#define </span><span style="color:#8fa1b3;">SAFERELEASE</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">p</span><span style="color:#c0c5ce;">){ </span><span style="color:#b48ead;">if</span><span style="color:#c0c5ce;">(p){p-&gt;</span><span style="color:#bf616a;">Release</span><span style="color:#c0c5ce;">(); p=</span><span style="color:#d08770;">nullptr</span><span style="color:#c0c5ce;">;}}
+
+</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">int</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">char </span><span style="color:#c0c5ce;">**)
+{
+    </span><span style="color:#bf616a;">CoInitializeEx</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">NULL</span><span style="color:#c0c5ce;">, COINITBASE_MULTITHREADED);
+
+    IXMLHTTPRequest2 *pXHR=</span><span style="color:#d08770;">nullptr</span><span style="color:#c0c5ce;">;
+    </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> hr = </span><span style="color:#bf616a;">CoCreateInstance</span><span style="color:#c0c5ce;">(CLSID_FreeThreadedXMLHTTP60,
+            </span><span style="color:#d08770;">NULL</span><span style="color:#c0c5ce;">,
+            CLSCTX_INPROC_SERVER,
+            </span><span style="color:#bf616a;">IID_PPV_ARGS</span><span style="color:#c0c5ce;">(&amp;pXHR));
+    </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">FAILED</span><span style="color:#c0c5ce;">(hr)) {
+        </span><span style="color:#b48ead;">goto</span><span style="color:#c0c5ce;"> EXIT;
+    }
+
+EXIT:
+    </span><span style="color:#bf616a;">SAFERELEASE</span><span style="color:#c0c5ce;">(pXHR);
+    </span><span style="color:#bf616a;">CoUninitialize</span><span style="color:#c0c5ce;">();
+
+    </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">FAILED</span><span style="color:#c0c5ce;">(hr)) {
+        </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">;
+    }
+    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">;
+}
+</span></code></pre><h2 id="safereleasetogoto">SAFERELEASEとgoto</h2>
+<p>ComPtrを取り入れてSAFERELEASEとgotoを除去しよう。
+After
+RAIIを取り入れて積極的にEarly Outできる(後始末が自動になったので)。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">Msxml6.h</span><span style="color:#c0c5ce;">&gt;
+</span><span style="color:#b48ead;">#pragma</span><span style="color:#c0c5ce;"> comment(lib, &quot;msxml6.lib&quot;)
+</span><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">wrl/client.h</span><span style="color:#c0c5ce;">&gt;
+
+
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">ComInitializer
+</span><span style="color:#eff1f5;">{
+</span><span style="color:#b48ead;">public</span><span style="color:#eff1f5;">:
+    </span><span style="color:#8fa1b3;">ComInitializer</span><span style="color:#eff1f5;">()
+    {
+        </span><span style="color:#bf616a;">CoInitializeEx</span><span style="color:#eff1f5;">(</span><span style="color:#d08770;">NULL</span><span style="color:#eff1f5;">, COINITBASE_MULTITHREADED);
+    }
+    </span><span style="color:#8fa1b3;">~ComInitializer</span><span style="color:#eff1f5;">()
+    {
+        </span><span style="color:#bf616a;">CoUninitialize</span><span style="color:#eff1f5;">();
+    }
+}</span><span style="color:#c0c5ce;">;
+
+</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">int</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">char </span><span style="color:#c0c5ce;">**)
+{
+    ComInitializer co;
+
+    Microsoft::WRL::ComPtr&lt;IXMLHTTPRequest2&gt; pXHR;
+    </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> hr = </span><span style="color:#bf616a;">CoCreateInstance</span><span style="color:#c0c5ce;">(CLSID_FreeThreadedXMLHTTP60,
+            </span><span style="color:#d08770;">NULL</span><span style="color:#c0c5ce;">,
+            CLSCTX_INPROC_SERVER,
+            </span><span style="color:#bf616a;">IID_PPV_ARGS</span><span style="color:#c0c5ce;">(&amp;pXHR));
+    </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">FAILED</span><span style="color:#c0c5ce;">(hr)) {
+        </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">;
+    }
+
+    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">;
+}
+</span></code></pre><h2 id="iunknownshi-zhuang-tocomptrchu-qi-hua">IUnknown実装とComPtr初期化</h2>
+<p>Callbackの定義等で自らComオブジェクトを定義する場合がある。
+IXMLHTTPRequest2Callbackを実装する例。
+Before</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">CCallback </span><span style="color:#eff1f5;">:</span><span style="color:#b48ead;">public </span><span style="color:#a3be8c;">IXMLHTTPRequest2Callback
+</span><span style="color:#eff1f5;">{
+    ULONG </span><span style="color:#bf616a;">m_cRef</span><span style="color:#c0c5ce;">=</span><span style="color:#d08770;">1</span><span style="color:#eff1f5;">;
+
+</span><span style="color:#b48ead;">public</span><span style="color:#eff1f5;">:
+    </span><span style="color:#8fa1b3;">CCallback</span><span style="color:#eff1f5;">()
+    {
+    }
+
+    </span><span style="color:#8fa1b3;">~CCallback</span><span style="color:#eff1f5;">()
+    {
+    }
+
+    </span><span style="color:#65737e;">// IUnknown
+    </span><span style="color:#bf616a;">STDMETHODIMP_</span><span style="color:#eff1f5;">(ULONG) </span><span style="color:#8fa1b3;">AddRef</span><span style="color:#eff1f5;">()</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#bf616a;">InterlockedIncrement</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&amp;</span><span style="color:#bf616a;">m_cRef</span><span style="color:#eff1f5;">);
+        </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">m_cRef</span><span style="color:#eff1f5;">;
+    }
+
+    </span><span style="color:#bf616a;">STDMETHODIMP_</span><span style="color:#eff1f5;">(ULONG) </span><span style="color:#8fa1b3;">Release</span><span style="color:#eff1f5;">()</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        ULONG ulRefCount </span><span style="color:#c0c5ce;">= </span><span style="color:#bf616a;">InterlockedDecrement</span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">&amp;</span><span style="color:#bf616a;">m_cRef</span><span style="color:#eff1f5;">);
+        </span><span style="color:#b48ead;">if </span><span style="color:#eff1f5;">(</span><span style="color:#d08770;">0 </span><span style="color:#c0c5ce;">== </span><span style="color:#bf616a;">m_cRef</span><span style="color:#eff1f5;">)
+        {
+            </span><span style="color:#b48ead;">delete </span><span style="color:#bf616a;">this</span><span style="color:#eff1f5;">;
+        }
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> ulRefCount;
+    }
+
+    STDMETHODIMP </span><span style="color:#8fa1b3;">QueryInterface </span><span style="color:#eff1f5;">(REFIID </span><span style="color:#bf616a;">riid</span><span style="color:#eff1f5;">, </span><span style="color:#b48ead;">void </span><span style="color:#c0c5ce;">**</span><span style="color:#bf616a;">ppvObj</span><span style="color:#eff1f5;">)</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#65737e;">// Always set out parameter to NULL, validating it first.
+        </span><span style="color:#b48ead;">if </span><span style="color:#eff1f5;">(</span><span style="color:#c0c5ce;">!</span><span style="color:#eff1f5;">ppvObj) </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_INVALIDARG;
+
+        </span><span style="color:#c0c5ce;">*</span><span style="color:#eff1f5;">ppvObj </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">NULL</span><span style="color:#eff1f5;">;
+        </span><span style="color:#b48ead;">if </span><span style="color:#eff1f5;">(riid </span><span style="color:#c0c5ce;">==</span><span style="color:#eff1f5;"> IID_IUnknown 
+                </span><span style="color:#c0c5ce;">||</span><span style="color:#eff1f5;"> riid </span><span style="color:#c0c5ce;">==</span><span style="color:#eff1f5;"> IID_IXMLHTTPRequest2Callback 
+           )
+        {
+            </span><span style="color:#65737e;">// Increment the reference count and return the pointer.
+            </span><span style="color:#c0c5ce;">*</span><span style="color:#eff1f5;">ppvObj </span><span style="color:#c0c5ce;">= </span><span style="color:#eff1f5;">(LPVOID)</span><span style="color:#bf616a;">this</span><span style="color:#eff1f5;">;
+            </span><span style="color:#bf616a;">AddRef</span><span style="color:#eff1f5;">();
+            </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> NOERROR;
+        }
+
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_NOINTERFACE;
+    }
+
+    </span><span style="color:#65737e;">// IXMLHTTPRequest2Callback
+    </span><span style="color:#eff1f5;">STDMETHODIMP </span><span style="color:#8fa1b3;">OnRedirect</span><span style="color:#eff1f5;">(
+        __RPC__in_opt IXMLHTTPRequest2 </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pXHR</span><span style="color:#eff1f5;">,
+        __RPC__in_string </span><span style="color:#b48ead;">const </span><span style="color:#eff1f5;">WCHAR </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pwszRedirectUrl</span><span style="color:#eff1f5;">)</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_NOTIMPL;
+    }
+
+    STDMETHODIMP
+        </span><span style="color:#8fa1b3;">OnHeadersAvailable</span><span style="color:#eff1f5;">(
+            __RPC__in_opt IXMLHTTPRequest2 </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pXHR</span><span style="color:#eff1f5;">,
+            DWORD </span><span style="color:#bf616a;">dwStatus</span><span style="color:#eff1f5;">,
+            __RPC__in_string </span><span style="color:#b48ead;">const </span><span style="color:#eff1f5;">WCHAR </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pwszStatus
+        </span><span style="color:#eff1f5;">)</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_NOTIMPL;
+    }
+
+    STDMETHODIMP
+        </span><span style="color:#8fa1b3;">OnDataAvailable</span><span style="color:#eff1f5;">(
+            __RPC__in_opt IXMLHTTPRequest2 </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pXHR</span><span style="color:#eff1f5;">,
+            __RPC__in_opt ISequentialStream </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pResponseStream
+        </span><span style="color:#eff1f5;">)</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_NOTIMPL;
+    }
+
+    STDMETHODIMP
+        </span><span style="color:#8fa1b3;">OnResponseReceived</span><span style="color:#eff1f5;">(
+            __RPC__in_opt IXMLHTTPRequest2 </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pXHR</span><span style="color:#eff1f5;">,
+            __RPC__in_opt ISequentialStream </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pResponseStream
+        </span><span style="color:#eff1f5;">)</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_NOTIMPL;
+    }
+
+    STDMETHODIMP
+        </span><span style="color:#8fa1b3;">OnError</span><span style="color:#eff1f5;">(
+            __RPC__in_opt IXMLHTTPRequest2 </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">pXHR</span><span style="color:#eff1f5;">,
+            HRESULT </span><span style="color:#bf616a;">hrError
+        </span><span style="color:#eff1f5;">)</span><span style="color:#b48ead;">override
+    </span><span style="color:#eff1f5;">{
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> E_NOTIMPL;
+    }
+}</span><span style="color:#c0c5ce;">;
+</span></code></pre>
+<p>IUnknownの実装(AddRef, Release, QueryInterface)が定型コードである</p>
+<p>newしたときにリファレンスカウントが1であること、AddRef, Releaseを正しく実装する
+QueryInterfaceを正しく実装する(あとでインタフェースを増減させたときに更新を忘れたりする)</p>
+<p>ComPtrの初期化が不穏</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">Microsoft::WRL::ComPtr&lt;CCallback&gt; pCallback;
+</span><span style="color:#65737e;">// RefCount=1のインスタンスを内部ポインタ(&amp;演算子)に渡す
+</span><span style="color:#c0c5ce;">*((CCallback**)&amp;pCallback)=</span><span style="color:#b48ead;">new </span><span style="color:#bf616a;">CCallback</span><span style="color:#c0c5ce;">(); 
+</span></code></pre>
+<p>または、</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">Microsoft::WRL::ComPtr&lt;CCallback&gt; </span><span style="color:#8fa1b3;">pCallback</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">new </span><span style="color:#bf616a;">CCallback</span><span style="color:#c0c5ce;">); </span><span style="color:#65737e;">// 1+1はRefCount=2
+</span><span style="color:#c0c5ce;">pCallback.</span><span style="color:#bf616a;">Get</span><span style="color:#c0c5ce;">()-&gt;</span><span style="color:#bf616a;">Release</span><span style="color:#c0c5ce;">(); </span><span style="color:#65737e;">// 1に減らす
+</span></code></pre>
+<p>のようなあからさまに不穏なコードを書かなければならない。
+間違いの元である。
+After</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">wrl/implements.h</span><span style="color:#c0c5ce;">&gt;
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">CCallback </span><span style="color:#eff1f5;">:
+    </span><span style="color:#b48ead;">public </span><span style="color:#a3be8c;">Microsoft::WRL::RuntimeClass</span><span style="color:#eff1f5;">&lt;
+    Microsoft::WRL::RuntimeClassFlags&lt;Microsoft::WRL::ClassicCom&gt;, IXMLHTTPRequest2Callback&gt;
+{
+</span><span style="color:#b48ead;">public</span><span style="color:#eff1f5;">: 
+    </span><span style="color:#8fa1b3;">CCallback</span><span style="color:#eff1f5;">()
+    {
+    }
+
+    </span><span style="color:#8fa1b3;">~CCallback</span><span style="color:#eff1f5;">()
+    {
+    }
+
+    </span><span style="color:#65737e;">// IXMLHTTPRequest2Callback
+    // 省略
+</span><span style="color:#eff1f5;">}</span><span style="color:#c0c5ce;">;
+</span></code></pre>
+<p>とすることでIUnknownの実装をWRL::RuntimeClassに任せることができる。
+また、newによる初期化を禁止されるので、newではなくWRL::Makeを使う。</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">error C2248: &#39;Microsoft::WRL::Details::DontUseNewUseMake::operator new&#39;: private メンバー (クラス &#39;Microsoft::WRL::Details::DontUseNewUseMake&#39; で宣言されている) にアクセスできません。
+</span></code></pre><pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">Microsoft::WRL::ComPtr&lt;CCallback&gt; pCallback=Microsoft::WRL::Make&lt;CCallback&gt;();
+</span></code></pre><h2 id="makeandinitialize-chu-qi-hua-mesotudo">MakeAndInitialize 初期化メソッド</h2>
+<p>Makeよりこっちの方がCom風。
+RuntimeClassInitializeという名前のメンバ関数で初期化する。失敗した場合はS_OK以外を返す。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">CCallback </span><span style="color:#eff1f5;">:
+    </span><span style="color:#b48ead;">public </span><span style="color:#a3be8c;">Microsoft::WRL::RuntimeClass</span><span style="color:#eff1f5;">&lt;
+    Microsoft::WRL::RuntimeClassFlags&lt;Microsoft::WRL::ClassicCom&gt;, IXMLHTTPRequest2Callback&gt;
+{
+</span><span style="color:#b48ead;">public</span><span style="color:#eff1f5;">: 
+
+    STDMETHODIMP </span><span style="color:#8fa1b3;">RuntimeClassInitialize</span><span style="color:#eff1f5;">()
+    {
+        </span><span style="color:#b48ead;">return</span><span style="color:#eff1f5;"> S_OK;
+    }
+
+}</span><span style="color:#c0c5ce;">;
+
+Microsoft::WRL::ComPtr&lt;CCallback&gt; pCallback;
+hr=Microsoft::WRL::MakeAndInitialize&lt;CCallback&gt;(&amp;pCallback);
+</span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">FAILED</span><span style="color:#c0c5ce;">(hr)) {
+    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">;
+}
+</span></code></pre>
+<p>MakeAndInitialize 初期化メソッド(引数)
+9つまでいける。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">    STDMETHODIMP </span><span style="color:#8fa1b3;">RuntimeClassInitialize</span><span style="color:#c0c5ce;">(DWORD </span><span style="color:#bf616a;">value</span><span style="color:#c0c5ce;">)
+    {
+        </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> S_OK;
+    }
+
+    DWORD value = </span><span style="color:#d08770;">255</span><span style="color:#c0c5ce;">;
+    Microsoft::WRL::ComPtr&lt;CCallback&gt; pCallback;
+    hr=Microsoft::WRL::MakeAndInitialize&lt;CCallback&gt;(&amp;pCallback, value);
+    </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">FAILED</span><span style="color:#c0c5ce;">(hr)) {
+        </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">;
+    }
+</span></code></pre>
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/cpp/com-wrl/#ixmlhttprequest2woshi-usanpurukodowobesuniwrlhua-sitemiru">IXMLHTTPRequest2を使うサンプルコードをベースにWRL化してみる。</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/cpp/com-wrl/#safereleasetogoto">SAFERELEASEとgoto</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/cpp/com-wrl/#iunknownshi-zhuang-tocomptrchu-qi-hua">IUnknown実装とComPtr初期化</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/cpp/com-wrl/#makeandinitialize-chu-qi-hua-mesotudo">MakeAndInitialize 初期化メソッド</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

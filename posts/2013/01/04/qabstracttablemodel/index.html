@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;01&#x2F;04&#x2F;qabstracttablemodel&#x2F;"> QTableViewとQAbstractTableModel 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0104</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>ディレクトリ表示をする専用のウィジェットがあったような気がするが、練習のため実装。</p>
+<h1 id="usr-bin-env-python">!/usr/bin/env python</h1>
+<h1 id="coding-utf-8">coding: utf-8</h1>
+<p>import re import operator import os import sys import stat from
+PyQt4.QtCore import * from PyQt4.QtGui import *</p>
+<p>class File(object):
+header=[</p>
+<p>‘type’, ‘name’, ‘size’, ‘mtime’ ]
+def <strong>init</strong>(self, path):
+self.path=os.path.abspath(path) self.data=[None, None, None,
+None] s=os.stat(path) mode=s[stat.ST_MODE] if
+stat.S_ISDIR(mode): self.data[0]=‘dir’ elif
+stat.S_ISLNK(mode): self.data[0]=‘link’ elif
+stat.S_ISREG(mode): self.data[0]=‘file’ else:
+self.data[0]=‘unknown’ self.data[1]=os.path.basename(path)
+self.data[2]=s[stat.ST_SIZE]
+self.data[3]=s[stat.ST_MTIME]
+def <strong>str</strong>(self):
+return “&lt;%s %s&gt;” % (self.data[0], self.data[1])
+def <strong>getitem</strong>(self, key):
+return self.data[key]
+def is_dir(self):
+return self.data[0]==‘dir’</p>
+<p>class MyTableModel(QAbstractTableModel):
+def <strong>init</strong>(self, parent, path):</p>
+<p>super(MyTableModel, self).<strong>init</strong>(parent) def
+get_stat(name): f=File(os.path.join(path, name)) return f
+self.data=[get_stat(os.path.join(path, “..”))]+[get_stat(e)
+for e in os.listdir(path)]
+def rowCount(self, parent):
+return len(self.data)
+def columnCount(self, parent):
+return len(File.header)
+def data(self, index, role):
+if not index.isValid():</p>
+<p>return None
+elif role != Qt.DisplayRole:
+return None</p>
+<p>return self.data[index.row()][index.column()]
+def headerData(self, col, orientation, role):
+if orientation == Qt.Horizontal and role == Qt.DisplayRole:</p>
+<p>return File.header[col]</p>
+<p>return None
+def sort(self, Ncol, order):
+”““Sort table by given column number.
+“”” self.emit(SIGNAL(“layoutAboutToBeChanged()”)) self.data =
+sorted(self.data,
+key=operator.itemgetter(Ncol), reverse=(order!=Qt.DescendingOrder))
+self.emit(SIGNAL(“layoutChanged()”))
+def getRow(self, index):
+return self.data[index]</p>
+<p>class MyWindow(QWidget):
+def <strong>init</strong>(self, *args): QWidget.<strong>init</strong>(self,*args)</p>
+<h1 id="create-the-view-self-tv-qtableview-hide">create the view self.tv = QTableView() # hide</h1>
+<p>grid self.tv.setShowGrid(False) # hide vertical header vh
+= self.tv.verticalHeader() vh.setVisible(False) # set
+horizontal header properties hh = self.tv.horizontalHeader()
+hh.setStretchLastSection(True) # set column width to fit
+contents self.tv.resizeColumnsToContents() # enable
+sorting self.tv.setSortingEnabled(True) # layout layout
+= QVBoxLayout() layout.addWidget(self.tv) self.setLayout(layout)</p>
+<h1 id="double">double</h1>
+<p>click self.tv.doubleClicked.connect(self.onDoubleClick)</p>
+<p>def chdir(self, path):</p>
+<p>self.tm = MyTableModel(self, path) # set the table
+model self.tv.setModel(self.tm)
+def onDoubleClick(self, event):
+item=self.tm.getRow(event.row()) if not item.is_dir():
+return self.chdir(item.path)</p>
+<p>def main():
+app = QApplication(sys.argv) w = MyWindow() w.chdir(“.”) w.show()
+sys.exit(app.exec_())
+if <strong>name</strong> == “<strong>main</strong>“:
+main()</p>
+<p>ToDo</p>
+<p>種類毎のアイコン表示
+日付の表示
+数字カラムの右寄せ
+行選択
+FilterProxyModel</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/01/04/qabstracttablemodel/#usr-bin-env-python">!&#x2F;usr&#x2F;bin&#x2F;env python</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/01/04/qabstracttablemodel/#coding-utf-8">coding: utf-8</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/01/04/qabstracttablemodel/#create-the-view-self-tv-qtableview-hide">create the view self.tv = QTableView() # hide</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/01/04/qabstracttablemodel/#double">double</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

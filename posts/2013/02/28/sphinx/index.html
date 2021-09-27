@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;02&#x2F;28&#x2F;sphinx&#x2F;"> sphinxも入れてみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0228</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>sphinxも入れてみる
+OctopressのサブディレクトリにSphinxを入れた。
+今回のディレクトリ配置
+work
++ octopress
++ Rakefile
++ _deploy
++ sphinx
++ Makefile
++ source
++ conf.py
++ build
++ sphihnx-to-github
++ setup.py
++ sphinxtogithub
++ <strong>init</strong>.py</p>
+<p>octopressをメインにサブディレクトリにsphinxを導入してみる。
+octopressの外のディレクトリで、
+$ mkdir sphinx
+$ cd sphinx
+$ sphinx-quickstart</p>
+<p>とした。 Makefileに
+octopress: html
+rm -rf ../octopress/_deploy/sphinx
+cp -rp build/html ../octopress/_deploy/sphinx</p>
+<p>と追記。 さらにoctopress/Rakefileを改造。
+{% codeblock lang:ruby %} multitask :push do puts “## Deploying branch
+to Github Pages “ (Dir[“#{deploy_dir}/<em>“]).each { |f| case f when
+%r|.</em>/sphinx$| # donothing puts “skip #{f}” else rm_rf(f) end } {%
+endcodeblock %}
+としてsphinxディレクトリをpush前にクリアしないようにした。
+これでoctopressと共存できた。
+次はsphinxの見た目の問題。
+octopressと共存するので.nojekyllは使えないのでsphinx-to-githubを使う。
+$ pip install -e git+git://github.com/michaeljones/sphinx-to-github.git#egg=sphinx-to-github</p>
+<p>エラー
+error import name setup</p>
+<p>とかそんな感じのエラー(うろ覚え)。
+いったんローカルにcloneして調べてみる。
+$ git clone https://github.com/michaeljones/sphinx-to-github.git
+$ cd sphinx-to-github
+$ sudo python setup.py install</p>
+<p>しばらく調べた結果、
+python3でモジュールimportの仕様が変わったのが原因と理解。直した。
+$ cd sphinx-to-github/sphinxtogithub
+$ mv sphinxtogithub.py <strong>init</strong>.py
+$ cd ..
+$ sudo python setup.py install</p>
+<p>sphinx/source/conf.pyに
+extensions = ['sphinxtogithub']</p>
+<p>と書いて
+$ Make octopress</p>
+<p>でできあがり。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

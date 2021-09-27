@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;10&#x2F;29&#x2F;waf&#x2F;"> pythonによるビルドスクリプトwafを使い始めた 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">1029</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>pythonによるビルドスクリプトwafを使い始めた
+pythonによるビルドシステムwafを使ってみた。
+使ってみた感触ではvcとgcc両方でビルドするとかそういうのに向いていそうなので、要するにわしのニーズに合っているように思える。
+https://code.google.com/p/waf/
+前から気にはなっていたのだけれどどうにも取っ付きが悪くて使えるところまでたどりつけていなかったのだが、やっと最初の一歩を踏み出すことができたのでメモを残す。
+早速実践から行く。
++hello/
++hello.cpp</p>
+<p>hello.cpp
+#include <iostream></p>
+<p>int main(int argc, char **argv)
+{
+std::cout &lt;&lt; &quot;hello waf !&quot; &lt;&lt; std::endl;
+return 0;
+}</p>
+<p>というプロジェクトを作ったとする。
+https://code.google.com/p/waf/downloads/detail?name=waf-1.7.13
+からwaf(python
+scriptの圧縮されたもの)をダウンロードしてwscriptを記述する。
++hello/
++hello.cpp
++waf
++wscript</p>
+<p>wscriptは以下のようにする。
+APPNAME='hello'
+VERSION='1.0.0'</p>
+<p>def configure(conf):
+conf.env['MSVC_TARGETS'] = ['x86']
+conf.load('msvc')
+conf.env.CXXFLAGS = ['/nologo', '/EHsc']</p>
+<p>def build(bld):
+bld.program(
+source='hello.cpp', 
+target=APPNAME
+)</p>
+<p>初回とwscriptのconfigureを修正する度にconfigureする。</p>
+<blockquote>
+<p>python waf configure 
+Setting top to                           : C:\work_waf\hello
+Setting out to                           : C:\work_waf\hello\build
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\amd64\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\x86_IA64\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\BIN\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\CL.exe
+Checking for program LINK                : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\LINK.exe
+Checking for program LIB                 : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\LIB.exe
+Checking for program MT                  : C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\MT.exe
+Checking for program RC                  : C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\RC.exe
+'configure' finished successfully (6.219s)</p>
+</blockquote>
+<p>ビルドする。</p>
+<blockquote>
+<p>python waf build
+Waf: Entering directory <code>C:\work\_waf\hello\build' [1/2] cxx: hello.cpp -&gt; build\hello.cpp.1.o hello.cpp [2/2] cxxprogram: build\hello.cpp.1.o -&gt; build\hello.exe build\hello.exe.manifest Waf: Leaving directory </code>C:\work_waf\hello\build'
+'build' finished successfully (1.138s)</p>
+</blockquote>
+<p>実行してみる。</p>
+<blockquote>
+<p>.\build\hello.exe
+hello waf !</p>
+</blockquote>
+<p>ということでvcでexeをビルドするスクリプトができた。
+何もパスの設定をしなくてもvcのコンパイラを勝手に探してビルドできるのは意外だった。
+とはいえ、これだけではwafの嬉しさは発揮されないのでこれからwscriptを拡張していく。
+次回、debugとrelease, 32bitビルドと64bitビルドの管理について書く予定。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;python&#x2F;boost-python3&#x2F;"> Boost.PythonのPython3でのstd::string、std::wstringのふるまい 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0810</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;python&#x2F;">python</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>ちょっと気になったので確認。</p>
+<p>Windows10(64bit) VisualStudio2017 + Python3.6</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">#define </span><span style="color:#c0c5ce;">BOOST_PYTHON_STATIC_LIB  
+</span><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">boost/python.hpp</span><span style="color:#c0c5ce;">&gt;
+
+std::string g_bytes;
+std::string </span><span style="color:#8fa1b3;">get_bytes</span><span style="color:#c0c5ce;">()
+{
+    </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> g_bytes;
+}
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">set_bytes</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::string &amp;</span><span style="color:#bf616a;">bytes</span><span style="color:#c0c5ce;">)
+{
+    g_bytes = bytes;
+}
+
+std::wstring g_unicode;
+std::wstring </span><span style="color:#8fa1b3;">get_unicode</span><span style="color:#c0c5ce;">()
+{
+    </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> g_unicode;
+}
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">set_unicode</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> std::wstring &amp;</span><span style="color:#bf616a;">unicode</span><span style="color:#c0c5ce;">)
+{
+    g_unicode = unicode;
+}
+
+
+</span><span style="color:#bf616a;">BOOST_PYTHON_MODULE</span><span style="color:#c0c5ce;">(StringSample)
+{
+    </span><span style="color:#b48ead;">using namespace</span><span style="color:#c0c5ce;"> boost::python;
+
+    </span><span style="color:#bf616a;">def</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">add</span><span style="color:#c0c5ce;">&quot;, &amp;add);
+    </span><span style="color:#bf616a;">def</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">get_bytes</span><span style="color:#c0c5ce;">&quot;, &amp;get_bytes);
+    </span><span style="color:#bf616a;">def</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">set_bytes</span><span style="color:#c0c5ce;">&quot;, &amp;set_bytes);
+    </span><span style="color:#bf616a;">def</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">get_unicode</span><span style="color:#c0c5ce;">&quot;, &amp;get_unicode);
+    </span><span style="color:#bf616a;">def</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">set_unicode</span><span style="color:#c0c5ce;">&quot;, &amp;set_unicode);
+}
+</span></code></pre><h1 id="coding-utf-8">coding: utf-8</h1>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">StringSample
+
+StringSample.</span><span style="color:#bf616a;">set_bytes</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">ascii</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_bytes</span><span style="color:#c0c5ce;">())
+
+StringSample.</span><span style="color:#bf616a;">set_bytes</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">b</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">ascii</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_bytes</span><span style="color:#c0c5ce;">())
+
+StringSample.</span><span style="color:#bf616a;">set_unicode</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">ascii</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_unicode</span><span style="color:#c0c5ce;">())
+
+StringSample.</span><span style="color:#bf616a;">set_unicode</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">b</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">ascii</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_unicode</span><span style="color:#c0c5ce;">())
+
+</span><span style="color:#65737e;">#
+</span><span style="color:#c0c5ce;">StringSample.</span><span style="color:#bf616a;">set_bytes</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">日本語</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_bytes</span><span style="color:#c0c5ce;">())
+
+StringSample.</span><span style="color:#bf616a;">set_bytes</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">日本語</span><span style="color:#c0c5ce;">&quot;.</span><span style="color:#bf616a;">encode</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">utf-8</span><span style="color:#c0c5ce;">&#39;))
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_bytes</span><span style="color:#c0c5ce;">())
+
+StringSample.</span><span style="color:#bf616a;">set_unicode</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">日本語</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_unicode</span><span style="color:#c0c5ce;">())
+
+StringSample.</span><span style="color:#bf616a;">set_unicode</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">日本語</span><span style="color:#c0c5ce;">&quot;.</span><span style="color:#bf616a;">encode</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">utf-8</span><span style="color:#c0c5ce;">&#39;))
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(StringSample.</span><span style="color:#bf616a;">get_unicode</span><span style="color:#c0c5ce;">())
+</span></code></pre><pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">ascii
+ascii
+ascii
+ascii
+日本語
+日本語
+日本語
+日本語
+続行するには何かキーを押してください . . .
+</span></code></pre>
+<p>bytesはutf-8のバイト列と見なされるようだ。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/python/boost-python3/#coding-utf-8">coding: utf-8</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

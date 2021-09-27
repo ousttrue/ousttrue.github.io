@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;python&#x2F;subprocess&#x2F;"> python で process を起動して PIPE 通信する 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2019</div>
+        <div class="md">0428</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;python&#x2F;">python</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>https://docs.python.org/3/library/subprocess.html</p>
+<p>こういうやつ</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+      | child |</span><span style="color:#c0c5ce;">
+      |process|</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+   stdin ^ | stdout</span><span style="color:#c0c5ce;">
+         | v</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+      |process|</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+-&gt; stdin     stdout -&gt;</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="subprocess-moziyuru">subprocess モジュール</h2>
+<p>subprocess は、</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">os.system</span><span style="color:#c0c5ce;">
+os.spawn*</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>の置き換え。</p>
+<h3 id="subprocess-run">subprocess.run</h3>
+<ul>
+<li>https://docs.python.org/3/library/subprocess.html#subprocess.run</li>
+</ul>
+<p>中でPopenして結果を集めて <code>CompletedProcess</code> として返す。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"><span style="color:#65737e;"># 抜粋</span><span style="color:#65737e;">
+</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">run</span><span style="color:#c0c5ce;">(...):</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">with </span><span style="color:#bf616a;">Popen</span><span style="color:#c0c5ce;">(*popenargs, **kwargs) </span><span style="color:#b48ead;">as </span><span style="color:#c0c5ce;">process:</span><span style="color:#c0c5ce;">
+        </span><span style="color:#b48ead;">try</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+            stdout, stderr = process.</span><span style="color:#bf616a;">communicate</span><span style="color:#c0c5ce;">(</span><span style="color:#96b5b4;">input</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">timeout</span><span style="color:#c0c5ce;">=timeout) </span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">CompletedProcess</span><span style="color:#c0c5ce;">(process.args, retcode, stdout, stderr)</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>実行して結果の文字列を得て終わりというタイプの用途向け。
+旧 <code>os.system</code> の代替になると思う。</p>
+<h3 id="subprocess-popen">subprocess.Popen</h3>
+<ul>
+<li>https://docs.python.org/3/library/subprocess.html#popen-constructor</li>
+</ul>
+<p>標準入力、標準出力を制御するのはこっち。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"><span style="color:#c0c5ce;">subprocess.</span><span style="color:#bf616a;">Popen</span><span style="color:#c0c5ce;">([&#39;</span><span style="color:#a3be8c;">cmd_name</span><span style="color:#c0c5ce;">&#39;, &#39;</span><span style="color:#a3be8c;">arg0</span><span style="color:#c0c5ce;">&#39;, &#39;</span><span style="color:#a3be8c;">arg1</span><span style="color:#c0c5ce;">&#39;...],</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">stdin</span><span style="color:#c0c5ce;">=subprocess.</span><span style="color:#bf616a;">PIPE</span><span style="color:#c0c5ce;">,</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">stdout</span><span style="color:#c0c5ce;">=subprocess.</span><span style="color:#bf616a;">PIPE</span><span style="color:#c0c5ce;">,</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">stderr</span><span style="color:#c0c5ce;">=subprocess.</span><span style="color:#bf616a;">PIPE</span><span style="color:#c0c5ce;">,</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">cwd</span><span style="color:#c0c5ce;">=</span><span style="color:#d08770;">None</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">env</span><span style="color:#c0c5ce;">=</span><span style="color:#d08770;">None</span><span style="color:#c0c5ce;">,</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">text</span><span style="color:#c0c5ce;">=</span><span style="color:#d08770;">False</span><span style="color:#c0c5ce;">
+    )</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>Readループが一個しかない時はこれでいいんでないかな。</p>
+<h2 id="jin-hui-notema">今回のテーマ</h2>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+      | child |</span><span style="color:#c0c5ce;">
+      |process|</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+   stdin ^ | @stdout</span><span style="color:#c0c5ce;">
+         | v</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+      |process| ここでロギングして通信内容を確認したい</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+  @stdin ^ | stdout</span><span style="color:#c0c5ce;">
+         | v</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+      | parent|</span><span style="color:#c0c5ce;">
+      |process|</span><span style="color:#c0c5ce;">
+      +-------+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<ul>
+<li>@のところを常時読み込みにしたい(2つのReadループ)</li>
+<li>@stdin をReadするとブロックして固まるのでつらい</li>
+</ul>
+<p>つらいのだ。</p>
+<h2 id="asyncio">asyncio</h2>
+<p>２つのReaderを非同期で制御しようということで 。</p>
+<h3 id="asyncio-noji-ben">asyncio の基本</h3>
+<p>loop を露出させる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"></code></pre>
+<p>loop は暗黙。
+基本的にこちらでよいと思う。
+必要に応じて取得する。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"></code></pre><h4 id="asyncio-create-task-dexin-siisutatukuwokai-shi-suru">asyncio.create_task で新しいスタックを開始する</h4>
+<p>新しいスタックなのでエラーハンドリングが無いことに注意。</p>
+<h4 id="streamreaderprotocol-to-streamwriterprotocol">StreamReaderProtocol と StreamWriterProtocol</h4>
+<p>コールバックと Stream を結び付ける。</p>
+<h3 id="windowsnobiao-zhun-ru-chu-li-haiocpdekinai">Windowsの標準入出力はIOCPできない</h3>
+<p>IOCPできるハンドルは決まっていて、</p>
+<ul>
+<li>
+<p>通常のファイル</p>
+</li>
+<li>
+<p>Socket</p>
+</li>
+<li>
+<p>NamedPipe</p>
+</li>
+<li>
+<p>https://tim.mcnamara.nz/post/176613307022/iocp-and-stdio</p>
+</li>
+</ul>
+<h4 id="python3-7-de-asyncio-create-subprocess-gadekita">python3.7 で <code>asyncio.create_subprocess</code> ができた</h4>
+<p>child process 側はこれで助かった。</p>
+<ul>
+<li>https://docs.python.org/3/library/asyncio-subprocess.html</li>
+</ul>
+<p>なんか、たまに <code>socket.exception</code> が出るので、
+tcpのlocalhost接続にリダイレクトするとか謎の技使っているのかもしれぬ。</p>
+<p>おかげで、子プロセスの標準入出力から <code>StreamReader</code> と <code>StreamWriter</code>
+を楽に取得できる。</p>
+<h4 id="zhong-i-nativecoroutine-ha-threadpoolexecutornitao-gasu">重い NativeCoroutine は、ThreadPoolExecutorに逃がす</h4>
+<p>標準入力側</p>
+<p>GILを回避して、別スレッドで待てるのではないか。</p>
+<p>どんな処理が、NativeCoroutine なのか。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/python/subprocess/#subprocess-moziyuru">subprocess モジュール</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/python/subprocess/#subprocess-run">subprocess.run</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/python/subprocess/#subprocess-popen">subprocess.Popen</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/python/subprocess/#jin-hui-notema">今回のテーマ</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/python/subprocess/#asyncio">asyncio</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/python/subprocess/#asyncio-noji-ben">asyncio の基本</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/python/subprocess/#windowsnobiao-zhun-ru-chu-li-haiocpdekinai">Windowsの標準入出力はIOCPできない</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

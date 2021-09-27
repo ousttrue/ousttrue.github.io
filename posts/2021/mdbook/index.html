@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;mdbook&#x2F;"> mdBook もやってみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0614</div>
+      </li>
+      
+      <li class="headline_date updated">
+        <div class="year">2021</div>
+        <div class="md">0831</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;mdbook&#x2F;">mdbook</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;ssg&#x2F;">ssg</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <ul>
+<li><a href="https://rust-lang.github.io/mdBook/">https://rust-lang.github.io/mdBook/</a></li>
+<li><a href="https://github.com/rust-lang/mdBook">https://github.com/rust-lang/mdBook</a></li>
+</ul>
+<h1 id="zuo-tutemita">作ってみた</h1>
+<ul>
+<li><a href="https://github.com/ousttrue/cmake_book">https://github.com/ousttrue/cmake_book</a></li>
+</ul>
+<p>gh-pages</p>
+<ul>
+<li><a href="https://ousttrue.github.io/cmake_book/">https://ousttrue.github.io/cmake_book/</a></li>
+</ul>
+<h1 id="config-toml">config.toml</h1>
+<h2 id="base-url-noshe-ding-nihamaru">base_url の設定にはまる</h2>
+<p>base_url の設定だけ探し回った。
+gh-pages の url が <code>https://ousttrue.github.io/cmake_book/</code> と root フォルダでは無いので必用。</p>
+<p><code>book.toml</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-toml" data-lang="toml"><span style="color:#c0c5ce;">[output.html]</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">site-url </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">https://ousttrue.github.io/cmake_book/</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="github">github</h2>
+<p><code>book.toml</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-toml" data-lang="toml"><span style="color:#c0c5ce;">[output.html]</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">git-repository-url </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">https://github.com/rust-lang/mdBook/tree/master/guide</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">edit-url-template </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">https://github.com/rust-lang/mdBook/edit/master/guide/{path}</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span></code></pre><h1 id="github-actions">github actions</h1>
+<p><a href="https://github.com/marketplace/actions/mdbook-action">https://github.com/marketplace/actions/mdbook-action</a></p>
+<p>を参考にしたのだけど、
+ちょっとはまった。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-yml" data-lang="yml"><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">github pages</span><span style="color:#c0c5ce;">
+</span><span style="color:#d08770;">on</span><span style="color:#c0c5ce;">: [</span><span style="color:#a3be8c;">push</span><span style="color:#c0c5ce;">] </span><span style="color:#65737e;"># &lt;= 書き方変わってた(pushしてもjobが起動しない)</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">jobs</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+  </span><span style="color:#bf616a;">Explore-GitHub-Actions</span><span style="color:#c0c5ce;">: </span><span style="color:#65737e;"># &lt;= 書き方変わってた？(アクションとして認識されない？)</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">runs-on</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">ubuntu-18.04</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">steps</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">uses</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">actions/checkout@v2</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">Setup mdBook</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">uses</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">peaceiris/actions-mdbook@v1</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">with</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+          </span><span style="color:#bf616a;">mdbook-version</span><span style="color:#c0c5ce;">: &quot;</span><span style="color:#a3be8c;">latest</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">run</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">mdbook build</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">Deploy</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">uses</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">peaceiris/actions-gh-pages@v3</span><span style="color:#c0c5ce;">
+        </span><span style="color:#65737e;"># if: github.ref == &#39;refs/heads/main&#39; &lt;= あると動かない</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">with</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+          </span><span style="color:#bf616a;">github_token</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">${{ secrets.GITHUB_TOKEN }}</span><span style="color:#c0c5ce;">
+          </span><span style="color:#bf616a;">publish_dir</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">./book</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>動かないとき、特に action として認識されていないときは全く手掛かりが無くて難儀した。</p>
+<p><a href="https://docs.github.com/ja/actions/quickstart">https://docs.github.com/ja/actions/quickstart</a></p>
+<p>は動いたので、これと違うところを見比べて勘でなおした。
+よくわかっていない。</p>
+<h1 id="mdbook-no-summary-md">mdbook の SUMMARY.md</h1>
+<p><code>SUMMARY.md</code> にページ構成を先に記述して章立てを作ってから中身を記述していくのが面白い。
+この仕組みが合うものは、 <code>zola</code> より <code>mdbook</code> の方がサクサク作れそう。
+<code>hugo</code> とかと違って各ページに <code>frontmatter</code> が不要なので、
+ページを足したり引いたりするする場合はこちらの方が使いやすい。</p>
+<p>Scrapbox 上にあるメモを整理するかもしれない。</p>
+<p>作った。</p>
+<ul>
+<li><a href="https://ousttrue.github.io/cmake_book/">cmake_book</a></li>
+<li><a href="https://ousttrue.github.io/rust_exercise_book/">rust練習帳</a></li>
+</ul>
+<p>あと、 <code>blender の addon 作成メモ</code> とか <code>Unity のカスタムエディターメモ</code> とか作るかも。</p>
+<ul>
+<li><a href="https://ousttrue.github.io/bldner_book/">blender_book</a></li>
+<li><a href="https://ousttrue.github.io/unity_book/">unity memo</a></li>
+</ul>
+<h1 id="mdbook-wo-gh-pages-dechu-qi-hua-surushou-shun">mdbook を gh-pages で初期化する手順</h1>
+<p>github に repository を作って gh-pages に公開するところまで</p>
+<ul>
+<li>new repository <code>https://github.com/GITHUB_USER_NAME/MDBOOK_REPOSITORY_NAME</code></li>
+<li>git clone GIT_REPOSITORY</li>
+<li>cd GIT_REPOSITORY</li>
+<li>mdbook init</li>
+</ul>
+<p><code>book.toml</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-toml" data-lang="toml"><span style="color:#c0c5ce;">[output.html]</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">site-url </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">https://${USER_NAME}.github.io/${REPO_NAME}/</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">git-repository-url </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">https://github.com/${USER_NAME}/${REPO_NAME}/tree/master</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">edit-url-template </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">https://github.com/${USER_NAME}/${REPO_NAME}/edit/master/{path}</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<ul>
+<li>.github/workflows/gh-pages.yml</li>
+</ul>
+<pre style="background-color:#2b303b;">
+<code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">github pages</span><span style="color:#c0c5ce;">
+</span><span style="color:#d08770;">on</span><span style="color:#c0c5ce;">: [</span><span style="color:#a3be8c;">push</span><span style="color:#c0c5ce;">]</span><span style="color:#c0c5ce;">
+</span><span style="color:#bf616a;">jobs</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+  </span><span style="color:#bf616a;">Explore-GitHub-Actions</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">runs-on</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">ubuntu-18.04</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">steps</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">uses</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">actions/checkout@v2</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">Setup mdBook</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">uses</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">peaceiris/actions-mdbook@v1</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">with</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+          </span><span style="color:#bf616a;">mdbook-version</span><span style="color:#c0c5ce;">: &quot;</span><span style="color:#a3be8c;">latest</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">run</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">mdbook build</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+      - </span><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">Deploy</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">uses</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">peaceiris/actions-gh-pages@v3</span><span style="color:#c0c5ce;">
+        </span><span style="color:#bf616a;">with</span><span style="color:#c0c5ce;">:</span><span style="color:#c0c5ce;">
+          </span><span style="color:#bf616a;">github_token</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">${{ secrets.GITHUB_TOKEN }}</span><span style="color:#c0c5ce;">
+          </span><span style="color:#bf616a;">publish_dir</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">./book</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<ul>
+<li>git add .</li>
+<li>git commit -m init</li>
+<li>git push
+<ul>
+<li>action が発動し、mdbook がビルドした book フォルダが gh-pages ブランチに push される</li>
+</ul>
+</li>
+<li>github の settings - pages から gh-pages branch を選んで root を設定する
+<ul>
+<li>しばらくすると <code>https://GITHUB_USER_NAME.github.io/MDBOOK_REPOSITORY_NAME/</code> が有効になる</li>
+</ul>
+</li>
+</ul>
+<p>初回にページが表示されるまで何回か push が要るかも。</p>
+<ul>
+<li>repo 作る</li>
+<li>gh-pages branch に push する</li>
+<li>設定で gh-pages を有効にする</li>
+<li>再度 push し action を発動させる。この辺でサイトが見れることを確認する</li>
+</ul>
+<h1 id="can-kao">参考</h1>
+<p><a href="https://o296.com/e/mdbook_as_blog.html">https://o296.com/e/mdbook_as_blog.html</a></p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/mdbook/#zuo-tutemita">作ってみた</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/mdbook/#config-toml">config.toml</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/mdbook/#base-url-noshe-ding-nihamaru">base_url の設定にはまる</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/mdbook/#github">github</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/mdbook/#github-actions">github actions</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/mdbook/#mdbook-no-summary-md">mdbook の SUMMARY.md</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/mdbook/#mdbook-wo-gh-pages-dechu-qi-hua-surushou-shun">mdbook を gh-pages で初期化する手順</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/mdbook/#can-kao">参考</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

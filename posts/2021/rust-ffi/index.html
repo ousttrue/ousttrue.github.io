@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;rust-ffi&#x2F;"> rust の ffi 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0620</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;rust&#x2F;">rust</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;libclang&#x2F;">libclang</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;ffi&#x2F;">ffi</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>rust の FFI に取り組んでいた。
+結局、 sdl binding と imgui binding を自作した。</p>
+<p>両方とも、既存の crate があるのに何故わざわざ自作するのかと言えば、
+ラップされて使い方が変わったところを学ぶのが面倒くさかったからじゃ。
+<a href="https://crates.io/crates/sdl2">SDL</a> は　<code>HWND</code> を取得する方法がわかりにくくて <code>SDL_Event</code> を <code>imgui</code> に渡す方法はわからなかった。
+<a href="https://crates.io/crates/imgui">imgui</a> は最新版の <code>docking</code> ブランチが使いたかった。</p>
+<p><a href="https://crates.io/crates/clang-sys">clang-sys</a> を使って rust の FFI コードを生成し、
+<a href="https://crates.io/crates/cc">cc</a> を使って <code>build.rs</code> でライブラリをビルドした。
+これで、 <code>c</code> <code>c++</code> のライブラリをソースビルドしてスタティックリンクし、 <code>FFI</code> で関数を呼び出し放題。</p>
+<p><code>imgui</code> の FFI 生成の方が簡単で、 <code>SDL</code> の方は C のマクロに苦しんだ(雑に対応)。
+とはいえ、わりと素直に記述できるので快適であった。</p>
+<p>おかげで、 rust の FFI 周りに対する習熟度がだいぶ上がった。</p>
+<h2 id="dekinaikoto">できないこと</h2>
+<p>POD の struct を return する関数を呼び出すとクラッシュした。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#c0c5ce;">ImVec2 ImGui::</span><span style="color:#8fa1b3;">GetContentRegionAvail</span><span style="color:#c0c5ce;">();</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>D言語だけど</p>
+<p>https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org</p>
+<p>の件らしく、C++ 側でラップした。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">pGetContentRegionAvail</span><span style="color:#c0c5ce;">(ImVec2 *</span><span style="color:#bf616a;">pOut</span><span style="color:#c0c5ce;">) {</span><span style="color:#c0c5ce;">
+  </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">(pOut) {</span><span style="color:#c0c5ce;">
+    *pOut = </span><span style="color:#bf616a;">GetContentRegionAvail</span><span style="color:#c0c5ce;">();</span><span style="color:#c0c5ce;">
+  }</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="zi-you-ni-static-link-dekiru">自由に static link できる</h2>
+<p>build.rs を駆使して自由にリンクできるので、スタティックリンクとダイナミックリンクを制御できるので便利。
+特に Windows の場合、システムに共通のライブラリがインストールされていることが期待できないので、
+DLLを作ってコピーした入りパスを通すよりは、スタティックリンクする方が気楽。
+今回は <code>cc</code> でコンパイルしたけど、<code>c++/c</code> は CMake でビルドする方が管理しやすいかもしれない。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/rust-ffi/#dekinaikoto">できないこと</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/rust-ffi/#zi-you-ni-static-link-dekiru">自由に static link できる</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

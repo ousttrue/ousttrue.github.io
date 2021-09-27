@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;05&#x2F;20&#x2F;gentoo&#x2F;"> Gentoo再構築 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0520</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;linux&#x2F;">linux</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>Gentoo再構築
+gentooのルートファイルシステムに10Gを割り当てていたのだがいつのまにかディスクフルになってしまった。
+portageとhomeをmountしていたので大丈夫かと思っていたのだが意外と容量を使ってしまっていた様子。
+いろいろインストールしすぎなのかもしれぬ。
+とりあえず/var/logの大きいファイルをxzして急場を凌いだが、
+パーティションの割り方の都合で拡大できないので新しく作り直すことにした。
+作業記録。
+ファイルシステム準備</p>
+<h1 id="lvcreate-l-100g-n-gentoo-root-mygroup">lvcreate -L 100G -n gentoo_root mygroup</h1>
+<h1 id="mkfs-ext4-dev-mygroup-gentoo-root">mkfs.ext4 /dev/mygroup/gentoo_root</h1>
+<h1 id="cd-mnt">cd /mnt</h1>
+<h1 id="mkdir-gentoo">mkdir gentoo</h1>
+<h1 id="mount-dev-mygroup-gentoo-root">mount /dev/mygroup/gentoo_root</h1>
+<p>Installing the Gentoo Installation Files
+——————————————-</p>
+<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=5
+stage3ファイルの取得と展開</p>
+<h1 id="cd-mnt-gentoo">cd /mnt/gentoo</h1>
+<h1 id="wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-current-stage3-stage3-amd64-20130516-tar-bz2">wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2</h1>
+<h1 id="tar-xvjpf-stage3-tar-bz2">tar xvjpf stage3-*.tar.bz2</h1>
+<p>portageは旧パーティションを流用</p>
+<h1 id="mkdir-usr-portage">mkdir usr/portage</h1>
+<h1 id="mount-dev-mygroup-portage-usr-portage">mount /dev/mygroup/portage usr/portage</h1>
+<p>/etc/portage/make.conf</p>
+<h1 id="these-settings-were-set-by-the-catalyst-build-script-that-automatically">These settings were set by the catalyst build script that automatically</h1>
+<h1 id="built-this-stage">built this stage.</h1>
+<h1 id="please-consult-usr-share-portage-config-make-conf-example-for-a-more">Please consult /usr/share/portage/config/make.conf.example for a more</h1>
+<h1 id="detailed-example">detailed example.</h1>
+<p>CFLAGS=&quot;-march=native -O2 -pipe&quot;
+#CFLAGS=&quot;-march=bdver2 -O2 -pipe&quot;
+CXXFLAGS=&quot;${CFLAGS}&quot;</p>
+<h1 id="warning-changing-your-chost-is-not-something-that-should-be-done-lightly">WARNING: Changing your CHOST is not something that should be done lightly.</h1>
+<h1 id="please-consult-http-www-gentoo-org-doc-en-change-chost-xml-before-changing">Please consult http://www.gentoo.org/doc/en/change-chost.xml before changing.</h1>
+<p>CHOST=&quot;x86_64-pc-linux-gnu&quot;</p>
+<h1 id="these-are-the-use-flags-that-were-used-in-addition-to-what-is-provided-by-the">These are the USE flags that were used in addition to what is provided by the</h1>
+<h1 id="profile-used-for-building">profile used for building.</h1>
+<p>USE=&quot;&quot;
+USE=&quot;$USE -ldap&quot;
+USE=&quot;$USE mmx sse sse2 sse3 ssse3&quot;
+USE=&quot;$USE openal alsa gstreamer phonon pulseaudio xft xnest&quot;
+USE=&quot;$USE gtk gnome xfce imlib gconf&quot;
+USE=&quot;$USE qt4 kde&quot;
+USE=&quot;$USE gd imlib eigen&quot;
+USE=&quot;$USE sqlite apache2&quot;
+USE=&quot;$USE ffmpeg theora lame mms&quot;
+USE=&quot;$USE samba fuse udisks&quot;
+USE=&quot;$USE icu&quot;
+USE=&quot;$USE consolekit dbus pam policykit udev&quot;
+USE=&quot;$USE c++0x&quot;</p>
+<p>INPUT_DEVICES=&quot;evdev&quot;
+#VIDEO_CARDS=&quot;radeon&quot;
+VIDEO_CARDS=&quot;fglrx&quot;
+LINGUAS=&quot;ja&quot;</p>
+<p>MAKEOPTS=&quot;-j5&quot;
+GENTOO_MIRRORS=&quot;http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/&quot;</p>
+<p>CFLAGSに-march=nativeを使えるようになった</p>
+<p>Installing the Gentoo Base System
+————————————</p>
+<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=6</p>
+<h1 id="cp-l-etc-resolv-conf-mnt-gentoo-etc">cp -L /etc/resolv.conf /mnt/gentoo/etc/</h1>
+<h1 id="mount-t-proc-none-mnt-gentoo-proc">mount -t proc none /mnt/gentoo/proc</h1>
+<h1 id="mount-rbind-sys-mnt-gentoo-sys">mount --rbind /sys /mnt/gentoo/sys</h1>
+<h1 id="mount-rbind-dev-mnt-gentoo-dev">mount --rbind /dev /mnt/gentoo/dev</h1>
+<h1 id="chroot-mnt-gentoo-bin-bash">chroot /mnt/gentoo /bin/bash</h1>
+<h1 id="source-etc-profile">source /etc/profile</h1>
+<h1 id="export-ps1-chroot-ps1">export PS1=&quot;(chroot) $PS1&quot;</h1>
+<h1 id="emerge-sync">emerge --sync</h1>
+<h1 id="cp-usr-share-zoneinfo-asia-tokyo-etc-localtime">cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime</h1>
+<h1 id="echo-asia-tokyo-etc-timezone">echo &quot;Asia/Tokyo&quot; &gt; /etc/timezone</h1>
+<p>Configuring the Kernel
+————————-</p>
+<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=7</p>
+<h1 id="emerge-gentoo-sources">emerge gentoo-sources</h1>
+<p>LVMからブートするのでgenkernelを使う</p>
+<h1 id="emerge-genkernel">emerge genkernel</h1>
+<h1 id="genkernel-lvm-install-all">genkernel --lvm --install all</h1>
+<p>Configuring your System
+————————–</p>
+<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=8</p>
+<p>Installing Necessary System Tools
+————————————</p>
+<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=9</p>
+<p>Configuring the Bootloader
+——————————</p>
+<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=10
+/boot/grub/menu.lst
+title genkernel 3.8.13
+root (hd0,0)
+kernel /boot/kernel-genkernel-x86_64-3.8.13-gentoo real_root=/dev/mygroup/gentoo_root rootfstype=ext4 dolvm
+initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#lvcreate-l-100g-n-gentoo-root-mygroup">lvcreate -L 100G -n gentoo_root mygroup</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mkfs-ext4-dev-mygroup-gentoo-root">mkfs.ext4 &#x2F;dev&#x2F;mygroup&#x2F;gentoo_root</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#cd-mnt">cd &#x2F;mnt</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mkdir-gentoo">mkdir gentoo</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mount-dev-mygroup-gentoo-root">mount &#x2F;dev&#x2F;mygroup&#x2F;gentoo_root</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#cd-mnt-gentoo">cd &#x2F;mnt&#x2F;gentoo</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-current-stage3-stage3-amd64-20130516-tar-bz2">wget http:&#x2F;&#x2F;ftp.jaist.ac.jp&#x2F;pub&#x2F;Linux&#x2F;Gentoo&#x2F;releases&#x2F;amd64&#x2F;current-stage3&#x2F;stage3-amd64-20130516.tar.bz2</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#tar-xvjpf-stage3-tar-bz2">tar xvjpf stage3-*.tar.bz2</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mkdir-usr-portage">mkdir usr&#x2F;portage</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mount-dev-mygroup-portage-usr-portage">mount &#x2F;dev&#x2F;mygroup&#x2F;portage usr&#x2F;portage</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#these-settings-were-set-by-the-catalyst-build-script-that-automatically">These settings were set by the catalyst build script that automatically</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#built-this-stage">built this stage.</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#please-consult-usr-share-portage-config-make-conf-example-for-a-more">Please consult &#x2F;usr&#x2F;share&#x2F;portage&#x2F;config&#x2F;make.conf.example for a more</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#detailed-example">detailed example.</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#warning-changing-your-chost-is-not-something-that-should-be-done-lightly">WARNING: Changing your CHOST is not something that should be done lightly.</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#please-consult-http-www-gentoo-org-doc-en-change-chost-xml-before-changing">Please consult http:&#x2F;&#x2F;www.gentoo.org&#x2F;doc&#x2F;en&#x2F;change-chost.xml before changing.</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#these-are-the-use-flags-that-were-used-in-addition-to-what-is-provided-by-the">These are the USE flags that were used in addition to what is provided by the</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#profile-used-for-building">profile used for building.</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#cp-l-etc-resolv-conf-mnt-gentoo-etc">cp -L &#x2F;etc&#x2F;resolv.conf &#x2F;mnt&#x2F;gentoo&#x2F;etc&#x2F;</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mount-t-proc-none-mnt-gentoo-proc">mount -t proc none &#x2F;mnt&#x2F;gentoo&#x2F;proc</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mount-rbind-sys-mnt-gentoo-sys">mount --rbind &#x2F;sys &#x2F;mnt&#x2F;gentoo&#x2F;sys</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#mount-rbind-dev-mnt-gentoo-dev">mount --rbind &#x2F;dev &#x2F;mnt&#x2F;gentoo&#x2F;dev</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#chroot-mnt-gentoo-bin-bash">chroot &#x2F;mnt&#x2F;gentoo &#x2F;bin&#x2F;bash</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#source-etc-profile">source &#x2F;etc&#x2F;profile</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#export-ps1-chroot-ps1">export PS1=&quot;(chroot) $PS1&quot;</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#emerge-sync">emerge --sync</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#cp-usr-share-zoneinfo-asia-tokyo-etc-localtime">cp &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Tokyo &#x2F;etc&#x2F;localtime</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#echo-asia-tokyo-etc-timezone">echo &quot;Asia&#x2F;Tokyo&quot; &gt; &#x2F;etc&#x2F;timezone</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#emerge-gentoo-sources">emerge gentoo-sources</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#emerge-genkernel">emerge genkernel</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2013/05/20/gentoo/#genkernel-lvm-install-all">genkernel --lvm --install all</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

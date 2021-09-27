@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;05&#x2F;17&#x2F;valiadic-templates&#x2F;"> 可変長テンプレート引数 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">0517</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;msgpack&#x2F;">msgpack</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>可変長テンプレート引数
+引き続きmsgpack-rpc-asioを実装しているのだが、可変長テンプレート引数(valiadic
+template)を使うと関数登録のような場合にうまく書けることがわかった。
+昨日は関数オブジェクトからstd::functionの型を得るのに下記のようにしていたのだけど、</p>
+<pre style="background-color:#2b303b;">
+<code class="language-c++ // ret template Ret helper0(Ret (F::*)(Rest…));" data-lang="c++ // ret template Ret helper0(Ret (F::*)(Rest…));"><span style="color:#c0c5ce;">template Ret helper0(Ret (F::*)(Rest…) const);
+// 1 template A1 helper1(Ret (F::*)(A1, Rest…));
+template A1 helper1(Ret (F::*)(A1, Rest…) const);
+// 2 template A2 helper2(Ret (F::*)(A1, A2, Rest…));
+template A2 helper2(Ret (F::*)(A1, A2, Rest…) const);
+template void add_handler(F handler, const std::string &amp;method) {
+typedef decltype(handler) functor; typedef
+decltype(helper0(&amp;functor::operator())) R; typedef
+decltype(helper1(&amp;functor::operator())) A1; typedef
+decltype(helper2(&amp;functor::operator())) A2;
+// register function...
+std::function&lt;R(A1, A2)&gt; func(handler);
+
+} 次のように書けた。c++ template void add_handler(F handler,
+R(C::*)(A1, A2)const) { // register function… std::function
+func(handler); }
+template void add_handler(F handler, const std::string &amp;method) {
+add_handler(handler, &amp;decltype(handler)::operator()); }
+昨日参照させてもらった
+&lt;http://d.hatena.ne.jp/osyo-manga/20121205/1354674180&gt;
+のコードがやっとわかるようになってきた。
+
+上記コードはさらに可変長テンプレート引数で
+
+template void add_handler(F handler, R(C::*)(A…)const) { // register
+function… std::function func(handler); }
+``と書けるのですごく便利になる。 msgpack-rpcの関数コールバック登録や、luaのような組み込み言語への関数公開の実装が楽になりそうだ。 上記サイトでも取り上げられているが&amp;decltype(functor)::operator()`を関数テンプレートの型推論に投げることで
+関数オブジェクトから型情報を取れるらしい。
+気をよくして各所を可変長テンプレート引数を使うように書き換えたのだが、
+致命的な問題を発見。
+vc2010はなんと可変長テンプレート引数を未実装だった。
+c++0xの機能がわりと入っているのでできると思っていたのに。
+msgpack-rpc-asioは、明瞭にvc2010をターゲットにしているので可変長テンプレート引数の使用を断念した。
+２引数関数の操作までしか実装していない時点で気付いて良かった。
+ライブラリの不足はboost使えば済むが言語機能が無いのは困るな・・・。
+vc2012に乗り換えたくなった。
+</span></code></pre>
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;06&#x2F;cpp11-rpc&#x2F;"> C++でMessagePack-RPCを実装する 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0603</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cpp&#x2F;">cpp</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;msgpack&#x2F;">msgpack</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。</p>
+<h1 id="ji-ben-she-ji">基本設計</h1>
+<p>MessagePack-RPCの仕様をおさらいすると以下の通り。</p>
+<p>request</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">[type, msgid, method, params]
+ (0)   (int)  (str)   (array)
+</span></code></pre>
+<p>response</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">[type, msgid, error, result]
+ (1)   (int)  (any)  (any)
+</span></code></pre>
+<p>msgpackのバイト列を受け取って、msgpackのバイト列を返す関数として一般化する。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">typedef</span><span style="color:#c0c5ce;"> std::vector&lt;std::uint8_t&gt; bytes;
+</span><span style="color:#65737e;">// msgpackのバイト列を引数にとり、msgpackのバイト列を返す
+</span><span style="color:#b48ead;">typedef</span><span style="color:#c0c5ce;"> std::function&lt;bytes(</span><span style="color:#b48ead;">const </span><span style="color:#c0c5ce;">&amp;bytes)&gt; procedurecall;
+</span></code></pre>
+<p>任意の関数呼び出しからprocedurecallを作り出せるようにして、MessagePack-RPCシステムの部品として使えるようにする。
+簡単な例
+例として</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">static int </span><span style="color:#8fa1b3;">add</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">a</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">){ </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> a+b; }
+</span></code></pre>
+<p>をprocedurecallに変換してみる。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">procedurecall </span><span style="color:#8fa1b3;">make_procedurecall</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">(*f)(</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">))
+{
+    </span><span style="color:#65737e;">// request -&gt; response ではなくparams -&gt; result
+    </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">[f](</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> bytes&amp; src)-&gt;</span><span style="color:#bf616a;">bytes
+    </span><span style="color:#c0c5ce;">{
+        </span><span style="color:#65737e;">// unpack args
+        </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> parser = msgpackpp::</span><span style="color:#bf616a;">parser</span><span style="color:#c0c5ce;">(src);
+        std::tuple&lt;</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">, </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">&gt; args;
+        parser &gt;&gt; args;
+
+        </span><span style="color:#65737e;">// call
+        </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> r = </span><span style="color:#bf616a;">f</span><span style="color:#c0c5ce;">(std::</span><span style="color:#bf616a;">get</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">&gt;(args), std::</span><span style="color:#bf616a;">get</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">&gt;(args));
+
+        </span><span style="color:#65737e;">// pack result
+</span><span style="color:#c0c5ce;">        msgpackpp::packer packer;
+        packer &lt;&lt; r;
+        </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> packer.</span><span style="color:#bf616a;">get_payload</span><span style="color:#c0c5ce;">();
+    };
+}
+</span></code></pre>
+<p><code>int add(int, int)</code> を <code>procedurecall</code> に変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。</p>
+<p><code>procedurecall</code> の使い方は以下の通り。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#65737e;">// register
+</span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> proc = msgpackpp::rpc::</span><span style="color:#bf616a;">make_procedurecall</span><span style="color:#c0c5ce;">(&amp;add);
+
+</span><span style="color:#65737e;">// call
+</span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> packer = msgpackpp::</span><span style="color:#bf616a;">packer</span><span style="color:#c0c5ce;">();
+packer &lt;&lt; std::</span><span style="color:#bf616a;">make_tuple</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">);
+</span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> result = </span><span style="color:#bf616a;">proc</span><span style="color:#c0c5ce;">(packer.</span><span style="color:#bf616a;">get_payload</span><span style="color:#c0c5ce;">());
+
+</span><span style="color:#65737e;">// result
+</span><span style="color:#bf616a;">REQUIRE</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">3 </span><span style="color:#c0c5ce;">== msgpackpp::</span><span style="color:#bf616a;">parser</span><span style="color:#c0c5ce;">(result).</span><span style="color:#bf616a;">get_number</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;">&gt;());
+</span></code></pre>
+<p>とりあえず動いたが、関数を増やすたびにこれだけのコードを記述するのはやってられませぬ。
+以下のような理想形を目指して作りこんでゆく。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#bf616a;">REQUIRE</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">3 </span><span style="color:#c0c5ce;">== </span><span style="color:#bf616a;">msgpack_procedurecall</span><span style="color:#c0c5ce;">([](</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> a, </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> b){ </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> a+b; }, </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">));
+</span></code></pre>
+<p><code>lambda</code> が動けば他も動くようにできるので、<code>lambda</code> を第一に実装する。</p>
+<h1 id="shi-zhuang">実装</h1>
+<p>ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#c0c5ce;">make_procedurecall
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> C, </span><span style="color:#b48ead;">typename </span><span style="color:#c0c5ce;">...AS, std::size_t... IS&gt;
+procedurecall </span><span style="color:#8fa1b3;">_make_procedurecall</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> F &amp;</span><span style="color:#bf616a;">f
+    </span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(C::*)(AS...)</span><span style="color:#b48ead;">const </span><span style="color:#65737e;">// template引数R, C, ASを受け付けるためのダミー
+    </span><span style="color:#c0c5ce;">, std::index_sequence&lt;IS...&gt; </span><span style="color:#65737e;">// template引数ISを受け付けるためのダミー
+</span><span style="color:#c0c5ce;">)
+{
+    </span><span style="color:#65737e;">// request -&gt; response ではなくparams -&gt; result
+    </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">[f](</span><span style="color:#b48ead;">const</span><span style="color:#c0c5ce;"> bytes&amp; src)-&gt;</span><span style="color:#bf616a;">bytes
+    </span><span style="color:#c0c5ce;">{
+        </span><span style="color:#65737e;">// unpack args
+        </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> parser = msgpackpp::</span><span style="color:#bf616a;">parser</span><span style="color:#c0c5ce;">(src);
+        std::tuple&lt;AS...&gt; args;
+        parser &gt;&gt; args;
+
+        </span><span style="color:#65737e;">// call
+        </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> r = </span><span style="color:#bf616a;">f</span><span style="color:#c0c5ce;">(std::</span><span style="color:#bf616a;">get</span><span style="color:#c0c5ce;">&lt;IS&gt;(args)...); </span><span style="color:#65737e;">// 可変長テンプレート引数を展開できる。ISと...が離れていることに注意
+
+        // pack result
+</span><span style="color:#c0c5ce;">        msgpackpp::packer packer;
+        packer &lt;&lt; r;
+        </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> packer.</span><span style="color:#bf616a;">get_payload</span><span style="color:#c0c5ce;">();
+    };
+}
+
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> C, </span><span style="color:#b48ead;">typename </span><span style="color:#c0c5ce;">...AS&gt;
+procedurecall </span><span style="color:#8fa1b3;">_make_procedurecall</span><span style="color:#c0c5ce;">(F </span><span style="color:#bf616a;">f
+    </span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(C::*)(AS...)</span><span style="color:#b48ead;">const </span><span style="color:#65737e;">// template引数R, C, ASを受け付けるためのダミー
+</span><span style="color:#c0c5ce;">)
+{
+    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">_make_procedurecall</span><span style="color:#c0c5ce;">(f
+        , &amp;</span><span style="color:#b48ead;">decltype</span><span style="color:#c0c5ce;">(f)::</span><span style="color:#bf616a;">operator</span><span style="color:#c0c5ce;">() </span><span style="color:#65737e;">// lambdaの返り値と引数の型を次のテンプレートに渡す
+        </span><span style="color:#c0c5ce;">, std::</span><span style="color:#bf616a;">index_sequence_for</span><span style="color:#c0c5ce;">&lt;AS...&gt;{} </span><span style="color:#65737e;">// std::get呼び出しのためにindex_sequenceを作る。
+    </span><span style="color:#c0c5ce;">);
+}
+
+</span><span style="color:#65737e;">//
+// あらゆる型のlambdaを受け付けるようにした
+//
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F&gt;
+procedurecall </span><span style="color:#8fa1b3;">make_procedurecall</span><span style="color:#c0c5ce;">(F </span><span style="color:#bf616a;">f</span><span style="color:#c0c5ce;">)
+{
+    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">_make_procedurecall</span><span style="color:#c0c5ce;">(f
+        , &amp;</span><span style="color:#b48ead;">decltype</span><span style="color:#c0c5ce;">(f)::</span><span style="color:#bf616a;">operator</span><span style="color:#c0c5ce;">() </span><span style="color:#65737e;">// lambdaの返り値と引数の型を次のテンプレートに渡す
+    </span><span style="color:#c0c5ce;">);
+}
+
+msgpack_call
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> R, </span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> C, </span><span style="color:#b48ead;">typename </span><span style="color:#c0c5ce;">...AS&gt;
+</span><span style="color:#b48ead;">decltype</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;">) </span><span style="color:#8fa1b3;">_msgpack_call</span><span style="color:#c0c5ce;">(F </span><span style="color:#bf616a;">f
+    </span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">R</span><span style="color:#c0c5ce;">(C::*)(AS...)</span><span style="color:#b48ead;">const </span><span style="color:#65737e;">// template引数R, C, ASを受けるためのダミー
+    </span><span style="color:#c0c5ce;">, AS... </span><span style="color:#bf616a;">args</span><span style="color:#c0c5ce;">)
+{
+    </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> proc = msgpackpp::rpc::</span><span style="color:#bf616a;">make_procedurecall</span><span style="color:#c0c5ce;">(f);
+
+    </span><span style="color:#65737e;">// call
+</span><span style="color:#c0c5ce;">    msgpackpp::packer packer;
+    packer &lt;&lt; std::</span><span style="color:#bf616a;">make_tuple</span><span style="color:#c0c5ce;">(args...); </span><span style="color:#65737e;">// 可変長テンプレート引数を展開できる
+    </span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> result = </span><span style="color:#bf616a;">proc</span><span style="color:#c0c5ce;">(packer.</span><span style="color:#bf616a;">get_payload</span><span style="color:#c0c5ce;">());
+
+    </span><span style="color:#65737e;">// unpack result
+</span><span style="color:#c0c5ce;">    R value;
+    msgpackpp::</span><span style="color:#bf616a;">parser</span><span style="color:#c0c5ce;">(result) &gt;&gt; value;
+    </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> value;
+}
+
+</span><span style="color:#b48ead;">template</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#b48ead;">typename</span><span style="color:#c0c5ce;"> F, </span><span style="color:#b48ead;">typename </span><span style="color:#c0c5ce;">...AS&gt;
+</span><span style="color:#b48ead;">decltype</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;">) </span><span style="color:#8fa1b3;">msgpack_call</span><span style="color:#c0c5ce;">(F </span><span style="color:#bf616a;">f</span><span style="color:#c0c5ce;">, AS... </span><span style="color:#bf616a;">args</span><span style="color:#c0c5ce;">) </span><span style="color:#65737e;">// 返り値の型はreturnから型推論
+</span><span style="color:#c0c5ce;">{
+    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">_msgpack_call</span><span style="color:#c0c5ce;">(f
+    , &amp;</span><span style="color:#b48ead;">decltype</span><span style="color:#c0c5ce;">(f)::</span><span style="color:#bf616a;">operator</span><span style="color:#c0c5ce;">() </span><span style="color:#65737e;">// lambdaの返り値と引数の型をテンプレート引数に渡す
+    </span><span style="color:#c0c5ce;">, args...
+    );
+}
+</span></code></pre><h1 id="shi-u">使う。</h1>
+<pre style="background-color:#2b303b;">
+<code class="language-cpp" data-lang="cpp"><span style="color:#bf616a;">REQUIRE</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">==</span><span style="color:#bf616a;">msgpack_call</span><span style="color:#c0c5ce;">([](</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> a, </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> b) { </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> a + b; }, </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">));
+</span><span style="color:#bf616a;">REQUIRE</span><span style="color:#c0c5ce;">(-</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">==</span><span style="color:#bf616a;">msgpack_call</span><span style="color:#c0c5ce;">([](</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> a, </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> b) { </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> a - b; }, </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">));
+</span></code></pre>
+<p><code>valiadic template</code> おそるべし。
+従来であれば、1引数、２引数・・・と引数の個数ごとに手作業でバージョンを増やさねばならなかったものが、わりとさくっと書けるな。</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/06/cpp11-rpc/#ji-ben-she-ji">基本設計</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/06/cpp11-rpc/#shi-zhuang">実装</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/06/cpp11-rpc/#shi-u">使う。</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

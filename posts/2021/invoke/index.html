@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;invoke&#x2F;"> python の task runner invoke 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0724</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;python&#x2F;">python</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>python でちょっとしたツールを書くときに便利。
+<code>make</code> みたいにタスクを定義して、コマンドラインから実行する。
+task として定義した関数の引数に応じてコマンドライン引数をさばけるので <code>argparse</code> せずにすませることができる。</p>
+<h2 id="install">install</h2>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">$ pip install invoke</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="tasks-py">tasks.py</h2>
+<pre style="background-color:#2b303b;">
+<code class="language-python" data-lang="python"><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">invoke </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">task</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+@</span><span style="color:#bf616a;">task</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">hello</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">c</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">who</span><span style="color:#c0c5ce;">=&quot;</span><span style="color:#a3be8c;">hoge</span><span style="color:#c0c5ce;">&quot;):</span><span style="color:#c0c5ce;">
+    </span><span style="color:#65737e;">&#39;&#39;&#39;</span><span style="color:#65737e;">
+    hello task</span><span style="color:#65737e;">
+    &#39;&#39;&#39;</span><span style="color:#c0c5ce;">
+    </span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">f</span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">hello </span><span style="color:#c0c5ce;">{hoge}&#39;)</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+@</span><span style="color:#bf616a;">task</span><span style="color:#c0c5ce;">(hello)</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">ver</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">c</span><span style="color:#c0c5ce;">):</span><span style="color:#c0c5ce;">
+    </span><span style="color:#65737e;">&#39;&#39;&#39;</span><span style="color:#65737e;">
+    version</span><span style="color:#65737e;">
+    &#39;&#39;&#39;</span><span style="color:#c0c5ce;">
+    </span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(sys.version)</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p>使う</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">$ invoke -l           </span><span style="color:#c0c5ce;">
+Available tasks:</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+  hello   hello task</span><span style="color:#c0c5ce;">
+  ver     version</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+$ invoke hello --help</span><span style="color:#c0c5ce;">
+Usage: inv[oke] [--core-opts] hello [--options] [other tasks here ...]</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+Docstring:</span><span style="color:#c0c5ce;">
+  hello task</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+Options:</span><span style="color:#c0c5ce;">
+  -w STRING, --who=STRING</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+$ invoke hello fuga  </span><span style="color:#c0c5ce;">
+No idea what &#39;fuga&#39; is!</span><span style="color:#c0c5ce;">
+$ invoke hello -w fuga</span><span style="color:#c0c5ce;">
+hello fuga</span><span style="color:#c0c5ce;">
+$ invoke ver</span><span style="color:#c0c5ce;">
+hello hoge</span><span style="color:#c0c5ce;">
+3.8.6 (tags/v3.8.6:db45529, Sep 23 2020, 15:52:53) [MSC v.1927 64 bit (AMD64)]</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="vscode-dedebatugu">vscode でデバッグ</h2>
+<p>module に <code>invoke</code> を設定してやる</p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">        {</span><span style="color:#c0c5ce;">
+            &quot;</span><span style="color:#a3be8c;">name</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">task</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+            &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">python</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+            &quot;</span><span style="color:#a3be8c;">request</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">launch</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+            &quot;</span><span style="color:#a3be8c;">module</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">invoke</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+            &quot;</span><span style="color:#a3be8c;">args</span><span style="color:#c0c5ce;">&quot;: [</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">hello</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+            ],</span><span style="color:#c0c5ce;">
+            &quot;</span><span style="color:#a3be8c;">console</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">integratedTerminal</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+        }</span><span style="color:#c0c5ce;">
+</span></code></pre>
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/invoke/#install">install</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/invoke/#tasks-py">tasks.py</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/invoke/#vscode-dedebatugu">vscode でデバッグ</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

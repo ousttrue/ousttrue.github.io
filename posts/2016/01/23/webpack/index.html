@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2016&#x2F;01&#x2F;23&#x2F;webpack&#x2F;"> WebPackやってみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2016</div>
+        <div class="md">0123</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>gulpだけでいっぱいいっぱいだったので敬遠していたwebpackをやってみる。
+#ことはじめ</p>
+<p>http://webpack.github.io/docs/</p>
+<p>http://webpack.github.io/docs/tutorials/getting-started/</p>
+<p>webpackをインストールして</p>
+<blockquote>
+<p>npm install webpack -g</p>
+</blockquote>
+<p>サンプルファイルを用意して
+entry.js
+document.write(&quot;It works.&quot;);</p>
+<p>webpack実行。</p>
+<blockquote>
+<p>webpack ./entry.js bundle.js
+Hash: ca188ee5789bb780fcec
+Version: webpack 1.12.12
+Time: 52ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  1.42 kB       0  [emitted]  main
+[0] ./entry.js 28 bytes {0} [built]</p>
+</blockquote>
+<p>entry.jsを入力し、bundle.jsが出力される。
+bundle.js
+/<strong><strong><strong>/ (function(modules) { // webpackBootstrap
+/</strong></strong></strong>/    // The module cache
+/******/    var installedModules = {};</p>
+<p>/<strong><strong><strong>/    // The require function
+/</strong></strong></strong>/    function <strong>webpack_require</strong>(moduleId) {</p>
+<p>/<strong><strong><strong>/        // Check if module is in cache
+/</strong></strong></strong>/        if(installedModules[moduleId])
+/******/            return installedModules[moduleId].exports;</p>
+<p>/<strong><strong><strong>/        // Create a new module (and put it into the cache)
+/</strong></strong></strong>/        var module = installedModules[moduleId] = {
+/<strong><strong><strong>/            exports: {},
+/</strong></strong></strong>/            id: moduleId,
+/<strong><strong><strong>/            loaded: false
+/</strong></strong></strong>/        };</p>
+<p>/<strong><strong><strong>/        // Execute the module function
+/</strong></strong></strong>/        modules[moduleId].call(module.exports, module, module.exports, <strong>webpack_require</strong>);</p>
+<p>/<strong><strong><strong>/        // Flag the module as loaded
+/</strong></strong></strong>/        module.loaded = true;</p>
+<p>/<strong><strong><strong>/        // Return the exports of the module
+/</strong></strong></strong>/        return module.exports;
+/******/    }</p>
+<p>/<strong><strong><strong>/    // expose the modules object (<strong>webpack_modules</strong>)
+/</strong></strong></strong>/    <strong>webpack_require</strong>.m = modules;</p>
+<p>/<strong><strong><strong>/    // expose the module cache
+/</strong></strong></strong>/    <strong>webpack_require</strong>.c = installedModules;</p>
+<p>/<strong><strong><strong>/    // <strong>webpack_public_path</strong>
+/</strong></strong></strong>/    <strong>webpack_require</strong>.p = &quot;&quot;;</p>
+<p>/<strong><strong><strong>/    // Load entry module and return exports
+/</strong></strong></strong>/    return <strong>webpack_require</strong>(0);
+/<strong><strong><strong>/ })
+/</strong></strong></strong>*********************************************************<strong><em><strong><strong><strong>/
+/</strong></strong></strong>/ ([
+/</em> 0 <em>/
+/</em></strong>/ function(module, exports) {</p>
+<pre style="background-color:#2b303b;">
+<code>document.write(&quot;It works.&quot;);
+</code></pre>
+<p>/<em><strong>/ }
+/</strong></em>***/ ]);</p>
+<p>ユーティリティと合体したコードが出力された。
+使う方は、bundle.jsをscriptタグで読み込むと。</p>
+<script type="text/javascript" src="bundle.js" charset="utf-8"></script>
+<p>複数ファイルのマージとrequire
+複数ファイルの参照にrequire関数が導入される。
+module.exports = &quot;It works from content.js.&quot;;</p>
+<p>document.write(require(&quot;./content.js&quot;));</p>
+<p>webpackする。</p>
+<blockquote>
+<p>webpack ./entry.js bundle.js
+Hash: 71eea1fe067e73397ebe
+Version: webpack 1.12.12
+Time: 64ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  1.55 kB       0  [emitted]  main
+[0] ./entry.js 40 bytes {0} [built]
+[1] ./content.js 45 bytes {0} [built]</p>
+</blockquote>
+<p>bundle.jsが出力される。
+bundle.jsの概要
+(function(modules) { // webpackBootstrap</p>
+<p>// 省略</p>
+<pre style="background-color:#2b303b;">
+<code>// Load entry module and return exports
+return __webpack_require__(0);
+</code></pre>
+<p>})
+/***********************************************************************<em>/
+( /</em> 無名関数を即実行 <em>/
+[
+/</em> 0 */
+function(module, exports, <strong>webpack_require</strong>) {</p>
+<pre style="background-color:#2b303b;">
+<code>document.write(__webpack_require__(1));
+</code></pre>
+<p>},
+/* 1 */
+function(module, exports) {</p>
+<pre style="background-color:#2b303b;">
+<code>// content.jsはここに
+module.exports = &quot;It works from content.js.&quot;;
+</code></pre>
+<p>}
+]);</p>
+<p>なるほど。自身がmodule[0]になって、requireされたファイルがmodule[1]になるのか。
+css対応
+WebPackは素ではjavascriptしか対応していない。cssに対応するためにloaderを導入する。</p>
+<blockquote>
+<p>npm install css-loader style-loader</p>
+</blockquote>
+<p>cssを追加して、
+style.css
+body {
+background: yellow;
+}</p>
+<p>requireする。
+loader経由でrequireするには、特殊な記法を用いるらしい。
+entry.js
+require(&quot;!style!css!./style.css&quot;);
+document.write(require(&quot;./content.js&quot;));</p>
+<p>webpack実行</p>
+<blockquote>
+<p>webpack ./entry.js bundle.js
+Hash: c8494a414a3a1d5c8c29
+Version: webpack 1.12.12
+Time: 716ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  11.8 kB       0  [emitted]  main
+[0] ./entry.js 76 bytes {0} [built]
+[5] ./content.js 45 bytes {0} [built]
++ 4 hidden modules</p>
+</blockquote>
+<p>6つモジュールができたと書いてあります。
+確かに、最初の無名関数への引数が6要素の配列になっている。
+modules[2]にさっきのcssがjavascript化されて入っている。
+/<strong><em>/ },
+/</em> 2 <em>/
+/</em></strong>/ function(module, exports, <strong>webpack_require</strong>) {</p>
+<pre style="background-color:#2b303b;">
+<code>exports = module.exports = __webpack_require__(3)();
+// imports
+
+
+// module
+exports.push([module.id, &quot;body {\r\n    background: yellow;\r\n}&quot;, &quot;&quot;]);
+
+// exports
+</code></pre>
+<p>/***/ },</p>
+<p>webpackは何もかもをjavascript化してrequireするシステムなのか！？
+configfile
+コマンドライン引数を設定に移動。
+webpack.config.js
+module.exports = {
+entry: &quot;./entry.js&quot;,
+output: {
+path: __dirname,
+filename: &quot;bundle.js&quot;
+},
+module: {
+loaders: [
+{ test: /.css$/, loader: &quot;style!css&quot; }
+]
+}
+};</p>
+<p>引数無しで実行できる。</p>
+<blockquote>
+<p>webpack
+Hash: 1141db5208a3ce352fb6
+Version: webpack 1.12.12
+Time: 669ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  11.8 kB       0  [emitted]  main
+[0] ./entry.js 67 bytes {0} [built]
+[5] ./content.js 45 bytes {0} [built]
++ 4 hidden modules</p>
+</blockquote>
+<p>Watchモードとか開発サーバーもあるで
+watchモード。</p>
+<blockquote>
+<p>webpack --progress --colors --watch</p>
+</blockquote>
+<p>dev-serverをインストール。</p>
+<blockquote>
+<p>npm install webpack-dev-server -g</p>
+</blockquote>
+<blockquote>
+<p>webpack-dev-server --progress --colors</p>
+</blockquote>
+<p>http://localhost:8080 で静的なコンパイル結果を表示
+http://localhost:8080/webpack-dev-server/bundle で自動リロード付き</p>
+<p>gulpでがんばってwatchからbrowser-syncを構築していたのをさくっとできるね。
+これはよさげ。
+機能的にはブラウザ側(いわゆるフロントエンド)に特化しているぽいな。
+サーバーサイドとの連携方法を探る必要がある。
+browsery-syncとnodemonの連携みたいにproxyを駆使するのか。
+参考</p>
+<p>webpack で Node サーバー用のコードを bundle する
+https://webpack.github.io/docs/webpack-dev-server.html#proxy
+http://stackoverflow.com/questions/26203725/how-to-allow-for-webpack-dev-server-to-allow-entry-points-from-react-router</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

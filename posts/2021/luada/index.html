@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2021&#x2F;luada&#x2F;"> LuaDA 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2021</div>
+        <div class="md">0731</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;lua&#x2F;">lua</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;luajit&#x2F;">luajit</a></li>
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;dap&#x2F;">dap</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>vscode の lua デバッガーに</p>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a> を使っていたのだが、</p>
+<p><code>launch.json</code> の <code>args</code> に <code>\\</code> が入るとエラーで起動できない。
+Windows で作業しているので、稀によくファイルパスの指定に <code>\\</code> が入る。</p>
+<h1 id="debugadapter-wozuo-tuteitara-zhi-sifang-gawakatuta">DebugAdapter を作っていたら、直し方がわかった</h1>
+<p><a href="https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4">https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4</a></p>
+<h2 id="pr">PR</h2>
+<p><a href="https://github.com/tomblind/local-lua-debugger-vscode/pull/37">https://github.com/tomblind/local-lua-debugger-vscode/pull/37</a></p>
+<p>Linux では動かんかったらしく、別の方法で修正してくれた。</p>
+<p>👍 <code>0.2.2</code> <a href="https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md">https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md</a></p>
+<h1 id="zi-qian-de-debugadapter-zuo-tutemirukotonisita">自前で <code>DebugAdapter</code> 作ってみることにした。</h1>
+<p><a href="https://github.com/ousttrue/luada">https://github.com/ousttrue/luada</a></p>
+<p>途中まで実装したのだが、</p>
+<ul>
+<li>luajit.exe + luada.lua</li>
+</ul>
+<p>という構成よりは、</p>
+<ul>
+<li>luada.exe</li>
+</ul>
+<p>の方が取り回しがよくて、それなら lua 成分をもっと減らして JSON-RPC 制御も <code>c++</code> なり <code>rust</code> なりにして
+lua 埋め込み型の exe が作りやすそう。
+元々、 スタンドアロンの lua インタプリタと組み合わせて使う lua スクリプトという方向性で実装していたのだが、
+<code>luajit-2.1.0-beta3</code> 一辺倒になりつつあるので気分が変わってきたのであった。
+これに関しては、今の構成でできるところまでやってみよう。</p>
+<h1 id="vscode-no-extension-wozuo-ru">VSCode の Extension を作る</h1>
+<ul>
+<li><a href="https://code.visualstudio.com/api/get-started/your-first-extension">https://code.visualstudio.com/api/get-started/your-first-extension</a></li>
+</ul>
+<p>手順通りに初期化した。npm は最新版に更新したほうがよいぽい。</p>
+<h1 id="mockdebug">MockDebug</h1>
+<ul>
+<li><a href="https://code.visualstudio.com/api/extension-guides/debugger-extension">https://code.visualstudio.com/api/extension-guides/debugger-extension</a></li>
+</ul>
+<p>を読む。</p>
+<ul>
+<li><a href="https://github.com/microsoft/vscode-mock-debug">https://github.com/microsoft/vscode-mock-debug</a></li>
+</ul>
+<p>というサンプルがある。</p>
+<p>いくつかの機能をまとめて提供する必要がありそう。</p>
+<ul>
+<li>launch.json の設定</li>
+<li>DebugAdapter 本体</li>
+<li>DebugAdapter を起動する</li>
+</ul>
+<h1 id="shi-zhuang-sitemiru">実装してみる</h1>
+<h2 id="extension-no-activate">Extension の activate</h2>
+<p>適当にイベントを登録して</p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// package.json</span><span style="color:#c0c5ce;">
+    &quot;</span><span style="color:#a3be8c;">activationEvents</span><span style="color:#c0c5ce;">&quot;: [</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">onDebug</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">onDebugInitialConfigurations</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">onDebugDynamicConfigurations</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">onDebugResolve:lua</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">onLanguage:lua</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+    ],</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<p><code>activate</code> されることを確認</p>
+<pre style="background-color:#2b303b;">
+<code class="language-ts" data-lang="ts"><span style="color:#65737e;">// src/extension.ts</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">export function </span><span style="color:#8fa1b3;">activate</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">context</span><span style="color:#c0c5ce;">: vscode.ExtensionContext) {</span><span style="color:#c0c5ce;">
+    </span><span style="color:#ebcb8b;">console</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">log</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">activate luada</span><span style="color:#c0c5ce;">&#39;);</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="launch">Launch</h2>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">contributes</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">breakpoints</span><span style="color:#c0c5ce;">&quot;: [</span><span style="color:#c0c5ce;">
+            {</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">language</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">lua</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+            }</span><span style="color:#c0c5ce;">
+        ],</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">debuggers</span><span style="color:#c0c5ce;">&quot;: [</span><span style="color:#c0c5ce;">
+            {</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">luada</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">label</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">LuaDA</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">languages</span><span style="color:#c0c5ce;">&quot;: [</span><span style="color:#c0c5ce;">
+                    &quot;</span><span style="color:#a3be8c;">lua</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+                ],</span><span style="color:#c0c5ce;">
+                </span><span style="color:#65737e;">// launch.json のテンプレート</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">initialConfigurations</span><span style="color:#c0c5ce;">&quot;: [</span><span style="color:#c0c5ce;">
+                    {</span><span style="color:#c0c5ce;">
+                        &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">luada</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                        &quot;</span><span style="color:#a3be8c;">name</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">launch luada</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                        &quot;</span><span style="color:#a3be8c;">request</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">launch</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                        &quot;</span><span style="color:#a3be8c;">program</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">${workspaceFolder}/main.lua</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                        &quot;</span><span style="color:#a3be8c;">args</span><span style="color:#c0c5ce;">&quot;: []</span><span style="color:#c0c5ce;">
+                    }</span><span style="color:#c0c5ce;">
+                ],</span><span style="color:#c0c5ce;">
+                </span><span style="color:#65737e;">// request: launch に対して可能な property の定義</span><span style="color:#c0c5ce;">
+                &quot;</span><span style="color:#a3be8c;">configurationAttributes</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+                    &quot;</span><span style="color:#a3be8c;">launch</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+                        &quot;</span><span style="color:#a3be8c;">properties</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+                            &quot;</span><span style="color:#a3be8c;">program</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+                                &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">string</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                                &quot;</span><span style="color:#a3be8c;">markdownDescription</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">Lua program to debug - set this to the path of the script</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                                &quot;</span><span style="color:#a3be8c;">default</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">${workspaceFolder}/main.lua</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+                            },                            </span><span style="color:#c0c5ce;">
+                            &quot;</span><span style="color:#a3be8c;">arg</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+                                &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">array</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                                &quot;</span><span style="color:#a3be8c;">markdownDescription</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">Command line argument, arg[1] ... arg[n]</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+                                &quot;</span><span style="color:#a3be8c;">default</span><span style="color:#c0c5ce;">&quot;: []</span><span style="color:#c0c5ce;">
+                            }                            </span><span style="color:#c0c5ce;">
+                        }</span><span style="color:#c0c5ce;">
+                    }</span><span style="color:#c0c5ce;">
+                }</span><span style="color:#c0c5ce;">
+            }</span><span style="color:#c0c5ce;">
+        ]</span><span style="color:#c0c5ce;">
+    },</span><span style="color:#c0c5ce;">
+</span></code></pre>
+<ul>
+<li>activate で DebugAdapterDescriptorFactory を登録</li>
+<li>launch で createDebugAdapterDescriptor を実行する</li>
+</ul>
+<p><code>src/extensions.ts</code></p>
+<pre style="background-color:#2b303b;">
+<code class="language-ts" data-lang="ts"><span style="color:#b48ead;">import </span><span style="color:#d08770;">* </span><span style="color:#b48ead;">as </span><span style="color:#bf616a;">vscode </span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">vscode</span><span style="color:#c0c5ce;">&#39;;</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">function </span><span style="color:#8fa1b3;">createDebugAdapterDescriptorFactory</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">context</span><span style="color:#c0c5ce;">: vscode.ExtensionContext): vscode.DebugAdapterDescriptorFactory {</span><span style="color:#c0c5ce;">
+    </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">{</span><span style="color:#c0c5ce;">
+        </span><span style="color:#8fa1b3;">createDebugAdapterDescriptor</span><span style="color:#c0c5ce;">(</span><span style="color:#c0c5ce;">
+            </span><span style="color:#bf616a;">session</span><span style="color:#c0c5ce;">: vscode.DebugSession,</span><span style="color:#c0c5ce;">
+            </span><span style="color:#bf616a;">executable</span><span style="color:#c0c5ce;">: vscode.DebugAdapterExecutable | undefined</span><span style="color:#c0c5ce;">
+        ): vscode.ProviderResult&lt;vscode.DebugAdapterDescriptor&gt; {</span><span style="color:#c0c5ce;">
+            </span><span style="color:#ebcb8b;">console</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">log</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">launch luada</span><span style="color:#c0c5ce;">&#39;);</span><span style="color:#c0c5ce;">
+            </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">runtime </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">exe</span><span style="color:#c0c5ce;">&quot;;</span><span style="color:#c0c5ce;">
+            </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">runtimeArgs</span><span style="color:#c0c5ce;">: string[] = [];</span><span style="color:#c0c5ce;">
+            </span><span style="color:#65737e;">//</span><span style="color:#c0c5ce;">
+            </span><span style="color:#65737e;">// デバッグアダプターを起動する</span><span style="color:#c0c5ce;">
+            </span><span style="color:#65737e;">// 起動したアダプターと vscode は、標準入出力で JSON-RPC により DebugAdapterProtocol で通信する。</span><span style="color:#c0c5ce;">
+            </span><span style="color:#65737e;">//</span><span style="color:#c0c5ce;">
+            </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">new vscode.DebugAdapterExecutable(</span><span style="color:#bf616a;">runtime</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">runtimeArgs</span><span style="color:#c0c5ce;">);</span><span style="color:#c0c5ce;">
+        }</span><span style="color:#c0c5ce;">
+    };</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">export function </span><span style="color:#8fa1b3;">activate</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">context</span><span style="color:#c0c5ce;">: vscode.ExtensionContext) {</span><span style="color:#c0c5ce;">
+    </span><span style="color:#ebcb8b;">console</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">log</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">activate luada</span><span style="color:#c0c5ce;">&#39;);</span><span style="color:#c0c5ce;">
+    </span><span style="color:#bf616a;">context</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">subscriptions</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">push</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">vscode</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">debug</span><span style="color:#c0c5ce;">.</span><span style="color:#8fa1b3;">registerDebugAdapterDescriptorFactory</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">luada</span><span style="color:#c0c5ce;">&#39;, </span><span style="color:#8fa1b3;">createDebugAdapterDescriptorFactory</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">context</span><span style="color:#c0c5ce;">)));</span><span style="color:#c0c5ce;">
+}</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">export function </span><span style="color:#8fa1b3;">deactivate</span><span style="color:#c0c5ce;">() { }</span><span style="color:#c0c5ce;">
+</span></code></pre><h2 id="debug-adapter-noshi-zhuang">Debug Adapter の実装</h2>
+<p><a href="https://microsoft.github.io/debug-adapter-protocol/specification">https://microsoft.github.io/debug-adapter-protocol/specification</a></p>
+<p>を見て粛々と実装する。</p>
+<h3 id="output-event"><a href="https://microsoft.github.io/debug-adapter-protocol/specification#Events_Output">Output Event</a></h3>
+<p>vscode の DebugConsole に出力されるので早期に作ると print debug の助けになる。</p>
+<h3 id="logger">Logger</h3>
+<ul>
+<li>DebugAdapterProtocol のやりとりすべてを記録する機能をアダプター側で作るべし。無いとデバッグ困難に。</li>
+</ul>
+<p>例</p>
+<p><a href="https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts">https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts</a></p>
+<h2 id="vsix-nichu-li">VSIX に出力</h2>
+<p><a href="https://code.visualstudio.com/api/working-with-extensions/publishing-extension">https://code.visualstudio.com/api/working-with-extensions/publishing-extension</a></p>
+<p>vsce を使う。</p>
+<p>package.json に追加。</p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">    &quot;</span><span style="color:#a3be8c;">publisher</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">ousttrue</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+    &quot;</span><span style="color:#a3be8c;">repository</span><span style="color:#c0c5ce;">&quot;: {</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">git</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#c0c5ce;">
+        &quot;</span><span style="color:#a3be8c;">url</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://github.com/ousttrue/luada.git</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#c0c5ce;">
+    },</span><span style="color:#c0c5ce;">
+</span></code></pre><pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">$ npx vsce package</span><span style="color:#c0c5ce;">
+</span></code></pre><h1 id="can-kao">参考</h1>
+<h2 id="https-github-com-actboy168-lua-debug"><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></h2>
+<ul>
+<li>vscode.DebugAdapterExecutable</li>
+</ul>
+<h2 id="https-github-com-tomblind-local-lua-debugger-vscode"><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></h2>
+<ul>
+<li>vscode.DebugAdapterServer</li>
+<li>TypeScript で vscode.DebugAdapterServer を new</li>
+<li>vscode と DebugAdapterServer が DAP で通信</li>
+<li>DebugAdapterServer が lua を spawn もしている</li>
+</ul>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luada/#debugadapter-wozuo-tuteitara-zhi-sifang-gawakatuta">DebugAdapter を作っていたら、直し方がわかった</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#pr">PR</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luada/#zi-qian-de-debugadapter-zuo-tutemirukotonisita">自前で DebugAdapter 作ってみることにした。</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luada/#vscode-no-extension-wozuo-ru">VSCode の Extension を作る</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luada/#mockdebug">MockDebug</a>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luada/#shi-zhuang-sitemiru">実装してみる</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#extension-no-activate">Extension の activate</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#launch">Launch</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#debug-adapter-noshi-zhuang">Debug Adapter の実装</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#vsix-nichu-li">VSIX に出力</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2021/luada/#can-kao">参考</a>
+            
+                <ul>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#https-github-com-actboy168-lua-debug">https:&#x2F;&#x2F;github.com&#x2F;actboy168&#x2F;lua-debug</a>
+                        </li>
+                    
+                        <li>
+                            <a href="https://ousttrue.github.io/posts/2021/luada/#https-github-com-tomblind-local-lua-debugger-vscode">https:&#x2F;&#x2F;github.com&#x2F;tomblind&#x2F;local-lua-debugger-vscode</a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;10&#x2F;21&#x2F;tinkerer&#x2F;"> Tinkererに引越し 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">1021</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>Tinkererに引越し
+Octpressが手に負えなくなってきたので手軽に使えそうな
+tinkererに引越しというかシステムを変更することにした。</p>
+<p>http://tinkerer.me/index.html</p>
+<p>以下作業手順メモ。
+tinkererインストール</p>
+<blockquote>
+<p>python --version
+Python 3.3.0
+easy_install tinkerer</p>
+</blockquote>
+<p>サイト生成</p>
+<blockquote>
+<p>mkdir pages_src
+pages_src&gt; tinkerer --setup
+pages_src&gt; gvim conf.py</p>
+</blockquote>
+<p>記事生成
+pages_src&gt; tinkerer --post &quot;tinkerer&quot;</p>
+<p>2013/10/21/tinkerer.rstが生成されるとともにmaster.rstのtoctreeに記事が追加される。
+categoriesとtagsの違いが良くわからん。
+pages_src&gt; gvim 2013/10/21/tinkerer.rst</p>
+<p>html生成
+pages_src&gt; tinkerer --build</p>
+<p>github転送
+既存のgithub-pages(user)があるのでそこれに送ってみる。</p>
+<blockquote>
+<p>mkdir pages_dst
+cd pages_dst
+pages_dst&gt; git init
+pages_dst&gt; git remote add origin url
+pages_dst&gt; cp -r ../pages_src/blog/html/* .
+pages_dst&gt; echo &quot;&quot; &gt; .nogekyll
+pages_dst&gt; git add .
+pages_dst&gt; git commit -m init</p>
+</blockquote>
+<p>上書き。
+pages_dst&gt; git push origin master --force</p>
+<p>_ではじまるパスが見えない件
+最初sphinxtogithubというので修正したのだけど、
+よく見たらtinkerのサイトに書いてあった。
+http://tinkerer.me/exts/withgithub.html
+extensions = [
+'tinkerer.ext.blog', 'tinkerer.ext.disqus', 'withgithub',
+]</p>
+<p>しかし404になるな・・・
+https://help.github.com/articles/files-that-start-with-an-underscore-are-missing
+.nogekyllがtypoしとった。-&gt; .nojekyll
+生成したファイルをローカルで開くとやたら時間がかかる件</p>
+<p>C:/Python33/Lib/site-packages/tinkerer-1.2.1-py3.3.egg/tinkerer/themes/boilerplate/layout.html</p>
+<p>の
+”//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js” を
+“http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js“
+に変えた。
+smb://ajax.googleapis.comとかにアクセスしてるような気がするw
+Octpressの記事を移植する
+pythonでpandocを呼び出して*.markdownから*.rstに変換した。
+完了
+とりあえず移行作業完了。
+なんだかんだでoctopressはブラックボックスだったので、
+sphinxベースのtinkererの方がわかる(sphinxの方が慣れている)。
+octopressではjekyllを良く知らずに使っていたのと、pushするときのタスクがgitをごにょごにょやっているのがよくわからんかった。
+いずれにしろ、hatenaの時が日記を一番よく書いていたので自前システムはメンテナンスコストが馬鹿にならんと思った。
+中身に入る前にシステムのメンテナンスで力尽きる。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

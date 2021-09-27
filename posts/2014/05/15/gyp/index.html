@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2014&#x2F;05&#x2F;15&#x2F;gyp&#x2F;"> python製のビルドツールgypを使ってみる 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2014</div>
+        <div class="md">0515</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;gyp&#x2F;">gyp</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>python製のビルドツールgypを使ってみる
+gyp(Generate Your Projects) は、
+pythonで記述されたプロジェクト生成ツールで設定からVC向けプロジェクトや、GCC向けMakefileを生成するツールである。
+chromeやnode.jsのビルドツールとして採用されているそうな。
+機能的にはpremake4やcmakeと同じ範囲をカバーするがそれぞれ以下のような問題があった。</p>
+<p>premake4はわりと気に入っているのだが布教困難。luaで宣言的に記述するのが分かりづらい
+cmakeはcmake語が解読不能でちょっとしたプロジェクトのカスタマイズが困難すぎる(OpenCVとかのことだ)</p>
+<p>そこで、python製のgypを試してみた。
+gyp導入
+環境は、Windows7 + python3。</p>
+<blockquote>
+<p>python setup.py install
+:
+中略
+:
+SyntaxError: invalid syntax</p>
+</blockquote>
+<p>File &quot;c:\python33\lib\site-packages\gyp-0.1-py3.3.egg\gyp\generator\ninja.py&quot;,
+line 475
+print &quot;Warning: Actions/rules writing object files don't work with &quot; <br />
+^
+SyntaxError: invalid syntax</p>
+<p>File &quot;c:\python33\lib\site-packages\gyp-0.1-py3.3.egg\gyp\generator\xcode.py&quot;,
+line 126
+except OSError, e:
+^
+SyntaxError: invalid syntax</p>
+<p>python3非対応だった。まぁpython2で。
+とりあえずc++の”hello world”をビルドするところから
+hello_gyp
++ main.cpp
++ projects.gyp</p>
+<p>main.cpp
+projects.gyp
+プロジェクト生成。</p>
+<blockquote>
+<p>gyp projects.gyp --depth .</p>
+</blockquote>
+<p>これで、projects.slnとhello_gyp.vcxprojが生成された。
+hello_gyp
++ main.cpp
++ projects.gyp
++ projects.sln(generated)
++ hello_gyp.vcxproj(generated)</p>
+<p>vc2010 express editionでprojects.slnを開いてビルドできた。
+hello_gyp
++ main.cpp
++ projects.gyp
++ projects.sln
++ hello_gyp.vcxproj
++ Default/hello_gyp.exe(build)</p>
+<p>構成がDebug,
+ReleaseではなくDefault一本立てなのでカスタマイズの必要あり。</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

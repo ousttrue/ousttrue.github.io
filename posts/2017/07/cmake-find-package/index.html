@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;07&#x2F;cmake-find-package&#x2F;"> cmakeのfind_package 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0720</div>
+      </li>
+      
+      
+
+
+    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;cmake&#x2F;">cmake</a></li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+ <p>cmakeのFIND_PACKAGEわかりずらいよ。もやもやするものがある。</p>
+<p>GLUTの例
+検証用に小さい例を作ってみた。</p>
+<p>https://stackoverflow.com/questions/9460242/how-to-compile-glut-opengl-project-with-cmake-and-kdevelop-in-linux</p>
+<p>これを参考にしたのだけどちょっと手直しした。</p>
+<p>ADD_EXECUTABLEの前にINCLUDE_DIRECTORIESする必要がある
+OPENGL_INCLUDE_DIRSじゃなくてOPENGL_INCLUDE_DIR
+GLUT_INCLUDE_DIRSじゃなくてGLUT_INCLUDE_DIR</p>
+<p>Linuxとかだとdistributionがcmakeファイルを管理してたりするかもしれん。
+main.cpp
+#include &lt;GL/glut.h&gt;</p>
+<p>void display(void)
+{
+}</p>
+<p>int main(int argc, char *argv[])
+{
+glutInit(&amp;argc, argv);
+glutCreateWindow(argv[0]);
+glutDisplayFunc(display);
+glutMainLoop();
+return 0;
+}</p>
+<p>CMakeLists.txt
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(hello)</p>
+<p>FIND_PACKAGE(OpenGL REQUIRED)
+MESSAGE(STATUS ${OPENGL_LIBRARIES})
+MESSAGE(STATUS ${OPENGL_INCLUDE_DIR})</p>
+<p>FIND_PACKAGE(GLUT REQUIRED)
+MESSAGE(STATUS ${GLUT_LIBRARY})
+MESSAGE(STATUS ${GLUT_INCLUDE_DIR})</p>
+<p>INCLUDE_DIRECTORIES(
+${OPENGL_INCLUDE_DIR}
+${GLUT_INCLUDE_DIR}
+)
+ADD_DEFINITIONS(
+-DFREEGLUT_LIB_PRAGMAS=0 # avoid pragma
+)
+ADD_EXECUTABLE(hello 
+main.cpp
+)
+TARGET_LINK_LIBRARIES(hello
+${OPENGL_LIBRARIES}
+${GLUT_LIBRARY}
+)</p>
+<h2 id="shi-xing-shi-nometusezi-glu32opengl32">実行時のメッセージ
+-- glu32opengl32</h2>
+<p>-- D:/vcpkg/installed/x64-windows/lib/freeglut.lib
+-- D:/vcpkg/installed/x64-windows/include
+-- Configuring done
+-- Generating done</p>
+<p>なぜかvcpkgのfreeglutを発見してくれた。
+vcpkgがcmakeの探索パスを追加しているぽい。レジストリとかか？
+まず、第1に
+FIND_PACKAGEの結果として如何なる変数が増えるのかが分からん。</p>
+<p>https://cmake.org/Wiki/CMake:How_To_Find_Libraries#How_package_finding_works</p>
+<p>慣例では、下記のようになっている。</p>
+<p>_FOUND
+_INCLUDE_DIRS or _INCLUDES
+_LIBRARIES or _LIBRARIES or _LIBS
+_DEFINITIONS</p>
+<p>強制じゃなくて規約なので各種表記ブレの余地が危険を醸し出している。
+大文字小文字(find_package(glut)に対して${GLUT_FOUND})、複数単数(DIR, DIRS)、短縮(LIBRARIES, LIBS)とか一貫性が。はまりそうだー。
+とりあえあず、標準のパッケージに関してはコマンドから問い合わせることができる。</p>
+<blockquote>
+<p>cmake --help-module OpenGL
+FindOpenGL</p>
+</blockquote>
+<hr />
+<p>FindModule for OpenGL and GLU.</p>
+<p>IMPORTED Targets
+^^^^^^^^^^^^^^^^</p>
+<p>This module defines the <code>IMPORTED</code> targets:</p>
+<p><code>OpenGL::GL</code>
+Defined if the system has OpenGL.
+<code>OpenGL::GLU</code>
+Defined if the system has GLU.</p>
+<p>Result Variables
+^^^^^^^^^^^^^^^^</p>
+<p>This module sets the following variables:</p>
+<p><code>OPENGL_FOUND</code>
+True, if the system has OpenGL.
+<code>OPENGL_XMESA_FOUND</code>
+True, if the system has XMESA.
+<code>OPENGL_GLU_FOUND</code>
+True, if the system has GLU.
+<code>OPENGL_INCLUDE_DIR</code>
+Path to the OpenGL include directory.
+<code>OPENGL_LIBRARIES</code>
+Paths to the OpenGL and GLU libraries.</p>
+<p>If you want to use just GL you can use these values:</p>
+<p><code>OPENGL_gl_LIBRARY</code>
+Path to the OpenGL library.
+<code>OPENGL_glu_LIBRARY</code>
+Path to the GLU library.</p>
+<p>OSX Specific
+^^^^^^^^^^^^</p>
+<p>On OSX default to using the framework version of OpenGL. People will
+have to change the cache values of OPENGL_glu_LIBRARY and
+OPENGL_gl_LIBRARY to use OpenGL with X11 on OSX.</p>
+<blockquote>
+<p>cmake --help-module GLUT
+FindGLUT</p>
+</blockquote>
+<hr />
+<p>try to find glut library and include files.</p>
+<p>IMPORTED Targets
+^^^^^^^^^^^^^^^^</p>
+<p>This module defines the <code>IMPORTED</code> targets:</p>
+<p><code>GLUT::GLUT</code>
+Defined if the system has GLUT.</p>
+<p>Result Variables
+^^^^^^^^^^^^^^^^</p>
+<p>This module sets the following variables:</p>
+<p>::</p>
+<p>GLUT_INCLUDE_DIR, where to find GL/glut.h, etc.
+GLUT_LIBRARIES, the libraries to link against
+GLUT_FOUND, If false, do not try to use GLUT.</p>
+<p>Also defined, but not for general use are:</p>
+<p>::</p>
+<p>GLUT_glut_LIBRARY = the full path to the glut library.
+GLUT_Xmu_LIBRARY  = the full path to the Xmu library.
+GLUT_Xi_LIBRARY   = the full path to the Xi Library.</p>
+<p>という感じでcmakeに最初から入っているタイプのモジュールはわかる。
+ちなみにFIND_PACKAGEの引数は大文字小文字を区別しないが、結果はただの変数なので区別することに注意。
+${OPENGL_GL_LIBRARY}とかだめですから。
+不安があるときはMESSAGEでプリントデバッグするのが手堅い。
+MESSAGE(STATUS ${OPENGL_gl_LIBRARY})</p>
+<p>VisualStudioなのでリンクをDebug, Releaseで振り分けたいんだけど
+lib/freeglut.libとdebug/lib/freeglutd.libとか。
+上の例は問答無用でRelease版にリンクされる(glutの場合は、別にfreeglutのデバッグはしないのでそれはそれでよかったりもするが・・・)。プラグマでリンクすればいいやんとなるのだが、link_directoriesにはDebug, Releaseの振り分けはない。Release決め打ちの方がましである。
+TARGET_LINK_LIBRARIESには振り分け機能が実装されている。
+TARGET_LINK_LIBRARIES(hello
+debug path_to_freeglutd.lib
+optimized path_to_freeglut.lib
+)</p>
+<p>という風に記述できる。で、これを如何にしてFIND_PACKAGEと連携させるのか。
+例としてfreeglut.libとfreeglutd.lib。
+FIND_PACKAGE(OpenGL REQUIRED)
+MESSAGE(STATUS ${OPENGL_LIBRARIES})
+FIND_PACKAGE(GLUT)
+MESSAGE(STATUS ${GLUT_LIBRARY})
+STRING(REPLACE lib/freeglut.lib debug/lib/freeglutd.lib GLUT_LIBRARY_DEBUG ${GLUT_LIBRARY})
+SET(OPENGL_LIBS 
+general ${OPENGL_LIBRARIES} 
+optimized ${GLUT_LIBRARY} 
+debug ${GLUT_LIBRARY_DEBUG}
+)
+TARGET_LINK_LIBRARIES(hello
+${OPENGL_LIBS}
+)</p>
+<p>インストールしたパッケージがFindされないんだけど
+alembicなどvcpkgでインストールしたパッケージをVCPKG_DIR/installed/x64-windowsから探索して欲しいのだが方法がよくわからない。</p>
+<p>CMakeを使ってみた (7) find_packageとpkg_check_modulesによるライブラリ探索</p>
+<p>あとで</p>
+
+</div>
+
+<nav class="toc">
+
+<div class="toc_fix">
+<ul>
+    
+        <li>
+            <a href="https://ousttrue.github.io/posts/2017/07/cmake-find-package/#shi-xing-shi-nometusezi-glu32opengl32">実行時のメッセージ-- glu32opengl32</a>
+            
+        </li>
+    
+</ul>
+</div>
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;10&#x2F;27&#x2F;rightvalue&#x2F;"> 右辺値の理解 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2013</div>
+        <div class="md">1027</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>右辺値の理解
+そろそろ右辺値を抑えておきたい気がしたのでテストコードを書きながら実験してみた(VC2010
+Express Edition)。
+http://msdn.microsoft.com/ja-jp/library/vstudio/dd293665.aspx
+を参考に右辺値実験クラスRightKunを書いた。
+コピーコンストラクタと同じくシグニチャは決まったものがあって
+右辺値代入演算のオーバーロードとペアになるらしい。
+各関数の呼び出しでメッセージを表示するように仕込んだ。
+https://gist.github.com/ousttrue/7178535
+#include <memory>
+#include <iostream></p>
+<p>class RightKun
+{
+public:
+RightKun()
+{
+std::cout &lt;&lt; this &lt;&lt; &quot;:default constructor&quot; &lt;&lt; std::endl;
+};</p>
+<pre style="background-color:#2b303b;">
+<code>~RightKun()
+{
+    std::cout &lt;&lt; this &lt;&lt; &quot;:destructor&quot; &lt;&lt; std::endl;
+}
+
+// 左辺値によるコピーコンストラクタ
+RightKun(const RightKun &amp;src)
+{
+    std::cout &lt;&lt; this &lt;&lt; &quot;:copy constructor: &quot;;
+    *this=src;
+}
+
+RightKun &amp;operator=(const RightKun &amp;src)
+{
+    std::cout &lt;&lt; &quot;left value operator= &quot; &lt;&lt; &amp;src &lt;&lt; std::endl;
+    return *this;
+}
+
+// 右辺値によるムーブコンストラクタ
+RightKun(RightKun &amp;&amp;src)
+{
+    std::cout &lt;&lt; this &lt;&lt; &quot;:move constructor: &quot;;
+    *this=std::move(src);
+}
+
+RightKun &amp;operator=(RightKun &amp;&amp;src)
+{
+    std::cout &lt;&lt; &quot;right value operator= &quot; &lt;&lt; &amp;src &lt;&lt; std::endl;
+    return *this;
+}
+</code></pre>
+<p>};</p>
+<p>とりあえず使ってみる
+{
+// default
+RightKun r1;</p>
+<pre style="background-color:#2b303b;">
+<code>// copy
+RightKun r2=r1;
+</code></pre>
+<p>}</p>
+<p>結果
+0025FE33:default constructor
+0025FE32:copy constructor: left value operator= 0025FE33
+0025FE32:destructor
+0025FE33:destructor </p>
+<p>問題ない。
+通常の値返しの呼び出し
+RightKun create()
+{
+return RightKun();
+}</p>
+<p>使う
+{
+RightKun r=create();
+}</p>
+<p>結果
+0025FE2E:default constructor
+0025FE2E:destructor</p>
+<p>おや、コピーコンストラクタが呼ばれない。
+RVO
+調べてみたらこれはコンパイラのRVO(Return Value Optimization)という機能で
+返り値が変数に代入されていない場合(いわゆる右辺値)に代入を無しにできるというものらしい。
+なるほど。
+よくある
+vec3 cross(const vec3 &amp;lhs, const vec3 &amp;rhs)
+{
+// x, y, z...
+return vec3(x, y, z);
+}</p>
+<p>vec3 out=cross(v1, v2);</p>
+<p>的なものを
+void cross(vec3 *out, const vec3 *lhs, const vec3 *rhs)
+{
+// x, y, z...
+out-&gt;x=x;
+out-&gt;y=y;
+out-&gt;z=z;
+}</p>
+<p>vec3 out;
+cross(&amp;out, &amp;v1, &amp;v2);</p>
+<p>と書いても別にパフォーマンスが変わらんと言うことですな。
+最近のコンパイラなら大丈夫というのは、RVOがたぶん効くということか。
+むしろ適切なコンストラクタで初期化できるので前者の方がよろしいな。
+後者だとデフォルトコンストラクタが0で初期化しないようにしたくなるし、
+いろいろよろしくない。
+RVOできないようにする
+先ほどの関数をRVOが無効になるように改造してみる。
+RightKun createNoRVO()
+{
+RightKun r;
+return r;
+}</p>
+<p>使う
+{
+RightKun r=createNoRVO();
+}</p>
+<p>結果
+0025FDFB:default constructor
+0025FE31:move constructor: right value operator= 0025FDFB
+0025FDFB:destructor
+0025FE31:destructor</p>
+<p>期せずしてムーブコンストラクタ呼び出しが発生した。
+どういう条件で切り替わるんだこれは。
+調べてみるとムーブコンストラクタはRVOが効かない時に使われる、という記述を見つけた。
+http://msdn.microsoft.com/ja-jp/library/vstudio/dd293668.aspx</p>
+<p>コンパイラが戻り値の最適化 (RVO) または名前付き戻り値の最適化 (NRVO)
+を使用できない場合に、移動セマンティクスが役立ちます。
+このような場合、型が移動コンストラクターを定義していれば、コンパイラはその移動コンストラクターを呼び出します</p>
+<p>ほぅ。
+NRVOというのはRVOの進化型で戻り値が変数に代入(名前付き)されていても有効になるものらしい。上記の例だと単純なのでNRVOできそうな気もするがコンパイルオプションとかですかね。
+コンパイラが代入の右側を破棄してもよいと判断した場合にムーブコンストラクタが定義されていれば自動的にそっちを使うという暗黙的な仕組みのようだ。
+g++(4.6)ではNRVOされた
+右側を破棄できないようにしてみよう
+RightKun createCanNotMove(const RightKun &amp;src, bool hoge)
+{
+if(hoge){
+return src;
+}
+return RightKun();
+}</p>
+<p>使う
+{
+RightKun r=createCanNotMove(RightKun(), true);
+}</p>
+<p>結果
+0025FE2C:default constructor
+0025FE30:copy constructor: left value operator= 0025FE2C
+0025FE2C:destructor
+0025FE30:destructor</p>
+<p>予定通りコピーコンストラクタ呼び出し。問題ない。
+引数をRightKun&amp;&amp;にしてみる
+ここでsrcの型をRightKun&amp;&amp;にすればムーブコンストラクタ呼び出しできるのではないか。
+static RightKun rightValueArg(RightKun &amp;&amp;src, bool hoge)
+{
+if(hoge){
+return src;
+}
+return RightKun();
+}</p>
+<p>使う
+{
+RightKun r=rightValueArg(RightKun(), true);
+}</p>
+<p>結果
+0025FE2C:default constructor
+0025FE30:copy constructor: left value operator= 0025FE2C
+0025FE2C:destructor
+0025FE30:destructor</p>
+<p>ところがぎっちょん、コピーの方。何故かというとrightValueArg内ではsrcはただの変数、左辺値として
+扱われるのだ。RightKun&amp;&amp;は実引数の制限だ。
+試しに以下のように呼び出すとエラーになる。
+{
+RightKun leftvalue;
+RightKun r=rightValueArg(leftvalue, true);
+}</p>
+<p>エラー
+error C2664: 'rightValueArg' : 1 番目の引数を 'RightKun' から 'RightKun &amp;&amp;' に変換できません。</p>
+<p>srcが右辺値であることを明示する
+プログラマはsrcが右辺値であることを明示できる。
+static RightKun moveExplicit(RightKun &amp;&amp;src, bool hoge)
+{
+if(hoge){
+return static_cast&lt;RightKun&amp;&amp;&gt;(src);
+}
+return RightKun();
+}</p>
+<p>使う
+{
+RightKun r=moveExplicit(RightKun(), true);
+}</p>
+<p>結果
+0025FE2B:default constructor
+0025FE2F:move constructor: right value operator= 0025FE2B
+0025FE2B:destructor
+0025FE2F:destructor</p>
+<p>意図通りにムーブコンストラクタが呼ばれた。
+で、このキャストをラップするのがstd::moveですよと。
+ただし、std::moveした変数をその後で使わないのはプログラマの責任と。
+ということで右辺値とムーブコンストラクタのなんたるかがなんとなく分かった。
+ムーブコンストラクタを呼ぶかどうかはコンパイラが判断するので
+使うほうは気にしなくても、知らないうちにムーブコンストラクタが呼ばれてパフォーマンス上の恩恵を受けることができるということですな。
+知っていればstd::moveによりムーブコンストラクタの呼び出しを増やせるかもしれない。
+unique_ptrでstd::moveを要求されるのはコピーコンストラクタを無効にしつつ、
+ムーブコンストラクタを定義している故と類推できた。
+だいたい分かった結果、
+自分でムーブコンストラクタを定義するクラスを書くことはあまり無さそうな気がした。
+だめな書き方
+最後に右辺値を返す関数を書こうとして最初にはまった、だめなバージョンを書いておく
+RightKun &amp;&amp;moveFail()
+{
+return RightKun();
+}</p>
+<p>使う
+{
+RightKun r=moveFail();
+}</p>
+<p>結果
+0025FE07:default constructor
+0025FE07:destructor
+0025FE2D:move constructor: right value operator= 0025FE07
+0025FE2D:destructor</p>
+<p>destructorが動いた後のポインタで、ムーブコンストラクタが呼び出される
+大変危険なコードになった。 なんじゃこりゃー。
+gccでやってみたらわかりやすいエラーメッセージが出た。
+警告: 一時オブジェクトへの参照を返そうとしています [デフォルトで有効]</p>
+<p>関数返り値の宣言に&amp;&amp;を使ってはいけないということか</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>

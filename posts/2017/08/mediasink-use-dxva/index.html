@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>三次元日誌</title>
+
+    
+
+  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
+  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
+  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+
+    
+
+     
+    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      />
+    
+  </head>
+
+  <body class="container">
+    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
+      <div>三次元日誌</div>
+    </a>
+
+    <nav class="nav">
+      <a class="item" href="/tags/">tags</a>
+      <a class="item" href="https://github.com/ousttrue" aria-label="github">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      
+
+        
+            <form class="navbar-form">
+                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+                    aria-label="Search docs..." autocomplete="off">
+                <div id="suggestions" class="shadow bg-white rounded"></div>
+            </form>
+        
+    </nav>
+
+    <main class="main">
+<div class="page">
+<div class="content">
+  <div class="headline">
+  
+  
+
+  
+  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2017&#x2F;08&#x2F;mediasink-use-dxva&#x2F;"> MediaSinkでDXVA 
+  
+
+  
+  </a>
+
+  
+
+  <div>
+    <ul class="tags">
+      <li class="headline_date">
+        <div class="year">2017</div>
+        <div class="md">0828</div>
+      </li>
+      
+      
+
+    </ul>
+  </div>
+</div>
+ <p>MediaSinkでDXVAを使うには。</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
+<p>解読の後半。
+DXVAが何かということについてはぼんやりとしているのだけれど、VideoSampleのバッファーにD3Dのテクスチャを使うということぽい。</p>
+<p>DirectX Surface Buffer</p>
+<p>ということはPipelineのどこかのタイミングでCPU上のbitmapをCreateTextureしてGPUに移動するのだけど、DecoderなりRendererなりのなるべく上流でGPUに上げた方がうれしいという話。
+ID3D11DeviceをMediaSessionに供給する
+Pipelineでテクスチャをやりとりするのだからデバイスを共有しましょうと。MediaSessionの場合は、レンダラがデバイスを作成してIMFDXGIDeviceManagerを公開する。
+公開するのはIMFGetServiceを通してぽい。
+この辺。
+HRESULT DX11VideoRenderer::CMediaSink::GetService(__RPC__in REFGUID guidService, __RPC__in REFIID riid, __RPC__deref_out_opt LPVOID* ppvObject)
+{
+HRESULT hr = S_OK;</p>
+<pre style="background-color:#2b303b;">
+<code>if (guidService == MF_RATE_CONTROL_SERVICE)
+{
+    hr = QueryInterface(riid, ppvObject);
+}
+else if (guidService == MR_VIDEO_RENDER_SERVICE)
+{
+    hr = m_pPresenter-&gt;QueryInterface(riid, ppvObject);
+}
+else if (guidService == MR_VIDEO_ACCELERATION_SERVICE)
+{
+    // ここからIMFDXGIDeviceManagerを得る
+    hr = m_pPresenter-&gt;GetService(guidService, riid, ppvObject);
+}
+else
+{
+    hr = MF_E_UNSUPPORTED_SERVICE;
+}
+
+return hr;
+</code></pre>
+<p>}</p>
+<p>実験
+まだIMFGetServiceを実装していないVideoRendererで、
+ProcessSampleに入ってくるIMFSampleからIMFDXGIBufferが取得できるか試してみよう。
+DWORD cBuffers = 0;
+auto hr = pSample-&gt;GetBufferCount(&amp;cBuffers);
+if (FAILED(hr))
+{
+return hr;
+}</p>
+<p>Microsoft::WRL::ComPtr<IMFMediaBuffer> pBuffer;
+if (1 == cBuffers)
+{
+hr = pSample-&gt;GetBufferByIndex(0, &amp;pBuffer);
+}
+else
+{
+hr = pSample-&gt;ConvertToContiguousBuffer(&amp;pBuffer);
+}
+if (FAILED(hr))
+{
+return hr;
+}</p>
+<p>Microsoft::WRL::ComPtr<IMFDXGIBuffer> pDXGIBuffer;
+hr = pBuffer.As(&amp;pDXGIBuffer);
+if (FAILED(hr))
+{
+// ここに来た
+return hr;
+}</p>
+<p>Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture2D;
+hr = pDXGIBuffer-&gt;GetResource(IID_PPV_ARGS(&amp;pTexture2D));
+if (FAILED(hr))
+{
+return hr;
+}</p>
+<p>実験２
+StreamSinkにIMFGetServiceを実装した。
+// IMFGetService
+STDMETHODIMP GetService(__RPC__in REFGUID guidService, __RPC__in REFIID riid, __RPC__deref_out_opt LPVOID* ppvObject)override
+{
+HRESULT hr = S_OK;</p>
+<pre style="background-color:#2b303b;">
+<code>if (guidService == MR_VIDEO_ACCELERATION_SERVICE)
+{
+    if (riid == __uuidof(IMFDXGIDeviceManager))
+    {
+        if (NULL != m_pDXGIManager)
+        {
+            *ppvObject = (void*) static_cast&lt;IUnknown*&gt;(m_pDXGIManager);
+            ((IUnknown*)*ppvObject)-&gt;AddRef();
+        }
+        else
+        {
+            hr = E_NOINTERFACE;
+        }
+    }
+    else
+    {
+        hr = E_NOINTERFACE;
+    }
+}
+else
+{
+    hr = MF_E_UNSUPPORTED_SERVICE;
+}
+
+return hr;
+</code></pre>
+<p>}</p>
+<p>IMFSampleからID3D11Texture2Dを取得できた。
+上流が、DXVA化されてSampleのバッファがテクスチャになった。
+どんなテクスチャなのか
+ArraySize = 13
+Format = DXGI_FORMAT_NV12</p>
+<p>中身がよくわからぬ。
+DecodeされたyuvフレームをSwapchainにコピーする</p>
+<p>deinterlace
+YUV To RGB
+サイズ調整</p>
+<p>等をしてデコード済みのフレームをRGB画像にする工程。
+２種類の実装がある。</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/cpp/Presenter.cpp</p>
+<p>の以下の部分。
+if (m_useXVP)
+{
+BOOL bInputFrameUsed = FALSE;</p>
+<pre style="background-color:#2b303b;">
+<code>hr = ProcessFrameUsingXVP( pCurrentType, pSample, pTexture2D, rcDest, ppOutputSample, &amp;bInputFrameUsed );
+
+if (SUCCEEDED(hr) &amp;&amp; !bInputFrameUsed)
+{
+    *pbProcessAgain = TRUE;
+}
+</code></pre>
+<p>}
+else
+{
+hr = ProcessFrameUsingD3D11( pTexture2D, pEVTexture2D, dwViewIndex, dwEVViewIndex, rcDest, *punInterlaceMode, ppOutputSample );</p>
+<pre style="background-color:#2b303b;">
+<code>// 省略
+</code></pre>
+<p>}</p>
+<p>どちらでもだいたい同じ動きになると思う。
+ProcessFrameUsingXVP</p>
+<p>Video Processor MFT</p>
+<p>初期化時にIDXGIDeviceManagerを直接渡してDXVAを有効にしている。
+hr = CoCreateInstance(CLSID_VideoProcessorMFT, nullptr, CLSCTX_INPROC_SERVER, IID_IMFTransform, (void**)&amp;m_pXVP);
+if (FAILED(hr))
+{
+break;
+}</p>
+<p>// MFTにDirectXを渡す
+hr = m_pXVP-&gt;ProcessMessage(MFT_MESSAGE_SET_D3D_MANAGER, ULONG_PTR(m_pDXGIManager));
+if (FAILED(hr))
+{
+break;
+}</p>
+<p>Textureの入ったサンプルを処理して、Textureの入ったサンプルに出力できる。
+ProcessFrameUsingD3D11
+D3D11VideoDeviceを使う。
+こっちの方が手順が長くて大変。
+おそらく、VideoProcessorMFTはD3D11VideoDeviceを使って実装していてこちらの方がローレベルなのであろう。
+Decode
+APIの説明としてはこれ。</p>
+<p>Supporting Direct3D 11 Video Decoding in Media Foundation</p>
+<p>DX11VideoRendererサンプルでは、直接使っていない。
+Video Processing
+DX11VideoRendererサンプルでは、D3D11VideoDeviceを最後の色変換等で使っている。</p>
+<p>DXVA Video Processing</p>
+<p>Video Process Blit</p>
+<p>DXVA2.0+D3D9のドキュメントぽい。
+D3D11ではこの関数。</p>
+<p>D3D11VideoContext::VideoProcessorBlt</p>
+
+</div>
+
+<nav class="toc">
+
+
+</nav>
+</div>
+</main>
+
+    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
+
+  </body>
+</html>
