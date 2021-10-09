@@ -119,28 +119,7 @@ quote_style = "AutoPreferDouble"
 no_call_parentheses = true
 ```
 
-# C-API
-
-```c
- // parse
- luaL_loadstring(L, script);
- // run
- lua_pcall(L, 0, LUA_MULTRET, 0);
-```
-
-* [lua执行字节码的过程介绍](https://www.cnblogs.com/zxh1210603696/p/4479945.html)
-* [Lua源码剖析（一）](http://airtrack.me/posts/2012/07/19/Lua%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/)
-
 # ソース読み
 
-* [The Evolution of Lua](https://www.cs.tufts.edu/comp/250RTS/archive/roberto-ierusalimschy/lua-hopl-iii.pdf)
-* [The Implementation of Lua 5.0](http://www.lua.org/doc/jucs05.pdf)
-* [Luaソース読みメモ1](https://sites.google.com/site/aotokage52/home/lua/luasosu-dumimemo1)
-* [Luaソースコード読みはじめる](https://blog.masu-mi.me/post/2013/08/31/practice_lua/)
-* [ひとり勉強会 LUA 目次](https://hzkr.hatenablog.com/entries/1900/01/03)
-* <https://the-ravi-programming-language.readthedocs.io/en/latest/lua-parser.html>
-
-## LuaVM, OpCode, Operand
-* [12 分くらいで知るLuaVM](https://www.slideshare.net/Isoparametric/12-luavm)
-* [Luaのコード生成](https://sites.google.com/site/safxdev/lua_codegen)
+<https://ousttrue.github.io/lua/>
 
