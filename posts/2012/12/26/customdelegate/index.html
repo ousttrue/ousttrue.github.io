@@ -1,170 +1,218 @@
 <!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>三次元日誌</title>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>カスタムデリゲート | 三次元日誌</title>
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="next" href="../../../../2013/01/04/qabstracttablemodel/" title="QTableViewとQAbstractTableModel" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="カスタムデリゲート">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2012/12/26/customdelegate/">
+<meta property="og:description" content="C++のQt4と平行してPyQt4を使い始めた。大概の用途にはこっちで十分な気がする。
+pyqtのチュートリアルには、
+http://zetcode.com/tutorials/pyqt4/
+がいい。wxWidgetsとかgtkでも世話になったが、ここのチュートリアルはサンプルが小さいので助かる。
+ビューのアイテム表示をカスタマイズするデリゲートについて調査中。
+!/usr/bin/python
+">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2012-12-26T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
 
-    
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../../">
 
-  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
-  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
-  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
 
-    
 
-     
-    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
-      />
-    
-  </head>
-
-  <body class="container">
-    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
-      <div>三次元日誌</div>
-    </a>
-
-    <nav class="nav">
-      <a class="item" href="/tags/">tags</a>
-      <a class="item" href="https://github.com/ousttrue" aria-label="github">
-        <i class="fab fa-github fa-lg"></i>
-      </a>
-      
-
-        
-            <form class="navbar-form">
-                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
-                    aria-label="Search docs..." autocomplete="off">
-                <div id="suggestions" class="shadow bg-white rounded"></div>
-            </form>
-        
-    </nav>
-
-    <main class="main">
-<div class="page">
-<div class="content">
-  <div class="headline">
-  
-  
-
-  
-  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2012&#x2F;12&#x2F;26&#x2F;customdelegate&#x2F;"> カスタムデリゲート 
-  
-
-  
-  </a>
-
-  
-
-  <div>
-    <ul class="tags">
-      <li class="headline_date">
-        <div class="year">2012</div>
-        <div class="md">1226</div>
-      </li>
-      
-      
-
-    </ul>
-  </div>
+                    
+            </ul></nav>
 </div>
- <p>C++のQt4と平行してPyQt4を使い始めた。大概の用途にはこっちで十分な気がする。</p>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">カスタムデリゲート</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2012-12-26T00:00:00Z" itemprop="datePublished" title="2012-12-26 00:00">2012-12-26 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2012/12/26/customdelegate.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>C++のQt4と平行してPyQt4を使い始めた。大概の用途にはこっちで十分な気がする。</p>
 <p>pyqtのチュートリアルには、</p>
 <p>http://zetcode.com/tutorials/pyqt4/</p>
 <p>がいい。wxWidgetsとかgtkでも世話になったが、ここのチュートリアルはサンプルが小さいので助かる。
 ビューのアイテム表示をカスタマイズするデリゲートについて調査中。</p>
-<h1 id="usr-bin-python">!/usr/bin/python</h1>
-<h1 id="coding-utf-8">-<em>- coding: utf-8 -</em>-</h1>
+<h2>!/usr/bin/python</h2>
+<h2>-<em>- coding: utf-8 -</em>-</h2>
 <p>import sys from PyQt4 import QtGui, QtCore from random import randint</p>
 <p>class CustomDelegate(QtGui.QItemDelegate):</p>
-<p>def __init__(self, parent = None):</p>
-<p>:   super(CustomDelegate, self).__init__(parent) self.editor
-= QtGui.QSpinBox()</p>
-<h2 id="bian-ji-shi"># 編集時</h2>
+<dl>
+<dt>def __init__(self, parent = None):</dt>
+<dd>
+<p>super(CustomDelegate, self).__init__(parent) self.editor
+  = QtGui.QSpinBox()</p>
+</dd>
+</dl>
+<p># 編集時</p>
+<hr>
 <p># create widget def createEditor(self, parent, styleOption, index):
-editor = QtGui.QSpinBox(parent) return editor</p>
+  editor = QtGui.QSpinBox(parent) return editor</p>
 <p># model to editor def setEditorData(self, editor, index):
-data=index.model().data(index, QtCore.Qt.EditRole)
-editor.setValue(data.toInt()[0])</p>
+  data=index.model().data(index, QtCore.Qt.EditRole)
+  editor.setValue(data.toInt()[0])</p>
 <p># editor to model def setModelData(self, editor, model, index):
-model.setData(index, editor.value())</p>
-<p>def updateEditorGeometry(self, editor, option, index):</p>
-<p>:   editor.setGeometry(option.rect)</p>
-<h2 id="tong-chang-shi"># 通常時</h2>
+  model.setData(index, editor.value())</p>
+<dl>
+<dt>def updateEditorGeometry(self, editor, option, index):</dt>
+<dd>
+<p>editor.setGeometry(option.rect)</p>
+</dd>
+</dl>
+<p># 通常時</p>
+<hr>
 <p># item render def paint(self, painter, option, index): widget =
-QtGui.QLabel() #widget = QtGui.QSpinBox()
-data=index.model().data(index, QtCore.Qt.EditRole)
-widget.setText(data.toString()[0])
-#widget.setValue(data.toInt()[0]) widget.setGeometry(option.rect)
-# border ? point=QtCore.QPoint(option.rect.left()+2,
-option.rect.top()+2) widget.render(painter, point)</p>
-<h2 id="itemyi-ge-fen-noda-kisa"># item一個分の大きさ</h2>
-<p>def sizeHint(self, option, index):</p>
-<p>:   self.editor.setGeometry(option.rect)
-return self.editor.sizeHint()</p>
-<p>def main():</p>
-<p>:   app = QtGui.QApplication(sys.argv)</p>
-<pre style="background-color:#2b303b;">
-<code>\# setup model model = QtGui.QStandardItemModel() for n in
+  QtGui.QLabel() #widget = QtGui.QSpinBox()
+  data=index.model().data(index, QtCore.Qt.EditRole)
+  widget.setText(data.toString()[0])
+  #widget.setValue(data.toInt()[0]) widget.setGeometry(option.rect)
+  # border ? point=QtCore.QPoint(option.rect.left()+2,
+  option.rect.top()+2) widget.render(painter, point)</p>
+<p># item一個分の大きさ</p>
+<hr>
+<dl>
+<dt>def sizeHint(self, option, index):</dt>
+<dd>
+<p>self.editor.setGeometry(option.rect)
+  return self.editor.sizeHint()</p>
+</dd>
+<dt>def main():</dt>
+<dd>
+<p>app = QtGui.QApplication(sys.argv)</p>
+<p># setup model model = QtGui.QStandardItemModel() for n in
 range(10): item = QtGui.QStandardItem('%s' % randint(1, 100))
-model.appendRow(item)
-
-view = QtGui.QListView()
+model.appendRow(item)</p>
+<p>view = QtGui.QListView()
 view.setModel(model) view.setItemDelegate(CustomDelegate())
-view.show()
-
-sys.exit(app.exec\_())
-</code></pre>
-<p>if __name__ == '__main__':</p>
-<p>:   main()</p>
+view.show()</p>
+<p>sys.exit(app.exec_())</p>
+</dd>
+<dt>if __name__ == '__main__':</dt>
+<dd>
+<p>main()</p>
+</dd>
+</dl>
 <p>QItemDelegateは非編集時のアイテム描画にpaintメソッドを使い、編集時の描画にcreateEditor,
 setEditorData, setModelData,
 updateEditorGeometryを使う。カスタムデリゲートにするとアイテムの大きさが変わりそうなのでsizeHintも実装するとよさげ。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="next">
+                <a href="../../../../2013/01/04/qabstracttablemodel/" rel="next" title="QTableViewとQAbstractTableModel">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2012/12/26/customdelegate/",
+        disqus_title="\u30ab\u30b9\u30bf\u30e0\u30c7\u30ea\u30b2\u30fc\u30c8",
+        disqus_identifier="cache/content/posts/2012/12/26/customdelegate.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
 </div>
 
-<nav class="toc">
 
-<div class="toc_fix">
-<ul>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#usr-bin-python">!&#x2F;usr&#x2F;bin&#x2F;python</a>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#coding-utf-8">-- coding: utf-8 --</a>
-            
-                <ul>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#bian-ji-shi"># 編集時</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#tong-chang-shi"># 通常時</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2012/12/26/customdelegate/#itemyi-ge-fen-noda-kisa"># item一個分の大きさ</a>
-                        </li>
-                    
-                </ul>
-            
-        </li>
-    
-</ul>
-</div>
-
-
-</nav>
-</div>
-</main>
-
-    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
-
-  </body>
+        <script src="../../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
 </html>

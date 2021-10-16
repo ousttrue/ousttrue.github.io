@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediaSinkを実装する | 三次元日誌</title>
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2017/08/create_mediasink/">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../media_foundation/" title="MeidaFoundation情報収集" type="text/html">
+<link rel="next" href="../mediasink_use_dxva/" title="MediaSinkでDXVA" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="MediaSinkを実装する">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2017/08/create_mediasink/">
+<meta property="og:description" content="DX11VideoRendererを解読して、VideoRenderer要件を探る。
+Microsoftのサンプルがあり参考になる。
+https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer
+これは結構がっつり作ってあるので、削って最低限必要な要素を探る。
+IMFMediaS">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2017-08-27T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">MediaSinkを実装する</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2017-08-27T00:00:00Z" itemprop="datePublished" title="2017-08-27 00:00">2017-08-27 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/create_mediasink.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>DX11VideoRendererを解読して、VideoRenderer要件を探る。</p>
+<p>Microsoftのサンプルがあり参考になる。</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
+<p>これは結構がっつり作ってあるので、削って最低限必要な要素を探る。
+IMFMediaSinkを作る
+手抜きしてIMFActivate抜きで。
+https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h
+を参考に最低限を実装してみる。
+guidgen.exeでguidを決めた。
+CustomVideoRenderer.h</p>
+<h2>pragma once</h2>
+<h2>include <windows.h></windows.h>
+</h2>
+<p>// {8C5C51AD-F400-4B2A-BD36-4990D07420B4}
+DEFINE_GUID(CLSID_CustomVideoRenderer, 
+0x8c5c51ad, 0xf400, 0x4b2a, 0xbd, 0x36, 0x49, 0x90, 0xd0, 0x74, 0x20, 0xb4);</p>
+<p>STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject);</p>
+<p>DX11VideoRendererから必要な部分をコピペしてくるだけである。
+CustomVideoRenderer.c++</p>
+<h2>include "CustomVideoRenderer.h"</h2>
+<h2>include <mfidl.h></mfidl.h>
+</h2>
+<p>class CustomVideoRenderer: public IMFMediaSink
+{
+    ULONG m_nRefCount = 1;</p>
+<p>public:
+    // IUnknown
+    STDMETHODIMP_(ULONG) AddRef(void)override
+    {
+        return InterlockedIncrement(&amp;m_nRefCount);
+    }</p>
+<pre class="code literal-block"><span></span>STDMETHODIMP QueryInterface(REFIID iid, __RPC__deref_out _Result_nullonfailure_ void** ppv)override
+{
+    if (!ppv)
+    {
+        return E_POINTER;
+    }
+    if (iid == IID_IUnknown)
+    {
+        *ppv = static_cast&lt;IUnknown*&gt;(static_cast&lt;IMFMediaSink*&gt;(this));
+    }
+    else if (iid == __uuidof(IMFMediaSink))
+    {
+        *ppv = static_cast&lt;IMFMediaSink*&gt;(this);
+    }
+    else
+    {
+        *ppv = NULL;
+        return E_NOINTERFACE;
+    }
+    AddRef();
+    return S_OK;
+}
+
+STDMETHODIMP_(ULONG) Release(void)override
+{
+    ULONG uCount = InterlockedDecrement(&amp;m_nRefCount);
+    if (uCount == 0)
+    {
+        delete this;
+    }
+    // For thread safety, return a temporary variable.
+    return uCount;
+}
+
+// IMFMediaSink methods
+STDMETHODIMP AddStreamSink(DWORD dwStreamSinkIdentifier, __RPC__in_opt IMFMediaType* pMediaType, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
+STDMETHODIMP GetCharacteristics(__RPC__out DWORD* pdwCharacteristics)override;
+STDMETHODIMP GetPresentationClock(__RPC__deref_out_opt IMFPresentationClock** ppPresentationClock)override;
+STDMETHODIMP GetStreamSinkById(DWORD dwIdentifier, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
+STDMETHODIMP GetStreamSinkByIndex(DWORD dwIndex, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
+STDMETHODIMP GetStreamSinkCount(__RPC__out DWORD* pcStreamSinkCount)override;
+STDMETHODIMP RemoveStreamSink(DWORD dwStreamSinkIdentifier)override;
+STDMETHODIMP SetPresentationClock(__RPC__in_opt IMFPresentationClock* pPresentationClock)override;
+STDMETHODIMP Shutdown(void)override;
+</pre>
+
+<p>};</p>
+<p>STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject)
+{
+    if(!ppvObject){
+        return E_FAIL;
+    }</p>
+<pre class="code literal-block"><span></span>auto sink=new CustomVideoRenderer();
+*ppvObject=sink;
+return S_OK;
+</pre>
+
+<p>}</p>
+<p>使う
+IMFStreamSinkからIMFTopologyNodeを作る。</p>
+<p>Creating Output Nodes</p>
+<pre class="code literal-block"><span></span><span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFTopologyNode</span><span class="o">&gt;</span> <span class="nt">pOutputNode</span><span class="o">;</span>
+<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span> <span class="o">=</span> <span class="nt">MFCreateTopologyNode</span><span class="o">(</span><span class="nt">MF_TOPOLOGY_OUTPUT_NODE</span><span class="o">,</span> <span class="o">&amp;</span><span class="nt">pOutputNode</span><span class="o">)))</span>
+<span class="p">{</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFMediaSink</span><span class="o">&gt;</span> <span class="nt">pSink</span><span class="o">;</span>
+<span class="o">//</span> <span class="nt">自前のIMFMediaSinkを作る</span>
+<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span><span class="o">=</span><span class="nt">CreateCustomVideoRenderer</span><span class="o">(</span><span class="nt">IID_PPV_ARGS</span><span class="o">(&amp;</span><span class="nt">pSink</span><span class="o">))))</span><span class="p">{</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFStreamSink</span><span class="o">&gt;</span> <span class="nt">pSSink</span><span class="o">;</span>
+<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span><span class="o">=</span><span class="nt">pSink-</span><span class="o">&gt;</span><span class="nt">GetStreamSinkByIndex</span><span class="o">(</span><span class="nt">0</span><span class="o">,</span> <span class="o">&amp;</span><span class="nt">pSSink</span><span class="o">)))</span><span class="p">{</span>
+    <span class="err">//</span> <span class="err">まだ作っていないのでここでエラーになる</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">if</span> <span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span> <span class="o">=</span> <span class="nt">pOutputNode-</span><span class="o">&gt;</span><span class="nt">SetObject</span><span class="o">(</span><span class="nt">pSSink</span><span class="p">.</span><span class="nc">Get</span><span class="o">())))</span>
+<span class="p">{</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+<p>IMFStreamSinkがひとつは必要
+作る。
+class CustomVideoStreamSink: public IMFStreamSink
+{
+    ULONG m_nRefCount = 1;</p>
+<pre class="code literal-block"><span></span><span class="nt">const</span> <span class="nt">DWORD</span>                 <span class="nt">STREAM_ID</span><span class="o">;</span>
+<span class="nt">CCritSec</span><span class="o">&amp;</span>                   <span class="nt">m_critSec</span><span class="o">;</span>                      <span class="o">//</span> <span class="nt">critical</span> <span class="nt">section</span> <span class="nt">for</span> <span class="nt">thread</span> <span class="nt">safety</span>
+<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFMediaSink</span><span class="o">&gt;</span>               <span class="nt">m_pSink</span><span class="o">;</span>
+</pre>
+
+<p>public:
+    CustomVideoStreamSink(DWORD dwStreamId, CCritSec&amp; critSec
+            , IMFMediaSink *parent)
+        : STREAM_ID(dwStreamId)
+          , m_critSec(critSec)
+          , m_pSink(parent)
+    {
+    }</p>
+<pre class="code literal-block"><span></span>// IUnknown
+STDMETHODIMP_(ULONG) AddRef(void)override;
+STDMETHODIMP QueryInterface(REFIID iid, __RPC__deref_out _Result_nullonfailure_ void** ppv)override;
+STDMETHODIMP_(ULONG) Release(void)override;
+
+// IMFStreamSink
+STDMETHODIMP Flush(void)override;
+STDMETHODIMP GetIdentifier(__RPC__out DWORD* pdwIdentifier)override;
+STDMETHODIMP GetMediaSink(__RPC__deref_out_opt IMFMediaSink** ppMediaSink)override;
+STDMETHODIMP GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)override;
+STDMETHODIMP PlaceMarker(MFSTREAMSINK_MARKER_TYPE eMarkerType, __RPC__in const PROPVARIANT* pvarMarkerValue, __RPC__in const PROPVARIANT* pvarContextValue)override;
+STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override;
+
+// IMFMediaEventGenerator (from IMFStreamSink)
+STDMETHODIMP BeginGetEvent(IMFAsyncCallback* pCallback,IUnknown* punkState)override;
+STDMETHODIMP EndGetEvent(IMFAsyncResult* pResult, _Out_ IMFMediaEvent** ppEvent)override;
+STDMETHODIMP GetEvent(DWORD dwFlags, __RPC__deref_out_opt IMFMediaEvent** ppEvent)override;
+STDMETHODIMP QueueEvent(MediaEventType met, __RPC__in REFGUID guidExtendedType, HRESULT hrStatus, __RPC__in_opt const PROPVARIANT* pvValue)override;
+</pre>
+
+<p>};</p>
+<p>メソッドの中身は
+return E_FAIL;</p>
+<p>でお茶を濁した。
+IMFMediaSink::AddStreamSink実装
+IMFMediaSink::GetStreamSinkById実装
+IMFMediaSink::GetStreamSinkByIndex実装
+IMFMediaSink::GetStreamSinkCount実装
+IMFMediaSink::RemoveStreamSink実装
+実行してみる。
+// Handler for Media Session events.
+void OnPlayerEvent(HWND hwnd, WPARAM pUnkPtr)
+{
+    HRESULT hr = g_pPlayer-&gt;HandleEvent(pUnkPtr);
+    if (FAILED(hr))
+    {
+        // ここに来る
+        NotifyError(hwnd, L"An error occurred.", hr);
+    }
+    UpdateUI(hwnd, g_pPlayer-&gt;GetState());
+}</p>
+<pre class="code literal-block"><span></span>// Get the event status. If the operation that triggered the event 
+// did not succeed, the status is a failure code.
+HRESULT hrStatus = S_OK;
+hr = pEvent-&gt;GetStatus(&amp;hrStatus);
+
+// Check if the async operation succeeded.
+if (SUCCEEDED(hr) &amp;&amp; FAILED(hrStatus)) 
+{
+    // ここに来る
+    hr=hrStatus;
+}
+</pre>
+
+<p>デバッガで調べたらIMFStreamSink::GetMediaSinkの直後にエラーになることがわかった。
+IMFStreamSink::GetMediaSink実装
+たんたんとエラーを直していく。
+IMFStreamSink::GetMediaTypeHandler実装
+HRESULT DX11VideoRenderer::CStreamSink::GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)
+{
+    CAutoLock lock(&amp;m_critSec);</p>
+<pre class="code literal-block"><span></span>if (ppHandler == NULL)
+{
+    return E_POINTER;
+}
+
+HRESULT hr = CheckShutdown();
+
+// This stream object acts as its own type handler, so we QI ourselves.
+if (SUCCEEDED(hr))
+{
+    hr = this-&gt;QueryInterface(IID_IMFMediaTypeHandler, (void**)ppHandler);
+}
+
+return hr;
+</pre>
+
+<p>}</p>
+<p>IMFMediaTypeHandlerが必要。
+StreamSinkにIMFMediaTypeHandlerを実装
+このインタフェースはStreamSinkが処理できるMediaTypeを示すので必要。
+サポートするフォーマットを決める。
+// IMFMediaTypeHandler
+STDMETHODIMP GetCurrentMediaType(<em>Outptr</em> IMFMediaType<strong> ppMediaType);
+STDMETHODIMP GetMajorType(__RPC__out GUID* pguidMajorType);
+STDMETHODIMP GetMediaTypeByIndex(DWORD dwIndex, <em>Outptr</em> IMFMediaType</strong> ppType);
+STDMETHODIMP GetMediaTypeCount(__RPC__out DWORD<em> pdwTypeCount);
+STDMETHODIMP IsMediaTypeSupported(IMFMediaType</em> pMediaType, <em>Outptr_opt_result_maybenull</em> IMFMediaType*<em> ppMediaType);
+STDMETHODIMP SetCurrentMediaType(IMFMediaType</em> pMediaType);</p>
+<p>PresentationClockが必要</p>
+<p>Presentation Clock</p>
+<p>IMFMediaSink::GetPresentationClock実装
+IMFMediaSink::SetPresentationClock実装
+MediaSinkにIMFClockStateSinkを実装
+// IMFClockStateSink methods
+STDMETHODIMP OnClockPause(MFTIME hnsSystemTime);
+STDMETHODIMP OnClockRestart(MFTIME hnsSystemTime);
+STDMETHODIMP OnClockSetRate(MFTIME hnsSystemTime, float flRate);
+STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset);
+STDMETHODIMP OnClockStop(MFTIME hnsSystemTime);</p>
+<p>Data Flow
+ここまでの実装でIMFSession::Startの呼び出しに応じてIMFClockStateSink::OnClockStartが呼ばれるようになった。
+Data Flow</p>
+<p>Media sinks use a pull model</p>
+<p>MesiaSink側からサンプルを取りに行かないといけない。</p>
+<p>[1] The client sets the media types and the presentation clock. The media sink registers itself with the presentation clock to receive notifications about clock state changes.
+[2][3][4] はPreroll。ミニマムを目指す今回は省略。
+[5] The client calls IMFPresentationClock::Start to start the presentation clock.
+[6] The presentation clock notifies the media sink that the clock is starting, by calling IMFClockStateSink::OnClockStart.
+[7] To get more data, each stream sink sends MEStreamSinkRequestSample events. In response to each of these events, the client gets the next sample and calls ProcessSample. This step is repeated until the presentation ends.</p>
+<p>State Changes
+IMFClockStateSinkの実装について。</p>
+<p>In addition, stream sinks must send the following events when they have completed the state transitions:</p>
+<p>OnClockStart, OnClockRestart: MEStreamSinkStarted event
+OnClockPause: MEStreamSinkPaused event
+OnClockStop: MEStreamSinkStopped event</p>
+<p>なるほど。
+STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset)override
+{
+    CAutoLock lock(&amp;m_csMediaSink);</p>
+<pre class="code literal-block"><span></span>HRESULT hr = CheckShutdown();
+if (SUCCEEDED(hr))
+{
+    //
+    // これが必要。このあとMEStreamSinkRequestSampleを受け付ける
+    //
+    hr = m_pStream-&gt;QueueEvent(MEStreamSinkStarted, GUID_NULL, hr, NULL);
+}
+if (SUCCEEDED(hr))
+{
+    hr = m_pStream-&gt;QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
+}
+
+return hr;
+</pre>
+
+<p>}</p>
+<p>ついにIMFStreamSink::ProcessSampleがコールされた。
+試しに下記のような実装にしてみたがこれではClock無視で最速でフレームを消化してしまうのでだめ。
+int m_count = 0;
+STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
+{
+    ++m_count;</p>
+<pre class="code literal-block"><span></span>auto hr = S_OK;
+hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
+
+return hr;
+</pre>
+
+<p>}</p>
+<p>MEStreamSinkRequestSampleをスケジューリングする</p>
+<p>Scheduled Work Items</p>
+<p>これを使ってみる。
+BOOL NeedMoreSamples(void)
+{
+    const DWORD cSamplesInFlight = /<em>m_SamplesToProcess.GetCount() +</em>/ m_cOutstandingSampleRequests;</p>
+<pre class="code literal-block"><span></span>return cSamplesInFlight &lt; SAMPLE_QUEUE_HIWATER_THRESHOLD;
+</pre>
+
+<p>}</p>
+<p>HRESULT RequestSamples(IMFAsyncResult* pAsyncResult)
+{
+    HRESULT hr = S_OK;</p>
+<pre class="code literal-block"><span></span>while (NeedMoreSamples())
+{
+    hr = CheckShutdown();
+    if (FAILED(hr))
+    {
+        break;
+    }
+
+    m_cOutstandingSampleRequests++;
+
+    hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, S_OK, NULL);
+}
+
+// 再突入
+hr=QueueRequest();
+
+return hr;
+</pre>
+
+<p>}</p>
+<p>// 正しいRateにする必要がある
+const INT64 interval = 1000 / 30;</p>
+<p>HRESULT QueueRequest()
+{
+    HRESULT hr = S_OK;</p>
+<pre class="code literal-block"><span></span>if (SUCCEEDED(hr))
+{
+    // Enqueue
+    MFWORKITEM_KEY cancelKey;
+    hr = MFScheduleWorkItem(&amp;m_WorkQueueCB, nullptr, -interval, &amp;cancelKey);
+}
+
+return hr;
+</pre>
+
+<p>}</p>
+<p>int m_count = 0;
+STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
+{
+    ++m_count;</p>
+<pre class="code literal-block"><span></span>m_cOutstandingSampleRequests--;
+
+// do something
+
+return  S_OK;
+</pre>
+
+<p>}</p>
+<p>DX11VideoRenderer::CSchedulerを使えばよいと思う。
+だいたい仕組みがわかった。
+DX11VideoRendererから引き算して最小限の構成にする(ProcessSampleが何もしない)場合、
+以下の部品を残す必要がありそう。</p>
+<p>Scheduler
+StreamSink: IMFStreamSink, IMFMediaTypeHandler
+MesiaSink: IMFMediaSink, IMFClockStateSink</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../media_foundation/" rel="prev" title="MeidaFoundation情報収集">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../mediasink_use_dxva/" rel="next" title="MediaSinkでDXVA">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2017/08/create_mediasink/",
+        disqus_title="MediaSink\u3092\u5b9f\u88c5\u3059\u308b",
+        disqus_identifier="cache/content/posts/2017/08/create_mediasink.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

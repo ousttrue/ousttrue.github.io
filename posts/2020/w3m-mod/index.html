@@ -1,82 +1,110 @@
 <!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>三次元日誌</title>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>w3m改造 | 三次元日誌</title>
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2020/w3m-mod/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../hugo-reinstall/" title="Hugo再インストール" type="text/html">
+<link rel="next" href="../../2021/init_zola/" title="サイトジェネレーターを Zola に変更" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="w3m改造">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2020/w3m-mod/">
+<meta property="og:description" content="以前にも何度かやったことがあるのだけど立ち消えになっていた、 w3m の改造を試みている。
+w3m はわりと好きなテキストブラウザなのだが、 2011 年くらいの 0.5.3 で開発が終了している様子。
+https://github.com/ousttrue/w3m
+まずは C++ 化してから、HTML処理などを再入可能にしてタブごとにスレッド独立する方向を目指す。
+同時に、 boehm-GC を">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-07-25T14:59:50Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
 
-    
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../">
 
-  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
-  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
-  <script src="https://ousttrue.github.io/js/search.js" defer></script>
-
-    
-
-     
-    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
-      />
-    
-  </head>
-
-  <body class="container">
-    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
-      <div>三次元日誌</div>
-    </a>
-
-    <nav class="nav">
-      <a class="item" href="/tags/">tags</a>
-      <a class="item" href="https://github.com/ousttrue" aria-label="github">
-        <i class="fab fa-github fa-lg"></i>
-      </a>
-      
-
-        
-            <form class="navbar-form">
-                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
-                    aria-label="Search docs..." autocomplete="off">
-                <div id="suggestions" class="shadow bg-white rounded"></div>
-            </form>
-        
-    </nav>
-
-    <main class="main">
-<div class="page">
-<div class="content">
-  <div class="headline">
-  
-  
-
-  
-  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2020&#x2F;w3m-mod&#x2F;"> w3m改造 
-  
-
-  
-  </a>
-
-  
-
-  <div>
-    <ul class="tags">
-      <li class="headline_date">
-        <div class="year">2020</div>
-        <div class="md">0725</div>
-      </li>
-      
-      
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
 
 
-    <li class="tag"><a href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;tags&#x2F;w3m&#x2F;">w3m</a></li>
-
-
-
-
-    </ul>
-  </div>
+                    
+            </ul></nav>
 </div>
- <p>以前にも何度かやったことがあるのだけど立ち消えになっていた、 <a href="http://w3m.sourceforge.net/index.ja.html">w3m</a> の改造を試みている。
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">w3m改造</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-25T14:59:50Z" itemprop="datePublished" title="2020-07-25 14:59">2020-07-25 14:59</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2020/w3m-mod.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>以前にも何度かやったことがあるのだけど立ち消えになっていた、 <a href="http://w3m.sourceforge.net/index.ja.html">w3m</a> の改造を試みている。
 w3m はわりと好きなテキストブラウザなのだが、 2011 年くらいの 0.5.3 で開発が終了している様子。</p>
 <p>https://github.com/ousttrue/w3m</p>
 <p>まずは <code>C++</code> 化してから、HTML処理などを再入可能にしてタブごとにスレッド独立する方向を目指す。
@@ -91,75 +119,77 @@ w3m はわりと好きなテキストブラウザなのだが、 2011 年くら�
 <li>GetText も削る</li>
 </ul>
 <p>量を減らす。思ったよりコードが多かったのだ。</p>
-<h1 id="xia-zhun-bei">下準備</h1>
-<h2 id="msys2-detoriaezubirudo">msys2 でとりあえずビルド</h2>
+<h2>下準備</h2>
+<h3>msys2 でとりあえずビルド</h3>
 <p>WSL Ubuntu だとビルドできなかった。
 しかし、msys2 ならわりと簡単にビルドできることを発見。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">$ pacman -S make gcc libgc-devel openssl-devel ncurses-devel
+<pre class="code literal-block"><span></span>$ pacman -S make gcc libgc-devel openssl-devel ncurses-devel
 $ x86_64-pc-msys-gcc --version
-x86_64-pc-msys-gcc (GCC) 9.3.0
-Copyright (C) 2019 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+x86_64-pc-msys-gcc <span class="o">(</span>GCC<span class="o">)</span> <span class="m">9</span>.3.0
+Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2019</span> Free Software Foundation, Inc.
+This is free software<span class="p">;</span> see the <span class="nb">source</span> <span class="k">for</span> copying conditions.  There is NO
+warranty<span class="p">;</span> not even <span class="k">for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 $ ./configure
-</span></code></pre>
+</pre>
+
 <p>コンパイル環境の方が昔と変わってしまってビルドでエラーになる。</p>
 <p>修正方法👇</p>
 <p><a href="https://qiita.com/imkitchen/items/02a9df7baaaf434fee66">[CentOS7] emacs24にemacs-w3mインストール</a></p>
 <p><code>#ifdef</code> の調整</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">// config.h
+<pre class="code literal-block"><span></span>// config.h
 //#define USE_BINMODE_STREAM 1
 //#define USE_EGD
-</span></code></pre><pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">$ make
+</pre>
+
+<pre class="code literal-block"><span></span>$ make
 $ ./w3m www.google.com // 動いた
-</span></code></pre><h2 id="wsl-de-gc-gakuratusiyusuruwen-ti">WSL で GC がクラッシュする問題</h2>
+</pre>
+
+<h3>WSL で GC がクラッシュする問題</h3>
 <p><code>boehm-GC</code> がランタイムにエラーになることで、 <code>make</code> 中のコード生成 <code>mktable</code> がクラッシュするのが原因でビルドステップが途中で止まるのが原因だった。なので、たとえビルド済みの <code>w3m</code> を <code>apt get</code> しても、ランタイムも同じ原因でクラッシュする。</p>
 <p>エラー。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">Wrong __data_start/_end pair
-fish: &#39;./build/w3m&#39; terminated by signal SIGABRT (Abort)
-</span></code></pre>
+<pre class="code literal-block"><span></span>Wrong __data_start/_end pair
+fish: './build/w3m' terminated by signal SIGABRT (Abort)
+</pre>
+
 <p>https://hitkey.nekokan.dyndns.info/diary2004.php#D200424</p>
 <p>によると、stack size の制限が原因らしい。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">$ ulimit -s
-8192
-</span></code></pre>
+<pre class="code literal-block"><span></span>$ <span class="nb">ulimit</span> -s
+<span class="m">8192</span>
+</pre>
+
 <p>WSL でこれを変えるには・・・。</p>
 <p>https://github.com/microsoft/WSL/issues/633</p>
 <p>無理。</p>
 <p><code>WSL2</code> ならできる？</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">&gt; wsl -l -v
+<pre class="code literal-block"><span></span>&gt; wsl -l -v
   NAME            STATE           VERSION
 * Ubuntu-20.04    Running         2
-</span></code></pre>
+</pre>
+
 <p>やってみる。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">$ ulimit -s unlimited
-&gt; ulimit -s
+<pre class="code literal-block"><span></span>$ <span class="nb">ulimit</span> -s unlimited
+&gt; <span class="nb">ulimit</span> -s
 unlimited
-</span></code></pre>
+</pre>
+
 <p>できた。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">$ w3m
+<pre class="code literal-block"><span></span>$ w3m
 Wrong __data_start/_end pair
-</span></code></pre>
+</pre>
+
 <p>うーむ。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">$ ulimit -s 81920
-&gt; ulimit -s
-81920
-</span></code></pre>
+<pre class="code literal-block"><span></span>$ <span class="nb">ulimit</span> -s <span class="m">81920</span>
+&gt; <span class="nb">ulimit</span> -s
+<span class="m">81920</span>
+</pre>
+
 <p>動いた。
 8192KB では足りなく、 unlimited では多すぎるらしい。これは、難しいな。</p>
 <p>ちなみに、 <code>gdb</code> 上ならスタック問題を解決しなくても動いた。
 <code>gdb</code> がスタックを覆い隠すのかな？
 開発だけならできなくもない。</p>
-<h2 id="birudosisutemu">ビルドシステム</h2>
+<h3>ビルドシステム</h3>
 <p>とりあえず慣れたツールに変更。
 WSL 上の vscode で作業しているのもあり、autotools から CMake に変更。
 クロスプラットフォームは後退させて、新しめの gcc(c++20) でビルドできればいいや。
@@ -167,29 +197,77 @@ config.h や funcname 系のコード生成結果はコミットしちゃう。
 libwc が static ライブラリにわかれているのも、ひとまとめにしてしまった。
 あと、適当にソースをフォルダに移動する。</p>
 <p>生成コード一覧</p>
-<table><thead><tr><th>ファイル</th><th>生成方法</th><th>入力</th><th>備考</th></tr></thead><tbody>
-<tr><td>config.h</td><td>configure</td><td></td><td>各種 #define など</td></tr>
-<tr><td>entity.h</td><td>Makefile(mktable)</td><td>entity.tab</td><td>./mktable 100 entity.tab &gt; entity.h</td></tr>
-<tr><td>funcname.tab</td><td>Makefile(awk)</td><td>main.c, menu.c</td><td></td></tr>
-<tr><td>funcname.c</td><td>Makefile(awk)</td><td>funcname.tab</td><td>sort funcname.tab ｜ awk -f funcname0.awk &gt; funcname.c</td></tr>
-<tr><td>funcname1.h</td><td>Makefile(awk)</td><td>funcname.tab</td><td></td></tr>
-<tr><td>funcname2.h</td><td>Makefile(awk)</td><td>funcname.tab</td><td></td></tr>
-<tr><td>functable.c</td><td>Makefile(mktable)</td><td>funcname.tab</td><td></td></tr>
-<tr><td>tagtable.c</td><td>Makefile(mktable)</td><td>funcname.tab</td><td></td></tr>
-</tbody></table>
-<h2 id="jing-gao-karaeraniyin-kishang-ge">警告からエラーに引き上げ</h2>
+<table>
+<thead><tr>
+<th>ファイル</th>
+<th>生成方法</th>
+<th>入力</th>
+<th>備考</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>config.h</td>
+<td>configure</td>
+<td></td>
+<td>各種 #define など</td>
+</tr>
+<tr>
+<td>entity.h</td>
+<td>Makefile(mktable)</td>
+<td>entity.tab</td>
+<td>./mktable 100 entity.tab &gt; entity.h</td>
+</tr>
+<tr>
+<td>funcname.tab</td>
+<td>Makefile(awk)</td>
+<td>main.c, menu.c</td>
+<td></td>
+</tr>
+<tr>
+<td>funcname.c</td>
+<td>Makefile(awk)</td>
+<td>funcname.tab</td>
+<td>sort funcname.tab ｜ awk -f funcname0.awk &gt; funcname.c</td>
+</tr>
+<tr>
+<td>funcname1.h</td>
+<td>Makefile(awk)</td>
+<td>funcname.tab</td>
+<td></td>
+</tr>
+<tr>
+<td>funcname2.h</td>
+<td>Makefile(awk)</td>
+<td>funcname.tab</td>
+<td></td>
+</tr>
+<tr>
+<td>functable.c</td>
+<td>Makefile(mktable)</td>
+<td>funcname.tab</td>
+<td></td>
+</tr>
+<tr>
+<td>tagtable.c</td>
+<td>Makefile(mktable)</td>
+<td>funcname.tab</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>警告からエラーに引き上げ</h3>
 <p>改造していくのに <code>C</code> の緩い型制限が危険(コンパイルが通るのに型が不一致になりやすい)なので、
 以下のオプションを追加。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">-Werror=implicit-function-declaration
+<pre class="code literal-block"><span></span>-Werror=implicit-function-declaration
 -Werror=int-conversion
 -Werror=conversion-null
-</span></code></pre>
+</pre>
+
 <p>これで、型宣言を補強しながら進める。</p>
-<h1 id="di-1duan-jie">第1段階</h1>
+<h2>第1段階</h2>
 <ul>
-<li>extern &quot;C&quot; を追加してソースの拡張子を <code>.cpp</code> に変更</li>
-<li>extern &quot;C&quot; をまとめて取り除く</li>
+<li>extern "C" を追加してソースの拡張子を <code>.cpp</code> に変更</li>
+<li>extern "C" をまとめて取り除く</li>
 <li>typedef struct tag を取り除く</li>
 </ul>
 <p>ここまでやると、自由に <code>c++</code> のコードを混ぜることができる。
@@ -197,43 +275,43 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 <p>特に <code>std::string_view</code> の使い勝手を試したい。
 所有しない文字列はすべて、 <code>std::string_view</code> でいけると思うのだが。
 <code>split</code> の <code>std::string_view</code> 版は具合がよかった。</p>
-<h2 id="c-hua-extern-c">c++ 化 (extern &quot;C&quot;)</h2>
+<h3>c++ 化 (extern "C")</h3>
 <p>手法としては、各ソースの拡張子を <code>.c</code> から <code>.cpp</code> に変更する。
 <code>CMakeLists.txt</code> を修正。
-<code>#include</code> を <code>extern &quot;C&quot;</code> で囲む、で <code>c++</code> 化することができる。</p>
-<pre style="background-color:#2b303b;">
-<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">extern </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">C</span><span style="color:#c0c5ce;">&quot; {
-</span><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">xxx.h</span><span style="color:#c0c5ce;">&quot;
-}
-</span></code></pre>
-<p>ただ、 <code>cpp</code> で定義する関数の宣言が <code>extern &quot;C&quot;</code> の中に入らないとリンクエラーになるので、
+<code>#include</code> を <code>extern "C"</code> で囲む、で <code>c++</code> 化することができる。</p>
+<pre class="code literal-block"><span></span><span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
+<span class="cp">#include</span> <span class="cpf">"xxx.h"</span><span class="cp"></span>
+<span class="p">}</span>
+</pre>
+
+<p>ただ、 <code>cpp</code> で定義する関数の宣言が <code>extern "C"</code> の中に入らないとリンクエラーになるので、
 そうなるようにソースごとにヘッダを分配してやる。
 <code>w3m</code> は関数宣言が少数のファイル <code>proto.h</code>, <code>fm.h</code> とかに集中しているのだが、いっぱいあるので雑にやる。
 コンパイルが通ればよい。</p>
 <p>分配するときに未定義の型を前方宣言ですませたいのだけど、 <code>c</code> の <code>struct</code> 定義が、<code>struct tag</code> と <code>typedef</code> に分かれているのがやっかいだった。</p>
-<pre style="background-color:#2b303b;">
-<code class="language-c" data-lang="c"><span style="color:#65737e;">// C
-</span><span style="color:#b48ead;">typedef struct</span><span style="color:#c0c5ce;"> hogeTag
-{
+<pre class="code literal-block"><span></span><span class="c1">// C</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">hogeTag</span>
+<span class="p">{</span>
 
-} Hoge;
-</span></code></pre><pre style="background-color:#2b303b;">
-<code class="language-c" data-lang="c"><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">DoHoge</span><span style="color:#c0c5ce;">(Hoge *</span><span style="color:#bf616a;">p</span><span style="color:#c0c5ce;">);
+<span class="p">}</span> <span class="n">Hoge</span><span class="p">;</span>
+</pre>
 
-</span><span style="color:#65737e;">// に対する前方宣言は、
+<pre class="code literal-block"><span></span><span class="kt">void</span> <span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
 
-</span><span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">hogeTag;
-</span><span style="color:#b48ead;">typedef</span><span style="color:#c0c5ce;"> hogeTag Hoge;
-</span></code></pre>
+<span class="c1">// に対する前方宣言は、</span>
+
+<span class="k">struct</span> <span class="n">hogeTag</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="n">hogeTag</span> <span class="n">Hoge</span><span class="p">;</span>
+</pre>
+
 <p><code>C</code> の状態で、前方宣言を導入できずヘッダの分割が難航。
 型ごとに別のヘッダに分割することは断念して、
 ほとんど全部の <code>struct</code> 定義の入ったヘッダを <code>fm.h</code> から分離して作るのに留めた。</p>
-<h2 id="defun">DEFUN</h2>
+<h3>DEFUN</h3>
 <p><code>w3m</code> は <code>DEFUN</code> でキーアサインできる関数を定義している。</p>
-<p><a href="/w3m/doc-jp/readme.func/">readme.func</a></p>
+<p><a href="../../../w3m/doc-jp/readme.func/">readme.func</a></p>
 <p>以下のように、キーボードなどのイベントをトリガーにアクションを実行するというイメージ。</p>
-<pre style="background-color:#2b303b;">
-<code><span style="color:#c0c5ce;">Key
+<pre class="code literal-block"><span></span>Key
     KeyMap
         DEFUN
     Menu
@@ -245,24 +323,23 @@ MouseAction
         DEFUN
 Alarm
     DEFUN
-</span></code></pre>
+</pre>
+
 <p>ソースは、<code>main.c</code> と <code>menu.c</code> に <code>DEFUN</code> とそれの使う補助関数がまとめて定義されていて、
 ヘッダは <code>proto.h</code> に全部入れとなっている。</p>
 <p>c++ で下記のようなディスパッチャを作った。</p>
-<pre style="background-color:#2b303b;">
-<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">typedef void </span><span style="color:#c0c5ce;">(*Command)();
-std::unordered_map&lt;std::string, Command&gt; g_commandMap;
-</span></code></pre>
+<pre class="code literal-block"><span></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">Command</span><span class="o">&gt;</span> <span class="n">g_commandMap</span><span class="p">;</span>
+</pre>
+
 <p>使い捨ての python で関数に登録するコードを生成した。</p>
-<h1 id="di-2duan-jie">第２段階</h1>
+<h2>第２段階</h2>
 <ul>
-<li>PODじゃない型が動くようにする
-<ul>
+<li>PODじゃない型が動くようにする<ul>
 <li>constructor/destructor</li>
 </ul>
 </li>
-<li>脱GC
-<ul>
+<li>脱GC<ul>
 <li>コレクションをSTLに置き換える</li>
 <li>std::string</li>
 <li>std::shared_ptr</li>
@@ -271,7 +348,7 @@ std::unordered_map&lt;std::string, Command&gt; g_commandMap;
 <li>機能ごとにモジュール化</li>
 <li>再入可能</li>
 </ul>
-<h2 id="gc-malloc-kara-gc-cleanup-ji-cheng-he">GC_MALLOC から gc_cleanup 継承へ</h2>
+<h3>GC_MALLOC から gc_cleanup 継承へ</h3>
 <p>boehm-GC を <code>c++</code> のクラスで使う方法を調べた。</p>
 <p>http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5</p>
 <p><code>w3m</code> では、 <code>GC</code> を多用している。</p>
@@ -290,15 +367,15 @@ std::unordered_map&lt;std::string, Command&gt; g_commandMap;
 これで、その型は <code>constructor/destructor</code> が動くようになり、
 メンバーに <code>std::string</code> 等を配置できるようになる。
 あとで、 <code>gc_cleanup</code> から <code>std::shared_ptr</code> に変更することも視野に入れている。</p>
-<h2 id="gcwen-zi-lie-str">GC文字列 Str</h2>
+<h3>GC文字列 Str</h3>
 <p>アプリ全体で使われていて一挙になくすことはできないのだけど、構造体の末端のメンバーから <code>std::string</code> に変える。
 あと、がんばって <code>const char *</code> の範囲を増やす。
 <code>libwc</code> から <code>Str</code> を剥そうと思っていたのだが、逆に <code>libwc</code> に <code>Str</code> を封じ込める方向に軌道修正。
 <code>indep.c</code> の便利文字列関数も少しずつ変えてく。</p>
-<h2 id="gurobarubian-shu-wojian-rasu">グローバル変数を減らす</h2>
+<h3>グローバル変数を減らす</h3>
 <p>関数の中でグローバル変数にアクセスしている場合(CurrentBufferなど)、これを関数の引数経由とか、クラスのメンバー経由でもらう。面倒でも Getter と Setter を区別して、どこで変更されうるかわかりやすくする。
 クラスのメンバーは、 <code>private</code> 化を試みる。</p>
-<h2 id="streamchu-li">Stream処理</h2>
+<h3>Stream処理</h3>
 <p>多分、最難関の <code>loadGeneralFile</code> 関数。700行くらいだったか。
 goto とか longjmp があってよくわからなかったのだが、慣れてきた。
 <code>http</code>, <code>https</code>, <code>NNTP ?</code>, <code>gopher</code>, <code>ftp</code>, <code>pipe</code> 等、<code>http</code> のプロキシーやリダイレクト、 <code>www-auth</code> などを一手に処理していて容易に手を付けられない。
@@ -307,31 +384,31 @@ goto とか longjmp があってよくわからなかったのだが、慣れて
 プロキシーとか、 <code>dump</code>, <code>halfload</code> などのよく知らない機能もどんどん削る。
 としてなんとか改造できるようになってきた。</p>
 <p>ここを <code>HttpClient</code>, <code>LocalFile</code>, <code>PipeReader</code> あたりに整理したい。</p>
-<h1 id="di-3duan-jie">第３段階</h1>
+<h2>第３段階</h2>
 <p>Tab, Buffer, Line のリンクリストを STL のコレクションに置き換えた。</p>
-<pre style="background-color:#2b303b;">
-<code class="language-c++" data-lang="c++"><span style="color:#b48ead;">auto</span><span style="color:#c0c5ce;"> buf = </span><span style="color:#bf616a;">load</span><span style="color:#c0c5ce;">(url);
-tab-&gt;</span><span style="color:#bf616a;">push</span><span style="color:#c0c5ce;">(buf);
-</span></code></pre>
+<pre class="code literal-block"><span></span><span class="k">auto</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+<span class="n">tab</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</pre>
+
 <p>という形を目指す。</p>
 <p><code>loadGeneralFile</code> を解きほぐして、 <code>HTTP</code> 機能を抽出、リダイレクトまで動くようにできた。
 <code>loadGeneralFile</code> は、</p>
-<pre style="background-color:#2b303b;">
-<code>* OpenStream/Send HTTP Request
+<pre class="code literal-block"><span></span>* OpenStream/Send HTTP Request
 * HTTP Response
     * 3xx =&gt; Redirect
 * content-type で分岐
     * BufferLoader =&gt; Buffer
-</code></pre>
+</pre>
+
 <p>という感じに整理できそう。
 HttpとBufferローダーを副作用の無い関数に整理できれば再入可能が見えてくる。
 早めに分岐させて、分岐したら合流しない。同じ処理は関数で共有するという方向性で整理。</p>
 <p>Buffer が多機能なので、Document, HttpResponse, FileInfo とかに分割したい。</p>
-<h1 id="di-4duan-jie">第４段階</h1>
+<h2>第４段階</h2>
 <p>mainloop の再実装。libuv, libevent 等を検討していたのだけど、 c++ との親和性の高い asio を使うことにした。
 <code>tty read (keyboard input)</code>, <code>signal callback (sigint, winresize)</code>, <code>alarm</code> の割り込みを asio 経由にする。
 アプリの終了をloop の終了にして、自然に destructor がコールされるようになる。</p>
-<h1 id="di-5duan-jie">第５段階</h1>
+<h2>第５段階</h2>
 <p>html parse から term へのレンダリング部分の分解。
 やっと解読できて１パス目</p>
 <ul>
@@ -349,7 +426,7 @@ HttpとBufferローダーを副作用の無い関数に整理できれば再入�
 <p>という感じだった。
 １パス目で html 化するときに知らない属性を捨てたり、内部属性を追加したりしている様子。
 この、内部属性がよくわからなくて難しい。</p>
-<h1 id="wen-zi-kodo">文字コード</h1>
+<h2>文字コード</h2>
 <p><code>content-charset</code> =&gt; <code>wtf</code> =&gt; <code>DisplayCharset</code> と文字コードを変換して動作していることがわかった。
 試しに、<code>utf-8</code> であることが分かっている <code>html</code> で <code>wtf</code> 変換を飛ばしてみたところ表示が壊れた。
 <code>wtf</code> は <code>utf-8</code> と互換性がないらしい。
@@ -362,17 +439,13 @@ http://simonsapin.github.io/wtf-8/
 正しく表示することができた。</p>
 <p>ということで、<code>euc-jp</code> と <code>shift-jis</code> と <code>iso-2022-jp</code> から <code>utf-8</code> への変換を作れば日本語は対応できそう。
 <code>std::string_view</code>, <code>char32_t</code>, <code>char8_t</code> あたりの新しい型を使った <code>\0</code> 終端に頼らないライブラリを作ってみる。</p>
-<h1 id="memo">メモ</h1>
-<h2 id="moziyurunifen-ge">モジュールに分割</h2>
+<h2>メモ</h2>
+<h3>モジュールに分割</h3>
 <p>機能ごとにモジュールに分割する。</p>
 <ul>
-<li>
-<p>UI(frontend)</p>
-<ul>
-<li>Term
-<ul>
-<li>低レベル描画
-<ul>
+<li>UI(frontend)<ul>
+<li>Term<ul>
+<li>低レベル描画<ul>
 <li>termcap の関数を直接呼ぶ。curses の自前実装的な</li>
 <li>マルチバイト、マルチカラムの文字列と密接に関連していて libwc と不可分</li>
 </ul>
@@ -380,15 +453,13 @@ http://simonsapin.github.io/wtf-8/
 <li>キーボード入力</li>
 <li>マウス入力</li>
 <li>リサイズイベント</li>
-<li>SIGNALハンドリング
-<ul>
+<li>SIGNALハンドリング<ul>
 <li>SIGINT =&gt; longjmp でキャンセル処理を実現している。c++ のデストラクタとかまずそう</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>高レベル描画
-<ul>
+<li>高レベル描画<ul>
 <li>Lineの構築(byte ごとに char と Lineprop がペアになる)</li>
 </ul>
 </li>
@@ -397,8 +468,7 @@ http://simonsapin.github.io/wtf-8/
 <li>Message</li>
 <li>Menu</li>
 <li>Keymap</li>
-<li>LineInput
-<ul>
+<li>LineInput<ul>
 <li>SearchKey</li>
 <li>History</li>
 </ul>
@@ -408,8 +478,7 @@ http://simonsapin.github.io/wtf-8/
 <li>
 <p>IO(transport)</p>
 <ul>
-<li>IStream
-<ul>
+<li>IStream<ul>
 <li>union =&gt; class polymorphism化</li>
 <li>file descriptor</li>
 <li>FILE*</li>
@@ -424,8 +493,7 @@ http://simonsapin.github.io/wtf-8/
 <li>
 <p>http</p>
 <ul>
-<li>HttpSession
-<ul>
+<li>HttpSession<ul>
 <li>HttpRequest</li>
 <li>HttpResponse</li>
 </ul>
@@ -442,8 +510,7 @@ http://simonsapin.github.io/wtf-8/
 <p>HTML</p>
 <ul>
 <li>HTMLtagproc1</li>
-<li>HTMLlineproc2body
-<ul>
+<li>HTMLlineproc2body<ul>
 <li>process_form</li>
 <li>process_form_int</li>
 </ul>
@@ -462,25 +529,22 @@ http://simonsapin.github.io/wtf-8/
 <li>url escape</li>
 <li>html escape</li>
 <li>html entity</li>
-<li>char_util
-<ul>
+<li>char_util<ul>
 <li>myctype</li>
 </ul>
 </li>
-<li>string_view_util
-<ul>
+<li>string_view_util<ul>
 <li>strip</li>
 </ul>
 </li>
-<li>string_util
-<ul>
+<li>string_util<ul>
 <li>malloc</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<h2 id="rinkuwotadoru-followlink">リンクをたどる(followLink)</h2>
+<h3>リンクをたどる(followLink)</h3>
 <p>followA();
 loadLink();
 loadGeneralFile();</p>
@@ -488,140 +552,55 @@ loadGeneralFile();</p>
 loadGeneralFile();</p>
 <p>cmd_loadURL();
 loadGeneralFile();</p>
-<h2 id="miao-hua-suru">描画する</h2>
+<h3>描画する</h3>
 <p>displayBuffer
 redrawBuffer
 redrawNLine</p>
-<h2 id="keyru-li">key入力</h2>
-
+<h3>key入力</h3>
 </div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../hugo-reinstall/" rel="prev" title="Hugo再インストール">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../../2021/init_zola/" rel="next" title="サイトジェネレーターを Zola に変更">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2020/w3m-mod/",
+        disqus_title="w3m\u6539\u9020",
+        disqus_identifier="cache/content/posts/2020/w3m-mod.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
-<nav class="toc">
 
-<div class="toc_fix">
-<ul>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#xia-zhun-bei">下準備</a>
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
-                <ul>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#msys2-detoriaezubirudo">msys2 でとりあえずビルド</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#wsl-de-gc-gakuratusiyusuruwen-ti">WSL で GC がクラッシュする問題</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#birudosisutemu">ビルドシステム</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#jing-gao-karaeraniyin-kishang-ge">警告からエラーに引き上げ</a>
-                        </li>
-                    
-                </ul>
             
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#di-1duan-jie">第1段階</a>
-            
-                <ul>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#c-hua-extern-c">c++ 化 (extern &quot;C&quot;)</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#defun">DEFUN</a>
-                        </li>
-                    
-                </ul>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#di-2duan-jie">第２段階</a>
-            
-                <ul>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#gc-malloc-kara-gc-cleanup-ji-cheng-he">GC_MALLOC から gc_cleanup 継承へ</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#gcwen-zi-lie-str">GC文字列 Str</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#gurobarubian-shu-wojian-rasu">グローバル変数を減らす</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#streamchu-li">Stream処理</a>
-                        </li>
-                    
-                </ul>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#di-3duan-jie">第３段階</a>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#di-4duan-jie">第４段階</a>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#di-5duan-jie">第５段階</a>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#wen-zi-kodo">文字コード</a>
-            
-        </li>
-    
-        <li>
-            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#memo">メモ</a>
-            
-                <ul>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#moziyurunifen-ge">モジュールに分割</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#rinkuwotadoru-followlink">リンクをたどる(followLink)</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#miao-hua-suru">描画する</a>
-                        </li>
-                    
-                        <li>
-                            <a href="https://ousttrue.github.io/posts/2020/w3m-mod/#keyru-li">key入力</a>
-                        </li>
-                    
-                </ul>
-            
-        </li>
-    
-</ul>
+        </footer>
+</div>
 </div>
 
 
-</nav>
-</div>
-</main>
-
-    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
-
-  </body>
+        <script src="../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
 </html>

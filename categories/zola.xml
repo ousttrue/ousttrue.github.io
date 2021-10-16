@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (zolaについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/zola.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:49:57 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>zola のテンプレートを整備する</title><link>https://ousttrue.github.io/posts/2021/zola_template/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;サイト整備のメモ。共通化して部品を少なくした。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;zola 設定&lt;/li&gt;
+&lt;li&gt;template 構築&lt;/li&gt;
+&lt;li&gt;場合によっては zola の改造&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;共通&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] title&lt;/li&gt;
+&lt;li&gt;[x] 日付&lt;/li&gt;
+&lt;li&gt;[x] 見出しの見た目&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Markdown&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] url 文字列を自動でリンクにしたい。markdownで &lt;code&gt;&amp;lt;url&amp;gt;&lt;/code&gt; と記述するべし&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210716: masonry 入れてみた&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://masonry.desandro.com/"&gt;https://masonry.desandro.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;20210717: TOC&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] 目次
+だいたいできた。
+github が増えすぎてカオスなので不要なものを整理せねば・・・&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210725: 色&lt;/h2&gt;
+&lt;p&gt;作業用に区域ごとに色分けしていたのをやめて、地味な色に変更。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;@mixin&lt;/span&gt;&lt;span class="nf"&gt; MAIN_COLOR&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nt"&gt;color&lt;/span&gt;&lt;span class="nd"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;black&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+    &lt;span class="nt"&gt;background-color&lt;/span&gt; &lt;span class="nt"&gt;white&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;のような方法を試してみた。&lt;/p&gt;
+&lt;h2&gt;20210725: TOC 固定&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;fixed&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;20210725: 画像を入れれるようにしてみた&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;page.assets&lt;/code&gt; や &lt;code&gt;section.assets&lt;/code&gt; に想定した形で入ってこないので、
+無理やりパスを操作したのだが、さすがにこれはちょっと・・・&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  {% if page.extra.image %}
+  {% set s = page.relative_path | split(pat="/") %}
+  {% set len = s | length %}
+  {% set sl = s | slice(start=0, end=len-1) %}
+  {% set j = sl | join(sep="/") %}
+  {% set image_url = resize_image(path=j ~ "/" ~ page.extra.image, width=600, op="fit_width") %}
+  &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;img&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ image_url }}"&lt;/span&gt;&lt;span class="err"&gt;"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+  {% endif %}
+&lt;/pre&gt;
+
+&lt;p&gt;なんか、 &lt;code&gt;zola&lt;/code&gt; がわりと融通が利かないことが分かってきた。
+&lt;code&gt;resize_image&lt;/code&gt; で明示的に画像を加工するという設計は理解。なるほど。
+当方、 &lt;code&gt;md&lt;/code&gt; ファイルと同じフォルダに &lt;code&gt;png, jpg&lt;/code&gt; を放り込んでそれを記事内で使いたいのです。
+画像を中央の &lt;code&gt;static&lt;/code&gt; フォルダにまとめて入れておくの嫌なので。
+改造して page.assets に放り込んでしまおう。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt; ほど多機能複雑でなく、 &lt;code&gt;zola&lt;/code&gt; ほど strict でない、そんなほどほどなツールが望まれる。&lt;/p&gt;
+&lt;h2&gt;20210815: pagination&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/documentation/templates/pagination/"&gt;https://www.getzola.org/documentation/templates/pagination/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;ドキュメントよりもソースを読もう w
+5分もかからぬ。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;      {% if paginator.current_index == 1 %}
+&lt;/pre&gt;
+
+&lt;h2&gt;20210829: 内部リンク記法&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;.md&lt;/code&gt; の記法。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/documentation/content/linking/#internal-links"&gt;https://www.getzola.org/documentation/content/linking/#internal-links&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[NvimTexture](@/posts/2021/summer/nvimtexture.md)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;@&lt;/code&gt; と &lt;code&gt;.md&lt;/code&gt; が必要。&lt;/p&gt;
+&lt;h2&gt;20210831: search&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/documentation/content/search/"&gt;https://www.getzola.org/documentation/content/search/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;設定は &lt;code&gt;build_search_index = true&lt;/code&gt; するだけなのだが、
+template 作るのは大変。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/aaranxu/adidoks"&gt;https://github.com/aaranxu/adidoks&lt;/a&gt; から部品を頂いてきた。&lt;/p&gt;&lt;/div&gt;</description><category>css</category><category>ssg</category><category>zola</category><guid>https://ousttrue.github.io/posts/2021/zola_template/</guid><pubDate>Mon, 14 Jun 2021 00:00:00 GMT</pubDate></item><item><title>サイトジェネレーターを Zola に変更</title><link>https://ousttrue.github.io/posts/2021/init_zola/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;最近、 rust を再開したので、
+&lt;code&gt;Static Site Generator&lt;/code&gt; を go 製の hugo から rust 製の zola に変更してみた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/"&gt;https://www.getzola.org/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;hugo のからの引っ越し&lt;/h2&gt;
+&lt;h3&gt;zola インストール&lt;/h3&gt;
+&lt;h3&gt;初期化&lt;/h3&gt;
+&lt;h3&gt;config.toml を hugo 版から zola 版に書き換える。&lt;/h3&gt;
+&lt;p&gt;最低限 base_url。&lt;/p&gt;
+&lt;h3&gt;プレビューしてみる&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ zola serve
+&lt;/pre&gt;
+
+&lt;p&gt;一部の記事でエラーが出る。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Reason&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;There&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt; &lt;span class="n"&gt;that&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="n"&gt;missing&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;URL&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;どの記事がまずいかはわかるが、何行目とか場所はわからないのかしら。
+適当になおす。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ zola check
+&lt;/pre&gt;
+
+&lt;p&gt;の方がデバッグ向け。
+いくつかなおしたら、エラーは出なくなった。&lt;/p&gt;
+&lt;h2&gt;テンプレートを用意する&lt;/h2&gt;
+&lt;p&gt;https://www.getzola.org/documentation/getting-started/overview/&lt;/p&gt;
+&lt;p&gt;に従って基本的なテンプレートを作成。
+index.html, section.html, page.html の3種類のテンプレートがサーチされる。
+section.html と page.html は、section のフロントマター、 &lt;code&gt;template&lt;/code&gt;, &lt;code&gt;page_template&lt;/code&gt; で変更できる。&lt;/p&gt;
+&lt;h2&gt;zola の content 構成&lt;/h2&gt;
+&lt;p&gt;section(フォルダ) に page が所属するという構成みたい。
+section とうのは単なるフォルダではなくて、folder/index.md もしくは folder/_index.md をさす。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;root =&amp;gt; index.html&lt;ul&gt;
+&lt;li&gt;section&lt;ul&gt;
+&lt;li&gt;_index.md (セクションになる) =&amp;gt; section.html&lt;/li&gt;
+&lt;li&gt;page1.md =&amp;gt; page.html&lt;/li&gt;
+&lt;li&gt;page2.md =&amp;gt; page.html&lt;/li&gt;
+&lt;li&gt;subsection (_index.md が無いのでセクションでは無い) =&amp;gt; レンダリングされない&lt;ul&gt;
+&lt;li&gt;page3.md (orphan page) =&amp;gt; page.html&lt;/li&gt;
+&lt;li&gt;page4.md (orphan page) =&amp;gt; page.html&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;セクションに所属しない page は orphan page となり、 &lt;code&gt;section.pages&lt;/code&gt; のように列挙することができなくなる。
+すべてのフォルダに &lt;code&gt;_index.md&lt;/code&gt; を配置してセクション化するという設計思想のようだ。&lt;/p&gt;
+&lt;p&gt;セクションが木構造になっていて、page が leaf になる。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;section&lt;ul&gt;
+&lt;li&gt;subsections&lt;/li&gt;
+&lt;li&gt;pages&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;が再帰的に続く。&lt;/p&gt;
+&lt;h3&gt;zola を改造してみた。&lt;/h3&gt;
+&lt;p&gt;orphan page が section.pages に入るようになる。
+https://github.com/ousttrue/zola/commit/7842d0b2d05eb15400dbe20b20791b57af077de1&lt;/p&gt;
+&lt;h2&gt;zola 設定 config.toml&lt;/h2&gt;
+&lt;p&gt;https://www.getzola.org/documentation/getting-started/configuration/&lt;/p&gt;
+&lt;h2&gt;Tera テンプレート&lt;/h2&gt;
+&lt;p&gt;https://tera.netlify.app/docs&lt;/p&gt;
+&lt;h3&gt;extends&lt;/h3&gt;
+&lt;p&gt;別ファイルを部分的に override する
+https://tera.netlify.app/docs/#inheritance&lt;/p&gt;
+&lt;h3&gt;include&lt;/h3&gt;
+&lt;p&gt;別ファイルの部品を読み込む
+https://tera.netlify.app/docs/#include&lt;/p&gt;
+&lt;h3&gt;date format&lt;/h3&gt;
+&lt;p&gt;https://tera.netlify.app/docs/#include&lt;/p&gt;
+&lt;h2&gt;とりあえずメンテナンス中・・・&lt;/h2&gt;
+&lt;p&gt;hugo に比べて template の構成がシンプルでわかりやすいような気がする
+(hugo に慣れているせいかもしれない)。
+そもそも hugo の時点でちゃんと管理してなかったので、
+ぼちぼち続きをやる。&lt;/p&gt;&lt;/div&gt;</description><category>rust</category><category>ssg</category><category>zola</category><guid>https://ousttrue.github.io/posts/2021/init_zola/</guid><pubDate>Sat, 12 Jun 2021 00:00:00 GMT</pubDate></item></channel></rss>

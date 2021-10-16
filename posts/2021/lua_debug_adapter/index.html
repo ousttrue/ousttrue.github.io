@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lua の DebugAdapter を書いてみた | 三次元日誌</title>
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2021/lua_debug_adapter/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../packer_luarocks/" title="packer から luarocks を使う" type="text/html">
+<link rel="next" href="../fix_hererocks/" title="VS2019 向けに hererocks を修正(vswhere を使う)" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="lua の DebugAdapter を書いてみた">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2021/lua_debug_adapter/">
+<meta property="og:description" content="nvim の nvim-dap で lua をデバッグするべく自分で書いてみた。
+手頃なのが見つからなかったので。
+https://github.com/ousttrue/my_nvim/blob/master/luada.lua
+https://microsoft.github.io/debug-adapter-protocol/ の自前実装。
+request のうち initialize, l">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-07-13T00:00:00Z">
+<meta property="article:tag" content="dap">
+<meta property="article:tag" content="lua">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">lua の DebugAdapter を書いてみた</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-13T00:00:00Z" itemprop="datePublished" title="2021-07-13 00:00">2021-07-13 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2021/lua_debug_adapter.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>nvim の nvim-dap で lua をデバッグするべく自分で書いてみた。
+手頃なのが見つからなかったので。</p>
+<p><a href="https://github.com/ousttrue/my_nvim/blob/master/luada.lua">https://github.com/ousttrue/my_nvim/blob/master/luada.lua</a></p>
+<p><a href="https://microsoft.github.io/debug-adapter-protocol/">https://microsoft.github.io/debug-adapter-protocol/</a> の自前実装。</p>
+<p><code>request</code> のうち <code>initialize</code>, <code>launch</code>, <code>setBreakpoints</code>, <code>configurationDone</code>, <code>threads</code>, <code>stackTrace</code>, <code>scopes</code>, <code>variables</code>, <code>continue</code>, <code>next</code> を実装した。
+<code>event</code> のうち <code>initialized</code>, <code>exited</code>, <code>stopped(breakpoint, step)</code> を実装した。</p>
+<p>これで最低限の breakpoint を設定して止める、ステップ実行、変数表示までできた。</p>
+<p>ログレベルを設定して</p>
+<pre class="code literal-block"><span></span><span class="nb">require</span><span class="p">(</span><span class="s1">'dap'</span><span class="p">).</span><span class="n">set_log_level</span><span class="p">(</span><span class="s1">'trace'</span><span class="p">)</span>
+</pre>
+
+<p>nvim の <code>:lua print(vim.fn.stdpath "cache")</code> に配置される <code>dap.log</code> を観察したらだいたいできた。</p>
+<p>nvim-dap の設定は以下。</p>
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">dap</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"dap"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">luada</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">nvim_get_var</span><span class="p">(</span><span class="s2">"my_nvim_root"</span><span class="p">)</span> <span class="o">..</span> <span class="s2">"/luada.lua"</span>
+
+<span class="c1">-- luada adapter を登録</span>
+<span class="n">dap</span><span class="p">.</span><span class="n">adapters</span><span class="p">.</span><span class="n">luada</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">-- debug用のスクリプトを lua で実行し、標準入出力で DAP 通信(JSON-RPC)を開始する</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">"executable"</span><span class="p">,</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">nvim_get_var</span><span class="p">(</span><span class="s2">"my_nvim_root"</span><span class="p">)</span> <span class="o">..</span> <span class="s2">"/neovim/.deps/usr/bin/luajit.exe"</span><span class="p">,</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span> <span class="n">luada</span> <span class="p">},</span>
+<span class="p">}</span>
+<span class="c1">-- filetype lua のときに luada を使用する。launch の引数</span>
+<span class="n">dap</span><span class="p">.</span><span class="n">configurations</span><span class="p">.</span><span class="n">lua</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">"lua debug adapter"</span><span class="p">,</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="s2">"luada"</span><span class="p">,</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="s2">"launch"</span><span class="p">,</span>
+        <span class="n">program</span> <span class="o">=</span> <span class="s2">"${fileDirname}</span><span class="se">\\</span><span class="s2">${file}"</span><span class="p">,</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span> <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre>
+
+<pre class="code literal-block"><span></span>+---------+    DAP       +--------------------+
+| nvim dap|-------&gt;stdin |luajit.exe luada.lua|
+|         |&lt;-------stdout|                    |
++---------+              +--------------------+
+                                              +==&gt; loadscript(target_lua_script)
+</pre>
+
+<p>入出力を DAP で占有してしまうので、それでも大丈夫なスクリプトしかデバッグできない。
+(print 関数は、stderr に出力するように退避したので、<code>dap.log</code> には出る)</p>
+<p>素の standalone の lua interpreter で簡単にできる範囲で実装する方針。</p>
+<h3>はまりポイント</h3>
+<h4>Windows 版 は、<code>io.stdout</code> で <code>CR</code> が <code>CRLF</code> に変換されるのを回避できない。</h4>
+<pre class="code literal-block"><span></span><span class="n">setmode</span><span class="p">(</span><span class="n">_fileno</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="n">_O_BINARY</span><span class="p">);</span>
+</pre>
+
+<p>を lua で呼び出す手段が無い。</p>
+<pre class="code literal-block"><span></span>Content-Leght: 123\n\n
+</pre>
+
+<p>と出力して変換されるのに任せることにした。</p>
+<h4>debug.sethook 内で coroutine.yield できない</h4>
+<p><a href="https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working">https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working</a></p>
+<p>breakpoint 等によるスクリプト中断を <code>coroutine.yield</code> で実装しようとしたのだけど断念した。
+(yield すると <code>suspend</code> にならずに <code>dead</code> になる)</p>
+<p><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a> は、coroutine で実装しているような気がするのだが・・・。</p>
+<p>yield する代わりに main.loop をネストさせてそこで通信待機させることにした、</p>
+<h4>launch で開始すると早すぎる</h4>
+<p>これは、 <code>nvim-dap</code> の実装の問題のような気がするが、
+capabilities に以下を設定して、 <code>configurationDone</code> リクエストで自開始する。</p>
+<pre class="code literal-block"><span></span><span class="n">supportsConfigurationDoneRequest</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</pre>
+
+<h3>ToDo</h3>
+<p>luada リポジトリを作って vscode 拡張としてリリースする。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/dap/" rel="tag">dap</a></li>
+            <li><a class="tag p-category" href="../../../categories/lua/" rel="tag">lua</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../packer_luarocks/" rel="prev" title="packer から luarocks を使う">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../fix_hererocks/" rel="next" title="VS2019 向けに hererocks を修正(vswhere を使う)">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2021/lua_debug_adapter/",
+        disqus_title="lua \u306e DebugAdapter \u3092\u66f8\u3044\u3066\u307f\u305f",
+        disqus_identifier="cache/content/posts/2021/lua_debug_adapter.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="作業記録">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三次元日誌 (過去の記事 7ページ目) | 三次元日誌</title>
+<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/index-7.html">
+<link rel="prev" href="index-8.html" type="text/html">
+<link rel="next" href="index-6.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]-->
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href=".">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav"></ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+    
+        
+
+    
+        
+    <div class="postindex">
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/22/threejs_pmd_loader/" class="u-url">Three.jsでpmd読み込み</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/22/threejs_pmd_loader/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-22T00:00:00Z" itemprop="datePublished" title="2015-12-22 00:00">2015-12-22 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/22/threejs_pmd_loader/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/22/threejs_pmd_loader.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>こちらのモデルを使わせていただいております。</p>
+<p>threejs_pmd_loader.ts source
+PmdLoader.ts source
+変換せずに直接Pmdを読み込むべくカスタムローダーを作ってみよう。
+まず、SJIS操作が必要なのでこちらを使わせて頂いた。
+* https://github.com/polygonplanet/encoding.js
+あとはJSONLoaderを参考にしてArrayBufferから地道に情報を切り出していく。
+ArrayBufferから情報を切り出すのはこつがわかれば簡単で以下のようなヘルパークラスを作れば
+さくさくできる。
+BinaryReader
+class BinaryReader {
+    m_buffer: ArrayBuffer;
+    m_postiion = 0;</p>
+<pre class="code literal-block"><span></span>constructor(buffer: ArrayBuffer) {
+    this.m_buffer = buffer;
+}
+
+read(length: number) {
+    var slice = this.m_buffer.slice(this.m_postiion, this.m_postiion + length);
+    this.m_postiion += length;
+    return slice;
+}
+
+readString(length: number): string {
+    var slice = new Uint8Array(this.read(length));
+    let i = 0;
+    for (; i &lt; slice.byteLength; ++i) {
+        if (slice[i] == 0) {
+            break;
+        }
+    }
+
+    return Encoding.codeToString(Encoding.convert(slice.slice(0, i), {
+        to: 'UNICODE',
+        from: 'SJIS'
+    }));
+}
+
+readFloat(): number {
+    var read = this.read(4);
+    return new Float32Array(read)[0];
+}
+
+readVector2(): THREE.Vector2 {
+    return new THREE.Vector2(this.readFloat(), this.readFloat());
+}
+
+readVector3(): THREE.Vector3 {
+    return new THREE.Vector3(this.readFloat(), this.readFloat(), this.readFloat());
+}
+
+readRGB(): THREE.Color {
+    return new THREE.Color(this.readFloat(), this.readFloat(), this.readFloat());
+}
+
+// int
+readInt16(): number {
+    var read = this.read(2);
+    return new Int16Array(read)[0];
+}
+
+readInt32(): number {
+    var read = this.read(4);
+    return new Int32Array(read)[0];
+}
+
+// uint
+readUint8(): number {
+    var read = this.read(1);
+    return new Uint8Array(read)[0];
+}
+
+readUint16(): number {
+    var read = this.read(2);
+    return new Uint16Array(read)[0];
+}
+
+readUint16Array(count: number): Uint16Array {
+    var read = this.read(2 * count);
+    return new Uint16Array(read);
+}
+</pre>
+
+<p>}</p>
+<p>先頭のVertices, Indices, Materialsを読み込むところまで実装した。
+意外とあっさりTexture読み込みまでできちゃった。Three.js便利ですなぁ。
+骨を入れる前にシェーダーをやろう。
+トゥーンシェーダーでないと見栄えが悪い。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/21/node_self_build/" class="u-url">node.js(Windows版)を自前ビルドする</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/21/node_self_build/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-21T00:00:00Z" itemprop="datePublished" title="2015-12-21 00:00">2015-12-21 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/21/node_self_build/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/21/node_self_build.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>謎のクラッシュ(FFIでネイティブプラグインがアクセス違反で死ぬ)を追跡するため、
+VCのデバッガをアタッチするべく自前ビルドする。
+node-v5.3.0.tar.xz</p>
+<p>7zipで解凍。
+python2系にpathを通してvcbuild.batをたたく。</p>
+<blockquote>
+<p>vcbuild.bat</p>
+</blockquote>
+<p>v8もlibuvも全部入りらしくあっさりとほぼビルドできた。
+SignTool Error: No certificates were found that met all the given criteria.
+Failed to sign exe</p>
+<p>document
+https://github.com/nodejs/node-v0.x-archive/wiki/Installation#building-on-windows
+debugビルドの作り方はこう。</p>
+<blockquote>
+<p>vcbuild.bat nosign debug</p>
+</blockquote>
+<p>nodeをデバッグ実行</p>
+<p>node-v5.3.0にnode.slnができているのでこれをVisualStudio2015で開く。
+nodeをスタートアッププロジェクトに指定
+nodeの設定のdebugタブで、カレントディレクトリとコマンドライン引数を指定
+f5</p>
+<p>例外が再現した
+void CallbackInfo::DispatchToV8(callback_info <em>info, void </em>retval, void **parameters, bool dispatched) {
+  Nan::HandleScope scope;</p>
+<p>static const char* errorMessage = "ffi fatal: callback has been garbage collected!";</p>
+<p>if (info-&gt;function == NULL) {
+    // throw an error instead of segfaulting.
+    // see: https://github.com/rbranson/node-ffi/issues/72
+    if (dispatched) {
+        Local<value> errorFunctionArgv[1];
+        errorFunctionArgv[0] = Nan::New<string>(errorMessage).ToLocalChecked();
+        info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
+    }
+    else {
+      Nan::ThrowError(errorMessage);
+    }
+  } else {
+    // invoke the registered callback function
+    Local<value> functionArgv[2];
+    functionArgv[0] = WrapPointer((char <em>)retval, info-&gt;resultSize);
+    functionArgv[1] = WrapPointer((char </em>)parameters, sizeof(char *) * info-&gt;argc);
+    Local<value> e = info-&gt;function-&gt;Call(2, functionArgv); // &lt;-- ここ。functionがnullptrになってるよ!
+    if (!e-&gt;IsUndefined()) {
+      if (dispatched) {
+        Local<value> errorFunctionArgv[1];
+        errorFunctionArgv[0] = e;
+        info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
+      } else {
+        Nan::ThrowError(e);
+      }
+    }
+  }
+}</value></value></value></string></value></p>
+<p>ううむ。if文でnullチェックしてるのにelse側に落ちてるな。矢張りスレッドとかGCが絡んでいそうな気がするぞ。
+ちょうどnode-ffiでjavascriptのコールバックを呼び出しているところなのではないか。
+コールスタック</p>
+<blockquote>
+<p>ffi_bindings.node!CallbackInfo::DispatchToV8(_callback_info * info, void * retval, void * * parameters, bool dispatched) 行 73   C++
+    ffi_bindings.node!CallbackInfo::WatcherCallback(uv_async_s * w, int revents) 行 94   C++
+    node.exe!uv_process_async_wakeup_req(uv_loop_s * loop, uv_async_s * handle, uv_req_s * req) 行 97    C</p>
+</blockquote>
+<p>よく見るとまさにffi_bindings.node(node-ffiのネイティブプラグイン)内で問題が発生している。
+呼び出しスレッドはメインスレッドか・・・。
+何回も試してみると例外がむしろdllのスレッド側で起こることの方が多い。
+他にWaitSingleObjectがstdcallの関数をスレッド実行しているものが４本。
+ひょっとして、コールバックの頻度が高すぎなんじゃないのか・・・。
+callback_infoはffiの構造体。こいつのデストラクタが呼ばれているのが確認できれば手がかりになるな。
+で、callback_info-&gt;functionを解放する下記の部分がメインスレッドから呼ばれて、その後に
+スレッドからのコールバック呼び出しがクラッシュしているらしいことを発見。
+node_modules/ffi/src/callback_info.cc
+/<em>
+ * Called when the <code>ffi_closure *</code> pointer (actually the "code" pointer) get's
+ * GC'd on the JavaScript side. In this case we have to unwrap the
+ * <code>callback_info *</code> struct, dispose of the JS function Persistent reference,
+ * then finally free the struct.
+ </em>/</p>
+<p>void closure_pointer_cb(char <em>data, void </em>hint) {
+  callback_info *info = reinterpret_cast<callback_info>(hint);
+  // dispose of the Persistent function reference
+  delete info-&gt;function;
+  info-&gt;function = NULL;
+  // now we can free the closure data
+  ffi_closure_free(info);
+}</callback_info></p>
+<p>コールスタック</p>
+<blockquote>
+<p>ffi_bindings.node!closure_pointer_cb(char * data, void * hint) 行 42 C++
+    node.exe!node::Buffer::CallbackInfo::WeakCallback(v8::Isolate * isolate, v8::Local<:object> object) 行 159    C++</:object></p>
+</blockquote>
+<pre class="code literal-block"><span></span> 省略
+
+node.exe!v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace space, const char * gc_reason, const v8::GCCallbackFlags callbackFlags) 行 556 C++
+
+ 省略
+
+node.exe!node::Buffer::New(v8::Isolate * isolate, char * data, unsigned int length, void (char *, void *) * callback, void * hint) 行 347    C++
+binding.node!`anonymous namespace'::WrapPointer(char * ptr, unsigned int length) 行 147  C++
+binding.node!`anonymous namespace'::ReadPointer(const Nan::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 261    C++
+binding.node!Nan::imp::FunctionCallbackWrapper(const v8::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 174  C++
+</pre>
+
+<p>なんか、GCが発動して回収されちゃっているぽい？
+2015/09/20
+* Nodejs GC is crashing when a C function is returning NULL
+むしろこっちか
+2015/11/05
+* Node.js v5.0.0でnode-ffiやNodObjCが動かない
+しかし、うちのnode.jsは</p>
+<blockquote>
+<p>node --version
+v5.3.0</p>
+</blockquote>
+<p>うむ。
+むしろこっちか
+2015/09/15
+* ffi.Function underlying Callback is garbage collected
+死ななくなった。これっぽいな。
+64bit版で試してみる
+これはこれで死ぬ。
+まとめ</p>
+<p>node-ffiのFunctionでGCに回収されてしまう書き方のところがある(FFI.Function内)
+32bit版のnode-ffiではSTDCALLを指定できる(ABI=2)
+64bit版のnode-ffiではIA64にされるのでSTDCALLは動かぬ</p>
+<p>gypでのIA64とX64の扱いの違いがわかったら修正できるかな。
+X86_WIN32の時にFFI_STDCALLを定義する修正をプルリクしてみよう。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/19/node_ffi/" class="u-url">node-ffiでstdcallが使いたい(頓挫)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/19/node_ffi/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-19T00:00:00Z" itemprop="datePublished" title="2015-12-19 00:00">2015-12-19 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/19/node_ffi/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/19/node_ffi.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>Windows上でnode-ffiでdllから関数を呼びだしていたのだが、
+dllにコールバックを登録した呼び出しを繰り返していると死ぬという現象に遭遇。
+調べ始めた。
+node-v5.3.0-x64.msi(Windows10)</p>
+<p>node-ffiはstdcallに対応してない
+2014/01/25</p>
+<p>http://stackoverflow.com/questions/21357502/calling-delphi-stdcall-function-with-panischar-from-node-js</p>
+<p>node-ffiはstdcall対応してないで。
+そうなのかー。
+github見るとIssueがあるけど解決されなかったぽい。
+2012/01/13
+* https://github.com/node-ffi/node-ffi/issues/34
+残念。
+ついで。node-ffiはffiにパッケージ名を改めたらしい。</p>
+<p>https://github.com/node-ffi/node-ffi/wiki/API-changes-from-v0.x-to-v1.x</p>
+<p>node-ffiを改造できないか模索する
+node-ffiはlibffiのラッパーとわかる。
+FFI_DEFAULT_ABI
+というのがcdeclになる様子でnode-ffiはそれしか対応していないのが問題。
+で、調べていくと
+node_modules/ffi/deps/libffi/src/x86/ffitarget.h
+typedef enum ffi_abi {
+  FFI_FIRST_ABI = 0,</p>
+<p>/<em> ---- Intel x86 Win32 ---------- </em>/</p>
+<h2>ifdef X86_WIN32</h2>
+<p>FFI_SYSV,
+  FFI_STDCALL,
+  FFI_THISCALL,
+  FFI_FASTCALL,
+  FFI_MS_CDECL,
+  FFI_LAST_ABI,</p>
+<h2>ifdef _MSC_VER</h2>
+<p>FFI_DEFAULT_ABI = FFI_MS_CDECL</p>
+<h2>else</h2>
+<p>FFI_DEFAULT_ABI = FFI_SYSV</p>
+<h2>endif</h2>
+<h2>elif defined(X86_WIN64)</h2>
+<p>FFI_WIN64,
+  FFI_LAST_ABI,
+  FFI_DEFAULT_ABI = FFI_WIN64</p>
+<h2>else</h2>
+<p>/<em> ---- Intel x86 and AMD x86-64 - </em>/
+  FFI_SYSV,
+  FFI_UNIX64,   /<em> Unix variants all use the same ABI for x86-64  </em>/
+  FFI_LAST_ABI,</p>
+<h2>if defined(<strong>i386</strong>) || defined(__i386)</h2>
+<p>FFI_DEFAULT_ABI = FFI_SYSV</p>
+<h2>else</h2>
+<p>FFI_DEFAULT_ABI = FFI_UNIX64</p>
+<h2>endif</h2>
+<h2>endif</h2>
+<p>} ffi_abi;</p>
+<p>STDCALL発見・・・。しかし、この書き方だと64bitビルドで消滅するのではないか？
+FFI_WIN64って何？
+X86_WIN64って何だろう。何故、STD_CALLが無いのか。もしかして、IA64のことなのか。
+どうやら、そのよう定義済みプリプロセッサー・シンボルの使用。
+うちはamd64なのでnot IA64。
+node-ffiのどこでX86_WIN64が定義されているのか
+node_modules/ffi/deps/libffi/config/win/x64
+/<em> Specify which architecture libffi is configured for. </em>/</p>
+<h2>ifndef X86_WIN64</h2>
+<h2>define X86_WIN64</h2>
+<h2>endif</h2>
+<p>とりあえず書き換えて、</p>
+<h2>ifndef X86_WIN32</h2>
+<h2>define X86_WI32</h2>
+<h2>endif</h2>
+<blockquote>
+<p>cd node_modules/ffi
+npm install
+node-gyp rebuild</p>
+</blockquote>
+<p>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_raw_THISCALL" は未解決です。 [D:\dev_web\neuron.
+js\node_modules\ffi\build\ffi_bindings.vcxproj]
+libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_SYSV" は未解決です。 [D:\dev_web\neuron.js\node_
+modules\ffi\build\ffi_bindings.vcxproj]
+libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_STDCALL" は未解決です。 [D:\dev_web\neuron.js\no
+de_modules\ffi\build\ffi_bindings.vcxproj]
+libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_THISCALL" は未解決です。 [D:\dev_web\neuron.js\n
+ode_modules\ffi\build\ffi_bindings.vcxproj]
+libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_raw_SYSV" は未解決です。 [D:\dev_web\neuron.js\n
+ode_modules\ffi\build\ffi_bindings.vcxproj]
+libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_call_win32" は未解決です。 [D:\dev_web\neuron.js\node_mo
+dules\ffi\build\ffi_bindings.vcxproj]</p>
+<p>頓挫・・・。
+上記関数の実体がwin32.asmの中にあるが64bitでコンパイルすると失敗する・・・。
+libffiを64bitビルドしてstdcallするところから出直さねばならない。
+32bit版のnode.jsに妥協
+FFI_STDCALLで関数登録
+// stdcallのabi番号。Windowsの32bit版Node.js専用
+const FFI_STDCALL=2;
+// callbackをFFI_STDCALLに設定
+const CallbackType = FFI.Function(ref.types.void
+    , [ref.refType(ref.types.void)], FFI_STDCALL);</p>
+<p>// 関数定義をFFI_STDCALLに設定
+const DllLib = FFI.Library("hoge.dll", {
+    RegisterCallback: [ref.types.void, [ref.refType(ref.types.void), CallbackType, {abi: FFI_STDCALL}],
+}</p>
+<p>上記の記述でWindowsの32bit版Node.jsではFFI登録にSTDCALLを設定できたっぽい。
+でも、プログラムが死ぬ。
+どうやらJavascript層より下で死んでいるようでエラーを吐かずに突然死する。ううむ。
+こりゃ、Cのデバッガをアタッチせねばなるまい。
+0x016E0008 で例外がスローされました (node.exe 内): 0xC0000005: 場所 0x00000588 の読み取り中にアクセス違反が発生しました</p>
+<p>この例外のハンドラーがある場合は、プログラムを安全に続行できます。</p>
+<p>uncaughtException
+こんなの発見した。
+東京Node学園#8 Let It Crash!?
+さっそくやってみる
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});</p>
+<p>ひっかからないな・・・
+自前ビルドしてどう死んでいるか確かめるか。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/17/toggle/" class="u-url">特定のHtmlElementを画面いっぱいにするToggleの実験</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/17/toggle/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-17T00:00:00Z" itemprop="datePublished" title="2015-12-17 00:00">2015-12-17 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/17/toggle/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/17/toggle.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>“W” translate | “E” rotate | “R” scale | “+” increase size | “-” decrease size
+Press “Q” to toggle world/local space, keep “Ctrl” down to snap to grid</p>
+<p>close</p>
+<p>ボタンが押されたら、最前面にposition: fixedの板($modal)を表示してそっちに
+Three.jsで使っているElement($renderer)の内容を付け替える。
+let $children=$renderer.children();</p>
+<p>$modal
+    .appendTo($('body'))
+    .css({
+        display: 'block',
+        position: 'fixed',
+        left: 0,
+        width: '100%',
+        top: 0,
+        height: '100%',
+        'z-index': 100
+    });</p>
+<p>$children.appendTo($modal);
+$(window).trigger('resize');</p>
+<p>概ねこんな感じ。
+スクロールバーをbodyじゃなくて最大化表示用のdivより後ろにまわすなどの細工はしてある。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/12/dat_gui/" class="u-url">dat-guiを試してみる</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/12/dat_gui/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-12T00:00:00Z" itemprop="datePublished" title="2015-12-12 00:00">2015-12-12 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/12/dat_gui/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/12/dat_gui.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>view typescript
+view javascript</p>
+<p>たまにthree.jsのデモと連動して使われているGUIライブラリdat-guiを試してみる。</p>
+<p>https://code.google.com/p/dat-gui/
+http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+https://stemkoski.github.io/Three.js/#gui</p>
+<p>ライブラリを導入</p>
+<blockquote>
+<p>bower install dat.gui
+tsd query dat-gui -rosa install</p>
+</blockquote>
+<p>dat.GuiControllerのnameプロパティがtypings/dat-gui/dat-gui.d.tsで未定義だった。
+bower_components/dat.gui/dat.gui.jsでは定義されていた。
+    /*<em>
+    * The name of <code>GUI</code>. Used for folders. i.e
+    * a folder's name
+    * @type String
+    </em>/
+    name: {
+    get: function() {
+        return params.name;
+    },
+    set: function(v) {
+        // TODO Check for collisions among sibling folders
+        params.name = v;
+        if (title_row_name) {
+        title_row_name.innerHTML = params.name;
+        }
+    }
+    },</p>
+<p>既存のd.tsにプロパティを追加する(C# partial class的な)方法があるかどうかわからないので、
+dat-gui.d.tsを改造することにした。
+dat-gui.d.tsにnameプロパティを追加
+declare module dat {</p>
+<pre class="code literal-block"><span></span><span class="c1">// 省略</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">Controller</span> <span class="p">{</span> <span class="c1">// &lt;- dat.gui.jsに合わせて名前変えてみた</span>
+    <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">fire</span><span class="p">()</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">getValue</span><span class="p">()</span><span class="o">:</span> <span class="nx">any</span><span class="p">;</span>
+    <span class="nx">isModified</span><span class="p">()</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">;</span>
+    <span class="nx">listen</span><span class="p">()</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">min</span><span class="p">(</span><span class="nx">n</span>: <span class="kt">number</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">remove</span><span class="p">(</span><span class="nx">target</span>: <span class="kt">Controller</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">setValue</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">step</span><span class="p">(</span><span class="nx">n</span>: <span class="kt">number</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">updateDisplay</span><span class="p">()</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">name</span><span class="p">(</span><span class="nx">newName?</span>: <span class="kt">string</span><span class="p">)</span><span class="o">:</span> <span class="kt">string</span><span class="p">;</span> <span class="c1">// &lt;- これ追加した</span>
+    <span class="nx">onChange</span><span class="o">:</span> <span class="p">(</span><span class="nx">value?</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">onFinishChange</span><span class="o">:</span> <span class="p">(</span><span class="nx">value?</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+<p>}</p>
+<p>サンプルコードを元にtypescript化してみる
+https://stemkoski.github.io/Three.js/GUI-Controller.html
+をベースにした。
+javscriptのコードをまるっとtsファイルにコピーして淡々と型を指定していく。
+dat.guiの場所調整の件</p>
+<p>http://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown</p>
+<p>autoPlace: falseがポインツ。そのうえでdomにposition:abusolute
+var  gui = new dat.GUI( { autoPlace: false } );</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/12/threejs_control/" class="u-url">Three.jsのトランスフォームコントロールでメッシュをマウスで移動</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/12/threejs_control/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-12T00:00:00Z" itemprop="datePublished" title="2015-12-12 00:00">2015-12-12 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/12/threejs_control/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/12/threejs_control.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>"W" translate | "E" rotate | "R" scale | "+" increase size | "-" decrease size
+Press "Q" to toggle world/local space, keep "Ctrl" down to snap to grid</p>
+<p>source
+今回は、本家サイトのサンプル
+http://threejs.org/examples/#misc_controls_transform
+をやってみよう。
+まず、TransformControlsのtypescriptインターフェースを用意する。
+というか書きながら作った。
+TransformControls.d.ts。モジュールの細かいところがよくわからん・・・
+declare module THREE {
+    export class TransformControls extends THREE.Mesh {
+        constructor(camera: THREE.Camera, element: Element);
+        update():void;
+        addEventListener(event: string, callback: Function): void;
+        attach(mesh: THREE.Mesh): void;</p>
+<pre class="code literal-block"><span></span>    <span class="nt">setSpace</span><span class="o">(</span><span class="nt">space</span><span class="o">:</span> <span class="nt">string</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setTranslationSnap</span><span class="o">(</span><span class="nt">snap</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setRotationSnap</span><span class="o">(</span><span class="nt">radians</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setMode</span><span class="o">(</span><span class="nt">mode</span><span class="o">:</span> <span class="nt">string</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setSize</span><span class="o">(</span><span class="nt">size</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+
+    <span class="nt">space</span><span class="o">:</span> <span class="nt">string</span><span class="o">;</span>
+    <span class="nt">size</span><span class="o">:</span> <span class="nt">number</span><span class="o">;</span>
+<span class="err">}</span>
+</pre>
+
+<p>}</p>
+<p>TransformControlsを初期化する。カメラとhtmlノードを渡して初期化する
+CreateTransformControl(mesh: THREE.Mesh) {
+    this.transform = new THREE.TransformControls(this.camera, this.renderer.domElement);
+    this.transform.addEventListener('change', () =&gt; this.Render());
+    this.transform.attach(mesh);
+    this.scene.add(this.transform);</p>
+<pre class="code literal-block"><span></span>window.addEventListener('keydown', (event: KeyboardEvent) =&gt; {
+
+    switch (event.keyCode) {
+
+        case 81: // Q
+            this.transform.setSpace(this.transform.space === "local" ? "world" : "local");
+            break;
+
+        case 17: // Ctrl
+            this.transform.setTranslationSnap(100);
+            this.transform.setRotationSnap(THREE.Math.degToRad(15));
+            break;
+
+        case 87: // W
+            this.transform.setMode("translate");
+            break;
+
+        case 69: // E
+            this.transform.setMode("rotate");
+            break;
+
+        case 82: // R
+            this.transform.setMode("scale");
+            break;
+
+        case 187:
+        case 107: // +, =, num+
+            this.transform.setSize(this.transform.size + 0.1);
+            break;
+
+        case 189:
+        case 109: // -, _, num-
+            this.transform.setSize(Math.max(this.transform.size - 0.1, 0.1));
+            break;
+
+    }
+});
+
+window.addEventListener('keyup', (event: KeyboardEvent) =&gt; {
+
+    switch (event.keyCode) {
+
+        case 17: // Ctrl
+            this.transform.setTranslationSnap(null);
+            this.transform.setRotationSnap(null);
+            break;
+
+    }
+
+});
+</pre>
+
+<p>}</p>
+<p>マウスイベントを監視するHtmlノードと、マウスの動きをどのように解釈するかを知るためにカメラが必要ということですね。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/fontawesome/" class="u-url">FontAwesomeを取り入れる</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/11/fontawesome/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-11T00:00:00Z" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/11/fontawesome/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/11/fontawesome.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>https://fortawesome.github.io/Font-Awesome/</p>
+<p>取り入れてみた。
+cssをセットアップして
+アイコンを選択してコピペすると。
+無駄にアイコンを配置してみよう。
+ fa-lg
+ fa-2x
+ fa-3x
+ fa-4x
+ fa-5x
+なるほど。
+<i class="fa fa-wrench fa-5x"></i></p>
+<p>iでアイコンタグを導入して、クラスで種類とサイズを指定する仕組み。</p>
+<p>適当にサイトのテンプレートにアイコンを入れてみる。
+わりとお手軽におされ？なサイトに。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/express_socketio/" class="u-url">Socket.IOな実験環境</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/11/express_socketio/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-11T00:00:00Z" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/11/express_socketio/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/11/express_socket.io.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>Socket.IOを実験する環境のメモ。</p>
+<p>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
+coffee-scriptは無しでES6要素をなるべく入れる
+Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</p>
+<p>https://github.com/ousttrue/sio_sample
+Project生成</p>
+<blockquote>
+<p>mkdir sio_sample
+cd sio_sample
+sio_sample&gt; npm init -y
+sio_sample&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D
+sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</p>
+</blockquote>
+<p>vscodeでes6を使えるように
+jsconifg.json
+{
+    "compilerOptions": {
+        "target": "ES6"
+    }
+}</p>
+<p>後で拡張できるように以下のようなディレクトリ構成にする。
+build &lt;- srcから(加工して)コピーされる</p>
+<p>src &lt;- 加工前のファイル置き場
+  + server
+    + app.js
+  + client
+    + index.html
+    + index.js</p>
+<p>src/server/app.js
+"use strict";</p>
+<p>const http = require('http');
+const express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+    .use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+const socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    console.log('a client connected %s', socket);
+    socket.on('disconnect', () =&gt; {
+        console.log('a client disconnected');
+    });
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.html</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<script src="posts/2015/12/11/express_socketio/index.js"></script><div id="target"></div>
+
+<p></p>
+<p>src/client/index.js
+"use strict";</p>
+<p>function setup(target) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('onLoad'));
+    target.appendChild(div);
+}</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block"><span></span>setup(document.getElementById('target'));
+</pre>
+
+<p>};</p>
+<p>srcからbuildに展開するgulp
+gulpfile.js
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();</p>
+<p>const config = {
+    server_src: './src/server/<strong>/*',
+    server_dst: './build',
+    client_src: './src/client/</strong>/*',
+    client_dst: './build/public'
+};</p>
+<p>gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe(gulp.dest(config.server_dst));
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe(gulp.dest(config.client_dst));
+});</p>
+<p>gulp.task('default', ['server', 'client']);</p>
+<p>build
+sio_sample&gt; gulp</p>
+<p>ブラウザで動いた。
+browserSync導入
+gulpfile.js。browserSync
+const config = { // 追加分
+    app_entry: './build/app.js',
+    app_port: 5000,  <br>
+};</p>
+<p>const browserSync = require('browser-sync').create();
+gulp.task('serve', ()=&gt;{
+    $.nodemon({
+        script: config.app_entry,
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: config.app_port
+        }
+    })
+    .on('readable', ()=&gt;{
+        this.stdout.on('data', (chunk)=&gt;{
+            if (/^start /.test(chunk)){
+                console.log('reloading...');
+                browserSync.reload();
+            }
+            process.stdout.write(chunk)
+        });
+    });
+});</p>
+<p>gulp.task('browser-sync', ['serve'], ()=&gt;{
+    browserSync.init({
+        proxy: 'localhost:' + config.app_port,
+        port: 3000,
+        ws: true
+    })
+});</p>
+<p>gulpfile.js。watchタスク追加
+gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe(gulp.dest(config.server_dst))
+        .pipe(browserSync.stream())
+        ;
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe(gulp.dest(config.client_dst))
+        .pipe(browserSync.stream())
+        ;
+});</p>
+<p>gulp.task('build', ['server', 'client']);</p>
+<p>gulp.task('watch', ['build', 'browser-sync'], ()=&gt;{
+    gulp.watch(config.server_src, ['server']);
+    gulp.watch(config.client_src, ['client']);
+});</p>
+<p>gulp.task('default', ['watch']);</p>
+<p>git
+いったんgitに登録しよう。
+.gitignore
+/node_modules/
+/build/</p>
+<p>Socket.IOの疎通</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<script type="text/javascript" src="socket.io/socket.io.js"></script><br><script src="posts/2015/12/11/express_socketio/index.js"></script><div id="target"></div>
+
+<p></p>
+<p>"use strict";</p>
+<p>function setup(target) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello'));
+    target.appendChild(div);</p>
+<pre class="code literal-block"><span></span>this.socket = io.connect();
+</pre>
+
+<p>}</p>
+<p>window.onload = () =&gt; {
+    setup(document.getElementById('target'));
+};</p>
+<p>typescript導入
+sio_sample&gt; tsc --init</p>
+<p>tsconfig.json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "outDir": ".",
+        "rootDir": ".",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}</p>
+<p>sio_sample&gt; npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D
+sio_sample&gt; cd src
+sio_sample/src&gt; tsd init
+sio_sample/src&gt; tsd query node express socket.io -rosa install</p>
+<p>gulpfile.js。typescriptのコンパイルを追加
+const path = require('path');
+const tsconfig = require('./tsconfig.json');
+const isTypescript = (file) =&gt; {
+    const ext = path.extname(file.path).toLowerCase();
+    return ext === '.ts';
+}</p>
+<p>gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe($.plumber())
+        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+        .pipe($.debug('server'))
+        .pipe(gulp.dest(config.server_dst))
+        .pipe(browserSync.stream())
+    ;
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe($.plumber())
+        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+        .pipe($.debug('client'))
+        .pipe(gulp.dest(config.client_dst))
+        .pipe(browserSync.stream())
+    ;
+});</p>
+<p>src/server/app.jsをapp.tsにリネーム
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>import http = require('http');
+import express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+    .use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    var clientAddress=socket.client.conn.remoteAddress;
+    console.log('connected: %s', clientAddress);
+    socket.on('disconnect', () =&gt; {
+        console.log('disconnected: %s', clientAddress);
+    });
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.jsをindex.tsにリネーム
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>declare module io {
+    export function connect(): SocketIO.Socket;
+}</p>
+<p>function setup(target: Element) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello socket.io'));
+    target.appendChild(div);</p>
+<pre class="code literal-block"><span></span>this.socket = io.connect();
+</pre>
+
+<p>}</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block"><span></span>setup(document.getElementById('target'));
+</pre>
+
+<p>};</p>
+<p>メッセージをやり取り
+src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行
+// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    var clientAddress = socket.client.conn.remoteAddress;
+    console.log('connected: %s', clientAddress);
+    socket.on('disconnect', () =&gt; {
+        console.log('disconnected: %s', clientAddress);
+    });</p>
+<pre class="code literal-block"><span></span>socket.on('client-message', (data: any) =&gt; {
+    socket.emit('server-message', 'server clicked message');
+});
+</pre>
+
+<p>});</p>
+<p>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>declare module io {
+    export function connect(): SocketIO.Socket;
+}</p>
+<p>class Client {
+    socket: SocketIO.Socket;</p>
+<pre class="code literal-block"><span></span>constructor() {
+    this.socket = io.connect();
+}
+
+setup(target: Element) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello socket.io'));
+    target.appendChild(div);
+
+    this.socket.on('server-message', (data: any)=&gt;{
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(data.toString()));
+        target.appendChild(div);
+    });
+
+    const button=document.createElement('button');
+    button.appendChild(document.createTextNode('send'));
+    button.onclick=(ev: MouseEvent)=&gt;{
+        this.socket.emit('client-message', 'clicked');
+    };
+    target.appendChild(button);
+}
+</pre>
+
+<p>}
+var client=new Client();</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block"><span></span>client.setup(document.getElementById('target'));
+</pre>
+
+<p>};</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/tree/" class="u-url">Treeを表示・操作する</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/11/tree/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-11T00:00:00Z" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/11/tree/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/11/tree.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>JavascriptでTreeを表示操作するライブラリを探してみる。
+なんとなくサンプルが充実している
+jqTree
+にしてみた。</p>
+<p>このサンプルに必要だったのでFontAwesomeも取り入れてみた。
+めんどくさいので避けていたが、そろそろscssを取り入れるべきか。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/10/nodejs_v4/" class="u-url">Node.jsのアップデート</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/10/nodejs_v4/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-10T00:00:00Z" itemprop="datePublished" title="2015-12-10 00:00">2015-12-10 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2015/12/10/nodejs_v4/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/10/nodejs_v4.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>ちょうど組み込まれているv8エンジンのバージョンが3から4に上がる直前にインストールしていたようで、
+node.jsのバージョン</p>
+<blockquote>
+<p>node --version
+v0.12.7
+node -p process.versions.v8
+3.28.71.19</p>
+</blockquote>
+<p>だった。
+最新版(node-v4.2.3-x64.msi)をインストールしてみる。
+node.jsのバージョン</p>
+<blockquote>
+<p>node --version
+v4.2.3
+node -p process.versions.v8
+4.5.103.35</p>
+</blockquote>
+<p>v8 4.5搭載ということでES6の機能がいろいろ使えるぞ。</p>
+<p>http://v8project.blogspot.jp/2015/07/v8-45-release.html</p>
+<p>exp.js
+let x=1;
+console.log(x);</p>
+<blockquote>
+<p>node exp.js
+SyntaxError: Block-scoped declarations (let, const, function, class) not yet supported outside strict mode</p>
+</blockquote>
+<p>最近よく見る”use strict”が要るのか。
+exp.js。use strict
+"use strict";</p>
+<p>let x=1;
+console.log(x);</p>
+<p>としたらいけた。
+class構文も問題なし。typescript使った後だとちょっと機能的に物足りない・・・
+class Hoge
+{
+    // コンストラクタと
+    constructor(name)
+    {
+        this.name=name;
+    }</p>
+<pre class="code literal-block"><span></span>// メソッドだけ定義できるらしい
+printName()
+{
+    console.log(this.name);
+}
+</pre>
+
+<p>}</p>
+<p>let hoge=new Hoge('hoge');
+hoge.printName();</p>
+<p>let fuga={
+    name: 'fuga',
+    printName: hoge.printName,
+};</p>
+<p>fuga.printName();</p>
+<p>hoge
+fuga</p>
+<p>thisは元の通り。
+arrow functionも問題なく動いた。
+ついでにbrowserでも実験してみよう。
+result</p>
+<p>source
+firefox では、
+SyntaxError: class is a reserved identifier</p>
+<p>になった。
+Chromeなら動いた。なるほど。</p>
+</div>
+                </div>
+            </article>
+</div>
+    
+        <ul class="pager postindexpager clearfix">
+<li class="previous"><a href="index-8.html" rel="prev">新しい記事</a></li>
+            <li class="next"><a href="index-6.html" rel="next">過去の記事</a></li>
+        </ul>
+<script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

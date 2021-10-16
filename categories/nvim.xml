@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (nvimについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/nvim.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:49:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NvimTexture開発開始</title><link>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;code&gt;Nvy&lt;/code&gt; の改造をしてだいたい構造を理解した。
+&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;msgpack-rpc-asio&lt;/a&gt; をオーバーホールして使えるようになった。
+ということで一から組みなおすで。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/NvimTexture"&gt;https://github.com/ousttrue/NvimTexture&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;部品を疎結合にする&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Window(HWND, resize, keyboard, mouse event)&lt;/li&gt;
+&lt;li&gt;NvimPipe(stdin, stdout, msgpack-rpc transport)&lt;/li&gt;
+&lt;li&gt;EventDispatcher(WindowEvent と MsgPackRPCMessage の処理)&lt;/li&gt;
+&lt;li&gt;D3D DeviceManager&lt;/li&gt;
+&lt;li&gt;D3D Renderer(RenderTarget)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;            +--------+
++----+ pipe |Renderer|redraw
+|nvim|-----&amp;gt;+--------+
+|    |&amp;lt;-----+------+
++----+      |Window|resize, keyboard, mouse event
+            +------+
+&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;MainLoop&lt;/li&gt;
+&lt;li&gt;NvimMsgPackRPC Read-Dispatch Loop&lt;/li&gt;
+&lt;li&gt;RenderLoop(30FPS)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Sample&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;FullWindow&lt;/li&gt;
+&lt;li&gt;imgui と混在させる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210910&lt;/h2&gt;
+&lt;p&gt;それなりに動くようになった。
+key-logger や msgpack-rpc の通信ログを横に表示できるようにしたい。&lt;/p&gt;&lt;/div&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</guid><pubDate>Sun, 22 Aug 2021 00:00:00 GMT</pubDate></item><item><title>nvim frontend nvy</title><link>https://ousttrue.github.io/posts/2021/summer/nvy/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;よさげなレポジトリを発見した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/RMichelsen/Nvy"&gt;https://github.com/RMichelsen/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;だいぶ前に作ろうとして頓挫した&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/nvim-dx"&gt;https://github.com/ousttrue/nvim-dx&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;の完成形。
+どこがうまくいかなかったのか忘れてしまったが。&lt;/p&gt;
+&lt;h3&gt;改造&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/Nvy"&gt;https://github.com/ousttrue/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] RenderTarget に対して Nvim をレンダリングする&lt;/li&gt;
+&lt;li&gt;[x] nvim の IO を &lt;a href="https://think-async.com/Asio/#"&gt;https://think-async.com/Asio/#&lt;/a&gt; にのせる&lt;/li&gt;
+&lt;li&gt;[ ] imgui と合体する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210815&lt;/h2&gt;
+&lt;p&gt;MsgPack-RPC のバックエンドに昔作った&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;https://github.com/ousttrue/msgpack-rpc-asio&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;におきかえる。&lt;/p&gt;
+&lt;p&gt;さらに、これのシリアライザーを自前の &lt;a href="https://github.com/ousttrue/msgpackpp"&gt;https://github.com/ousttrue/msgpackpp&lt;/a&gt; におきかえる。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CMake 化&lt;/li&gt;
+&lt;li&gt;RPC を &lt;code&gt;c++20&lt;/code&gt; 化 (co_await)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;で、最初の nvim 初期化を&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;api_info&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_get_api_info"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notity&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_set_var"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"nvy"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_eval"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;"stdpath('config')"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="c1"&gt;// initialize&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notify&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_ui_attach"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;on_message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;dispatcher&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;のように書けるようにして整理する。&lt;/p&gt;
+&lt;h2&gt;20210829&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] MsgPack-RPC のバックエンドを置きかえた&lt;/li&gt;
+&lt;li&gt;[x] logger に RPC の内容を JSON 化して表示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;だいたいリファクタリングが終わって改造しやすい状態になった。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] &lt;code&gt;&amp;lt;C-/&amp;gt;&lt;/code&gt; できるようにする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を実装できた。
+特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;""&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",["&amp;lt;C-/&amp;gt;"]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;h3&gt;修正が必要&lt;/h3&gt;
+&lt;p&gt;非control時に&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",[""]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;GetKeyState&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VK_CONTROL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="c1"&gt;// C-/&lt;/span&gt;
+      &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;"/"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;なるほど。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ousttrue.github.io/posts/2021/summer/nvy/@/posts/2021/summer/nvimtexture.md"&gt;NvimTexture&lt;/a&gt; へ続く&lt;/p&gt;
+&lt;h2&gt;20210829  太字がずれる？&lt;/h2&gt;&lt;/div&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvy/</guid><pubDate>Sat, 07 Aug 2021 00:00:00 GMT</pubDate></item><item><title>VS2019 向けに hererocks を修正(vswhere を使う)</title><link>https://ousttrue.github.io/posts/2021/fix_hererocks/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;hererocks が VS2019BuildTools を検知して動作するように改造してみた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/luarocks/hererocks/pull/15"&gt;https://github.com/luarocks/hererocks/pull/15&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;通るかどうかは微妙。
+内容的に、通りづらそう。
+古い vc を使っていたり MinGW 使っていたりすると実験できないしね。
+とりあえず、既存の動いている部分が壊れないようには配慮した。&lt;/p&gt;
+&lt;p&gt;採用されれば、&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/wbthomason/packer.nvim/issues/302"&gt;https://github.com/wbthomason/packer.nvim/issues/302&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;も進展する。
+Windows 版の luarocks 呼び出しに改造が必要なのだが、
+先に hererocks が動いている必要があるという順番。&lt;/p&gt;
+&lt;p&gt;とりあえず単体で試すことができて&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# C:/Python38/Scripts/pip.exe
+$ pip install https://github.com/ousttrue/hererocks/archive/add_vswhere.zip
+&lt;/pre&gt;
+
+&lt;p&gt;とする。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# C:/Python38/Scripts/hererocks.exe
+$ hererocks.exe --target vs -j 2.1.0-beta3 -r latest build_dir
+Using cl.exe found in PATH.
+Fetching LuaJIT 2.1.0-beta3 (target: vs) (cached)
+Verifying SHA256 checksum
+Building LuaJIT 2.1.0-beta3 (target: vs)
+Installing LuaJIT 2.1.0-beta3 (target: vs)
+Fetching LuaRocks 3.7.0 (cached)
+Verifying SHA256 checksum
+Building and installing LuaRocks 3.7.0
+&lt;/pre&gt;
+
+&lt;p&gt;lua はシステムにインストールして全体でライブラリを共有するというよりは、
+プロジェクト単位でインストールしてローカルに必要なライブラリだけを追加するという運用になりそう。
+なので、 hererocks でプロジェクトローカルに lua をサクッとビルドできるのはなかなかよい。
+python の venv 的な運用。
+展開先は、 &lt;code&gt;.gitignore&lt;/code&gt; する。&lt;/p&gt;
+&lt;p&gt;ただ、外部ライブラリのラッパーがさくっと動くかというと Windows だと厳しいものがありますな・・・。
+vcpkg と連携させるとか、更なる頑張りが必要かもしれない。
+なので、 luajit の ffi が面白いかもしれない。
+standalone の lua インタプリタを使う場合は &lt;code&gt;hererocks&lt;/code&gt; がいいのではないか。&lt;/p&gt;
+&lt;h3&gt;vswhere メモ&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/Microsoft/vswhere"&gt;https://github.com/Microsoft/vswhere&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cl.exe&lt;/code&gt;, &lt;code&gt;msbuild.exe&lt;/code&gt; などの探索に使う。
+&lt;code&gt;vs2017 version 15.2&lt;/code&gt; 以降に入っているらしい。&lt;/p&gt;
+&lt;p&gt;こんな感じに使う。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# %ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
+&amp;gt; vswhere -nologo -products *
+instanceId: 6762dfe1
+installDate: 2020/07/21 9:26:34
+installationName: VisualStudio/16.7.3+30503.244
+installationPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+installationVersion: 16.7.30503.244
+productId: Microsoft.VisualStudio.Product.BuildTools
+productPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\LaunchDevCmd.bat
+state: 4294967295
+isComplete: 1
+isLaunchable: 1
+isPrerelease: 0
+isRebootRequired: 0
+displayName: Visual Studio Build Tools 2019
+description: Visual Studio Build Tools では、Visual Studio IDE を必要とせずに、MSBuild ベースのネイティブ マネージド アプリケーションをビルドできます。また、Visual C++ のコンパイラやライブラリ、MFC、ATL、および C++/CLI サポートをインストールするオプションも用意されています。
+channelId: VisualStudio.16.Release
+channelUri: https://aka.ms/vs/16/release/channel
+enginePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service
+releaseNotes: https://go.microsoft.com/fwlink/?LinkId=660893#16.7.3
+thirdPartyNotices: https://go.microsoft.com/fwlink/?LinkId=660909
+updateDate: 2020-09-13T06:19:26.0508205Z
+catalog_buildBranch: d16.7
+catalog_buildVersion: 16.7.30503.244
+catalog_id: VisualStudio/16.7.3+30503.244
+catalog_localBuild: build-lab
+catalog_manifestName: VisualStudio
+catalog_manifestType: installer
+catalog_productDisplayVersion: 16.7.3
+catalog_productLine: Dev16
+catalog_productLineVersion: 2019
+catalog_productMilestone: RTW
+catalog_productMilestoneIsPreRelease: False
+catalog_productName: Visual Studio
+catalog_productPatchVersion: 3
+catalog_productPreReleaseMilestoneSuffix: 1.0
+catalog_productSemanticVersion: 16.7.3+30503.244
+catalog_requiredEngineVersion: 2.7.3132.26759
+properties_campaignId:
+properties_channelManifestId: VisualStudio.16.Release/16.7.3+30503.244
+properties_nickname:
+properties_setupEngineFilePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href="https://github.com/microsoft/vswhere/wiki/Find-VC"&gt;https://github.com/microsoft/vswhere/wiki/Find-VC&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;フィルタをかけられる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+&lt;/pre&gt;
+
+&lt;p&gt;見つかったパスから先は固定であるとみなして、 &lt;code&gt;vcvars64.bat&lt;/code&gt; などを見つける。&lt;/p&gt;&lt;/div&gt;</description><category>lua</category><category>nvim</category><category>python</category><guid>https://ousttrue.github.io/posts/2021/fix_hererocks/</guid><pubDate>Thu, 15 Jul 2021 00:00:00 GMT</pubDate></item><item><title>packer から luarocks を使う</title><link>https://ousttrue.github.io/posts/2021/packer_luarocks/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;nvim のパッケージマネージャー packer に、 luarocks のモジュール機能があるのだが Windows hererocks が失敗する。
+Linux は、 hererocks はできるがモジュールがロードできぬ。
+問題の少ない Linux から調べていく。&lt;/p&gt;
+&lt;h3&gt;Linux&lt;/h3&gt;
+&lt;p&gt;packer 設定で lua モジュール設定を記述すると、 &lt;code&gt;hererocks&lt;/code&gt; を用いて luarocks が &lt;code&gt;~/.config/nvim/hererocks&lt;/code&gt; にセットアップされることは分かった。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;-- packer で lua の penlight モジュールをインストール&lt;/span&gt;
+&lt;span class="n"&gt;use_rocks&lt;/span&gt; &lt;span class="s2"&gt;"penlight"&lt;/span&gt; 
+&lt;/pre&gt;
+
+&lt;p&gt;しかし、&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"penlight"&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;がエラーになる。
+&lt;code&gt;package.path&lt;/code&gt; に luarocks が無くてうまくいかないぽい？&lt;/p&gt;&lt;/div&gt;</description><category>lua</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/packer_luarocks/</guid><pubDate>Thu, 08 Jul 2021 00:00:00 GMT</pubDate></item><item><title>nvim.init ではまる</title><link>https://ousttrue.github.io/posts/2021/nvim_init/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;Windows でも環境変数 &lt;code&gt;XDG_CONFIG_HOME&lt;/code&gt; を設定していると、 &lt;code&gt;%USERPROFILE%/AppData/Local/nvim&lt;/code&gt; が無効になる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://neovim.io/doc/user/starting.html#%24XDG_CONFIG_HOME"&gt;https://neovim.io/doc/user/starting.html#$XDG_CONFIG_HOME&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/nvim_init/</guid><pubDate>Thu, 01 Jul 2021 00:00:00 GMT</pubDate></item><item><title>nvim-dap で coldelldb 動いた</title><link>https://ousttrue.github.io/posts/2021/nvim_dap_codelldb/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/mfussenegger/nvim-dap"&gt;nvim-dap&lt;/a&gt; で rust をデバッグするべく悪戦苦闘中。
+nvim-dap というのは、来たる nvim-0.5 で動くようになる、 &lt;code&gt;vscode&lt;/code&gt; のデバッグアダプターを動作させる機能。&lt;/p&gt;
+&lt;p&gt;rust(Windows) は native debugger をアタッチすればいいので、いくつか選択肢があって&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools"&gt;https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode"&gt;https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb"&gt;https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最後の、&lt;code&gt;vscode-lldb(codelldb)&lt;/code&gt; &lt;a href="https://github.com/vadimcn/vscode-lldb"&gt;https://github.com/vadimcn/vscode-lldb&lt;/a&gt; が使いたい。&lt;/p&gt;
+&lt;h3&gt;codelldb の起動&lt;/h3&gt;
+&lt;p&gt;nvim-dap から &lt;code&gt;codelldb.exe&lt;/code&gt; プロセスは起動している様子。通信がうまくいってないように見える。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; .\.cache\dein\repos\github.com\puremourning\vimspector\gadgets\windows\CodeLLDB\adapter\codelldb.exe
+Listening on port 55201
+&lt;/pre&gt;
+
+&lt;p&gt;標準入出力を使うモードになっていないのでは？&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;adapter/src/lib.rs&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;async&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="nf"&gt;run_debug_server&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;addr&lt;/span&gt;: &lt;span class="nc"&gt;net&lt;/span&gt;::&lt;span class="n"&gt;SocketAddr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;adapter_settings&lt;/span&gt;: &lt;span class="nc"&gt;debug_protocol&lt;/span&gt;::&lt;span class="n"&gt;AdapterSettings&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;multi_session&lt;/span&gt;: &lt;span class="kt"&gt;bool&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kd"&gt;let&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listener&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TcpListener&lt;/span&gt;::&lt;span class="n"&gt;bind&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;addr&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;await&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;unwrap&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"Listening on port {}"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listener&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;local_addr&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;unwrap&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;遡る。 &lt;code&gt;main -&amp;gt; debug_server -&amp;gt; entry -&amp;gt; run_debug_server&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-&amp;gt; &lt;span class="nb"&gt;Result&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Error&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;env_logger&lt;/span&gt;::&lt;span class="n"&gt;Builder&lt;/span&gt;::&lt;span class="n"&gt;from_default_env&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kd"&gt;let&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;matches&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;App&lt;/span&gt;::&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"codelldb"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Arg&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"port"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"port"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;takes_value&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Arg&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"multi-session"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"multi-session"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Arg&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"preload"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"preload"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;multiple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;takes_value&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Arg&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"liblldb"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"liblldb"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;takes_value&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Arg&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"params"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"params"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;takes_value&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subcommand&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SubCommand&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"terminal-agent"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Arg&lt;/span&gt;::&lt;span class="n"&gt;with_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"port"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"port"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;takes_value&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_matches&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;let&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;Some&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;matches&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;matches&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subcommand_matches&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"terminal-agent"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;terminal_agent&lt;/span&gt;::&lt;span class="n"&gt;terminal_agent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;matches&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;debug_server&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;matches&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;どうやら、 &lt;code&gt;executable&lt;/code&gt; かつ &lt;code&gt;stdio ではなく tcp&lt;/code&gt; 通信というタイプで nvim-dap では未対応ということでよさそう。？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;起動&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Listening on port XXXXX&lt;/code&gt; メッセージから port を得る&lt;/li&gt;
+&lt;li&gt;そのポートに対して TCP 接続という手順が必要&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href="https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension"&gt;https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;の &lt;code&gt;DebugAdapterServer&lt;/code&gt; タイプにあたる。&lt;/p&gt;
+&lt;h3&gt;nvim-dap の改造を試みる&lt;/h3&gt;
+&lt;p&gt;adapter.type &lt;code&gt;executable&lt;/code&gt;, &lt;code&gt;server&lt;/code&gt; に加えて、第3の &lt;code&gt;executable_server&lt;/code&gt; を作れるか。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;run_adapter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;configuration&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;configuration&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="s1"&gt;'[no name]'&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+  &lt;span class="n"&gt;opts&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;vim&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tbl_extend&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'keep'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;cwd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cwd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;env&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;
+  &lt;span class="p"&gt;})&lt;/span&gt;
+  &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'executable'&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+    &lt;span class="n"&gt;lazy&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;progress&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;report&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Running: '&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;M&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;launch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;configuration&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;elseif&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'server'&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+    &lt;span class="n"&gt;lazy&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;progress&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;report&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Running: '&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;M&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;attach&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;configuration&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;elseif&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'executable_server'&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt; &lt;span class="c1"&gt;-- 👈これを追加した&lt;/span&gt;
+    &lt;span class="n"&gt;lazy&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;progress&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;report&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Running: '&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;-- local session = M.launch(adapter, configuration, opts)&lt;/span&gt;
+    &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;stdin&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stderr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;executable_server&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;-- `Error executing luv callback: vimL function must not be called in a lua loop callback`&lt;/span&gt;
+    &lt;span class="n"&gt;vim&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loop&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_start&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;vim&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;schedule_wrap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="c1"&gt;-- codelldb の出力から port を得る&lt;/span&gt;
+      &lt;span class="c1"&gt;-- Lisening on port xxxxx&lt;/span&gt;
+      &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;string.match&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Listening on port (%d+)"&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="n"&gt;M&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;attach&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;configuration&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="kr"&gt;else&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Invalid adapter type %s, expected `executable` or `server`'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+
+&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;executable_server&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;uv&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;vim&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loop&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;stdin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;uv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new_pipe&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;stdout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;uv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new_pipe&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;stderr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;uv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new_pipe&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;handle&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;onexit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;stdin&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;stderr&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="kr"&gt;end&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;pid_or_err&lt;/span&gt;
+  &lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pid_or_err&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;uv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;spawn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;stdio&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;stdin&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stderr&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;
+    &lt;span class="n"&gt;cwd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cwd&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;env&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;detached&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="n"&gt;onexit&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="nb"&gt;assert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'Error running '&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;adapter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;command&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="s1"&gt;': '&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;pid_or_err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+  &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;stdin&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stderr&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+
+&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nc"&gt;M&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;attach&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="kr"&gt;end&lt;/span&gt;
+  &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'config needs the `request` property which must be one of `attach` or `launch`'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt;
+  &lt;span class="kr"&gt;end&lt;/span&gt;
+  &lt;span class="c1"&gt;-- initialize が早すぎるので config を connect 引数に&lt;/span&gt;
+  &lt;span class="n"&gt;session&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;require&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'dap.session'&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+
+&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nc"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nf"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;session_defaults&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;opts&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="p"&gt;{})&lt;/span&gt;
+  &lt;span class="nb"&gt;setmetatable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__index&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;self&lt;/span&gt;
+
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;uv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new_tcp&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;write&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
+        &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
+    &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;close&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+      &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;shutdown&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+      &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="s1"&gt;'127.0.0.1'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;tonumber&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt; &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;err&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;end&lt;/span&gt;
+    &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;read_start&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create_read_loop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;body&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;handle_body&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;body&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="c1"&gt;-- connect が成立してから initialize を送る&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;initialize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+  &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;動いた。 PR 作ろう。&lt;/p&gt;&lt;/div&gt;</description><category>dap</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/nvim_dap_codelldb/</guid><pubDate>Sun, 27 Jun 2021 00:00:00 GMT</pubDate></item></channel></rss>

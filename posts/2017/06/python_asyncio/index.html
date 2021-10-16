@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python3のasyncioについてのメモ | 三次元日誌</title>
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2017/06/python_asyncio/">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../threejs_setup/" title="threejsとwebsocketを使った開発環境" type="text/html">
+<link rel="next" href="../ts_module/" title="Typescriptのモジュールでまたはまる" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="Python3のasyncioについてのメモ">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2017/06/python_asyncio/">
+<meta property="og:description" content="PythonのVersion3.4から始まったasyncio周りについてのメモ。
+環境は、Windows10上のpython3.6(64bit)。
+Version
+Python3.4
+asyncio
+yield from
+Python3.5
+async def
+await
+EventLoop
+https://docs.python.org/3/library/asyncio-eventloop.h">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2017-06-10T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Python3のasyncioについてのメモ</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2017-06-10T00:00:00Z" itemprop="datePublished" title="2017-06-10 00:00">2017-06-10 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2017/06/python_asyncio.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>PythonのVersion3.4から始まったasyncio周りについてのメモ。
+環境は、Windows10上のpython3.6(64bit)。</p>
+<p>Version
+Python3.4</p>
+<p>asyncio
+yield from</p>
+<p>Python3.5</p>
+<p>async def
+await</p>
+<p>EventLoop</p>
+<p>https://docs.python.org/3/library/asyncio-eventloop.html</p>
+<p>import asyncio
+loop=asyncio.get_event_loop()
+print(loop)</p>
+<h2>&lt;_WindowsSelectorEventLoop running=False closed=False debug=False&gt;</h2>
+<p>loop.run_forever()
+print('done')</p>
+<p>ただし永遠(forever)走り続けるのでプロセスをkillしないと止まらず。
+Windows向けのloop</p>
+<p>https://docs.python.org/3/library/asyncio-eventloops.html#asyncio.ProactorEventLoop</p>
+<p>import asyncio
+import sys</p>
+<p>if sys.platform == 'win32':
+    loop = asyncio.ProactorEventLoop()
+    # <proactoreventloop running="False" closed="False" debug="False">
+    asyncio.set_event_loop(loop)
+else:
+    loop = asyncio.get_event_loop()</proactoreventloop></p>
+<p>以降、loopを得るコードを省略。
+EventLoopに関数を投入する
+def func(loop):
+    loop.stop() # 停止</p>
+<p>loop.call_soon(func, loop)
+loop.run_forever()
+print('done')</p>
+<p>asyncio.get_event_loopでloopを取得。loop.call_soonでloopに関数を投入できる。
+投入された関数は、loop.run_foreverで消化される。
+ついでに、loop.stopでrun_foreverから抜けることができる。
+EventLoopにgeneratorを投入する
+def gen(loop, name, count):
+    print(name, loop.time())
+    for i in range(count):
+        print(name, i, loop.time())
+        yield
+    print(name, 'done')
+    loop.stop()</p>
+<p>asyncio.ensure_future(gen(loop, 'a', 3))
+asyncio.ensure_future(gen(loop, 'b', 3))
+loop.run_forever()</p>
+<p>a 534341.609
+a 0 534341.609
+b 534341.609
+b 0 534341.609
+a 1 534341.609
+b 1 534341.609
+a 2 534341.609
+b 2 534341.609
+a done
+b done</p>
+<p>loop.stopで止まった。
+すべてのtaskが終わるのを待つ
+def gen(loop, name, count):
+    print(name, loop.time())
+    for i in range(count):
+        print(name, i, loop.time())
+        yield
+    print(name, 'done')</p>
+<p>taskA=asyncio.ensure_future(gen(loop, 'a', 3), loop=loop)
+taskB=asyncio.ensure_future(gen(loop, 'b', 5), loop=loop)
+future=asyncio.gather(taskA, taskB)
+future.add_done_callback(lambda future: loop.stop())
+task=asyncio.ensure_future(future, loop=loop)</p>
+<p>loop.run_forever()</p>
+<p>a 571911.359
+a 0 571911.359
+b 571911.359
+b 0 571911.359
+a 1 571911.359
+b 1 571911.359
+a 2 571911.359
+b 2 571911.359
+a done
+b 3 571911.359
+b 4 571911.359
+b done</p>
+<p>loop.run_until_completeでfutureが終わるのを待つ
+def gen(loop, name, count):
+    print(name, loop.time())
+    for i in range(count):
+        print(name, i, loop.time())
+        yield
+    print(name, 'done')
+futureA=asyncio.ensure_future(gen(loop, 'a', 3), loop=loop)
+futureB=asyncio.ensure_future(gen(loop, 'b', 5), loop=loop)
+future=asyncio.gather(futureA, futureB)</p>
+<p>loop.run_until_complete(future)</p>
+<p>futureの終了を待ってloop.stopしたいならrun_until_completeするのが明瞭。
+PEP492 – Coroutines with async and await syntax(python3.5 09-Apr-2015)</p>
+<p>generatorを流用したcoroutineは紛らわしいので、coroutineに独自のシンタックスを導入するで。native coroutineと呼称する。Cで実装しているわけではない。
+関数内でawaitを使わなくてもcoroutineとして有効</p>
+<p>async def read_data(db):
+    pass</p>
+<p>EventLoopにnative coroutineを投入する
+async def gen(loop, name, count):
+    print(name, loop.time())
+    for i in range(count):
+        print(name, i, loop.time())
+        #yield
+        await asyncio.sleep(0)
+    print(name, 'done')</p>
+<p>taskA=asyncio.ensure_future(gen(loop, 'a', 3), loop=loop)
+taskB=asyncio.ensure_future(gen(loop, 'b', 5), loop=loop)
+future=asyncio.gather(taskA, taskB)</p>
+<p>loop.run_until_complete(future)</p>
+<p>yieldをawait asyncio.sleep(0)で置き換えた。
+yieldのままだとTypeErrorになる。
+Traceback (most recent call last):
+  File ".\exp.py", line 18, in <module>
+    taskA=asyncio.ensure_future(gen(loop, 'a', 3), loop=loop)
+  File "D:\Python36\lib\asyncio\tasks.py", line 519, in ensure_future
+    raise TypeError('A Future, a coroutine or an awaitable is required')
+TypeError: A Future, a coroutine or an awaitable is required</module></p>
+<p>It is a TypeError if <strong>await</strong> returns anything but an iterator.
+実験。
+def it():
+    yield</p>
+<p>async def co_y():
+    yield</p>
+<p>async def co():
+    pass</p>
+<p><class><class>
+.\exp.py:22: RuntimeWarning: coroutine 'co' was never awaited
+  print(type(co()))
+<class></class></class></class></p>
+<p>async_generator…。async def内でyieldすると違うものになるのね。syntax errorにはできんな。
+自前のメインループにloopを組み込むとすれば
+loop.onceのような関数があると毎フレーム小出しにタスクを消化できるのだが。
+ググってみた。</p>
+<p>https://stackoverflow.com/questions/29868372/python-asyncio-run-event-loop-once</p>
+<p>loop.stop(); loop.run_forever()</p>
+<p>なるほど。
+async def gen(loop, name, count):
+    print(name, loop.time())
+    for i in range(count):
+        print(name, i, loop.time())
+        await asyncio.sleep(0)
+    print(name, 'done')</p>
+<p>taskA=asyncio.ensure_future(gen(loop, 'a', 3), loop=loop)
+taskB=asyncio.ensure_future(gen(loop, 'b', 5), loop=loop)
+future=asyncio.gather(taskA, taskB)</p>
+<p>count=1
+while not future.done():
+    print(count)
+    count+=1
+    # loop one step
+    loop.stop()
+    loop.run_forever()</p>
+<p>print('done')</p>
+<p>1
+a 579281.828
+a 0 579281.828
+b 579281.828
+b 0 579281.828
+2
+a 1 579281.828
+b 1 579281.828
+3
+a 2 579281.828
+b 2 579281.828
+4
+a done
+b 3 579281.828
+5
+b 4 579281.828
+6
+b done
+7
+done</p>
+<p>いいかんじになった。これなら付き合っていけそうだ。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../threejs_setup/" rel="prev" title="threejsとwebsocketを使った開発環境">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../ts_module/" rel="next" title="Typescriptのモジュールでまたはまる">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2017/06/python_asyncio/",
+        disqus_title="Python3\u306easyncio\u306b\u3064\u3044\u3066\u306e\u30e1\u30e2",
+        disqus_identifier="cache/content/posts/2017/06/python_asyncio.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

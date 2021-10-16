@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌</title><link>https://ousttrue.github.io/</link><description>作業記録</description><atom:link href="https://ousttrue.github.io/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:49:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>nikola にしてみる</title><link>https://ousttrue.github.io/posts/2021/fall/nikola/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;また生成システムを変えてみる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/"&gt;https://getnikola.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;init&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; pip install "Nikola[extras]"
+&amp;gt; nikola init .
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href="https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore"&gt;https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore&lt;/a&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# nikola
+.doit.db*
+*.pyc
+/cache/
+/output/
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;conf.py&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# とりあえず &lt;/span&gt;
+&lt;span class="n"&gt;POSTS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.rst"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.txt"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; nikola auto --browser
+&lt;/pre&gt;
+
+&lt;p&gt;なんとなくプレビューできた。
+ええやん。&lt;/p&gt;
+&lt;h2&gt;zola から記事移植&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;POSTS&lt;/code&gt; のパス調整でもうできているのだけど、 &lt;code&gt;frontmatter&lt;/code&gt; の非互換がある。
+それを調べる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/handbook.html#metadata-fields"&gt;https://getnikola.com/handbook.html#metadata-fields&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;taxonomies.tags&lt;/code&gt; を &lt;code&gt;tags&lt;/code&gt; に書き換える&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;小文字強制&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;METADATA_VALUE_MAPPING&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="s2"&gt;"toml"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"tags"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+     &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;github action で gh-pages&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;.github/workflows/nikola.yml&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;こんなもんかな。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Nikola&lt;/span&gt;
+
+&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;push&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;branches&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;nikola&lt;/span&gt;
+
+&lt;span class="n"&gt;jobs&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;runs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;latest&lt;/span&gt;
+    &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="n"&gt;ACTIONS_ALLOW_UNSECURE_COMMANDS&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+    &lt;span class="n"&gt;steps&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;checkout&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="s2"&gt;"Nikola[extras]"&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt;
+        &lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;nikola&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Deploy&lt;/span&gt;
+        &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v3&lt;/span&gt;
+        &lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+          &lt;span class="n"&gt;github_token&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="o"&gt;{{&lt;/span&gt; &lt;span class="n"&gt;secrets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;GITHUB_TOKEN&lt;/span&gt; &lt;span class="o"&gt;}}&lt;/span&gt;
+          &lt;span class="n"&gt;publish_dir&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;./&lt;/span&gt;&lt;span class="n"&gt;output&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/fall/nikola/</guid><pubDate>Sat, 16 Oct 2021 00:00:00 GMT</pubDate></item><item><title>Squirrel</title><link>https://ousttrue.github.io/posts/2021/fall/squirrel/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;lua のコード解読しててふお思い出した Squirrel 。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.squirrel-lang.org/"&gt;http://www.squirrel-lang.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/albertodemichelis/squirrel"&gt;https://github.com/albertodemichelis/squirrel&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;こっちの方が &lt;code&gt;c++&lt;/code&gt; なので読みやすいかも。&lt;/p&gt;
+&lt;h2&gt;3.1&lt;/h2&gt;
+&lt;p&gt;2016 年に &lt;code&gt;3.1&lt;/code&gt; が出てからバージョンは変わっていないぽい。
+更新はあるポイ？細々という様子。&lt;/p&gt;
+&lt;h2&gt;tool&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;formatter&lt;/code&gt;, &lt;code&gt;language-server&lt;/code&gt;, &lt;code&gt;debug adapter&lt;/code&gt; あるのか。&lt;/p&gt;&lt;/div&gt;</description><category>sq</category><guid>https://ousttrue.github.io/posts/2021/fall/squirrel/</guid><pubDate>Mon, 27 Sep 2021 00:00:00 GMT</pubDate></item><item><title>sphinx + MyST よいのでは</title><link>https://ousttrue.github.io/posts/2021/fall/sphinx_myst/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;Gizmo を作る過程で GeometryShader からやりなおしていたら、記憶が飛んでいたので
+忘れてもいいように記録しておくことにした。&lt;/p&gt;
+&lt;p&gt;旧 &lt;code&gt;MinTriangle&lt;/code&gt; リポジトリを作り直し。&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://ousttrue.github.io/d3d11_samples/"&gt;http://ousttrue.github.io/d3d11_samples/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;MyST なかなかよい&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;reStructuredText&lt;/code&gt; わりと苦手なので &lt;code&gt;sphinx&lt;/code&gt; でも Markdown を使いたい派なのだが、
+&lt;a href="https://myst-parser.readthedocs.io/en/latest/index.html"&gt;MyST&lt;/a&gt; なる Sphinx 向け markdown 拡張ができていた。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/Tachy_Pochy/items/53866eea43d0ad93ea1d"&gt;Sphinx で使える Markdown 方言 'MyST'&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;sphinx directive の指定の仕方がシンプルで下のような感じ。markdown のシンタックスハイライトやフォーマッターに乗れるのでよい。&lt;/p&gt;
+&lt;pre&gt;
+```{image} ./basic_pipeline.jpg
+:width: 320px
+:height: 320px
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;```{toctree}
+basic/create_window
+basic/create_device
+basic/create_swapchain
+basic/render_target
+basic/compile_shader
+basic/basic_pipeline
+&lt;/pre&gt;
+
+
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;sphinx-autobuild&lt;/code&gt; と github-actions による &lt;code&gt;gh-pages&lt;/code&gt; デプロイを仕込んだらかなりよくなった。&lt;/p&gt;
+&lt;h2&gt;memo&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/wpilibsuite/sphinxext-remoteliteralinclude"&gt;https://github.com/wpilibsuite/sphinxext-remoteliteralinclude&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;git の revision と path 指定して include できないかしら。
+サンプルコードにちょこちょこっと解説を書きたいのだが、サンプルコードが進化する場合に &lt;code&gt;literalinclude&lt;/code&gt; だと場所がずれるのだ。&lt;/p&gt;&lt;/div&gt;</description><category>sphinx</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/fall/sphinx_myst/</guid><pubDate>Sat, 11 Sep 2021 00:00:00 GMT</pubDate></item><item><title>gizmo のライブラリを整備したい</title><link>https://ousttrue.github.io/posts/2021/fall/gizmo/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;去年手を付けたのだが、放棄されていたのを発掘した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/gizmesh"&gt;https://github.com/ousttrue/gizmesh&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;tiny gizmo を改造しようとしてて、動かなくなっている。&lt;/p&gt;
+&lt;h2&gt;既存の gizmo libraries&lt;/h2&gt;
+&lt;h3&gt;tinygizmo&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/ddiakopoulos/tinygizmo"&gt;https://github.com/ddiakopoulos/tinygizmo&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;im3d&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/john-chapman/im3d"&gt;https://github.com/john-chapman/im3d&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;memo&lt;/h2&gt;
+&lt;h3&gt;20210921&lt;/h3&gt;
+&lt;p&gt;tinygizmo の改造を最初からやりなおし&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/tinygizmo/tree/custom"&gt;https://github.com/ousttrue/tinygizmo/tree/custom&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;example を整理する。
+* glfw 依存を最小化して、 include が伝わらないように隔離
+* gizmo と OpenGL を分離&lt;/p&gt;&lt;/div&gt;</description><category>3d</category><category>c++</category><guid>https://ousttrue.github.io/posts/2021/fall/gizmo/</guid><pubDate>Fri, 10 Sep 2021 00:00:00 GMT</pubDate></item><item><title>法線マップやってみる</title><link>https://ousttrue.github.io/posts/2021/summer/normalmap/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;glTFViewerの実装がてら法線マップの実装をやってみる。
+&lt;code&gt;OpenGL 4.0 Shading Language Cookbook&lt;/code&gt; を参考に進めた。&lt;/p&gt;
+&lt;h2&gt;法線mapとTangentを供給する&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet"&gt;https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet&lt;/a&gt; をサンプルモデルとした。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;glActiveTexture&lt;/code&gt; がうまくいかず難航する。
+以下のようにして、無理やり解決。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#version 400&lt;/span&gt;
+&lt;span class="cp"&gt;#extension GL_ARB_shading_language_420pack : enable&lt;/span&gt;
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;binding&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mo"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;sampler2D&lt;/span&gt; &lt;span class="n"&gt;Tex0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;binding&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;sampler2D&lt;/span&gt; &lt;span class="n"&gt;Tex1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;すべての sampler2D が 0 にバインディングされる挙動だった。
+&lt;code&gt;#version 420&lt;/code&gt; はうまくいかなかったので断念。
+エラーは出ないが、何もレンダリングされなくなった。&lt;/p&gt;
+&lt;h2&gt;Tangent が格納されていないので生成する&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/KhronosGroup/glTF/tree/master/specification/2.0"&gt;https://github.com/KhronosGroup/glTF/tree/master/specification/2.0&lt;/a&gt; に以下のよう書いてある。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Implementation note: When tangents are not specified, client implementations should calculate tangents using default MikkTSpace algorithms. For best results, the mesh triangles should also be processed using default MikkTSpace algorithms.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="https://github.com/mmikk/MikkTSpace"&gt;https://github.com/mmikk/MikkTSpace&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;さくっと dll を作成して、 luajit から呼びだしてみた。
+&lt;code&gt;indices&lt;/code&gt; &lt;code&gt;POSITION&lt;/code&gt; &lt;code&gt;NORMAL&lt;/code&gt; &lt;code&gt;TEXCOORD0&lt;/code&gt; を入力して &lt;code&gt;TANGENT&lt;/code&gt; を出力する。
+わりと適当で動く &lt;code&gt;luajit ffi&lt;/code&gt; 恐るべし。
+さすがに C の方に呼びだし回数を減らすラッパーを作ったほうが速そうだが、動かすだけなら問題なし。&lt;/p&gt;
+&lt;h2&gt;Shader&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;OpenGL 4.0 Shading Language Cookbook&lt;/code&gt; の phong shading を省略して法線だけ確認。
+&lt;code&gt;2倍して1引く&lt;/code&gt; を補った。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#version 400&lt;/span&gt;
+&lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;mat4&lt;/span&gt; &lt;span class="n"&gt;MVP&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;mat4&lt;/span&gt; &lt;span class="n"&gt;ModelViewMatrix&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;mat3&lt;/span&gt; &lt;span class="n"&gt;NormalMatrix&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;LightDirection&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;location&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mo"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;VertexPosition&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;location&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;VertexNormal&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;location&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec2&lt;/span&gt; &lt;span class="n"&gt;VertexTexCoord&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;location&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec4&lt;/span&gt; &lt;span class="n"&gt;VertexTangent&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;LightDir&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;ViewDir&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;vec2&lt;/span&gt; &lt;span class="n"&gt;TexCoord&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;Debug&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;normal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NormalMatrix&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;VertexNormal&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;tangent&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NormalMatrix&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VertexTangent&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+  &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;binormal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cross&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tangent&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;VertexTangent&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="kt"&gt;mat3&lt;/span&gt; &lt;span class="n"&gt;toObjectLocal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+      &lt;span class="kt"&gt;mat3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tangent&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;binormal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tangent&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;binormal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="n"&gt;tangent&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;binormal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;pos&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ModelViewMatrix&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="kt"&gt;vec4&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VertexPosition&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;1.0&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+  &lt;span class="n"&gt;LightDir&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;toObjectLocal&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;LightDirection&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="n"&gt;ViewDir&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;toObjectLocal&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pos&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="n"&gt;TexCoord&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;VertexTexCoord&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;Debug&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VertexTangent&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="nb"&gt;gl_Position&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MVP&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="kt"&gt;vec4&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VertexPosition&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;1.0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#version 400&lt;/span&gt;
+&lt;span class="cp"&gt;#extension GL_ARB_shading_language_420pack : enable&lt;/span&gt;
+
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;binding&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mo"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;sampler2D&lt;/span&gt; &lt;span class="n"&gt;Tex0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;layout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;binding&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;uniform&lt;/span&gt; &lt;span class="kt"&gt;sampler2D&lt;/span&gt; &lt;span class="n"&gt;Tex1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;LightDir&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;ViewDir&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec2&lt;/span&gt; &lt;span class="n"&gt;TexCoord&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;Debug&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;out&lt;/span&gt; &lt;span class="kt"&gt;vec4&lt;/span&gt; &lt;span class="n"&gt;FragColor&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kt"&gt;vec4&lt;/span&gt; &lt;span class="n"&gt;texColor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;texture2D&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Tex0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;TexCoord&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="kt"&gt;vec4&lt;/span&gt; &lt;span class="n"&gt;normal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;texture2D&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Tex1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;TexCoord&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// FragColor = vec4(Debug, 1);&lt;/span&gt;
+
+  &lt;span class="kt"&gt;float&lt;/span&gt; &lt;span class="n"&gt;intensity&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;max&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LightDir&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xyz&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="mo"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="kt"&gt;vec3&lt;/span&gt; &lt;span class="n"&gt;color&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;vec3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;intensity&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="n"&gt;FragColor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;vec4&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;glTF の シェーダー では、 &lt;code&gt;mat3&lt;/code&gt; を fragment shader に送りこんでいた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/bwasty/gltf-viewer/tree/master/src/shaders"&gt;https://github.com/bwasty/gltf-viewer/tree/master/src/shaders&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;tangent space でライティングするという概念は同じらしい。&lt;/p&gt;&lt;/div&gt;</description><category>opengl</category><guid>https://ousttrue.github.io/posts/2021/summer/normalmap/</guid><pubDate>Sun, 05 Sep 2021 00:00:00 GMT</pubDate></item><item><title>Blender-3.0</title><link>https://ousttrue.github.io/posts/2021/summer/blender3/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;Blender-3.0 が面白そうだし bender 活動を再開しよう。
+&lt;code&gt;Gingerbread Man&lt;/code&gt; を作りなおそう。&lt;/p&gt;
+&lt;h2&gt;Blender-3.0 alpha&lt;/h2&gt;
+&lt;h3&gt;build&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/bpy_module"&gt;https://github.com/ousttrue/bpy_module&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;build より subversion の更新が遥かに長い。
+embree や llvm までいろんなもの入っているな。&lt;/p&gt;
+&lt;p&gt;luajit を仕込んだら ffi で色々な関数にアクセスできるかもしれないな。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/scoder/lupa"&gt;https://github.com/scoder/lupa&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;python-3.9&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Blender-2.93&lt;/code&gt; で既に python-3.9 になっていた。
+python-3.9 の型ヒント付きで addon 書くで。
+Blender に合わせて python のバージョンを上げるスタイル。&lt;/p&gt;
+&lt;h3&gt;asset browser&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://ameblo.jp/kay-nea/entry-12688563203.html"&gt;Blender 3.0 Alphaを触ってみた　【　Blender 3.0 Alpha　】&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;pose library&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.youtube.com/watch?v=TNbdj6qbrAg"&gt;https://www.youtube.com/watch?v=TNbdj6qbrAg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;USD&lt;/h3&gt;
+&lt;p&gt;オープンソースで簡単なオーサリングができるツールがあるといいのだけど、現状 Houdini の Solaris しか存在しない？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://zenn.dev/remiria/articles/a4c8e4a80caec7"&gt;Blender 3.0 のUSD対応状況を調べる(1)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;addon&lt;/h2&gt;
+&lt;p&gt;作りかけで放置している&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/io_scene_yup"&gt;https://github.com/ousttrue/io_scene_yup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/pyimpex"&gt;https://github.com/ousttrue/pyimpex&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>blender</category><guid>https://ousttrue.github.io/posts/2021/summer/blender3/</guid><pubDate>Mon, 30 Aug 2021 00:00:00 GMT</pubDate></item><item><title>NvimTexture開発開始</title><link>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;code&gt;Nvy&lt;/code&gt; の改造をしてだいたい構造を理解した。
+&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;msgpack-rpc-asio&lt;/a&gt; をオーバーホールして使えるようになった。
+ということで一から組みなおすで。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/NvimTexture"&gt;https://github.com/ousttrue/NvimTexture&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;部品を疎結合にする&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Window(HWND, resize, keyboard, mouse event)&lt;/li&gt;
+&lt;li&gt;NvimPipe(stdin, stdout, msgpack-rpc transport)&lt;/li&gt;
+&lt;li&gt;EventDispatcher(WindowEvent と MsgPackRPCMessage の処理)&lt;/li&gt;
+&lt;li&gt;D3D DeviceManager&lt;/li&gt;
+&lt;li&gt;D3D Renderer(RenderTarget)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;            +--------+
++----+ pipe |Renderer|redraw
+|nvim|-----&amp;gt;+--------+
+|    |&amp;lt;-----+------+
++----+      |Window|resize, keyboard, mouse event
+            +------+
+&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;MainLoop&lt;/li&gt;
+&lt;li&gt;NvimMsgPackRPC Read-Dispatch Loop&lt;/li&gt;
+&lt;li&gt;RenderLoop(30FPS)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Sample&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;FullWindow&lt;/li&gt;
+&lt;li&gt;imgui と混在させる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210910&lt;/h2&gt;
+&lt;p&gt;それなりに動くようになった。
+key-logger や msgpack-rpc の通信ログを横に表示できるようにしたい。&lt;/p&gt;&lt;/div&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</guid><pubDate>Sun, 22 Aug 2021 00:00:00 GMT</pubDate></item><item><title>Asio と Coroutine (c++20)</title><link>https://ousttrue.github.io/posts/2021/summer/update_asio/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;非同期ライブラリ ASIO &lt;/p&gt;
+&lt;p&gt;&lt;a href="http://think-async.com/Asio/index.html"&gt;http://think-async.com/Asio/index.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;の知識を &lt;code&gt;c++20&lt;/code&gt; 時代にアップデート。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/chriskohlhoff/talking-async"&gt;https://github.com/chriskohlhoff/talking-async&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;に動画と動画のサンプルコードが有る。&lt;/p&gt;
+&lt;h2&gt;compiler を最新にする&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;ASIO_HAS_CO_AWAIT&lt;/code&gt; が必要でこれが有効になるには新しいコンパイラが必要。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;// asio/detail/config.hpp`&lt;/span&gt;
+
+&lt;span class="c1"&gt;// Support the co_await keyword on compilers known to allow it.&lt;/span&gt;
+&lt;span class="cp"&gt;#if !defined(ASIO_HAS_CO_AWAIT)&lt;/span&gt;
+&lt;span class="cp"&gt;# if !defined(ASIO_DISABLE_CO_AWAIT)&lt;/span&gt;
+&lt;span class="cp"&gt;#  if defined(ASIO_MSVC)&lt;/span&gt;
+&lt;span class="cp"&gt;#   if (_MSC_VER &amp;gt;= 1928) &amp;amp;&amp;amp; (_MSVC_LANG &amp;gt;= 201705) &amp;amp;&amp;amp; !defined(__clang__)&lt;/span&gt;
+&lt;span class="cp"&gt;#    define ASIO_HAS_CO_AWAIT 1&lt;/span&gt;
+&lt;span class="cp"&gt;#   elif (_MSC_FULL_VER &amp;gt;= 190023506)&lt;/span&gt;
+&lt;span class="cp"&gt;#    if defined(_RESUMABLE_FUNCTIONS_SUPPORTED)&lt;/span&gt;
+&lt;span class="cp"&gt;#     define ASIO_HAS_CO_AWAIT 1&lt;/span&gt;
+&lt;span class="cp"&gt;#    endif &lt;/span&gt;&lt;span class="c1"&gt;// defined(_RESUMABLE_FUNCTIONS_SUPPORTED)&lt;/span&gt;
+&lt;span class="cp"&gt;#   endif &lt;/span&gt;&lt;span class="c1"&gt;// (_MSC_FULL_VER &amp;gt;= 190023506)&lt;/span&gt;
+&lt;span class="cp"&gt;#  elif defined(__clang__)&lt;/span&gt;
+&lt;span class="cp"&gt;#   if (__cplusplus &amp;gt;= 201703) &amp;amp;&amp;amp; (__cpp_coroutines &amp;gt;= 201703)&lt;/span&gt;
+&lt;span class="cp"&gt;#    if __has_include(&amp;lt;experimental/coroutine&amp;gt;)&lt;/span&gt;
+&lt;span class="cp"&gt;#     define ASIO_HAS_CO_AWAIT 1&lt;/span&gt;
+&lt;span class="cp"&gt;#    endif &lt;/span&gt;&lt;span class="c1"&gt;// __has_include(&amp;lt;experimental/coroutine&amp;gt;)&lt;/span&gt;
+&lt;span class="cp"&gt;#   endif &lt;/span&gt;&lt;span class="c1"&gt;// (__cplusplus &amp;gt;= 201703) &amp;amp;&amp;amp; (__cpp_coroutines &amp;gt;= 201703)&lt;/span&gt;
+&lt;span class="cp"&gt;#  elif defined(__GNUC__)&lt;/span&gt;
+&lt;span class="cp"&gt;#   if (__cplusplus &amp;gt;= 201709) &amp;amp;&amp;amp; (__cpp_impl_coroutine &amp;gt;= 201902)&lt;/span&gt;
+&lt;span class="cp"&gt;#    if __has_include(&amp;lt;coroutine&amp;gt;)&lt;/span&gt;
+&lt;span class="cp"&gt;#     define ASIO_HAS_CO_AWAIT 1&lt;/span&gt;
+&lt;span class="cp"&gt;#    endif &lt;/span&gt;&lt;span class="c1"&gt;// __has_include(&amp;lt;coroutine&amp;gt;)&lt;/span&gt;
+&lt;span class="cp"&gt;#   endif &lt;/span&gt;&lt;span class="c1"&gt;// (__cplusplus &amp;gt;= 201709) &amp;amp;&amp;amp; (__cpp_impl_coroutine &amp;gt;= 201902)&lt;/span&gt;
+&lt;span class="cp"&gt;#  endif &lt;/span&gt;&lt;span class="c1"&gt;// defined(__GNUC__)&lt;/span&gt;
+&lt;span class="cp"&gt;# endif &lt;/span&gt;&lt;span class="c1"&gt;// !defined(ASIO_DISABLE_CO_AWAIT)&lt;/span&gt;
+&lt;span class="cp"&gt;#endif &lt;/span&gt;&lt;span class="c1"&gt;// !defined(ASIO_HAS_CO_AWAIT)&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;VC2019(20210818最新版いける)&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/"&gt;https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;C++20 coroutines in Visual Studio 2019 version 16.8.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;16.7.3&lt;/code&gt; だめ&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;16.11.1&lt;/code&gt; 動いた。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# CMakeListx.txt
+set(TARGET_NAME pingpong)
+add_executable(&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;TARGET_NAME&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; main.cpp)
+target_link_libraries(&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;TARGET_NAME&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; PRIVATE asio)
+set_property(TARGET &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;TARGET_NAME&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; PROPERTY CXX_STANDARD 20) # 必要
+target_compile_options(&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;TARGET_NAME&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; PUBLIC $&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;$&lt;span class="nt"&gt;&amp;lt;C&lt;/span&gt;&lt;span class="err"&gt;_COMPILER_ID:MSVC&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;:/await&amp;gt;) # 必要
+target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#if defined(ASIO_HAS_STD_COROUTINE)&lt;/span&gt;
+&lt;span class="cp"&gt;# include &amp;lt;coroutine&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#else &lt;/span&gt;&lt;span class="c1"&gt;// defined(ASIO_HAS_STD_COROUTINE)&lt;/span&gt;
+&lt;span class="cp"&gt;# include &amp;lt;experimental/coroutine&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#endif &lt;/span&gt;&lt;span class="c1"&gt;// defined(ASIO_HAS_STD_COROUTINE)&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;LLVM-12(うまくいかず。追加のコマンドライン引数か)&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://clang.llvm.org/cxx_status.html"&gt;https://clang.llvm.org/cxx_status.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;LLVM-12 だと、&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt; 'C:\Program Files\LLVM\bin\clang.exe' -v
+clang version 12.0.1
+Target: x86_64-pc-windows-msvc
+Thread model: posix
+InstalledDir: C:\Program Files\LLVM\bin
+&lt;/pre&gt;
+
+&lt;p&gt;わからん。&lt;/p&gt;
+&lt;h2&gt;コード&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/awaitable.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/co_spawn.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/detached.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/experimental/as_tuple.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/io_context.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/ip/tcp.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/read.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/streambuf.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/system_timer.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/use_awaitable.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/use_future.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio/write.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;co_spawn で awaitable を起動する&lt;/h3&gt;
+&lt;p&gt;coroutine は 戻り値の型が &lt;code&gt;asio::awaitable&amp;lt;T&amp;gt;&lt;/code&gt; である必要がある。この関数の中で &lt;code&gt;co_await&lt;/code&gt;, &lt;code&gt;co_yield&lt;/code&gt;, &lt;code&gt;co_return&lt;/code&gt; が使える。
+coroutine は lambda でもよいので、下記のようにできる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;co&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;co_return&lt;/span&gt; &lt;span class="s"&gt;"result"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;};&lt;/span&gt;
+  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+      &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;co_spawn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client_context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_executor&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;co&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_future&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// coroutine 登録&lt;/span&gt;
+  &lt;span class="n"&gt;client_context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt; &lt;span class="c1"&gt;// ループを回す&lt;/span&gt;
+  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;pong&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt; &lt;span class="c1"&gt;// future から結果を得る&lt;/span&gt;
+  &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"pong: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;pong&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;asio::use_future を使うことで返り値 &lt;code&gt;std::future&lt;/code&gt; になるので &lt;code&gt;co_return&lt;/code&gt; の値を得ることも可能。
+結果に興味がないときは、&lt;code&gt;asio::detached&lt;/code&gt; でよい。
+Completion Handler というコールバックなので、 promise に set_value する関数を自前で書いたりしてもよい様子。
+&lt;code&gt;asio::use_awaitable&lt;/code&gt; で &lt;code&gt;co_await&lt;/code&gt; するのも可能。&lt;/p&gt;
+&lt;p&gt;返り値が &lt;code&gt;std::tuple&amp;lt;asio::error_code, RESULT&amp;gt;&lt;/code&gt; になるハンドラ。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;constexpr&lt;/span&gt; &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;use_nothrow_awaitable&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+    &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;experimental&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;as_tuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;client side&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;timer&lt;/li&gt;
+&lt;li&gt;connect&lt;/li&gt;
+&lt;li&gt;send(ping)&lt;/li&gt;
+&lt;li&gt;receive(pong)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;co&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;client_context&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;]()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[client]wait 1000ms..."&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;system_timer&lt;/span&gt; &lt;span class="n"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;expires_from_now&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="n"&gt;ms&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;async_wait&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[client]connect: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;ep&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"..."&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;async_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[client]connected"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[client]ping..."&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt; &lt;span class="n"&gt;ping&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"ping"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;write_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;async_write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;buffer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ping&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+                                                 &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;assert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;write_size&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[client]read..."&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;streambuf&lt;/span&gt; &lt;span class="n"&gt;buf&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;read_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;async_read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;buf&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;transfer_at_least&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;co_return&lt;/span&gt; &lt;span class="nf"&gt;to_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;buf&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;server side&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;server&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;_context&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;acceptor&lt;/span&gt; &lt;span class="n"&gt;_acceptor&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;_context&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;_acceptor&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+  &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+
+  &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[server]listen: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;ep&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"..."&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;_acceptor&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;
+    &lt;span class="n"&gt;_acceptor&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bind&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;_acceptor&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+
+    &lt;span class="c1"&gt;// coroutineを起動する&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;ex&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;_context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_executor&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;co_spawn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ex&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;accept_loop&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;detached&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;accept_loop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+    &lt;span class="c1"&gt;// 単なるループになって再起が不要に&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+      &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;_acceptor&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;async_accept&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;use_nothrow_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+      &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[server]accept error: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+      &lt;span class="p"&gt;}&lt;/span&gt;
+      &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[server]accepted"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+      &lt;span class="c1"&gt;// coroutineを起動する&lt;/span&gt;
+      &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;ex&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;_context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_executor&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+      &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;co_spawn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ex&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;move&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;detached&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+    &lt;span class="c1"&gt;// echo server ぽい ping pong&lt;/span&gt;
+    &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;streambuf&lt;/span&gt; &lt;span class="n"&gt;buf&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;e1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;read_size&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;async_read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;buf&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;transfer_at_least&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;use_nothrow_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;pong&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;to_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;buf&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[server]ping: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;pong&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;pong&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="s"&gt;"pong"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;e2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;write_size&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;async_write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;buffer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pong&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;use_nothrow_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"[server]pong: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;write_size&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;ep&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;address&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;from_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"127.0.0.1"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+                                    &lt;span class="n"&gt;PORT&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// server&lt;/span&gt;
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="n"&gt;server_context&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="nf"&gt;server&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;server_context&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="kr"&gt;thread&lt;/span&gt; &lt;span class="n"&gt;server_thread&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;server_context&lt;/span&gt;&lt;span class="p"&gt;]()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;server_context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt; &lt;span class="p"&gt;});&lt;/span&gt; &lt;span class="c1"&gt;// thread でループを回す。&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;ループ(io_context)が隠蔽されていないのが良いですね。&lt;/p&gt;
+&lt;h2&gt;asio api&lt;/h2&gt;
+&lt;h3&gt;io_context&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;c++23&lt;/code&gt; の &lt;code&gt;Networking TS&lt;/code&gt; に向けた変更？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://amedama1x1.hatenablog.com/entry/2016/04/05/205340"&gt;Networking TS の Boost.Asio からの変更点 - その 1: Associated allocator&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://amedama1x1.hatenablog.com/entry/2016/08/20/222326"&gt;Networking TS の Boost.Asio からの変更点 - その 3: Executor&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;io_service は Executor と ExecutionContext という概念に分割されたことで, io_context に名前が変わりました&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;Boost 1.66&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://amedama1x1.hatenablog.com/entry/2017/12/09/102405"&gt;Networking TS の Boost.Asio からの変更点 - その 4: Associated Executor&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;単純に io_service を io_context に追きかえるだけで動いた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;asio.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// 全てのタスクが消化されるまでブロックする。&lt;/span&gt;
+&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+
+&lt;span class="c1"&gt;// スレッド上で実行する例&lt;/span&gt;
+&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="kr"&gt;thread&lt;/span&gt; &lt;span class="n"&gt;run_thread&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;](){&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt; &lt;span class="p"&gt;});&lt;/span&gt;
+
+&lt;span class="c1"&gt;// 止める&lt;/span&gt;
+&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="n"&gt;run_thread&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;endpoint&lt;/h3&gt;
+&lt;p&gt;ipaddress + port&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;asip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt; &lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;address&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;from_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"127.0.0.1"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="mi"&gt;1234&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;tcp connect&lt;/h3&gt;
+&lt;p&gt;socket&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;coontext&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;basic&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;on_connect&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[](&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;error_code&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ec&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ec&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"error: "&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;ec&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;"connected"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;};&lt;/span&gt;
+  &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;async_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;on_connect&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;c++11 future&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;std::future に対して &lt;code&gt;continue_with&lt;/code&gt; する手段を用意しないと、これ単体では使いづらい&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;future&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;connect_future&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="c1"&gt;// move するのが大変な場合があるので手抜き&lt;/span&gt;
+  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;make_shared&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;promise&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+  &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;get_future&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+
+  &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;async_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;](&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;error_code&lt;/span&gt; &lt;span class="n"&gt;ec&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ec&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="c1"&gt;// future value&lt;/span&gt;
+      &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;set_value&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;});&lt;/span&gt;
+
+  &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;c++20 coroutine&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;有望&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;co&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;coontext&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;async_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;tcp listen&lt;/h3&gt;
+&lt;h3&gt;raed_async&lt;/h3&gt;
+&lt;h3&gt;write_async&lt;/h3&gt;
+&lt;h2&gt;coroutine 詳細&lt;/h2&gt;
+&lt;p&gt;asio の coroutine を学んでいたらできないことが出てきた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc_call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"add"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;自前の Awaiter が必要？&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;rpc_call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="n"&gt;as&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;io_context&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;endpoint&lt;/span&gt; &lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+  &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connect_async&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ep&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// msgpack-rpc&lt;/span&gt;
+  &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;vector&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;uint8_t&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;make_request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;as&lt;/span&gt;&lt;span class="p"&gt;...);&lt;/span&gt;
+  &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;write_async&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;socket&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;use_awaitable&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt; 
+
+  &lt;span class="c1"&gt;// ここで実行の流れが切れる&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// ?&lt;/span&gt;
+  &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;promise&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_future&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;co_await std::future&lt;/code&gt; できるぽいが, &lt;code&gt;asio&lt;/code&gt; と混ぜてうまくいくのだろうか。&lt;/p&gt;
+&lt;h2&gt;c++20 coroutine&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://cpprefjp.github.io/lang/cpp20/coroutines.html"&gt;https://cpprefjp.github.io/lang/cpp20/coroutines.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html"&gt;https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/tan-y/items/ae54153ec3eb42f80638"&gt;C++ でコルーチン (async/await 準備編)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/tan-y/items/6033ab9e7298999bf214#await_ready"&gt;C++ で async/await をする&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;内部で &lt;code&gt;co_await&lt;/code&gt;, &lt;code&gt;co_yield&lt;/code&gt;, &lt;code&gt;co_return&lt;/code&gt; の何れかを使う関数は coroutine になる。
+返り値の型から promise_type を得られるようにする必要がある。&lt;/p&gt;
+&lt;p&gt;初期化は &lt;code&gt;promise_type::get_return_object&lt;/code&gt; から始まるぽい。&lt;/p&gt;
+&lt;h3&gt;generator の例&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;generator&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;promise_type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;coroutine_handle&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;promise_type&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+  &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;promise_type&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;get_return_object&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;generator&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;from_promise&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;)};&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;};&lt;/span&gt;
+  &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;coroutine_handle&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;promise_type&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;private&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="n"&gt;coro&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;generator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;coro&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;promise_type&lt;/span&gt; &lt;span class="n"&gt;promise&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// 戻り値型オブジェクトの初期化&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;promise&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_return_object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;Asio の実装&lt;/h2&gt;
+&lt;h3&gt;asio::awaitable&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;asio::awaitable&amp;lt;T&amp;gt;&lt;/code&gt; が CoroutineTrait の実装。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;include/asio/awaitable.hpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;any_io_executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ASIO_NODISCARD&lt;/span&gt; &lt;span class="n"&gt;awaitable&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="c1"&gt;/// The type of the awaited value.&lt;/span&gt;
+  &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;value_type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+  &lt;span class="c1"&gt;/// The executor type that will be used for the coroutine.&lt;/span&gt;
+  &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt; &lt;span class="n"&gt;executor_type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+  &lt;span class="c1"&gt;/// Default constructor.&lt;/span&gt;
+  &lt;span class="k"&gt;constexpr&lt;/span&gt; &lt;span class="nf"&gt;awaitable&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;noexcept&lt;/span&gt;
+    &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;nullptr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="c1"&gt;/// Move constructor.&lt;/span&gt;
+  &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;other&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;noexcept&lt;/span&gt;
+    &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;other&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;nullptr&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="c1"&gt;/// Destructor&lt;/span&gt;
+  &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;destroy&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="c1"&gt;/// Checks if the awaitable refers to a future result.&lt;/span&gt;
+  &lt;span class="kt"&gt;bool&lt;/span&gt; &lt;span class="n"&gt;valid&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;noexcept&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;!!&lt;/span&gt;&lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="cp"&gt;#if !defined(GENERATING_DOCUMENTATION)&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// Support for co_await keyword.&lt;/span&gt;
+  &lt;span class="kt"&gt;bool&lt;/span&gt; &lt;span class="n"&gt;await_ready&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;noexcept&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;false&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// Support for co_await keyword.&lt;/span&gt;
+  &lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;U&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;await_suspend&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+      &lt;span class="n"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;coroutine_handle&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;U&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;push_frame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;promise&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// Support for co_await keyword.&lt;/span&gt;
+  &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;await_resume&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;static_cast&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;)).&lt;/span&gt;&lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="cp"&gt;#endif &lt;/span&gt;&lt;span class="c1"&gt;// !defined(GENERATING_DOCUMENTATION)&lt;/span&gt;
+
+&lt;span class="k"&gt;private&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;friend&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_thread&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;friend&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// Not copy constructible or copy assignable.&lt;/span&gt;
+  &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="k"&gt;operator&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+  &lt;span class="c1"&gt;// Construct the awaitable from a coroutine's frame object.&lt;/span&gt;
+  &lt;span class="k"&gt;explicit&lt;/span&gt; &lt;span class="nf"&gt;awaitable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;*&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="n"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;*&lt;/span&gt; &lt;span class="n"&gt;frame_&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;promise_type&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;include/asio/impl/awaitable.hpp&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;// promise_type&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;# if defined(ASIO_HAS_STD_COROUTINE)&lt;/span&gt;
+
+&lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+&lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="n"&gt;Args&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;coroutine_traits&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Args&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;promise_type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="c1"&gt;// namespace std&lt;/span&gt;
+
+&lt;span class="cp"&gt;# else &lt;/span&gt;&lt;span class="c1"&gt;// defined(ASIO_HAS_STD_COROUTINE)&lt;/span&gt;
+
+&lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;experimental&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+&lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;typename&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt; &lt;span class="n"&gt;Args&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;coroutine_traits&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Args&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;asio&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;detail&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;promise_type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+&lt;span class="p"&gt;}}&lt;/span&gt; &lt;span class="c1"&gt;// namespace std::experimental&lt;/span&gt;
+
+&lt;span class="cp"&gt;# endif &lt;/span&gt;&lt;span class="c1"&gt;// defined(ASIO_HAS_STD_COROUTINE)&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;asio::detail::awaitable_frame&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;template&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="n"&gt;awaitable_frame_base&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;get_return_object&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;coro_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;coroutine_handle&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;awaitable_frame&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;::&lt;/span&gt;&lt;span class="n"&gt;from_promise&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;awaitable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Executor&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+  &lt;span class="p"&gt;};&lt;/span&gt;
+
+  &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;return_void&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+
+  &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;get&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;caller_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;nullptr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;rethrow_exception&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>asio</category><category>cpp</category><guid>https://ousttrue.github.io/posts/2021/summer/update_asio/</guid><pubDate>Sun, 15 Aug 2021 00:00:00 GMT</pubDate></item><item><title>nvim frontend nvy</title><link>https://ousttrue.github.io/posts/2021/summer/nvy/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;よさげなレポジトリを発見した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/RMichelsen/Nvy"&gt;https://github.com/RMichelsen/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;だいぶ前に作ろうとして頓挫した&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/nvim-dx"&gt;https://github.com/ousttrue/nvim-dx&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;の完成形。
+どこがうまくいかなかったのか忘れてしまったが。&lt;/p&gt;
+&lt;h3&gt;改造&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/Nvy"&gt;https://github.com/ousttrue/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] RenderTarget に対して Nvim をレンダリングする&lt;/li&gt;
+&lt;li&gt;[x] nvim の IO を &lt;a href="https://think-async.com/Asio/#"&gt;https://think-async.com/Asio/#&lt;/a&gt; にのせる&lt;/li&gt;
+&lt;li&gt;[ ] imgui と合体する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210815&lt;/h2&gt;
+&lt;p&gt;MsgPack-RPC のバックエンドに昔作った&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;https://github.com/ousttrue/msgpack-rpc-asio&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;におきかえる。&lt;/p&gt;
+&lt;p&gt;さらに、これのシリアライザーを自前の &lt;a href="https://github.com/ousttrue/msgpackpp"&gt;https://github.com/ousttrue/msgpackpp&lt;/a&gt; におきかえる。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CMake 化&lt;/li&gt;
+&lt;li&gt;RPC を &lt;code&gt;c++20&lt;/code&gt; 化 (co_await)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;で、最初の nvim 初期化を&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;api_info&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_get_api_info"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notity&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_set_var"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"nvy"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_eval"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;"stdpath('config')"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="c1"&gt;// initialize&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notify&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_ui_attach"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;on_message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;dispatcher&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;のように書けるようにして整理する。&lt;/p&gt;
+&lt;h2&gt;20210829&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] MsgPack-RPC のバックエンドを置きかえた&lt;/li&gt;
+&lt;li&gt;[x] logger に RPC の内容を JSON 化して表示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;だいたいリファクタリングが終わって改造しやすい状態になった。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] &lt;code&gt;&amp;lt;C-/&amp;gt;&lt;/code&gt; できるようにする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を実装できた。
+特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;""&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",["&amp;lt;C-/&amp;gt;"]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;h3&gt;修正が必要&lt;/h3&gt;
+&lt;p&gt;非control時に&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",[""]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;GetKeyState&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VK_CONTROL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="c1"&gt;// C-/&lt;/span&gt;
+      &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;"/"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;なるほど。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ousttrue.github.io/posts/2021/summer/nvy/@/posts/2021/summer/nvimtexture.md"&gt;NvimTexture&lt;/a&gt; へ続く&lt;/p&gt;
+&lt;h2&gt;20210829  太字がずれる？&lt;/h2&gt;&lt;/div&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvy/</guid><pubDate>Sat, 07 Aug 2021 00:00:00 GMT</pubDate></item><item><title>Lua Language Server 解読</title><link>https://ousttrue.github.io/posts/2021/summer/lua_language_server/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/sumneko/lua-language-server"&gt;lua-language-server&lt;/a&gt; が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
+&lt;code&gt;ffi.cdef&lt;/code&gt; を読めるようにすればよいのでは。
+ということで、lua-language-server を探ってみる。&lt;/p&gt;
+&lt;h2&gt;構成&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/sumneko/lua-language-server/wiki/Command-line"&gt;https://github.com/sumneko/lua-language-server/wiki/Command-line&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;BINRARY/lua-language-server LUA_LANGUAGE_SERVER/main.lua --logpath=D:/log --metapath=D:/meta --locale=en-us --configpath="config.json"&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; .\bin\Windows\lua-language-server.exe --help
+lua-language-server.exe:unrecognized option '--help'usage: C:\Users\oustt\ghq\github.com\sumneko\lua-language-server\bin\Windows\lua-language-server.exe [options] [script [args]]
+Available options are:
+  -e stat  execute string 'stat'
+  -i       enter interactive mode after executing 'script'
+  -l name  require library 'name' into global 'name'
+  -v       show version information
+  -E       ignore environment variables
+  -W       turn warnings on
+  --       stop handling options
+  -        stop handling options and execute stdin
+&amp;gt; .\bin\Windows\lua-language-server.exe -v    
+Lua 5.4.4  Copyright (C) 1994-2021 Lua.org, PUC-Rio  
+&lt;/pre&gt;
+
+&lt;p&gt;native モジュールを埋め込んだインタープリター &lt;code&gt;lua-language-server.exe&lt;/code&gt; で &lt;code&gt;main.lua&lt;/code&gt; を実行する。&lt;/p&gt;
+&lt;h3&gt;setting&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;.vscode/settings.json&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;     &lt;span class="s2"&gt;"Lua.runtime.version"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"LuaJIT"&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+     &lt;span class="s2"&gt;"Lua.workspace.preloadFileSize"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;10000&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;LSP&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://microsoft.github.io/language-server-protocol/"&gt;https://microsoft.github.io/language-server-protocol/&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_signatureHelp"&gt;signatureHelp&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;main.lua&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;main.lua&lt;ul&gt;
+&lt;li&gt;script/service/service.lua&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nc"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;enableCloseFunction&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;await&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setErrorHandle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;pub&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;recruitBraves&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="c1"&gt;-- transport&lt;/span&gt;
+    &lt;span class="n"&gt;proto&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;report&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pulse&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reportStatus&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;testVersion&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'provider'&lt;/span&gt;
+
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startTimer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;script/parser&lt;/h2&gt;
+&lt;p&gt;lua のコード解析&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;script/parser/parse.lua&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;ast.init(state)&lt;/code&gt;&lt;/p&gt;
+&lt;h3&gt;LPeg&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;script/parser/grammar.lua&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="http://www.inf.puc-rio.br/~roberto/lpeg/"&gt;LPeg&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://gist.github.com/tacigar/93b30931c879cd8a9b12380724b956aa"&gt;Lua製PEG「LPeg」を触ってみた&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://nymphium.github.io/2015/07/23/lpeg2.html"&gt;LPegの使い方 patternその2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://sceneryandfish.withnotes.net/blog/2014/07/22-lua-lpeg-how-to-use/"&gt;LPeg – Parsing Expression Grammars For Luaの使い方&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>lsp</category><category>lua</category><category>luajit</category><guid>https://ousttrue.github.io/posts/2021/summer/lua_language_server/</guid><pubDate>Fri, 06 Aug 2021 00:00:00 GMT</pubDate></item></channel></rss>

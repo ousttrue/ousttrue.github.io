@@ -1,76 +1,110 @@
 <!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>三次元日誌</title>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QtでOpenGLを使う | 三次元日誌</title>
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2013/03/27/qglwidget/">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../../11/more/" title="Octopress整備" type="text/html">
+<link rel="next" href="../long/" title="long型のサイズ" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="QtでOpenGLを使う">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2013/03/27/qglwidget/">
+<meta property="og:description" content="QtでOpenGLを使う
+Qt5でOpenGLを使おうとしていたのだが、なんかglewを使うことができずに失敗した。
+英語の情報によると5.0.2でそういうビルドをリリースするという説があったのでしばらくQt4.8系で行くことに。
+{{ “1849514763” | amazon_medium_image }}
+スキニング方面ばかりいじっていてシェーディングが手薄なので、積んでいる”OpenGL
+">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-03-27T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
 
-    
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../../">
 
-  <script src="https://ousttrue.github.io/plugins/elasticlunr.min.js" defer></script>
-  <script src="https://ousttrue.github.io/search_index.en.js" defer></script>
-  <script src="https://ousttrue.github.io/js/search.js" defer></script>
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
 
-    
 
-     
-    <link rel="stylesheet" href="https://ousttrue.github.io/main.css">
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
-      />
-    
-  </head>
-
-  <body class="container">
-    <a class="site_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;">
-      <div>三次元日誌</div>
-    </a>
-
-    <nav class="nav">
-      <a class="item" href="/tags/">tags</a>
-      <a class="item" href="https://github.com/ousttrue" aria-label="github">
-        <i class="fab fa-github fa-lg"></i>
-      </a>
-      
-
-        
-            <form class="navbar-form">
-                <input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
-                    aria-label="Search docs..." autocomplete="off">
-                <div id="suggestions" class="shadow bg-white rounded"></div>
-            </form>
-        
-    </nav>
-
-    <main class="main">
-<div class="page">
-<div class="content">
-  <div class="headline">
-  
-  
-
-  
-  <a class="headline_title" href="https:&#x2F;&#x2F;ousttrue.github.io&#x2F;posts&#x2F;2013&#x2F;03&#x2F;27&#x2F;qglwidget&#x2F;"> QtでOpenGLを使う 
-  
-
-  
-  </a>
-
-  
-
-  <div>
-    <ul class="tags">
-      <li class="headline_date">
-        <div class="year">2013</div>
-        <div class="md">0327</div>
-      </li>
-      
-      
-
-    </ul>
-  </div>
+                    
+            </ul></nav>
 </div>
- <p>QtでOpenGLを使う
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">QtでOpenGLを使う</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2013-03-27T00:00:00Z" itemprop="datePublished" title="2013-03-27 00:00">2013-03-27 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2013/03/27/qglwidget.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>QtでOpenGLを使う
 Qt5でOpenGLを使おうとしていたのだが、なんかglewを使うことができずに失敗した。
 英語の情報によると5.0.2でそういうビルドをリリースするという説があったのでしばらくQt4.8系で行くことに。
 {{ “1849514763” | amazon_medium_image }}
@@ -79,17 +113,49 @@ Qt5でOpenGLを使おうとしていたのだが、なんかglewを使うこと�
 Cookbook”を攻略して今風のOpenGLをマスターしなおすとしよう。
 練習用コード
 https://github.com/ousttrue/qtgltest</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../11/more/" rel="prev" title="Octopress整備">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../long/" rel="next" title="long型のサイズ">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2013/03/27/qglwidget/",
+        disqus_title="Qt\u3067OpenGL\u3092\u4f7f\u3046",
+        disqus_identifier="cache/content/posts/2013/03/27/qglwidget.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
 
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
 </div>
 
-<nav class="toc">
 
-
-</nav>
-</div>
-</main>
-
-    <footer class="footer">Powered by <a href="https://www.getzola.org/">Zola</a> <a href="https://github.com/ousttrue/zola/tree/custom">custom</a></footer>
-
-  </body>
+        <script src="../../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
 </html>

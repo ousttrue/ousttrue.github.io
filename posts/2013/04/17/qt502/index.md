@@ -1,0 +1,15 @@
+---
+title: "Qt5.0.2が来ていた"
+date: 2013-04-17
+taxonomies: {tags: []}
+---
+
+Qt5.0.2が来ていた
+Qt5.0.2がReleaseされた。
+VC版のQt5.0.1ではglewの使用に支障があったのだけど無事解決。
+これで、全面的にQt5に乗り換えて行ける。
+こちらでQt5の新機能が紹介されているのだが、
+その中のconnectのC++0x対応がよさげ。
+
+http://www.slideshare.net/takumiasaki/qt5-20121215
+

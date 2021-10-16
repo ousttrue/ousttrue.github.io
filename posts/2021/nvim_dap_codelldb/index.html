@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nvim-dap で coldelldb 動いた | 三次元日誌</title>
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2021/nvim_dap_codelldb/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../rust_ffi/" title="rust の ffi" type="text/html">
+<link rel="next" href="../nvim_init/" title="nvim.init ではまる" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="nvim-dap で coldelldb 動いた">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2021/nvim_dap_codelldb/">
+<meta property="og:description" content="nvim-dap で rust をデバッグするべく悪戦苦闘中。
+nvim-dap というのは、来たる nvim-0.5 で動くようになる、 vscode のデバッグアダプターを動作させる機能。
+rust(Windows) は native debugger をアタッチすればいいので、いくつか選択肢があって
+
+https://marketplace.visualstudio.com/items?it">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-06-27T00:00:00Z">
+<meta property="article:tag" content="dap">
+<meta property="article:tag" content="nvim">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">nvim-dap で coldelldb 動いた</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-06-27T00:00:00Z" itemprop="datePublished" title="2021-06-27 00:00">2021-06-27 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2021/nvim_dap_codelldb.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p><a href="https://github.com/mfussenegger/nvim-dap">nvim-dap</a> で rust をデバッグするべく悪戦苦闘中。
+nvim-dap というのは、来たる nvim-0.5 で動くようになる、 <code>vscode</code> のデバッグアダプターを動作させる機能。</p>
+<p>rust(Windows) は native debugger をアタッチすればいいので、いくつか選択肢があって</p>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools">https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools</a></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode">https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode</a></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb">https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb</a></li>
+</ul>
+<p>最後の、<code>vscode-lldb(codelldb)</code> <a href="https://github.com/vadimcn/vscode-lldb">https://github.com/vadimcn/vscode-lldb</a> が使いたい。</p>
+<h3>codelldb の起動</h3>
+<p>nvim-dap から <code>codelldb.exe</code> プロセスは起動している様子。通信がうまくいってないように見える。</p>
+<pre class="code literal-block"><span></span>&gt; .\.cache\dein\repos\github.com\puremourning\vimspector\gadgets\windows\CodeLLDB\adapter\codelldb.exe
+Listening on port 55201
+</pre>
+
+<p>標準入出力を使うモードになっていないのでは？</p>
+<p><code>adapter/src/lib.rs</code></p>
+<pre class="code literal-block"><span></span><span class="n">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">run_debug_server</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">addr</span>: <span class="nc">net</span>::<span class="n">SocketAddr</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">adapter_settings</span>: <span class="nc">debug_protocol</span>::<span class="n">AdapterSettings</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">multi_session</span>: <span class="kt">bool</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TcpListener</span>::<span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">).</span><span class="n">await</span><span class="p">.</span><span class="n">unwrap</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">"Listening on port {}"</span><span class="p">,</span><span class="w"> </span><span class="n">listener</span><span class="p">.</span><span class="n">local_addr</span><span class="p">().</span><span class="n">unwrap</span><span class="p">().</span><span class="n">port</span><span class="p">());</span><span class="w"></span>
+</pre>
+
+<p>遡る。 <code>main -&gt; debug_server -&gt; entry -&gt; run_debug_server</code></p>
+<pre class="code literal-block"><span></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">env_logger</span>::<span class="n">Builder</span>::<span class="n">from_default_env</span><span class="p">().</span><span class="n">init</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">App</span>::<span class="n">new</span><span class="p">(</span><span class="s">"codelldb"</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"multi-session"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"multi-session"</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"preload"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"preload"</span><span class="p">).</span><span class="n">multiple</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"liblldb"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"liblldb"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"params"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"params"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">subcommand</span><span class="p">(</span><span class="n">SubCommand</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"terminal-agent"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">)))</span><span class="w"></span>
+<span class="w">        </span><span class="p">.</span><span class="n">get_matches</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matches</span><span class="p">.</span><span class="n">subcommand_matches</span><span class="p">(</span><span class="s">"terminal-agent"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">terminal_agent</span>::<span class="n">terminal_agent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">matches</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">debug_server</span><span class="p">(</span><span class="o">&amp;</span><span class="n">matches</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre>
+
+<p>どうやら、 <code>executable</code> かつ <code>stdio ではなく tcp</code> 通信というタイプで nvim-dap では未対応ということでよさそう。？</p>
+<ul>
+<li>起動</li>
+<li>
+<code>Listening on port XXXXX</code> メッセージから port を得る</li>
+<li>そのポートに対して TCP 接続という手順が必要</li>
+</ul>
+<p><a href="https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension">https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension</a></p>
+<p>の <code>DebugAdapterServer</code> タイプにあたる。</p>
+<h3>nvim-dap の改造を試みる</h3>
+<p>adapter.type <code>executable</code>, <code>server</code> に加えて、第3の <code>executable_server</code> を作れるか。</p>
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="kr">function</span> <span class="nf">run_adapter</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">'[no name]'</span>
+  <span class="kd">local</span> <span class="n">options</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
+  <span class="n">opts</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">tbl_extend</span><span class="p">(</span><span class="s1">'keep'</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="p">{</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">cwd</span><span class="p">,</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">env</span>
+  <span class="p">})</span>
+  <span class="kr">if</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'executable'</span> <span class="kr">then</span>
+    <span class="n">lazy</span><span class="p">.</span><span class="n">progress</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="s1">'Running: '</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">M</span><span class="p">.</span><span class="n">launch</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+  <span class="kr">elseif</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'server'</span> <span class="kr">then</span>
+    <span class="n">lazy</span><span class="p">.</span><span class="n">progress</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="s1">'Running: '</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">M</span><span class="p">.</span><span class="n">attach</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">host</span><span class="p">,</span> <span class="n">adapter</span><span class="p">.</span><span class="n">port</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+  <span class="kr">elseif</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'executable_server'</span> <span class="kr">then</span> <span class="c1">-- 👈これを追加した</span>
+    <span class="n">lazy</span><span class="p">.</span><span class="n">progress</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="s1">'Running: '</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
+    <span class="c1">-- local session = M.launch(adapter, configuration, opts)</span>
+    <span class="kd">local</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">executable_server</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+    <span class="c1">-- `Error executing luv callback: vimL function must not be called in a lua loop callback`</span>
+    <span class="n">vim</span><span class="p">.</span><span class="n">loop</span><span class="p">.</span><span class="n">read_start</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">schedule_wrap</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+      <span class="c1">-- codelldb の出力から port を得る</span>
+      <span class="c1">-- Lisening on port xxxxx</span>
+      <span class="kd">local</span> <span class="n">port</span> <span class="o">=</span> <span class="nb">string.match</span><span class="p">(</span><span class="n">data</span> <span class="p">,</span> <span class="s2">"Listening on port (%d+)"</span> <span class="p">)</span>
+      <span class="n">M</span><span class="p">.</span><span class="n">attach</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+    <span class="kr">end</span><span class="p">))</span>
+  <span class="kr">else</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">'Invalid adapter type %s, expected `executable` or `server`'</span><span class="p">,</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span><span class="p">))</span>
+  <span class="kr">end</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nf">executable_server</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">uv</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">loop</span>
+  <span class="kd">local</span> <span class="n">stdin</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_pipe</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_pipe</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_pipe</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">handle</span>
+  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">onexit</span><span class="p">()</span>
+    <span class="n">stdin</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">stdout</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">stderr</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">handle</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+  <span class="kr">end</span>
+  <span class="kd">local</span> <span class="n">options</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
+  <span class="kd">local</span> <span class="n">pid_or_err</span>
+  <span class="n">handle</span><span class="p">,</span> <span class="n">pid_or_err</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">command</span><span class="p">,</span> <span class="p">{</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">args</span><span class="p">;</span>
+    <span class="n">stdio</span> <span class="o">=</span> <span class="p">{</span><span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">};</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">cwd</span><span class="p">;</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">env</span><span class="p">;</span>
+    <span class="n">detached</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">},</span> <span class="n">onexit</span><span class="p">)</span>
+  <span class="nb">assert</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="s1">'Error running '</span> <span class="o">..</span> <span class="n">adapter</span><span class="p">.</span><span class="n">command</span> <span class="o">..</span> <span class="s1">': '</span> <span class="o">..</span> <span class="n">pid_or_err</span><span class="p">)</span>
+
+  <span class="kr">return</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nc">M</span><span class="p">.</span><span class="nf">attach</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">session</span> <span class="kr">then</span>
+    <span class="n">session</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+  <span class="kr">end</span>
+  <span class="kr">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">.</span><span class="n">request</span> <span class="kr">then</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'config needs the `request` property which must be one of `attach` or `launch`'</span><span class="p">)</span>
+    <span class="kr">return</span>
+  <span class="kr">end</span>
+  <span class="c1">-- initialize が早すぎるので config を connect 引数に</span>
+  <span class="n">session</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'dap.session'</span><span class="p">):</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">session</span>
+<span class="kr">end</span>
+
+<span class="kr">function</span> <span class="nc">Session</span><span class="p">:</span><span class="nf">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">session</span> <span class="o">=</span> <span class="n">session_defaults</span><span class="p">(</span><span class="n">opts</span> <span class="ow">or</span> <span class="p">{})</span>
+  <span class="nb">setmetatable</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">self</span><span class="p">)</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">self</span>
+
+  <span class="kd">local</span> <span class="n">client</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_tcp</span><span class="p">()</span>
+  <span class="n">session</span><span class="p">.</span><span class="n">client</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">write</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> 
+        <span class="n">client</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> 
+    <span class="kr">end</span><span class="p">;</span>
+    <span class="n">close</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+      <span class="n">client</span><span class="p">:</span><span class="n">shutdown</span><span class="p">()</span>
+      <span class="n">client</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+    <span class="kr">end</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">client</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span> <span class="ow">or</span> <span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">port</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="kr">then</span> <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="kr">end</span>
+    <span class="n">client</span><span class="p">:</span><span class="n">read_start</span><span class="p">(</span><span class="n">rpc</span><span class="p">.</span><span class="n">create_read_loop</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+      <span class="n">session</span><span class="p">:</span><span class="n">handle_body</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+    <span class="kr">end</span><span class="p">))</span>
+
+    <span class="c1">-- connect が成立してから initialize を送る</span>
+    <span class="n">session</span><span class="p">:</span><span class="n">initialize</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+  <span class="kr">end</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">session</span>
+<span class="kr">end</span>
+</pre>
+
+<p>動いた。 PR 作ろう。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/dap/" rel="tag">dap</a></li>
+            <li><a class="tag p-category" href="../../../categories/nvim/" rel="tag">nvim</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../rust_ffi/" rel="prev" title="rust の ffi">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../nvim_init/" rel="next" title="nvim.init ではまる">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2021/nvim_dap_codelldb/",
+        disqus_title="nvim-dap \u3067 coldelldb \u52d5\u3044\u305f",
+        disqus_identifier="cache/content/posts/2021/nvim_dap_codelldb.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

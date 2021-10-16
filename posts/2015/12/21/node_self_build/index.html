@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>node.js(Windows版)を自前ビルドする | 三次元日誌</title>
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2015/12/21/node_self_build/">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../../19/node_ffi/" title="node-ffiでstdcallが使いたい(頓挫)" type="text/html">
+<link rel="next" href="../../22/threejs_pmd_loader/" title="Three.jsでpmd読み込み" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="node.js(Windows版)を自前ビルドする">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2015/12/21/node_self_build/">
+<meta property="og:description" content="謎のクラッシュ(FFIでネイティブプラグインがアクセス違反で死ぬ)を追跡するため、
+VCのデバッガをアタッチするべく自前ビルドする。
+node-v5.3.0.tar.xz
+7zipで解凍。
+python2系にpathを通してvcbuild.batをたたく。
+
+vcbuild.bat
+
+v8もlibuvも全部入りらしくあっさりとほぼビルドできた。
+SignTool Error: No certifi">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2015-12-21T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">node.js(Windows版)を自前ビルドする</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-21T00:00:00Z" itemprop="datePublished" title="2015-12-21 00:00">2015-12-21 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/21/node_self_build.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>謎のクラッシュ(FFIでネイティブプラグインがアクセス違反で死ぬ)を追跡するため、
+VCのデバッガをアタッチするべく自前ビルドする。
+node-v5.3.0.tar.xz</p>
+<p>7zipで解凍。
+python2系にpathを通してvcbuild.batをたたく。</p>
+<blockquote>
+<p>vcbuild.bat</p>
+</blockquote>
+<p>v8もlibuvも全部入りらしくあっさりとほぼビルドできた。
+SignTool Error: No certificates were found that met all the given criteria.
+Failed to sign exe</p>
+<p>document
+https://github.com/nodejs/node-v0.x-archive/wiki/Installation#building-on-windows
+debugビルドの作り方はこう。</p>
+<blockquote>
+<p>vcbuild.bat nosign debug</p>
+</blockquote>
+<p>nodeをデバッグ実行</p>
+<p>node-v5.3.0にnode.slnができているのでこれをVisualStudio2015で開く。
+nodeをスタートアッププロジェクトに指定
+nodeの設定のdebugタブで、カレントディレクトリとコマンドライン引数を指定
+f5</p>
+<p>例外が再現した
+void CallbackInfo::DispatchToV8(callback_info <em>info, void </em>retval, void **parameters, bool dispatched) {
+  Nan::HandleScope scope;</p>
+<p>static const char* errorMessage = "ffi fatal: callback has been garbage collected!";</p>
+<p>if (info-&gt;function == NULL) {
+    // throw an error instead of segfaulting.
+    // see: https://github.com/rbranson/node-ffi/issues/72
+    if (dispatched) {
+        Local<value> errorFunctionArgv[1];
+        errorFunctionArgv[0] = Nan::New<string>(errorMessage).ToLocalChecked();
+        info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
+    }
+    else {
+      Nan::ThrowError(errorMessage);
+    }
+  } else {
+    // invoke the registered callback function
+    Local<value> functionArgv[2];
+    functionArgv[0] = WrapPointer((char <em>)retval, info-&gt;resultSize);
+    functionArgv[1] = WrapPointer((char </em>)parameters, sizeof(char *) * info-&gt;argc);
+    Local<value> e = info-&gt;function-&gt;Call(2, functionArgv); // &lt;-- ここ。functionがnullptrになってるよ!
+    if (!e-&gt;IsUndefined()) {
+      if (dispatched) {
+        Local<value> errorFunctionArgv[1];
+        errorFunctionArgv[0] = e;
+        info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
+      } else {
+        Nan::ThrowError(e);
+      }
+    }
+  }
+}</value></value></value></string></value></p>
+<p>ううむ。if文でnullチェックしてるのにelse側に落ちてるな。矢張りスレッドとかGCが絡んでいそうな気がするぞ。
+ちょうどnode-ffiでjavascriptのコールバックを呼び出しているところなのではないか。
+コールスタック</p>
+<blockquote>
+<p>ffi_bindings.node!CallbackInfo::DispatchToV8(_callback_info * info, void * retval, void * * parameters, bool dispatched) 行 73   C++
+    ffi_bindings.node!CallbackInfo::WatcherCallback(uv_async_s * w, int revents) 行 94   C++
+    node.exe!uv_process_async_wakeup_req(uv_loop_s * loop, uv_async_s * handle, uv_req_s * req) 行 97    C</p>
+</blockquote>
+<p>よく見るとまさにffi_bindings.node(node-ffiのネイティブプラグイン)内で問題が発生している。
+呼び出しスレッドはメインスレッドか・・・。
+何回も試してみると例外がむしろdllのスレッド側で起こることの方が多い。
+他にWaitSingleObjectがstdcallの関数をスレッド実行しているものが４本。
+ひょっとして、コールバックの頻度が高すぎなんじゃないのか・・・。
+callback_infoはffiの構造体。こいつのデストラクタが呼ばれているのが確認できれば手がかりになるな。
+で、callback_info-&gt;functionを解放する下記の部分がメインスレッドから呼ばれて、その後に
+スレッドからのコールバック呼び出しがクラッシュしているらしいことを発見。
+node_modules/ffi/src/callback_info.cc
+/<em>
+ * Called when the <code>ffi_closure *</code> pointer (actually the "code" pointer) get's
+ * GC'd on the JavaScript side. In this case we have to unwrap the
+ * <code>callback_info *</code> struct, dispose of the JS function Persistent reference,
+ * then finally free the struct.
+ </em>/</p>
+<p>void closure_pointer_cb(char <em>data, void </em>hint) {
+  callback_info *info = reinterpret_cast<callback_info>(hint);
+  // dispose of the Persistent function reference
+  delete info-&gt;function;
+  info-&gt;function = NULL;
+  // now we can free the closure data
+  ffi_closure_free(info);
+}</callback_info></p>
+<p>コールスタック</p>
+<blockquote>
+<p>ffi_bindings.node!closure_pointer_cb(char * data, void * hint) 行 42 C++
+    node.exe!node::Buffer::CallbackInfo::WeakCallback(v8::Isolate * isolate, v8::Local<:object> object) 行 159    C++</:object></p>
+</blockquote>
+<pre class="code literal-block"><span></span> 省略
+
+node.exe!v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace space, const char * gc_reason, const v8::GCCallbackFlags callbackFlags) 行 556 C++
+
+ 省略
+
+node.exe!node::Buffer::New(v8::Isolate * isolate, char * data, unsigned int length, void (char *, void *) * callback, void * hint) 行 347    C++
+binding.node!`anonymous namespace'::WrapPointer(char * ptr, unsigned int length) 行 147  C++
+binding.node!`anonymous namespace'::ReadPointer(const Nan::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 261    C++
+binding.node!Nan::imp::FunctionCallbackWrapper(const v8::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 174  C++
+</pre>
+
+<p>なんか、GCが発動して回収されちゃっているぽい？
+2015/09/20
+* Nodejs GC is crashing when a C function is returning NULL
+むしろこっちか
+2015/11/05
+* Node.js v5.0.0でnode-ffiやNodObjCが動かない
+しかし、うちのnode.jsは</p>
+<blockquote>
+<p>node --version
+v5.3.0</p>
+</blockquote>
+<p>うむ。
+むしろこっちか
+2015/09/15
+* ffi.Function underlying Callback is garbage collected
+死ななくなった。これっぽいな。
+64bit版で試してみる
+これはこれで死ぬ。
+まとめ</p>
+<p>node-ffiのFunctionでGCに回収されてしまう書き方のところがある(FFI.Function内)
+32bit版のnode-ffiではSTDCALLを指定できる(ABI=2)
+64bit版のnode-ffiではIA64にされるのでSTDCALLは動かぬ</p>
+<p>gypでのIA64とX64の扱いの違いがわかったら修正できるかな。
+X86_WIN32の時にFFI_STDCALLを定義する修正をプルリクしてみよう。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../19/node_ffi/" rel="prev" title="node-ffiでstdcallが使いたい(頓挫)">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../../22/threejs_pmd_loader/" rel="next" title="Three.jsでpmd読み込み">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2015/12/21/node_self_build/",
+        disqus_title="node.js(Windows\u7248)\u3092\u81ea\u524d\u30d3\u30eb\u30c9\u3059\u308b",
+        disqus_identifier="cache/content/posts/2015/12/21/node_self_build.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

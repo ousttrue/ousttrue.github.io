@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (pythonについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:49:57 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>python の task runner invoke</title><link>https://ousttrue.github.io/posts/2021/invoke/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;python でちょっとしたツールを書くときに便利。
+&lt;code&gt;make&lt;/code&gt; みたいにタスクを定義して、コマンドラインから実行する。
+task として定義した関数の引数に応じてコマンドライン引数をさばけるので &lt;code&gt;argparse&lt;/code&gt; せずにすませることができる。&lt;/p&gt;
+&lt;h3&gt;install&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install invoke
+&lt;/pre&gt;
+
+&lt;h3&gt;tasks.py&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;invoke&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;task&lt;/span&gt;
+
+&lt;span class="nd"&gt;@task&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hello&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;who&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hoge"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;'''&lt;/span&gt;
+&lt;span class="sd"&gt;    hello task&lt;/span&gt;
+&lt;span class="sd"&gt;    '''&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;'hello {hoge}'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@task&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hello&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;ver&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;'''&lt;/span&gt;
+&lt;span class="sd"&gt;    version&lt;/span&gt;
+&lt;span class="sd"&gt;    '''&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;使う&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ invoke -l           
+Available tasks:
+
+  hello   hello task
+  ver     version
+
+$ invoke hello --help
+Usage: inv&lt;span class="o"&gt;[&lt;/span&gt;oke&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;--core-opts&lt;span class="o"&gt;]&lt;/span&gt; hello &lt;span class="o"&gt;[&lt;/span&gt;--options&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;other tasks here ...&lt;span class="o"&gt;]&lt;/span&gt;
+
+Docstring:
+  hello task
+
+Options:
+  -w STRING, --who&lt;span class="o"&gt;=&lt;/span&gt;STRING
+
+$ invoke hello fuga  
+No idea what &lt;span class="s1"&gt;'fuga'&lt;/span&gt; is!
+$ invoke hello -w fuga
+hello fuga
+$ invoke ver
+hello hoge
+&lt;span class="m"&gt;3&lt;/span&gt;.8.6 &lt;span class="o"&gt;(&lt;/span&gt;tags/v3.8.6:db45529, Sep &lt;span class="m"&gt;23&lt;/span&gt; &lt;span class="m"&gt;2020&lt;/span&gt;, &lt;span class="m"&gt;15&lt;/span&gt;:52:53&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;MSC v.1927 &lt;span class="m"&gt;64&lt;/span&gt; bit &lt;span class="o"&gt;(&lt;/span&gt;AMD64&lt;span class="o"&gt;)]&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;vscode でデバッグ&lt;/h3&gt;
+&lt;p&gt;module に &lt;code&gt;invoke&lt;/code&gt; を設定してやる&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;        &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="nt"&gt;"name"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"task"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="nt"&gt;"type"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"python"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="nt"&gt;"request"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"launch"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="nt"&gt;"module"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"invoke"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="nt"&gt;"args"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+                &lt;span class="s2"&gt;"hello"&lt;/span&gt;
+            &lt;span class="p"&gt;],&lt;/span&gt;
+            &lt;span class="nt"&gt;"console"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"integratedTerminal"&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><guid>https://ousttrue.github.io/posts/2021/invoke/</guid><pubDate>Sat, 24 Jul 2021 00:00:00 GMT</pubDate></item><item><title>VS2019 向けに hererocks を修正(vswhere を使う)</title><link>https://ousttrue.github.io/posts/2021/fix_hererocks/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;hererocks が VS2019BuildTools を検知して動作するように改造してみた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/luarocks/hererocks/pull/15"&gt;https://github.com/luarocks/hererocks/pull/15&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;通るかどうかは微妙。
+内容的に、通りづらそう。
+古い vc を使っていたり MinGW 使っていたりすると実験できないしね。
+とりあえず、既存の動いている部分が壊れないようには配慮した。&lt;/p&gt;
+&lt;p&gt;採用されれば、&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/wbthomason/packer.nvim/issues/302"&gt;https://github.com/wbthomason/packer.nvim/issues/302&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;も進展する。
+Windows 版の luarocks 呼び出しに改造が必要なのだが、
+先に hererocks が動いている必要があるという順番。&lt;/p&gt;
+&lt;p&gt;とりあえず単体で試すことができて&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# C:/Python38/Scripts/pip.exe
+$ pip install https://github.com/ousttrue/hererocks/archive/add_vswhere.zip
+&lt;/pre&gt;
+
+&lt;p&gt;とする。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# C:/Python38/Scripts/hererocks.exe
+$ hererocks.exe --target vs -j 2.1.0-beta3 -r latest build_dir
+Using cl.exe found in PATH.
+Fetching LuaJIT 2.1.0-beta3 (target: vs) (cached)
+Verifying SHA256 checksum
+Building LuaJIT 2.1.0-beta3 (target: vs)
+Installing LuaJIT 2.1.0-beta3 (target: vs)
+Fetching LuaRocks 3.7.0 (cached)
+Verifying SHA256 checksum
+Building and installing LuaRocks 3.7.0
+&lt;/pre&gt;
+
+&lt;p&gt;lua はシステムにインストールして全体でライブラリを共有するというよりは、
+プロジェクト単位でインストールしてローカルに必要なライブラリだけを追加するという運用になりそう。
+なので、 hererocks でプロジェクトローカルに lua をサクッとビルドできるのはなかなかよい。
+python の venv 的な運用。
+展開先は、 &lt;code&gt;.gitignore&lt;/code&gt; する。&lt;/p&gt;
+&lt;p&gt;ただ、外部ライブラリのラッパーがさくっと動くかというと Windows だと厳しいものがありますな・・・。
+vcpkg と連携させるとか、更なる頑張りが必要かもしれない。
+なので、 luajit の ffi が面白いかもしれない。
+standalone の lua インタプリタを使う場合は &lt;code&gt;hererocks&lt;/code&gt; がいいのではないか。&lt;/p&gt;
+&lt;h3&gt;vswhere メモ&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/Microsoft/vswhere"&gt;https://github.com/Microsoft/vswhere&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cl.exe&lt;/code&gt;, &lt;code&gt;msbuild.exe&lt;/code&gt; などの探索に使う。
+&lt;code&gt;vs2017 version 15.2&lt;/code&gt; 以降に入っているらしい。&lt;/p&gt;
+&lt;p&gt;こんな感じに使う。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# %ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
+&amp;gt; vswhere -nologo -products *
+instanceId: 6762dfe1
+installDate: 2020/07/21 9:26:34
+installationName: VisualStudio/16.7.3+30503.244
+installationPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+installationVersion: 16.7.30503.244
+productId: Microsoft.VisualStudio.Product.BuildTools
+productPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\LaunchDevCmd.bat
+state: 4294967295
+isComplete: 1
+isLaunchable: 1
+isPrerelease: 0
+isRebootRequired: 0
+displayName: Visual Studio Build Tools 2019
+description: Visual Studio Build Tools では、Visual Studio IDE を必要とせずに、MSBuild ベースのネイティブ マネージド アプリケーションをビルドできます。また、Visual C++ のコンパイラやライブラリ、MFC、ATL、および C++/CLI サポートをインストールするオプションも用意されています。
+channelId: VisualStudio.16.Release
+channelUri: https://aka.ms/vs/16/release/channel
+enginePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service
+releaseNotes: https://go.microsoft.com/fwlink/?LinkId=660893#16.7.3
+thirdPartyNotices: https://go.microsoft.com/fwlink/?LinkId=660909
+updateDate: 2020-09-13T06:19:26.0508205Z
+catalog_buildBranch: d16.7
+catalog_buildVersion: 16.7.30503.244
+catalog_id: VisualStudio/16.7.3+30503.244
+catalog_localBuild: build-lab
+catalog_manifestName: VisualStudio
+catalog_manifestType: installer
+catalog_productDisplayVersion: 16.7.3
+catalog_productLine: Dev16
+catalog_productLineVersion: 2019
+catalog_productMilestone: RTW
+catalog_productMilestoneIsPreRelease: False
+catalog_productName: Visual Studio
+catalog_productPatchVersion: 3
+catalog_productPreReleaseMilestoneSuffix: 1.0
+catalog_productSemanticVersion: 16.7.3+30503.244
+catalog_requiredEngineVersion: 2.7.3132.26759
+properties_campaignId:
+properties_channelManifestId: VisualStudio.16.Release/16.7.3+30503.244
+properties_nickname:
+properties_setupEngineFilePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href="https://github.com/microsoft/vswhere/wiki/Find-VC"&gt;https://github.com/microsoft/vswhere/wiki/Find-VC&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;フィルタをかけられる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+&lt;/pre&gt;
+
+&lt;p&gt;見つかったパスから先は固定であるとみなして、 &lt;code&gt;vcvars64.bat&lt;/code&gt; などを見つける。&lt;/p&gt;&lt;/div&gt;</description><category>lua</category><category>nvim</category><category>python</category><guid>https://ousttrue.github.io/posts/2021/fix_hererocks/</guid><pubDate>Thu, 15 Jul 2021 00:00:00 GMT</pubDate></item></channel></rss>
