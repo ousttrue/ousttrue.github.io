@@ -1,0 +1,54 @@
++++
+title = "nikola にしてみる"
+date = 2021-10-16
+tags = ["ssg"]
++++
+
+また生成システムを変えてみる。
+
+<https://getnikola.com/>
+
+# init
+
+```
+> pip install "Nikola[extras]"
+> nikola init .
+```
+
+<https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore>
+```.gitignore
+# nikola
+.doit.db*
+*.pyc
+/cache/
+/output/
+```
+
+`conf.py`
+```py
+# とりあえず 
+POSTS = (
+    ("content/*.rst", "posts", "post.tmpl"),
+    ("content/*.md", "posts", "post.tmpl"),
+    ("content/*.txt", "posts", "post.tmpl"),
+    ("content/*.html", "posts", "post.tmpl"),
+)
+```
+
+```
+> nikola auto --browser
+```
+
+なんとなくプレビューできた。
+ええやん。
+
+# zola から記事移植
+
+`POSTS` のパス調整でもうできているのだけど、 `frontmatter` の非互換がある。
+それを調べる。
+
+<https://getnikola.com/handbook.html#metadata-fields>
+
+* `taxonomies.tags` を `tags` に書き換える
+
+# github action で gh-pages
