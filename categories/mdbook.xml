@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (mdbookについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/mdbook.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:38:40 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>mdBook もやってみる</title><link>https://ousttrue.github.io/posts/2021/mdbook/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://rust-lang.github.io/mdBook/"&gt;https://rust-lang.github.io/mdBook/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/rust-lang/mdBook"&gt;https://github.com/rust-lang/mdBook&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;作ってみた&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/cmake_book"&gt;https://github.com/ousttrue/cmake_book&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;gh-pages&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/cmake_book/"&gt;https://ousttrue.github.io/cmake_book/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;config.toml&lt;/h2&gt;
+&lt;h3&gt;base_url の設定にはまる&lt;/h3&gt;
+&lt;p&gt;base_url の設定だけ探し回った。
+gh-pages の url が &lt;code&gt;https://ousttrue.github.io/cmake_book/&lt;/code&gt; と root フォルダでは無いので必用。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;book.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[output.html]&lt;/span&gt;
+&lt;span class="na"&gt;site-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://ousttrue.github.io/cmake_book/"&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;github&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;book.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[output.html]&lt;/span&gt;
+&lt;span class="na"&gt;git-repository-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/rust-lang/mdBook/tree/master/guide"&lt;/span&gt;
+&lt;span class="na"&gt;edit-url-template&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/rust-lang/mdBook/edit/master/guide/{path}"&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;github actions&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/marketplace/actions/mdbook-action"&gt;https://github.com/marketplace/actions/mdbook-action&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;を参考にしたのだけど、
+ちょっとはまった。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;github&lt;/span&gt; &lt;span class="n"&gt;pages&lt;/span&gt;
+&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;push&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="err"&gt;書き方変わってた&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pushしてもjobが起動しない&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;jobs&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;Explore&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;GitHub&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Actions&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="err"&gt;書き方変わってた？&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="err"&gt;アクションとして認識されない？&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;runs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;18.04&lt;/span&gt;
+    &lt;span class="n"&gt;steps&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;checkout&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v2&lt;/span&gt;
+
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Setup&lt;/span&gt; &lt;span class="n"&gt;mdBook&lt;/span&gt;
+        &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mdbook&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;
+        &lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+          &lt;span class="n"&gt;mdbook&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"latest"&lt;/span&gt;
+
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mdbook&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt;
+
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Deploy&lt;/span&gt;
+        &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v3&lt;/span&gt;
+        &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;ref&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'refs/heads/main'&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="err"&gt;あると動かない&lt;/span&gt;
+        &lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+          &lt;span class="n"&gt;github_token&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="o"&gt;{{&lt;/span&gt; &lt;span class="n"&gt;secrets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;GITHUB_TOKEN&lt;/span&gt; &lt;span class="o"&gt;}}&lt;/span&gt;
+          &lt;span class="n"&gt;publish_dir&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;./&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;動かないとき、特に action として認識されていないときは全く手掛かりが無くて難儀した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://docs.github.com/ja/actions/quickstart"&gt;https://docs.github.com/ja/actions/quickstart&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;は動いたので、これと違うところを見比べて勘でなおした。
+よくわかっていない。&lt;/p&gt;
+&lt;h2&gt;mdbook の SUMMARY.md&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;SUMMARY.md&lt;/code&gt; にページ構成を先に記述して章立てを作ってから中身を記述していくのが面白い。
+この仕組みが合うものは、 &lt;code&gt;zola&lt;/code&gt; より &lt;code&gt;mdbook&lt;/code&gt; の方がサクサク作れそう。
+&lt;code&gt;hugo&lt;/code&gt; とかと違って各ページに &lt;code&gt;frontmatter&lt;/code&gt; が不要なので、
+ページを足したり引いたりするする場合はこちらの方が使いやすい。&lt;/p&gt;
+&lt;p&gt;Scrapbox 上にあるメモを整理するかもしれない。&lt;/p&gt;
+&lt;p&gt;作った。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/cmake_book/"&gt;cmake_book&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/rust_exercise_book/"&gt;rust練習帳&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;あと、 &lt;code&gt;blender の addon 作成メモ&lt;/code&gt; とか &lt;code&gt;Unity のカスタムエディターメモ&lt;/code&gt; とか作るかも。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/bldner_book/"&gt;blender_book&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/unity_book/"&gt;unity memo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;mdbook を gh-pages で初期化する手順&lt;/h2&gt;
+&lt;p&gt;github に repository を作って gh-pages に公開するところまで&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;new repository &lt;code&gt;https://github.com/GITHUB_USER_NAME/MDBOOK_REPOSITORY_NAME&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;git clone GIT_REPOSITORY&lt;/li&gt;
+&lt;li&gt;cd GIT_REPOSITORY&lt;/li&gt;
+&lt;li&gt;mdbook init&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;book.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[output.html]&lt;/span&gt;
+&lt;span class="na"&gt;site-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://${USER_NAME}.github.io/${REPO_NAME}/"&lt;/span&gt;
+&lt;span class="na"&gt;git-repository-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/${USER_NAME}/${REPO_NAME}/tree/master"&lt;/span&gt;
+&lt;span class="na"&gt;edit-url-template&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/${USER_NAME}/${REPO_NAME}/edit/master/{path}"&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;.github/workflows/gh-pages.yml&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;github pages&lt;/span&gt;
+&lt;span class="nt"&gt;on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p p-Indicator"&gt;[&lt;/span&gt;&lt;span class="nv"&gt;push&lt;/span&gt;&lt;span class="p p-Indicator"&gt;]&lt;/span&gt;
+&lt;span class="nt"&gt;jobs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="nt"&gt;Explore-GitHub-Actions&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="nt"&gt;runs-on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;ubuntu-18.04&lt;/span&gt;
+    &lt;span class="nt"&gt;steps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;actions/checkout@v2&lt;/span&gt;
+
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Setup mdBook&lt;/span&gt;
+        &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;peaceiris/actions-mdbook@v1&lt;/span&gt;
+        &lt;span class="nt"&gt;with&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+          &lt;span class="nt"&gt;mdbook-version&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;"latest"&lt;/span&gt;
+
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mdbook build&lt;/span&gt;
+
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Deploy&lt;/span&gt;
+        &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;peaceiris/actions-gh-pages@v3&lt;/span&gt;
+        &lt;span class="nt"&gt;with&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+          &lt;span class="nt"&gt;github_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;${{ secrets.GITHUB_TOKEN }}&lt;/span&gt;
+          &lt;span class="nt"&gt;publish_dir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;./book&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;git add .&lt;/li&gt;
+&lt;li&gt;git commit -m init&lt;/li&gt;
+&lt;li&gt;git push&lt;ul&gt;
+&lt;li&gt;action が発動し、mdbook がビルドした book フォルダが gh-pages ブランチに push される&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;github の settings - pages から gh-pages branch を選んで root を設定する&lt;ul&gt;
+&lt;li&gt;しばらくすると &lt;code&gt;https://GITHUB_USER_NAME.github.io/MDBOOK_REPOSITORY_NAME/&lt;/code&gt; が有効になる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;初回にページが表示されるまで何回か push が要るかも。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;repo 作る&lt;/li&gt;
+&lt;li&gt;gh-pages branch に push する&lt;/li&gt;
+&lt;li&gt;設定で gh-pages を有効にする&lt;/li&gt;
+&lt;li&gt;再度 push し action を発動させる。この辺でサイトが見れることを確認する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://o296.com/e/mdbook_as_blog.html"&gt;https://o296.com/e/mdbook_as_blog.html&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>mdbook</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/mdbook/</guid><pubDate>Mon, 14 Jun 2021 00:00:00 GMT</pubDate></item></channel></rss>

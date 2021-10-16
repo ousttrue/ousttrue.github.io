@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gstreamerを始めてみた | 三次元日誌</title>
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2013/06/02/gstreamer/">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../../11/irrlicht/" title="Oculusぽちった" type="text/html">
+<link rel="next" href="../../17/irrlicht_msgpackrpc/" title="IrrlichtにMsgPackRPCを仕込む" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="Gstreamerを始めてみた">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2013/06/02/gstreamer/">
+<meta property="og:description" content="動画プログラムでもしてみようということでGstreamerをはじめた。
+Hello world
+まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。
+Basic
+tutorials htt">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-06-11T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Gstreamerを始めてみた</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2013-06-11T00:00:00Z" itemprop="datePublished" title="2013-06-11 00:00">2013-06-11 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2013/06/02/gstreamer.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>動画プログラムでもしてみようということでGstreamerをはじめた。</p>
+<h2>Hello world</h2>
+<p>まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。</p>
+<p>Basic
+tutorials http://docs.gstreamer.com/display/GstSDK/Basic+tutorials をやってみる</p>
+<p>最初のコードをc++に改造しやすいようにちょっと変更。</p>
+<p>::</p>
+<h2>include <gst></gst>
+</h2>
+<p>int main(int argc, char *argv[]) 
+{
+    gst_init (&amp;argc, &amp;argv);</p>
+<pre class="code literal-block"><span></span>{
+    GstElement *pipeline = gst_parse_launch (
+            "playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm", 
+            NULL);
+
+    gst_element_set_state (pipeline, GST_STATE_PLAYING);
+    {
+        GstBus *bus = gst_element_get_bus (pipeline);
+        {
+            GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, 
+                    static_cast&lt;GstMessageType&gt;(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+            if (msg != NULL){
+                gst_message_unref (msg);
+            }
+        }
+        gst_object_unref (bus);
+    }
+
+    gst_element_set_state (pipeline, GST_STATE_NULL);
+    gst_object_unref (pipeline);
+}
+
+return 0;
+</pre>
+
+<p>}</p>
+<p>build $ gcc 'pkg-config gstreamer-0.10 --cflags --libs' main.c
+動いた。
+gstreamermmでやってみる</p>
+<p>https://developer.gnome.org/gstreamermm/0.10/</p>
+<p>::</p>
+<h2>include <gstreamermm.h></gstreamermm.h>
+</h2>
+<p>int main(int argc, char *argv[]) 
+{
+    Gst::init();</p>
+<pre class="code literal-block"><span></span><span class="p">{</span>
+    <span class="err">auto</span> <span class="err">pipeline</span> <span class="err">=</span> <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">Parse</span><span class="o">::</span><span class="n">launch</span> <span class="p">(</span>
+            <span class="s2">"playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm"</span><span class="p">);</span>
+
+    <span class="err">pipeline-&gt;set_state(</span><span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">STATE_PLAYING</span><span class="p">);</span>
+    <span class="err">{</span>
+        <span class="err">auto</span> <span class="err">bus</span> <span class="err">=</span> <span class="err">pipeline-&gt;get_bus()</span><span class="p">;</span>
+        <span class="err">auto</span> <span class="err">msg</span> <span class="err">=</span> <span class="err">bus-&gt;pop(</span><span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">CLOCK_TIME_NONE</span><span class="p">,</span> 
+                <span class="n">static_cast</span><span class="o">&lt;</span><span class="n">Gst</span><span class="o">::</span><span class="n">MessageType</span><span class="o">&gt;</span><span class="p">(</span>
+                    <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_ERROR</span> 
+                    <span class="o">|</span> <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_EOS</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_NULL</span><span class="o">);</span>
+<span class="err">}</span>
+
+<span class="nt">return</span> <span class="nt">0</span><span class="o">;</span>
+</pre>
+
+<p>}</p>
+<p>build
+$ g++ -std=c++0x 'pkg-config gstreamermm-0.10 --cflags --libs' main.cpp
+unrefが省略できるのと、method呼び出しの記述方法がかわるのでコードがシンプルになる。
+C版から翻訳するのに少し手間がかかるが、ほぼ機械的に変更するだけなのでこちらでいってみる。
+2
+::</p>
+<h2>include <gstreamermm.h></gstreamermm.h>
+</h2>
+<p>int main(int argc, char *argv[]) 
+{
+    Gst::init();</p>
+<pre class="code literal-block"><span></span><span class="nt">auto</span> <span class="nt">source</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"videotestsrc"</span><span class="o">,</span> <span class="s2">"source"</span><span class="o">);</span>
+<span class="nt">auto</span> <span class="nt">sink</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"autovideosink"</span><span class="o">,</span> <span class="s2">"sink"</span><span class="o">);</span>
+<span class="nt">auto</span> <span class="nt">pipeline</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">Pipeline</span><span class="p">::</span><span class="nd">create</span><span class="o">(</span><span class="s2">"test-pipeline"</span><span class="o">);</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">pipeline</span> <span class="o">||</span> <span class="o">!</span><span class="nt">source</span> <span class="o">||</span> <span class="o">!</span><span class="nt">sink</span><span class="o">)</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Not</span> <span class="err">all</span> <span class="err">elements</span> <span class="err">could</span> <span class="err">be</span> <span class="err">created.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">auto</span> <span class="nt">filter</span><span class="o">=</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"vertigotv"</span><span class="o">,</span> <span class="s2">"vertigotv_filter"</span><span class="o">);</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter</span><span class="o">)</span><span class="p">{</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">auto</span> <span class="nt">filter2</span><span class="o">=</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"ffmpegcolorspace"</span><span class="o">,</span> <span class="s2">"color_filter"</span><span class="o">);</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter2</span><span class="o">)</span><span class="p">{</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Build the pipeline */</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">source</span><span class="o">);</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">sink</span><span class="o">);</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">filter</span><span class="o">);</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">filter2</span><span class="o">);</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">source-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">filter</span><span class="o">))</span><span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">filter2</span><span class="o">))</span><span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter2-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">sink</span><span class="o">))</span><span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Modify the source's properties */</span>
+<span class="nt">source-</span><span class="o">&gt;</span><span class="nt">set_property</span><span class="o">(</span><span class="s2">"pattern"</span><span class="o">,</span> <span class="nt">0</span><span class="o">);</span>
+
+<span class="c">/* Start playing */</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_PLAYING</span><span class="o">))</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Unable</span> <span class="err">to</span> <span class="err">set</span> <span class="err">the</span> <span class="err">pipeline</span> <span class="err">to</span> <span class="err">the</span> <span class="err">playing</span> <span class="err">state.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Wait until error or EOS */</span>
+<span class="nt">auto</span> <span class="nt">bus</span> <span class="o">=</span> <span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">get_bus</span> <span class="o">();</span>
+<span class="nt">auto</span> <span class="nt">msg</span> <span class="o">=</span> <span class="nt">bus-</span><span class="o">&gt;</span><span class="nt">pop</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">CLOCK_TIME_NONE</span><span class="o">,</span> 
+        <span class="nt">Gst</span><span class="p">::</span><span class="nd">MESSAGE_ERROR</span> <span class="o">|</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">MESSAGE_EOS</span><span class="o">);</span>
+
+<span class="c">/* Parse message */</span>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">msg</span><span class="o">)</span> <span class="p">{</span>
+
+    <span class="err">switch</span> <span class="err">(msg-&gt;get_message_type())</span> <span class="err">{</span>
+        <span class="err">case</span> <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">MESSAGE_ERROR</span><span class="o">:</span>
+            <span class="err">{</span>
+                <span class="n">Glib</span><span class="o">::</span><span class="n">Error</span> <span class="n">err</span><span class="p">;</span>
+                <span class="n">std</span><span class="p">:</span><span class="o">:</span><span class="n">string</span> <span class="n">debug_info</span><span class="p">;</span>
+                <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="nf">MessageError</span><span class="p">(</span><span class="n">msg</span><span class="o">-</span><span class="err">&gt;</span><span class="nf">gobj_copy</span><span class="p">())</span><span class="o">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">debug_info</span><span class="p">);</span>
+                <span class="err">g_printerr</span> <span class="err">("Error</span> <span class="err">received</span> <span class="err">from</span> <span class="err">element</span> <span class="err">%</span><span class="n">s</span><span class="p">:</span> <span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">n</span><span class="s2">", </span>
+<span class="s2">                        msg-&gt;get_source()-&gt;get_name().c_str(), </span>
+<span class="s2">                        err.what().c_str());</span>
+<span class="s2">                g_printerr ("</span><span class="n">Debugging</span> <span class="n">information</span><span class="o">:</span> <span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">n</span><span class="s2">", debug_info.c_str());</span>
+<span class="s2">            }</span>
+<span class="s2">            break;</span>
+
+<span class="s2">        case Gst::MESSAGE_EOS:</span>
+<span class="s2">            g_print ("</span><span class="n">End-Of-Stream</span> <span class="n">reached</span><span class="o">.</span><span class="err">\</span><span class="n">n</span><span class="s2">");</span>
+<span class="s2">            break;</span>
+
+<span class="s2">        default:</span>
+<span class="s2">            /* We should not reach here because we only asked for ERRORs and EOS */</span>
+<span class="s2">            g_printerr ("</span><span class="n">Unexpected</span> <span class="n">message</span> <span class="n">received</span><span class="o">.</span><span class="err">\</span><span class="n">n</span><span class="err">"</span><span class="p">);</span>
+            <span class="err">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="err">}</span>
+
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_NULL</span><span class="o">);</span>
+
+<span class="nt">return</span> <span class="nt">0</span><span class="o">;</span>
+</pre>
+
+<p>}</p>
+<p>3
+::</p>
+<h2>include <gstreamermm.h></gstreamermm.h>
+</h2>
+<p>struct CustomData 
+{
+    Glib::RefPtr&lt; Gst::Pipeline &gt; pipeline;
+    Glib::RefPtr&lt; Gst::Element &gt; source;
+    Glib::RefPtr&lt; Gst::Element &gt; convert;
+    Glib::RefPtr&lt; Gst::Element &gt; sink;
+};</p>
+<p>// Handler for the pad-added signal
+static void pad_added_handler (
+        const Glib::RefPtr<:pad> &amp;new_pad, 
+        CustomData *data)
+{
+    auto sink_pad = data-&gt;convert-&gt;get_static_pad("sink");</:pad></p>
+<pre class="code literal-block"><span></span><span class="nt">g_print</span> <span class="o">(</span><span class="s2">"Received new pad '%s'\n"</span><span class="o">,</span> 
+        <span class="nt">new_pad-</span><span class="o">&gt;</span><span class="nt">get_name</span><span class="o">()</span><span class="p">.</span><span class="nc">c_str</span><span class="o">());</span>
+
+<span class="c">/* If our converter is already linked, we have nothing to do here */</span>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">sink_pad-</span><span class="o">&gt;</span><span class="nt">is_linked</span> <span class="o">())</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">We</span> <span class="err">are</span> <span class="err">already</span> <span class="err">linked.</span> <span class="err">Ignoring.\n")</span><span class="p">;</span>
+    <span class="err">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Check the new pad's type */</span>
+<span class="nt">auto</span> <span class="nt">new_pad_caps</span> <span class="o">=</span> <span class="nt">new_pad-</span><span class="o">&gt;</span><span class="nt">get_caps</span> <span class="o">();</span>
+<span class="nt">auto</span> <span class="nt">new_pad_struct</span> <span class="o">=</span> <span class="nt">new_pad_caps-</span><span class="o">&gt;</span><span class="nt">get_structure</span> <span class="o">(</span><span class="nt">0</span><span class="o">);</span>
+<span class="nt">std</span><span class="p">::</span><span class="nd">string</span> <span class="nt">new_pad_type</span> <span class="o">=</span> <span class="nt">new_pad_struct</span><span class="p">.</span><span class="nc">get_name</span><span class="o">();</span>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">new_pad_type</span><span class="p">.</span><span class="nc">find</span><span class="o">(</span><span class="s2">"audio/x-raw"</span><span class="o">)==</span><span class="nt">std</span><span class="p">::</span><span class="nd">string</span><span class="p">::</span><span class="nd">npos</span><span class="o">)</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">It</span> <span class="err">has</span> <span class="err">type</span> <span class="err">'%s'</span> <span class="err">which</span> <span class="err">is</span> <span class="err">not</span> <span class="err">raw</span> <span class="err">audio.</span> <span class="err">Ignoring.\n",</span> 
+            <span class="err">new_pad_type.c_str())</span><span class="p">;</span>
+    <span class="err">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Attempt the link */</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">new_pad-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">sink_pad</span><span class="o">))</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">Type</span> <span class="err">is</span> <span class="err">'%s'</span> <span class="err">but</span> <span class="err">link</span> <span class="err">failed.\n",</span> <span class="err">new_pad_type.c_str())</span><span class="p">;</span>
+<span class="p">}</span> 
+<span class="nt">else</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">Link</span> <span class="err">succeeded</span> <span class="err">(type</span> <span class="err">'%s').\n",</span> <span class="err">new_pad_type.c_str())</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+<p>}</p>
+<p>int main(int argc, char *argv[]) 
+{
+    Gst::init();</p>
+<pre class="code literal-block"><span></span><span class="nt">CustomData</span> <span class="nt">data</span><span class="o">;</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">source</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span> <span class="o">(</span><span class="s2">"uridecodebin"</span><span class="o">,</span> <span class="s2">"source"</span><span class="o">);</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">convert</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span> <span class="o">(</span><span class="s2">"audioconvert"</span><span class="o">,</span> <span class="s2">"convert"</span><span class="o">);</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">sink</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span> <span class="o">(</span><span class="s2">"autoaudiosink"</span><span class="o">,</span> <span class="s2">"sink"</span><span class="o">);</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">pipeline</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">Pipeline</span><span class="p">::</span><span class="nd">create</span> <span class="o">(</span><span class="s2">"test-pipeline"</span><span class="o">);</span>
+
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">data</span><span class="p">.</span><span class="nc">pipeline</span> <span class="o">||</span> <span class="o">!</span><span class="nt">data</span><span class="p">.</span><span class="nc">source</span> <span class="o">||</span> <span class="o">!</span><span class="nt">data</span><span class="p">.</span><span class="nc">convert</span> <span class="o">||</span> <span class="o">!</span><span class="nt">data</span><span class="p">.</span><span class="nc">sink</span><span class="o">)</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Not</span> <span class="err">all</span> <span class="err">elements</span> <span class="err">could</span> <span class="err">be</span> <span class="err">created.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Build the pipeline. Note that we are NOT linking the source at this</span>
+<span class="c"> *    * point. We will do it later. */</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">data</span><span class="p">.</span><span class="nc">source</span><span class="o">);</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">data</span><span class="p">.</span><span class="nc">convert</span><span class="o">);</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">data</span><span class="p">.</span><span class="nc">sink</span><span class="o">);</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">data</span><span class="p">.</span><span class="nc">convert-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">data</span><span class="p">.</span><span class="nc">sink</span><span class="o">))</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Set the URI to play */</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">source-</span><span class="o">&gt;</span><span class="nt">set_property</span><span class="o">(</span>
+        <span class="s2">"uri"</span><span class="o">,</span> 
+        <span class="nt">Glib</span><span class="p">::</span><span class="nd">ustring</span><span class="o">(</span><span class="s2">"http://docs.gstreamer.com/media/sintel_trailer-480p.webm"</span><span class="o">)</span>
+        <span class="o">);</span>
+
+<span class="c">/* Connect to the pad-added signal */</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">source-</span><span class="o">&gt;</span><span class="nt">signal_pad_added</span><span class="o">()</span><span class="p">.</span><span class="nc">connect</span><span class="o">(</span><span class="cp">[</span><span class="o">&amp;</span><span class="nb">data</span><span class="cp">]</span><span class="o">(</span>
+            <span class="nt">const</span> <span class="nt">Glib</span><span class="p">::</span><span class="nd">RefPtr</span><span class="o">&lt;</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">Pad</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="nt">pad</span><span class="o">)</span>
+        <span class="p">{</span>
+        <span class="err">pad_added_handler(pad,</span> <span class="err">&amp;data)</span><span class="p">;</span>
+        <span class="p">}</span><span class="o">);</span>
+
+<span class="c">/* Start playing */</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">data</span><span class="p">.</span><span class="nc">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_PLAYING</span><span class="o">))</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Unable</span> <span class="err">to</span> <span class="err">set</span> <span class="err">the</span> <span class="err">pipeline</span> <span class="err">to</span> <span class="err">the</span> <span class="err">playing</span> <span class="err">state.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Listen to the bus */</span>
+<span class="nt">auto</span> <span class="nt">bus</span> <span class="o">=</span> <span class="nt">data</span><span class="p">.</span><span class="nc">pipeline-</span><span class="o">&gt;</span><span class="nt">get_bus</span><span class="o">();</span>
+<span class="nt">gboolean</span> <span class="nt">terminate</span> <span class="o">=</span> <span class="nt">FALSE</span><span class="o">;</span>
+<span class="nt">do</span> <span class="p">{</span>
+    <span class="err">auto</span> <span class="err">msg</span> <span class="err">=</span> <span class="err">bus-&gt;pop(</span><span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">CLOCK_TIME_NONE</span><span class="p">,</span>
+            <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_STATE_CHANGED</span> <span class="o">|</span> <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_ERROR</span> <span class="o">|</span> <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_EOS</span><span class="p">);</span>
+
+    <span class="c">/* Parse message */</span>
+    <span class="err">if</span> <span class="err">(msg)</span> <span class="err">{</span>
+
+        <span class="err">switch</span> <span class="err">(msg-&gt;get_message_type())</span> <span class="err">{</span>
+            <span class="err">case</span> <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">MESSAGE_ERROR</span><span class="o">:</span>
+                <span class="err">{</span>
+                    <span class="n">Glib</span><span class="o">::</span><span class="n">Error</span> <span class="n">err</span><span class="p">;</span>
+                    <span class="n">std</span><span class="p">:</span><span class="o">:</span><span class="n">string</span> <span class="n">debug_info</span><span class="p">;</span>
+                    <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="nf">MessageError</span><span class="p">(</span><span class="n">msg</span><span class="o">-</span><span class="err">&gt;</span><span class="nf">gobj_copy</span><span class="p">())</span><span class="o">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">debug_info</span><span class="p">);</span>
+                    <span class="err">g_printerr</span> <span class="err">("Error</span> <span class="err">received</span> <span class="err">from</span> <span class="err">element</span> <span class="err">%</span><span class="n">s</span><span class="p">:</span> <span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">n</span><span class="s2">", </span>
+<span class="s2">                            msg-&gt;get_source()-&gt;get_name().c_str(),</span>
+<span class="s2">                            err.what().c_str());</span>
+<span class="s2">                    g_printerr ("</span><span class="n">Debugging</span> <span class="n">information</span><span class="o">:</span> <span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">n</span><span class="s2">", debug_info.c_str());</span>
+<span class="s2">                    terminate = TRUE;</span>
+<span class="s2">                }</span>
+<span class="s2">                break;</span>
+
+<span class="s2">            case Gst::MESSAGE_EOS:</span>
+<span class="s2">                g_print ("</span><span class="n">End-Of-Stream</span> <span class="n">reached</span><span class="o">.</span><span class="err">\</span><span class="n">n</span><span class="s2">");</span>
+<span class="s2">                terminate = TRUE;</span>
+<span class="s2">                break;</span>
+
+<span class="s2">            case Gst::MESSAGE_STATE_CHANGED:</span>
+<span class="s2">                /* We are only interested in state-changed messages from the pipeline */</span>
+<span class="s2">                if (msg-&gt;get_source() == data.pipeline) {</span>
+<span class="s2">                    Gst::State old_state;</span>
+<span class="s2">                    Gst::State new_state;</span>
+<span class="s2">                    Gst::State pending_state;</span>
+<span class="s2">                    Gst::MessageStateChanged(msg-&gt;gobj_copy()).parse(</span>
+<span class="s2">                            old_state, new_state, pending_state);</span>
+<span class="s2">                    g_print ("</span><span class="n">Pipeline</span> <span class="n">state</span> <span class="n">changed</span> <span class="n">from</span> <span class="o">%</span><span class="n">s</span> <span class="kc">to</span> <span class="o">%</span><span class="n">s</span><span class="o">:</span><span class="err">\</span><span class="n">n</span><span class="s2">",</span>
+<span class="s2">                            typeid(old_state).name(),</span>
+<span class="s2">                            typeid(new_state).name());</span>
+<span class="s2">                }</span>
+<span class="s2">                break;</span>
+<span class="s2">            default:</span>
+<span class="s2">                /* We should not reach here */</span>
+<span class="s2">                g_printerr ("</span><span class="n">Unexpected</span> <span class="n">message</span> <span class="n">received</span><span class="o">.</span><span class="err">\</span><span class="n">n</span><span class="err">"</span><span class="p">);</span>
+                <span class="err">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="err">}</span>
+<span class="err">}</span> <span class="nt">while</span> <span class="o">(!</span><span class="nt">terminate</span><span class="o">);</span>
+
+<span class="c">/* Free resources */</span>
+<span class="nt">data</span><span class="p">.</span><span class="nc">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_NULL</span><span class="o">);</span>
+<span class="nt">return</span> <span class="nt">0</span><span class="o">;</span>
+</pre>
+
+<p>}</p>
+<p>.. categories:: programming
+.. taxonomies: {tags: : cpp, gstreamer}</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../11/irrlicht/" rel="prev" title="Oculusぽちった">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../../17/irrlicht_msgpackrpc/" rel="next" title="IrrlichtにMsgPackRPCを仕込む">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2013/06/02/gstreamer/",
+        disqus_title="Gstreamer\u3092\u59cb\u3081\u3066\u307f\u305f",
+        disqus_identifier="cache/content/posts/2013/06/02/gstreamer.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

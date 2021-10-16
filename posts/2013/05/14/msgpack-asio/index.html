@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>msgpack-rpcのasio版を作成中 | 三次元日誌</title>
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2013/05/14/msgpack-asio/">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../../../04/29/release/" title="release" type="text/html">
+<link rel="next" href="../../16/lambda/" title="lambdaの引数の型を得たい" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="msgpack-rpcのasio版を作成中">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2013/05/14/msgpack-asio/">
+<meta property="og:description" content="msgpack-rpcのasio版を作成中
+連休から始めていたmsgpack-rpcのバックエンドをasioに置き換えてWindowsでも動くようにする試みがやっと目処が立った。
+https://github.com/ousttrue/msgpack-asiorpc
+改め
+https://github.com/ousttrue/msgpack-rpc-asio
+当初は msgpack-rpc のバ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-05-14T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">msgpack-rpcのasio版を作成中</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2013-05-14T00:00:00Z" itemprop="datePublished" title="2013-05-14 00:00">2013-05-14 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/14/msgpack-asio.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>msgpack-rpcのasio版を作成中
+連休から始めていたmsgpack-rpcのバックエンドをasioに置き換えてWindowsでも動くようにする試みがやっと目処が立った。</p>
+<p><a href="https://github.com/ousttrue/msgpack-asiorpc">https://github.com/ousttrue/msgpack-asiorpc</a></p>
+<p>改め</p>
+<p><a href="https://github.com/ousttrue/msgpack-rpc-asio">https://github.com/ousttrue/msgpack-rpc-asio</a></p>
+<p>当初は <code>msgpack-rpc</code> のバックエンドの <code>mpio</code> に <code>asio</code> の <code>kernel</code> を追加することで乗り切ろうとしたのだが、わりとすぐに頓挫した。
+<code>mpio</code> のファイルディスクリプタでIOを管理するAPIがasioと合わないのですな。
+次に、 <code>msgpack-rpc</code> の <code>mp::wavy::loop</code> をasioをラップしたクラスで置き換える作戦で
+進めていたのだがだいぶ改造して構造が見えてきたところで、 <code>asio</code> との設計の違いをラップするのがめんどくさく
+なってまた頓挫した。 <a href="http://dev.activebasic.com/egtra/2011/10/27/449/">http://dev.activebasic.com/egtra/2011/10/27/449/</a>
+を見ると簡単そうに見えるのだが功夫が足らないようだ。
+で、上記の反省を踏まえて <code>asio</code> で <code>msgpack-rpc</code> を自由に実装することにした。
+バイナリデータと <code>msgpack-rpc</code> の変換部分に <code>msgpack-rpc</code> のコードを借用して、
+ネットワーク通信部分は <code>asio</code> で普通に作成した。
+だいたいこんな感じのAPIになる予定。 </p>
+<pre class="code literal-block"><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">server_method</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="kt">int</span> <span class="n">port</span><span class="o">=</span><span class="mi">18080</span><span class="p">;</span>
+    <span class="c1">// server</span>
+    <span class="n">boost</span><span class="o">::</span><span class="n">io_service</span> <span class="n">server_io</span><span class="p">;</span>
+    <span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">server</span> <span class="n">s</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">server_method</span><span class="p">,</span> <span class="s">"add"</span><span class="p">);</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">v4</span><span class="p">(),</span> <span class="n">port</span><span class="p">));</span>
+    <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span> <span class="n">server_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">server_io</span><span class="p">](){</span> <span class="n">server_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">}</span>
+
+    <span class="c1">// client</span>
+    <span class="n">boost</span><span class="o">::</span><span class="n">io_service</span> <span class="n">client_io</span><span class="p">;</span>
+    <span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">session</span> <span class="n">c</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span> 
+    <span class="n">c</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span> <span class="n">port</span><span class="p">);</span>
+    <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span> <span class="n">client_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">client_io</span><span class="p">](){</span> <span class="n">client_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">}</span>
+
+    <span class="c1">// request</span>
+    <span class="k">auto</span> <span class="n">request</span><span class="o">=</span><span class="n">c</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+
+    <span class="c1">// blocking</span>
+    <span class="kt">int</span> <span class="n">result</span><span class="p">;</span>
+    <span class="n">request</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">resut</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+    <span class="c1">// finalize</span>
+    <span class="n">client_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+    <span class="n">client_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+    <span class="n">server_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+    <span class="n">server_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+<p>原型はだいたいできて <code>Windows</code> でも動いたので続きを作りこんで行きたい。
+今のうちに <code>msgpack::asiorpc</code> のネームスペースを変えたいような気もするがどうしようかね。
+<code>msgpack::rpc::asio</code> とかか？うぅむ。
+あと、クラスを <code>UpperCamelCase</code> で、関数を <code>lowerCamelCase</code> に変えよう思っていたが
+<code>boost</code> 、 <code>msgpack</code> と一緒に使うときの見栄えを考慮するとスケークケースも一理あるな。
+クラス名と同じ変数名(<code>request</code>とか)を使いたいときに変数名をreq等に変えることを強いられることがあるのが
+気に入らないところではあるのだが。
+プロジェクト名を <code>msgpack-rpc-asio</code>
+に変えてネームスペースも <code>msgpack::rpc::asio</code> に変えることに今決めた。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../../04/29/release/" rel="prev" title="release">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../../16/lambda/" rel="next" title="lambdaの引数の型を得たい">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2013/05/14/msgpack-asio/",
+        disqus_title="msgpack-rpc\u306easio\u7248\u3092\u4f5c\u6210\u4e2d",
+        disqus_identifier="cache/content/posts/2013/05/14/msgpack-asio.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

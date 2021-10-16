@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>imgui の FFI が luajit で動くところまで作った | 三次元日誌</title>
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2021/example_glfw_openg/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../invoke/" title="python の task runner invoke" type="text/html">
+<link rel="next" href="../lua_info/" title="luaメモ" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="imgui の FFI が luajit で動くところまで作った">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2021/example_glfw_openg/">
+<meta property="og:description" content="https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua
+Window System は GLFW、3D API は OpenGL3 を選択。
+
+SDL2 は、 HWND を取得周りが FFI では面倒なことが分かっていたのと、SDL-Image などの関連ライブラリ無しで行くつもりだった
+D3D11 のバインデ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-07-25T00:00:00Z">
+<meta property="article:tag" content="ffi">
+<meta property="article:tag" content="imgui">
+<meta property="article:tag" content="libclang">
+<meta property="article:tag" content="luajit">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">imgui の FFI が luajit で動くところまで作った</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-25T00:00:00Z" itemprop="datePublished" title="2021-07-25 00:00">2021-07-25 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2021/example_glfw_openg.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p><a href="https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua">https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua</a></p>
+<p>Window System は <code>GLFW</code>、3D API は <code>OpenGL3</code> を選択。</p>
+<ul>
+<li>SDL2 は、 <code>HWND</code> を取得周りが FFI では面倒なことが分かっていたのと、<code>SDL-Image</code> などの関連ライブラリ無しで行くつもりだった</li>
+<li>D3D11 のバインディングを作っているとまた時間がかかる。<code>COM</code> は C の範囲で実装できるので後でやりたい</li>
+</ul>
+<p>ということから、楽そうなものを選択したらそうなった。</p>
+<h2>メンバー関数呼び出し</h2>
+<p><code>ImFont</code>, <code>ImFontAtlas</code> のみ何故か <code>c++</code> 色が強く、メンバ関数呼び出しがあったりするのでなんとかしたい。
+cdecl で FFI 記述できるんだっけ？</p>
+<pre class="code literal-block"><span></span><span class="c1">//io.Fonts-&gt;AddFontDefault();</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);</span>
+<span class="c1">//ImFont* font = io.Fonts-&gt;AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts-&gt;GetGlyphRangesJapanese());</span>
+</pre>
+
+<p>第1引数に this に相当する引数を追加してやればいけた。</p>
+<pre class="code literal-block"><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<span class="s">// 適当に名前を付け替える</span>
+<span class="s">struct ImFont* ImFontAtlas_AddFontFromFileTTF(</span>
+<span class="s">    struct ImFontAtlas* this,</span>
+<span class="s">    const char* filename,</span>
+<span class="s">    float size_pixels,</span>
+<span class="s">    const struct ImFontConfig* font_cfg,</span>
+<span class="s">    ImWchar* glyph_ranges</span>
+<span class="s">) asm("?AddFontFromFileTTF@ImFontAtlas@@QEAAPEAUImFont@@PEBDMPEBUImFontConfig@@PEBG@Z");</span>
+<span class="s">]]</span>
+</pre>
+
+<h2>C++ デフォルト引数</h2>
+<p><code>ImGui</code> の <code>API</code> は基本的にほぼ C になるように配慮されていて、C++ の機能は限定的にしか使っていない。</p>
+<ul>
+<li>関数オーバーロード</li>
+<li>デフォルト引数</li>
+</ul>
+<p>である。
+で、このデフォルト引数がないと <code>imgui</code> の使い勝手が著しく下がる。
+リファレンスを確認して、デフォルト値を当ててやる必要が出るので。</p>
+<pre class="code literal-block"><span></span><span class="c1">// 例</span>
+<span class="n">IMGUI_API</span> <span class="kt">bool</span> <span class="nf">Begin</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span> <span class="kt">bool</span><span class="o">*</span> <span class="n">p_open</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ImGuiWindowFlags</span> <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+</pre>
+
+<p><code>NULL</code> は <code>nil</code> だし、 <code>0</code> はそのまま <code>0</code> なので、簡単なところだけでも対応する。
+最悪、インテリセンスに出るようにすることで調べる手間は回避できるのだけど
+<code>const &amp;ImVec2 v = ImVec2(0, 0)</code> とかはめんどくさいです。
+FFI 境界の <code>struct の value 渡し</code>, <code>デフォルト引数</code> は解決できない場合が多いが、コード生成側で努力する価値はある。</p>
+<p><code>rust</code> はここができなくて、故にラッパー側で API を builder パターンに変更していたりするのだけど、
+<code>rust</code> の <code>imgui</code> ラッパーの API を使いたいのではなくて、生の <code>imgui</code> が使いたいのだ。
+<code>luajit</code> の FFI はちょっとラップすることで簡単に解決できる(遅くなるかもしれないが)。</p>
+<p>ラッパーを自動で生成するようにできた。</p>
+<pre class="code literal-block"><span></span>    <span class="c1">-- lua では nil と false のみが 偽 である</span>
+
+    <span class="c1">-- wrapper</span>
+    <span class="n">Begin</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p_open</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+        <span class="c1">-- p_open が供給されない場合、デフォルト nil になり、NULL として解釈される</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="c1">-- ffi 呼び出し</span>
+        <span class="kr">return</span> <span class="n">imgui</span><span class="p">.</span><span class="n">Begin</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p_open</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+    <span class="kr">end</span><span class="p">,</span>
+
+    <span class="c1">-- wrapper</span>
+    <span class="n">Button</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="c1">-- 引数なしの `ffi.new` は zero 詰めする。 `ImVec2(0, 0)` になる。</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="ow">or</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'struct ImVec2'</span><span class="p">)</span>
+        <span class="c1">-- ffi 呼び出し</span>
+        <span class="kr">return</span> <span class="n">imgui</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="kr">end</span><span class="p">,</span>
+</pre>
+
+<h2>可変長引数</h2>
+<pre class="code literal-block"><span></span><span class="n">IMGUI_API</span> <span class="kt">void</span> <span class="n">Text</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span>
+</pre>
+
+<p>luajit ffi ではそのまま <code>...</code> を扱うことができた。</p>
+<p>ただし、<code>%d</code> のときは、
+<code>LL</code> をつけて <code>integer</code> を渡す。
+<code>number</code> だとうまくいかない。</p>
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="n">LL</span> <span class="c1">-- 64bit int. UL もある</span>
+<span class="n">imgui</span><span class="p">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">"counter = %d"</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
+</pre>
+
+<p><code>LL</code> と <code>UL</code> は luajit の拡張らしい。
+<a href="https://luajit.org/ext_ffi_api.html">https://luajit.org/ext_ffi_api.html</a></p>
+<blockquote>
+<p>Extensions to the Lua Parser</p>
+<p>numeric literals with the suffixes LL or ULL as signed or unsigned 64 bit integers</p>
+</blockquote>
+<p>だがしかし、この記法使うと <code>stylua</code> がエラーになる。そりゃ、そうだ。</p>
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'long long[1]'</span><span class="p">)</span> <span class="c1">-- 32bit だとうまくいかない</span>
+<span class="n">imgui</span><span class="p">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">"counter = %d"</span><span class="p">,</span> <span class="n">counter</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre>
+
+<p>を使うのがよさそう。</p>
+<h2>template class のごまかし</h2>
+<p>T を pointer としてしか使わない場合は、
+<code>T*</code> を除去して <code>void*</code> にすれば動く。</p>
+<pre class="code literal-block"><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">ImVector</span><span class="p">{</span>
+    <span class="kt">int</span> <span class="n">Size</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">Capacity</span><span class="p">;</span>
+    <span class="n">T</span><span class="o">*</span> <span class="n">Data</span><span class="p">;</span>
+<span class="p">};</span>    
+</pre>
+
+<pre class="code literal-block"><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<span class="s">struct ImVector{</span>
+<span class="s">    int Size;</span>
+<span class="s">    int Capacity;</span>
+<span class="s">    void* Data;</span>
+<span class="s">};    </span>
+<span class="s">]]</span>
+</pre>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/ffi/" rel="tag">ffi</a></li>
+            <li><a class="tag p-category" href="../../../categories/imgui/" rel="tag">imgui</a></li>
+            <li><a class="tag p-category" href="../../../categories/libclang/" rel="tag">libclang</a></li>
+            <li><a class="tag p-category" href="../../../categories/luajit/" rel="tag">luajit</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../invoke/" rel="prev" title="python の task runner invoke">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../lua_info/" rel="next" title="luaメモ">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2021/example_glfw_openg/",
+        disqus_title="imgui \u306e FFI \u304c luajit \u3067\u52d5\u304f\u3068\u3053\u308d\u307e\u3067\u4f5c\u3063\u305f",
+        disqus_identifier="cache/content/posts/2021/example_glfw_openg.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

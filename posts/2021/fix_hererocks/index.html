@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VS2019 向けに hererocks を修正(vswhere を使う) | 三次元日誌</title>
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2021/fix_hererocks/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../lua_debug_adapter/" title="lua の DebugAdapter を書いてみた" type="text/html">
+<link rel="next" href="../lua_imgui_plan/" title="lua による imgui 計画" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="VS2019 向けに hererocks を修正(vswhere を使う)">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2021/fix_hererocks/">
+<meta property="og:description" content="hererocks が VS2019BuildTools を検知して動作するように改造してみた。
+https://github.com/luarocks/hererocks/pull/15
+通るかどうかは微妙。
+内容的に、通りづらそう。
+古い vc を使っていたり MinGW 使っていたりすると実験できないしね。
+とりあえず、既存の動いている部分が壊れないようには配慮した。
+採用されれば、
+htt">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-07-15T00:00:00Z">
+<meta property="article:tag" content="lua">
+<meta property="article:tag" content="nvim">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">VS2019 向けに hererocks を修正(vswhere を使う)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-15T00:00:00Z" itemprop="datePublished" title="2021-07-15 00:00">2021-07-15 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2021/fix_hererocks.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>hererocks が VS2019BuildTools を検知して動作するように改造してみた。</p>
+<p><a href="https://github.com/luarocks/hererocks/pull/15">https://github.com/luarocks/hererocks/pull/15</a></p>
+<p>通るかどうかは微妙。
+内容的に、通りづらそう。
+古い vc を使っていたり MinGW 使っていたりすると実験できないしね。
+とりあえず、既存の動いている部分が壊れないようには配慮した。</p>
+<p>採用されれば、</p>
+<p><a href="https://github.com/wbthomason/packer.nvim/issues/302">https://github.com/wbthomason/packer.nvim/issues/302</a></p>
+<p>も進展する。
+Windows 版の luarocks 呼び出しに改造が必要なのだが、
+先に hererocks が動いている必要があるという順番。</p>
+<p>とりあえず単体で試すことができて</p>
+<pre class="code literal-block"><span></span># C:/Python38/Scripts/pip.exe
+$ pip install https://github.com/ousttrue/hererocks/archive/add_vswhere.zip
+</pre>
+
+<p>とする。</p>
+<pre class="code literal-block"><span></span># C:/Python38/Scripts/hererocks.exe
+$ hererocks.exe --target vs -j 2.1.0-beta3 -r latest build_dir
+Using cl.exe found in PATH.
+Fetching LuaJIT 2.1.0-beta3 (target: vs) (cached)
+Verifying SHA256 checksum
+Building LuaJIT 2.1.0-beta3 (target: vs)
+Installing LuaJIT 2.1.0-beta3 (target: vs)
+Fetching LuaRocks 3.7.0 (cached)
+Verifying SHA256 checksum
+Building and installing LuaRocks 3.7.0
+</pre>
+
+<p>lua はシステムにインストールして全体でライブラリを共有するというよりは、
+プロジェクト単位でインストールしてローカルに必要なライブラリだけを追加するという運用になりそう。
+なので、 hererocks でプロジェクトローカルに lua をサクッとビルドできるのはなかなかよい。
+python の venv 的な運用。
+展開先は、 <code>.gitignore</code> する。</p>
+<p>ただ、外部ライブラリのラッパーがさくっと動くかというと Windows だと厳しいものがありますな・・・。
+vcpkg と連携させるとか、更なる頑張りが必要かもしれない。
+なので、 luajit の ffi が面白いかもしれない。
+standalone の lua インタプリタを使う場合は <code>hererocks</code> がいいのではないか。</p>
+<h3>vswhere メモ</h3>
+<p><a href="https://github.com/Microsoft/vswhere">https://github.com/Microsoft/vswhere</a></p>
+<p><code>cl.exe</code>, <code>msbuild.exe</code> などの探索に使う。
+<code>vs2017 version 15.2</code> 以降に入っているらしい。</p>
+<p>こんな感じに使う。</p>
+<pre class="code literal-block"><span></span># %ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
+&gt; vswhere -nologo -products *
+instanceId: 6762dfe1
+installDate: 2020/07/21 9:26:34
+installationName: VisualStudio/16.7.3+30503.244
+installationPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+installationVersion: 16.7.30503.244
+productId: Microsoft.VisualStudio.Product.BuildTools
+productPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\LaunchDevCmd.bat
+state: 4294967295
+isComplete: 1
+isLaunchable: 1
+isPrerelease: 0
+isRebootRequired: 0
+displayName: Visual Studio Build Tools 2019
+description: Visual Studio Build Tools では、Visual Studio IDE を必要とせずに、MSBuild ベースのネイティブ マネージド アプリケーションをビルドできます。また、Visual C++ のコンパイラやライブラリ、MFC、ATL、および C++/CLI サポートをインストールするオプションも用意されています。
+channelId: VisualStudio.16.Release
+channelUri: https://aka.ms/vs/16/release/channel
+enginePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service
+releaseNotes: https://go.microsoft.com/fwlink/?LinkId=660893#16.7.3
+thirdPartyNotices: https://go.microsoft.com/fwlink/?LinkId=660909
+updateDate: 2020-09-13T06:19:26.0508205Z
+catalog_buildBranch: d16.7
+catalog_buildVersion: 16.7.30503.244
+catalog_id: VisualStudio/16.7.3+30503.244
+catalog_localBuild: build-lab
+catalog_manifestName: VisualStudio
+catalog_manifestType: installer
+catalog_productDisplayVersion: 16.7.3
+catalog_productLine: Dev16
+catalog_productLineVersion: 2019
+catalog_productMilestone: RTW
+catalog_productMilestoneIsPreRelease: False
+catalog_productName: Visual Studio
+catalog_productPatchVersion: 3
+catalog_productPreReleaseMilestoneSuffix: 1.0
+catalog_productSemanticVersion: 16.7.3+30503.244
+catalog_requiredEngineVersion: 2.7.3132.26759
+properties_campaignId:
+properties_channelManifestId: VisualStudio.16.Release/16.7.3+30503.244
+properties_nickname:
+properties_setupEngineFilePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe
+</pre>
+
+<p><a href="https://github.com/microsoft/vswhere/wiki/Find-VC">https://github.com/microsoft/vswhere/wiki/Find-VC</a></p>
+<p>フィルタをかけられる。</p>
+<pre class="code literal-block"><span></span>&gt; vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+</pre>
+
+<p>見つかったパスから先は固定であるとみなして、 <code>vcvars64.bat</code> などを見つける。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/lua/" rel="tag">lua</a></li>
+            <li><a class="tag p-category" href="../../../categories/nvim/" rel="tag">nvim</a></li>
+            <li><a class="tag p-category" href="../../../categories/python/" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../lua_debug_adapter/" rel="prev" title="lua の DebugAdapter を書いてみた">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../lua_imgui_plan/" rel="next" title="lua による imgui 計画">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2021/fix_hererocks/",
+        disqus_title="VS2019 \u5411\u3051\u306b hererocks \u3092\u4fee\u6b63(vswhere \u3092\u4f7f\u3046)",
+        disqus_identifier="cache/content/posts/2021/fix_hererocks.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

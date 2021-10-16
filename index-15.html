@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="作業記録">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三次元日誌 (過去の記事 15ページ目) | 三次元日誌</title>
+<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/index-15.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-14.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]-->
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href=".">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav"></ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+    
+        
+
+    
+        
+    <div class="postindex">
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/summer/lua_opengl/" class="u-url">Lua で OpenGL</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/summer/lua_opengl/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-08-05T00:00:00Z" itemprop="datePublished" title="2021-08-05 00:00">2021-08-05 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/summer/lua_opengl/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/summer/lua_opengl.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>imgui bind がだいたいできて軌道に乗ったので、glTF viewer の作成にとりかかる。</p>
+<p><a href="https://www.glfw.org/docs/latest/quick.html">https://www.glfw.org/docs/latest/quick.html</a></p>
+<p>の回転アニメーション以外できた。</p>
+<h2>luajit の cdef で頂点配列の定義が捗る</h2>
+<pre class="code literal-block"><span></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>
+<span class="p">{</span>
+    <span class="p">{</span> <span class="o">-</span><span class="mf">0.6f</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span> <span class="p">},</span>
+    <span class="p">{</span>  <span class="mf">0.6f</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">,</span> <span class="mf">0.f</span> <span class="p">},</span>
+    <span class="p">{</span>   <span class="mf">0.f</span><span class="p">,</span>  <span class="mf">0.6f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span> <span class="p">}</span>
+<span class="p">};</span>
+</pre>
+
+<p>が、</p>
+<pre class="code literal-block"><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="p">(</span><span class="s">[[</span>
+<span class="s">struct Vertex2DRGB</span>
+<span class="s">{</span>
+<span class="s">    float x, y;</span>
+<span class="s">    float r, g, b;</span>
+<span class="s">};</span>
+<span class="s">]]</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">vertices</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span>
+    <span class="s2">"struct Vertex2DRGB[3]"</span><span class="p">,</span>
+    <span class="p">{</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre>
+
+<p>などという書き方ができてしまう。luajit ffi 強い。</p>
+<h2>ffi.metatype</h2>
+<p>luajit を活かした線形代数ライブラリを探索していて、</p>
+<p><a href="https://github.com/bjornbytes/maf">https://github.com/bjornbytes/maf</a></p>
+<p>を見つけた。</p>
+<p>luajit ffi には便利関数</p>
+<pre class="code literal-block"><span></span>ffi.metatype(ct, metatable)
+</pre>
+
+<p>があって、これを使うと ffi.cdef した C の struct に lua の metatable を合体できる。</p>
+<p>線形代数ライブラリは、 <code>ffi.metatype</code> を使って自作してみよう(mafにはvec3 と quaternion しかないのもあり)。
+ついでに、lua の unittest を取り入れましょう。</p>
+<h2>20210830</h2>
+<p><code>mat4</code> を実装してみた。</p>
+<p><a href="https://github.com/ousttrue/limgui/blob/master/lua/mafex.lua">https://github.com/ousttrue/limgui/blob/master/lua/mafex.lua</a></p>
+<pre class="code literal-block"><span></span>    <span class="k">typedef</span> <span class="k">union</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="p">{</span>
+            <span class="kt">float</span> <span class="n">_11</span><span class="p">,</span> <span class="n">_12</span><span class="p">,</span> <span class="n">_13</span><span class="p">,</span> <span class="n">_14</span><span class="p">;</span>
+            <span class="kt">float</span> <span class="n">_21</span><span class="p">,</span> <span class="n">_22</span><span class="p">,</span> <span class="n">_23</span><span class="p">,</span> <span class="n">_24</span><span class="p">;</span>
+            <span class="kt">float</span> <span class="n">_31</span><span class="p">,</span> <span class="n">_32</span><span class="p">,</span> <span class="n">_33</span><span class="p">,</span> <span class="n">_34</span><span class="p">;</span>
+            <span class="kt">float</span> <span class="n">_41</span><span class="p">,</span> <span class="n">_42</span><span class="p">,</span> <span class="n">_43</span><span class="p">,</span> <span class="n">_44</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="kt">float</span> <span class="n">array</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+    <span class="p">}</span> <span class="n">mat4</span><span class="p">;</span>
+</pre>
+
+<p>という定義で OpenGL の uniform 変数に直接渡せるので使いやすい。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/luada/" class="u-url">LuaDA</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/luada/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-31T00:00:00Z" itemprop="datePublished" title="2021-07-31 00:00">2021-07-31 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/luada/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/luada.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>vscode の lua デバッガーに</p>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a> を使っていたのだが、</p>
+<p><code>launch.json</code> の <code>args</code> に <code>\\</code> が入るとエラーで起動できない。
+Windows で作業しているので、稀によくファイルパスの指定に <code>\\</code> が入る。</p>
+<h2>DebugAdapter を作っていたら、直し方がわかった</h2>
+<p><a href="https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4">https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4</a></p>
+<h3>PR</h3>
+<p><a href="https://github.com/tomblind/local-lua-debugger-vscode/pull/37">https://github.com/tomblind/local-lua-debugger-vscode/pull/37</a></p>
+<p>Linux では動かんかったらしく、別の方法で修正してくれた。</p>
+<p>👍 <code>0.2.2</code> <a href="https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md">https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md</a></p>
+<h2>自前で <code>DebugAdapter</code> 作ってみることにした。</h2>
+<p><a href="https://github.com/ousttrue/luada">https://github.com/ousttrue/luada</a></p>
+<p>途中まで実装したのだが、</p>
+<ul>
+<li>luajit.exe + luada.lua</li>
+</ul>
+<p>という構成よりは、</p>
+<ul>
+<li>luada.exe</li>
+</ul>
+<p>の方が取り回しがよくて、それなら lua 成分をもっと減らして JSON-RPC 制御も <code>c++</code> なり <code>rust</code> なりにして
+lua 埋め込み型の exe が作りやすそう。
+元々、 スタンドアロンの lua インタプリタと組み合わせて使う lua スクリプトという方向性で実装していたのだが、
+<code>luajit-2.1.0-beta3</code> 一辺倒になりつつあるので気分が変わってきたのであった。
+これに関しては、今の構成でできるところまでやってみよう。</p>
+<h2>VSCode の Extension を作る</h2>
+<ul>
+<li><a href="https://code.visualstudio.com/api/get-started/your-first-extension">https://code.visualstudio.com/api/get-started/your-first-extension</a></li>
+</ul>
+<p>手順通りに初期化した。npm は最新版に更新したほうがよいぽい。</p>
+<h2>MockDebug</h2>
+<ul>
+<li><a href="https://code.visualstudio.com/api/extension-guides/debugger-extension">https://code.visualstudio.com/api/extension-guides/debugger-extension</a></li>
+</ul>
+<p>を読む。</p>
+<ul>
+<li><a href="https://github.com/microsoft/vscode-mock-debug">https://github.com/microsoft/vscode-mock-debug</a></li>
+</ul>
+<p>というサンプルがある。</p>
+<p>いくつかの機能をまとめて提供する必要がありそう。</p>
+<ul>
+<li>launch.json の設定</li>
+<li>DebugAdapter 本体</li>
+<li>DebugAdapter を起動する</li>
+</ul>
+<h2>実装してみる</h2>
+<h3>Extension の activate</h3>
+<p>適当にイベントを登録して</p>
+<pre class="code literal-block"><span></span>    <span class="err">//</span> <span class="err">package.json</span>
+    <span class="s2">"activationEvents"</span><span class="err">:</span> <span class="p">[</span>
+        <span class="s2">"onDebug"</span><span class="p">,</span>
+        <span class="s2">"onDebugInitialConfigurations"</span><span class="p">,</span>
+        <span class="s2">"onDebugDynamicConfigurations"</span><span class="p">,</span>
+        <span class="s2">"onDebugResolve:lua"</span><span class="p">,</span>
+        <span class="s2">"onLanguage:lua"</span>
+    <span class="p">]</span><span class="err">,</span>
+</pre>
+
+<p><code>activate</code> されることを確認</p>
+<pre class="code literal-block"><span></span><span class="c1">// src/extension.ts</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">activate</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'activate luada'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+
+<h3>Launch</h3>
+<pre class="code literal-block"><span></span>    <span class="s2">"contributes"</span><span class="err">:</span> <span class="p">{</span>
+        <span class="nt">"breakpoints"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">"language"</span><span class="p">:</span> <span class="s2">"lua"</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">"debuggers"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"luada"</span><span class="p">,</span>
+                <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"LuaDA"</span><span class="p">,</span>
+                <span class="nt">"languages"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">"lua"</span>
+                <span class="p">],</span>
+                <span class="err">//</span> <span class="err">launch.json</span> <span class="err">のテンプレート</span>
+                <span class="nt">"initialConfigurations"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"luada"</span><span class="p">,</span>
+                        <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"launch luada"</span><span class="p">,</span>
+                        <span class="nt">"request"</span><span class="p">:</span> <span class="s2">"launch"</span><span class="p">,</span>
+                        <span class="nt">"program"</span><span class="p">:</span> <span class="s2">"${workspaceFolder}/main.lua"</span><span class="p">,</span>
+                        <span class="nt">"args"</span><span class="p">:</span> <span class="p">[]</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="err">//</span> <span class="err">request:</span> <span class="err">launch</span> <span class="err">に対して可能な</span> <span class="err">property</span> <span class="err">の定義</span>
+                <span class="nt">"configurationAttributes"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">"launch"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">"properties"</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="nt">"program"</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+                                <span class="nt">"markdownDescription"</span><span class="p">:</span> <span class="s2">"Lua program to debug - set this to the path of the script"</span><span class="p">,</span>
+                                <span class="nt">"default"</span><span class="p">:</span> <span class="s2">"${workspaceFolder}/main.lua"</span>
+                            <span class="p">},</span>                            
+                            <span class="nt">"arg"</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"array"</span><span class="p">,</span>
+                                <span class="nt">"markdownDescription"</span><span class="p">:</span> <span class="s2">"Command line argument, arg[1] ... arg[n]"</span><span class="p">,</span>
+                                <span class="nt">"default"</span><span class="p">:</span> <span class="p">[]</span>
+                            <span class="p">}</span>                            
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span><span class="err">,</span>
+</pre>
+
+<ul>
+<li>activate で DebugAdapterDescriptorFactory を登録</li>
+<li>launch で createDebugAdapterDescriptor を実行する</li>
+</ul>
+<p><code>src/extensions.ts</code></p>
+<pre class="code literal-block"><span></span><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">vscode</span> <span class="nx">from</span> <span class="s1">'vscode'</span><span class="p">;</span>
+
+
+<span class="kd">function</span> <span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span><span class="o">:</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptorFactory</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">createDebugAdapterDescriptor</span><span class="p">(</span>
+            <span class="nx">session</span>: <span class="kt">vscode.DebugSession</span><span class="p">,</span>
+            <span class="nx">executable</span>: <span class="kt">vscode.DebugAdapterExecutable</span> <span class="o">|</span> <span class="kc">undefined</span>
+        <span class="p">)</span><span class="o">:</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">ProviderResult</span><span class="o">&lt;</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptor</span><span class="o">&gt;</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'launch luada'</span><span class="p">);</span>
+            <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">"exe"</span><span class="p">;</span>
+            <span class="kr">const</span> <span class="nx">runtimeArgs</span>: <span class="kt">string</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="c1">//</span>
+            <span class="c1">// デバッグアダプターを起動する</span>
+            <span class="c1">// 起動したアダプターと vscode は、標準入出力で JSON-RPC により DebugAdapterProtocol で通信する。</span>
+            <span class="c1">//</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterExecutable</span><span class="p">(</span><span class="nx">runtime</span><span class="p">,</span> <span class="nx">runtimeArgs</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">activate</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'activate luada'</span><span class="p">);</span>
+    <span class="nx">context</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">registerDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="s1">'luada'</span><span class="p">,</span> <span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span><span class="p">)));</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">deactivate() {</span> <span class="p">}</span>
+</pre>
+
+<h3>Debug Adapter の実装</h3>
+<p><a href="https://microsoft.github.io/debug-adapter-protocol/specification">https://microsoft.github.io/debug-adapter-protocol/specification</a></p>
+<p>を見て粛々と実装する。</p>
+<h4><a href="https://microsoft.github.io/debug-adapter-protocol/specification#Events_Output">Output Event</a></h4>
+<p>vscode の DebugConsole に出力されるので早期に作ると print debug の助けになる。</p>
+<h4>Logger</h4>
+<ul>
+<li>DebugAdapterProtocol のやりとりすべてを記録する機能をアダプター側で作るべし。無いとデバッグ困難に。</li>
+</ul>
+<p>例</p>
+<p><a href="https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts">https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts</a></p>
+<h3>VSIX に出力</h3>
+<p><a href="https://code.visualstudio.com/api/working-with-extensions/publishing-extension">https://code.visualstudio.com/api/working-with-extensions/publishing-extension</a></p>
+<p>vsce を使う。</p>
+<p>package.json に追加。</p>
+<pre class="code literal-block"><span></span>    <span class="s2">"publisher"</span><span class="err">:</span> <span class="s2">"ousttrue"</span><span class="err">,</span>
+    <span class="s2">"repository"</span><span class="err">:</span> <span class="p">{</span>
+        <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"git"</span><span class="p">,</span>
+        <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://github.com/ousttrue/luada.git"</span>
+    <span class="p">}</span><span class="err">,</span>
+</pre>
+
+<pre class="code literal-block"><span></span>$ npx vsce package
+</pre>
+
+<h2>参考</h2>
+<h3><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></h3>
+<ul>
+<li>vscode.DebugAdapterExecutable</li>
+</ul>
+<h3><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></h3>
+<ul>
+<li>vscode.DebugAdapterServer</li>
+<li>TypeScript で vscode.DebugAdapterServer を new</li>
+<li>vscode と DebugAdapterServer が DAP で通信</li>
+<li>DebugAdapterServer が lua を spawn もしている</li>
+</ul>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/luv/" class="u-url">luv</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/luv/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-29T00:00:00Z" itemprop="datePublished" title="2021-07-29 00:00">2021-07-29 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/luv/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/luv.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>main loop がブロックするので luv を取り入れてみる。</p>
+<p><a href="https://github.com/luvit/luv">https://github.com/luvit/luv</a></p>
+<h2>cmake で build</h2>
+<p>luv に CMake が付属しており簡単。</p>
+<pre class="code literal-block"><span></span>$ cmake -S <span class="o">{</span>LUV_DIR<span class="o">}</span> -B <span class="o">{</span>BUILD_DIR<span class="o">}</span>
+$ cmake --build <span class="o">{</span>BUILD_DIR<span class="o">}</span> --config Release
+</pre>
+
+<h2>main loop を idle へ</h2>
+<pre class="code literal-block"><span></span><span class="c1">-- Main loop</span>
+<span class="kr">while</span> <span class="n">app</span><span class="p">:</span><span class="n">new_frame</span><span class="p">()</span> <span class="kr">do</span>
+    <span class="n">gui</span><span class="p">:</span><span class="n">update</span><span class="p">()</span>
+    <span class="n">app</span><span class="p">:</span><span class="n">render</span><span class="p">(</span><span class="n">gui</span><span class="p">.</span><span class="n">clear_color</span><span class="p">)</span>
+<span class="kr">end</span>
+</pre>
+
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">uv</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"luv"</span><span class="p">)</span>
+
+<span class="c1">-- Main loop</span>
+<span class="kd">local</span> <span class="n">idle</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_idle</span><span class="p">()</span>
+<span class="n">idle</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="kr">function</span><span class="p">()</span>
+    <span class="kr">if</span> <span class="ow">not</span> <span class="n">app</span><span class="p">:</span><span class="n">new_frame</span><span class="p">()</span> <span class="kr">then</span>
+        <span class="n">idle</span><span class="p">:</span><span class="n">stop</span><span class="p">()</span>
+    <span class="kr">end</span>
+    <span class="n">gui</span><span class="p">:</span><span class="n">update</span><span class="p">()</span>
+    <span class="n">app</span><span class="p">:</span><span class="n">render</span><span class="p">(</span><span class="n">gui</span><span class="p">.</span><span class="n">clear_color</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="n">uv</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="s2">"default"</span><span class="p">)</span>
+</pre>
+
+<h2>重い処理を thread へ</h2>
+<pre class="code literal-block"><span></span>    <span class="kd">local</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_work</span><span class="p">(</span>
+        <span class="n">on_thread</span><span class="p">,</span> <span class="c1">--work,in threadpool</span>
+        <span class="n">on_end</span> <span class="c1">--after work, in loop thread</span>
+    <span class="p">)</span>
+    <span class="n">uv</span><span class="p">.</span><span class="n">queue_work</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">mp</span><span class="p">.</span><span class="n">pack</span><span class="p">({</span> <span class="p">...</span> <span class="p">}))</span>
+</pre>
+
+<pre class="code literal-block"><span></span><span class="n">Error</span><span class="o">:</span> <span class="n">thread</span> <span class="n">arg</span> <span class="n">not</span> <span class="n">support</span> <span class="n">type</span> <span class="s1">'table'</span> <span class="n">at</span> <span class="mi">2</span><span class="n">Error</span><span class="o">:</span> <span class="n">thread</span> <span class="n">arg</span> <span class="n">not</span> <span class="n">support</span> <span class="n">type</span> <span class="n">table</span> <span class="n">at</span> <span class="mi">1</span><span class="n">Uncaught</span> <span class="n">Error</span><span class="o">:</span> <span class="n">attempt</span> <span class="n">to</span> <span class="n">call</span> <span class="n">a</span> <span class="n">nil</span> <span class="n">value</span>
+</pre>
+
+<p>あ</p>
+<h2>thread 間で受け渡しのできる型</h2>
+<ul>
+<li><a href="https://github.com/luvit/luv/blob/master/docs.md#pseudo-types">https://github.com/luvit/luv/blob/master/docs.md#pseudo-types</a></li>
+</ul>
+<blockquote>
+<p>threadargs: variable arguments (...) of type nil, boolean, number, string, or userdata</p>
+</blockquote>
+<p>nvim ではそこで messagepack なわけか。</p>
+<p><a href="https://tullio.hatenablog.com/entry/20121112/1352732239">Kyoto Tycoon+Lua-JIT拡張+MessagePack=無敵</a> 経由で <a href="https://gist.github.com/catwell/2971290">The state of MessagePack in Lua</a> をたどり着く。</p>
+<blockquote>
+<p>If you want pure LuaJIT -&gt; luajit-msgpack-pure</p>
+</blockquote>
+<p>たしかに、これだ。</p>
+<p><a href="https://github.com/catwell/luajit-msgpack-pure">https://github.com/catwell/luajit-msgpack-pure</a></p>
+<ul>
+<li>Windows なので <code>malloc</code>, <code>free</code>, <code>realloc</code> が cdef できなかったのを修正</li>
+<li>
+<code>function</code> と <code>cdata</code> を nil にしてスキップする処理を追加してみた</li>
+</ul>
+<p>結果、巨大なテーブルの pack/unpack でブロックしてしまう。
+あとスレッド側のエラーハンドリングをしてないので、デバッガはアタッチできないし、何もわからない。
+<code>pcall</code> などでエラーメッセージを取得して、失敗した場合はエラーメッセージを投げるようにしてあげる必要がある。</p>
+<p>なんとなく、使い方はわかった。
+後で、アニメーションシステムを実装するときのインフラにも使えるかもしれない。
+OpenGL のレンダースレッドと、シーン更新を分離する。</p>
+<h2>関連</h2>
+<ul>
+<li><a href="https://kimitok.hateblo.jp/entry/2014/04/16/223643">node.jsを支えるlibuvのチュートリアル"uvbook" :スレッド</a></li>
+<li><a href="https://nikhilm.github.io/uvbook/threads.html">https://nikhilm.github.io/uvbook/threads.html</a></li>
+</ul>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/imgui_docking_api/" class="u-url">ImGui の API</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/imgui_docking_api/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-28T00:00:00Z" itemprop="datePublished" title="2021-07-28 00:00">2021-07-28 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/imgui_docking_api/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/imgui_docking_api.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p><a href="https://github.com/ousttrue/limgui">https://github.com/ousttrue/limgui</a></p>
+<p>ようやく <code>FFI</code> の整備ができたので、ImGui の API 調査に進む</p>
+<h2>DockingBuilder</h2>
+<p><code>imgui_internal.h</code> に一連の <code>Docking</code> 向けの API がある。</p>
+<ul>
+<li><a href="https://github.com/ocornut/imgui/issues/2109">https://github.com/ocornut/imgui/issues/2109</a></li>
+</ul>
+<h3><a href="https://gist.github.com/PossiblyAShrub/0aea9511b84c34e191eaa90dd7225969">PossiblyAShrub/dock_builder_example.cpp</a></h3>
+<p>変数を流用していてわかりにくいのだが、おそらく下記のような感じだと思う。</p>
+<pre class="code literal-block"><span></span>+----+----+
+|    |    |
+|Left|----|
+|    |Down|
++----+----+
+</pre>
+
+<pre class="code literal-block"><span></span><span class="k">auto</span> <span class="n">root</span> <span class="o">=</span> <span class="n">ImGui</span><span class="o">::</span><span class="n">DockBuilderAddNode</span><span class="p">(</span><span class="n">dockspace_id</span><span class="p">,</span> <span class="n">dockspace_flags</span> <span class="o">|</span> <span class="n">ImGuiDockNodeFlags_DockSpace</span><span class="p">);</span>
+                                                                         <span class="c1">// 返り値と同じ Left  // 反対側 Right</span>
+<span class="n">ImGuiID</span> <span class="n">right</span><span class="p">;</span>
+<span class="k">auto</span> <span class="n">left</span> <span class="o">=</span> <span class="n">ImGui</span><span class="o">::</span><span class="n">DockBuilderSplitNode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">ImGuiDir_Left</span><span class="p">,</span> <span class="mf">0.2f</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">right</span><span class="p">);</span>
+                                                                         <span class="c1">// 返り値と同じ Down  // 反対側 Up</span>
+<span class="n">ImGuiID</span> <span class="n">up</span><span class="p">;</span>
+<span class="k">auto</span> <span class="n">down</span> <span class="o">=</span> <span class="n">ImGui</span><span class="o">::</span><span class="n">DockBuilderSplitNode</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">ImGuiDir_Down</span><span class="p">,</span> <span class="mf">0.25f</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">up</span><span class="p">);</span>
+</pre>
+
+<pre class="code literal-block"><span></span># .imgui.ini 
+[Docking][Data]
+DockSpace     ID=0x7CF2A649 Window=0x9A404470 Pos=0,30 Size=1200,870 Split=X
+  DockNode    ID=0x00000001 Parent=0x7CF2A649 SizeRef=599,900 Selected=0xDA554856 =&gt; Left
+  DockNode    ID=0x00000002 Parent=0x7CF2A649 SizeRef=599,900 Split=Y
+    DockNode  ID=0x00000003 Parent=0x00000002 SizeRef=599,673 CentralNode=1
+    DockNode  ID=0x00000004 Parent=0x00000002 SizeRef=599,225 Selected=0xBCCD3F05 =&gt; Down
+</pre>
+
+<ul>
+<li>[ ] central node</li>
+</ul>
+<h2>Tree</h2>
+<p>libclang のパース結果の <code>CXCursor</code> のツリー</p>
+<p>{{ image(path="tree.jpg") }}</p>
+<ul>
+<li>[ ] selection</li>
+</ul>
+<h2>Table</h2>
+<p>glTF を表示してみた。さくさく書けてよさそう。</p>
+<p>{{ image(path="table.jpg") }}</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/lua_info/" class="u-url">luaメモ</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/lua_info/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-27T00:00:00Z" itemprop="datePublished" title="2021-07-27 00:00">2021-07-27 00:00</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2021-08-15T00:00:00Z" itemprop="dateUpdated" title="2021-08-15 00:00">2021-08-15 00:00</time>)</span>
+            </a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/lua_info/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/lua_info.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p><a href="https://www.lua.org/docs.html">https://www.lua.org/docs.html</a></p>
+<h2>Interpreter</h2>
+<p>とりあえず <code>luajit-2.1.0-beta3</code> 推し。</p>
+<pre class="code literal-block"><span></span>+---+    +---+    +---+    +---+
+|5.1| -&gt; |5.2| -&gt; |5.3| -&gt; |5.4|
++---+    +---+    +---+    +---+
+  |        |        |
+  |        |        +- ravi
+  |        |
+  |        +- moonsharp
+  |
+  +- luajit(5.1 base)
+  |   +- moonjit
+  +- luau(5.1 base)
+</pre>
+
+<p><code>lua-5.1</code> をベースに分岐したものが多い？</p>
+<p><a href="https://www.lua.org/versions.html">https://www.lua.org/versions.html</a></p>
+<table>
+<thead><tr>
+<th></th>
+<th>url</th>
+<th>memo</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Lua5.1</td>
+<td></td>
+<td>2012。これより古いものを使う理由は無さそう。</td>
+</tr>
+<tr>
+<td>Lu15.2</td>
+<td><a href="https://www.lua.org/manual/5.2/readme.html#changes">since Lua5.1</a></td>
+<td>2015。finalizer. 関数の <code>_ENV</code> 仕様変更</td>
+</tr>
+<tr>
+<td>Lua5.3</td>
+<td><a href="https://www.lua.org/manual/5.3/readme.html#changes">since Lua5.2</a></td>
+<td>2020。integers</td>
+</tr>
+<tr>
+<td>Lua5.4</td>
+<td><a href="https://www.lua.org/manual/5.4/readme.html#changes">since Lua5.3</a></td>
+<td>2021。const, to-be-closed</td>
+</tr>
+<tr>
+<td>LuaJIT</td>
+<td><a href="https://luajit.org/">https://luajit.org/</a></td>
+<td>Lua5.1base。最終版は <code>2.1.0-beta3</code>。neovimもこれ。<code>FFI</code> も強力。</td>
+</tr>
+<tr>
+<td>Luau</td>
+<td><a href="https://luau-lang.org/">https://luau-lang.org/</a></td>
+<td>Lua5.1 の superset。Roblox専用。オープンソースではない。</td>
+</tr>
+<tr>
+<td>Ravi</td>
+<td><a href="http://ravilang.github.io/">http://ravilang.github.io/</a></td>
+<td>Lua5.3base？。limited optional static typing and MIR based JIT compiler</td>
+</tr>
+</tbody>
+</table>
+<h3>変わり種</h3>
+<p><code>headeronly</code>. include するだけで使える。</p>
+<ul>
+<li><a href="https://github.com/edubart/minilua">https://github.com/edubart/minilua</a></li>
+</ul>
+<p>LUA に更に埋め込む</p>
+<ul>
+<li><a href="https://terralang.org/">https://terralang.org/</a></li>
+</ul>
+<h2>Translator</h2>
+<h3><a href="https://moonscript.org/">MoonScript</a></h3>
+<h3><a href="https://typescripttolua.github.io/">TypescriptToLua</a></h3>
+<ul>
+<li>後で出てくる、<code>local-lua-debugger</code> はこれで実装されているぽい。</li>
+</ul>
+<h3><a href="https://ifritjp.github.io/documents/lunescript/">LuneScript/</a></h3>
+<h3><a href="https://github.com/teal-language/tl">Teal</a></h3>
+<h2>Language server</h2>
+<h3><a href="https://github.com/EmmyLua/EmmyLua-LanguageServer">EmmyLua</a></h3>
+<ul>
+<li>Java製</li>
+<li>
+<a href="https://emmylua.github.io/annotation.html">EmmyLua Annotation</a> に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する</li>
+</ul>
+<h3><a href="https://github.com/sumneko/lua-language-server">lua-language-server</a></h3>
+<ul>
+<li>⭐ <a href="https://emmylua.github.io/annotation.html">EmmyLua Annotation</a> に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する</li>
+</ul>
+<p>設定例</p>
+<pre class="code literal-block"><span></span>    <span class="s2">"Lua.runtime.version"</span><span class="err">:</span> <span class="s2">"LuaJIT"</span><span class="err">,</span>
+    <span class="s2">"Lua.workspace.preloadFileSize"</span><span class="err">:</span> <span class="mi">10000</span><span class="err">,</span>
+    <span class="s2">"Lua.runtime.path"</span><span class="err">:</span> <span class="p">[</span>
+        <span class="s2">"?.lua"</span><span class="p">,</span>
+        <span class="s2">"?/init.lua"</span><span class="p">,</span>
+        <span class="s2">"?/?.lua"</span><span class="p">,</span>
+    <span class="p">]</span><span class="err">,</span>
+</pre>
+
+<h3><a href="https://github.com/Alloyed/lua-lsp">lua-lsp</a></h3>
+<h2>Debug adapter</h2>
+<h3><a href="https://github.com/tomblind/local-lua-debugger-vscode">local-lua-debugger-vscode</a></h3>
+<ul>
+<li>Debugされるスクリプト側に仕込み不要</li>
+<li>⭐ luajit 対応</li>
+<li>__tostring でエラーが発生すると固まるので、__tostring の実装で例外が起きないように注意</li>
+<li>起動時の引数に <code>\\</code> が含まれているとエラーになる =&gt; <code>0.2.2</code> で修正</li>
+</ul>
+<h3><a href="https://github.com/actboy168/lua-debug">lua-debug</a></h3>
+<ul>
+<li>Debugされるスクリプト側に仕込み不要</li>
+<li>hook が拡張してある。途中で止めたりとかできるぽい</li>
+<li>残念ながら luajit では動作しない</li>
+</ul>
+<h2>Formatter</h2>
+<h3><a href="https://github.com/johnnymorganz/stylua">stylua</a></h3>
+<ul>
+<li>⭐ rust 製でインストールしやすい</li>
+</ul>
+<p>stylua.toml</p>
+<pre class="code literal-block"><span></span>column_width = 120
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 4
+quote_style = "AutoPreferDouble"
+no_call_parentheses = true
+</pre>
+
+<h2>ソース読み</h2>
+<p><a href="https://ousttrue.github.io/lua/">https://ousttrue.github.io/lua/</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/example_glfw_openg/" class="u-url">imgui の FFI が luajit で動くところまで作った</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/example_glfw_openg/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-25T00:00:00Z" itemprop="datePublished" title="2021-07-25 00:00">2021-07-25 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/example_glfw_openg/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/example_glfw_openg.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p><a href="https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua">https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua</a></p>
+<p>Window System は <code>GLFW</code>、3D API は <code>OpenGL3</code> を選択。</p>
+<ul>
+<li>SDL2 は、 <code>HWND</code> を取得周りが FFI では面倒なことが分かっていたのと、<code>SDL-Image</code> などの関連ライブラリ無しで行くつもりだった</li>
+<li>D3D11 のバインディングを作っているとまた時間がかかる。<code>COM</code> は C の範囲で実装できるので後でやりたい</li>
+</ul>
+<p>ということから、楽そうなものを選択したらそうなった。</p>
+<h2>メンバー関数呼び出し</h2>
+<p><code>ImFont</code>, <code>ImFontAtlas</code> のみ何故か <code>c++</code> 色が強く、メンバ関数呼び出しがあったりするのでなんとかしたい。
+cdecl で FFI 記述できるんだっけ？</p>
+<pre class="code literal-block"><span></span><span class="c1">//io.Fonts-&gt;AddFontDefault();</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);</span>
+<span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);</span>
+<span class="c1">//ImFont* font = io.Fonts-&gt;AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts-&gt;GetGlyphRangesJapanese());</span>
+</pre>
+
+<p>第1引数に this に相当する引数を追加してやればいけた。</p>
+<pre class="code literal-block"><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<span class="s">// 適当に名前を付け替える</span>
+<span class="s">struct ImFont* ImFontAtlas_AddFontFromFileTTF(</span>
+<span class="s">    struct ImFontAtlas* this,</span>
+<span class="s">    const char* filename,</span>
+<span class="s">    float size_pixels,</span>
+<span class="s">    const struct ImFontConfig* font_cfg,</span>
+<span class="s">    ImWchar* glyph_ranges</span>
+<span class="s">) asm("?AddFontFromFileTTF@ImFontAtlas@@QEAAPEAUImFont@@PEBDMPEBUImFontConfig@@PEBG@Z");</span>
+<span class="s">]]</span>
+</pre>
+
+<h2>C++ デフォルト引数</h2>
+<p><code>ImGui</code> の <code>API</code> は基本的にほぼ C になるように配慮されていて、C++ の機能は限定的にしか使っていない。</p>
+<ul>
+<li>関数オーバーロード</li>
+<li>デフォルト引数</li>
+</ul>
+<p>である。
+で、このデフォルト引数がないと <code>imgui</code> の使い勝手が著しく下がる。
+リファレンスを確認して、デフォルト値を当ててやる必要が出るので。</p>
+<pre class="code literal-block"><span></span><span class="c1">// 例</span>
+<span class="n">IMGUI_API</span> <span class="kt">bool</span> <span class="nf">Begin</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span> <span class="kt">bool</span><span class="o">*</span> <span class="n">p_open</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ImGuiWindowFlags</span> <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+</pre>
+
+<p><code>NULL</code> は <code>nil</code> だし、 <code>0</code> はそのまま <code>0</code> なので、簡単なところだけでも対応する。
+最悪、インテリセンスに出るようにすることで調べる手間は回避できるのだけど
+<code>const &amp;ImVec2 v = ImVec2(0, 0)</code> とかはめんどくさいです。
+FFI 境界の <code>struct の value 渡し</code>, <code>デフォルト引数</code> は解決できない場合が多いが、コード生成側で努力する価値はある。</p>
+<p><code>rust</code> はここができなくて、故にラッパー側で API を builder パターンに変更していたりするのだけど、
+<code>rust</code> の <code>imgui</code> ラッパーの API を使いたいのではなくて、生の <code>imgui</code> が使いたいのだ。
+<code>luajit</code> の FFI はちょっとラップすることで簡単に解決できる(遅くなるかもしれないが)。</p>
+<p>ラッパーを自動で生成するようにできた。</p>
+<pre class="code literal-block"><span></span>    <span class="c1">-- lua では nil と false のみが 偽 である</span>
+
+    <span class="c1">-- wrapper</span>
+    <span class="n">Begin</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p_open</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+        <span class="c1">-- p_open が供給されない場合、デフォルト nil になり、NULL として解釈される</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="c1">-- ffi 呼び出し</span>
+        <span class="kr">return</span> <span class="n">imgui</span><span class="p">.</span><span class="n">Begin</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p_open</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+    <span class="kr">end</span><span class="p">,</span>
+
+    <span class="c1">-- wrapper</span>
+    <span class="n">Button</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="c1">-- 引数なしの `ffi.new` は zero 詰めする。 `ImVec2(0, 0)` になる。</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="ow">or</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'struct ImVec2'</span><span class="p">)</span>
+        <span class="c1">-- ffi 呼び出し</span>
+        <span class="kr">return</span> <span class="n">imgui</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="kr">end</span><span class="p">,</span>
+</pre>
+
+<h2>可変長引数</h2>
+<pre class="code literal-block"><span></span><span class="n">IMGUI_API</span> <span class="kt">void</span> <span class="n">Text</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span>
+</pre>
+
+<p>luajit ffi ではそのまま <code>...</code> を扱うことができた。</p>
+<p>ただし、<code>%d</code> のときは、
+<code>LL</code> をつけて <code>integer</code> を渡す。
+<code>number</code> だとうまくいかない。</p>
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="n">LL</span> <span class="c1">-- 64bit int. UL もある</span>
+<span class="n">imgui</span><span class="p">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">"counter = %d"</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
+</pre>
+
+<p><code>LL</code> と <code>UL</code> は luajit の拡張らしい。
+<a href="https://luajit.org/ext_ffi_api.html">https://luajit.org/ext_ffi_api.html</a></p>
+<blockquote>
+<p>Extensions to the Lua Parser</p>
+<p>numeric literals with the suffixes LL or ULL as signed or unsigned 64 bit integers</p>
+</blockquote>
+<p>だがしかし、この記法使うと <code>stylua</code> がエラーになる。そりゃ、そうだ。</p>
+<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'long long[1]'</span><span class="p">)</span> <span class="c1">-- 32bit だとうまくいかない</span>
+<span class="n">imgui</span><span class="p">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">"counter = %d"</span><span class="p">,</span> <span class="n">counter</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre>
+
+<p>を使うのがよさそう。</p>
+<h2>template class のごまかし</h2>
+<p>T を pointer としてしか使わない場合は、
+<code>T*</code> を除去して <code>void*</code> にすれば動く。</p>
+<pre class="code literal-block"><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">ImVector</span><span class="p">{</span>
+    <span class="kt">int</span> <span class="n">Size</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">Capacity</span><span class="p">;</span>
+    <span class="n">T</span><span class="o">*</span> <span class="n">Data</span><span class="p">;</span>
+<span class="p">};</span>    
+</pre>
+
+<pre class="code literal-block"><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<span class="s">struct ImVector{</span>
+<span class="s">    int Size;</span>
+<span class="s">    int Capacity;</span>
+<span class="s">    void* Data;</span>
+<span class="s">};    </span>
+<span class="s">]]</span>
+</pre>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/invoke/" class="u-url">python の task runner invoke</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/invoke/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-24T00:00:00Z" itemprop="datePublished" title="2021-07-24 00:00">2021-07-24 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/invoke/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/invoke.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>python でちょっとしたツールを書くときに便利。
+<code>make</code> みたいにタスクを定義して、コマンドラインから実行する。
+task として定義した関数の引数に応じてコマンドライン引数をさばけるので <code>argparse</code> せずにすませることができる。</p>
+<h3>install</h3>
+<pre class="code literal-block"><span></span>$ pip install invoke
+</pre>
+
+<h3>tasks.py</h3>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">invoke</span> <span class="kn">import</span> <span class="n">task</span>
+
+<span class="nd">@task</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">who</span><span class="o">=</span><span class="s2">"hoge"</span><span class="p">):</span>
+    <span class="sd">'''</span>
+<span class="sd">    hello task</span>
+<span class="sd">    '''</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">'hello {hoge}'</span><span class="p">)</span>
+
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ver</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">'''</span>
+<span class="sd">    version</span>
+<span class="sd">    '''</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+</pre>
+
+<p>使う</p>
+<pre class="code literal-block"><span></span>$ invoke -l           
+Available tasks:
+
+  hello   hello task
+  ver     version
+
+$ invoke hello --help
+Usage: inv<span class="o">[</span>oke<span class="o">]</span> <span class="o">[</span>--core-opts<span class="o">]</span> hello <span class="o">[</span>--options<span class="o">]</span> <span class="o">[</span>other tasks here ...<span class="o">]</span>
+
+Docstring:
+  hello task
+
+Options:
+  -w STRING, --who<span class="o">=</span>STRING
+
+$ invoke hello fuga  
+No idea what <span class="s1">'fuga'</span> is!
+$ invoke hello -w fuga
+hello fuga
+$ invoke ver
+hello hoge
+<span class="m">3</span>.8.6 <span class="o">(</span>tags/v3.8.6:db45529, Sep <span class="m">23</span> <span class="m">2020</span>, <span class="m">15</span>:52:53<span class="o">)</span> <span class="o">[</span>MSC v.1927 <span class="m">64</span> bit <span class="o">(</span>AMD64<span class="o">)]</span>
+</pre>
+
+<h3>vscode でデバッグ</h3>
+<p>module に <code>invoke</code> を設定してやる</p>
+<pre class="code literal-block"><span></span>        <span class="p">{</span>
+            <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"task"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"python"</span><span class="p">,</span>
+            <span class="nt">"request"</span><span class="p">:</span> <span class="s2">"launch"</span><span class="p">,</span>
+            <span class="nt">"module"</span><span class="p">:</span> <span class="s2">"invoke"</span><span class="p">,</span>
+            <span class="nt">"args"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"hello"</span>
+            <span class="p">],</span>
+            <span class="nt">"console"</span><span class="p">:</span> <span class="s2">"integratedTerminal"</span>
+        <span class="p">}</span>
+</pre>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/luajitffi/" class="u-url">libclang で luajit 向けの FFI を生成する</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/luajitffi/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-07-23T00:00:00Z" itemprop="datePublished" title="2021-07-23 00:00">2021-07-23 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/luajitffi/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/luajitffi.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>lua による imgui 計画の準備として、 <code>libclang</code> によるバインディング生成器を <code>luajit</code> に移植してみた。</p>
+<p><a href="https://github.com/ousttrue/luajitffi">https://github.com/ousttrue/luajitffi</a></p>
+<p><code>libclang</code> に対してはだいだい動くようになって、自身で生成した <code>FFI</code> で動作するところまでできた。
+また、 <code>EmmyLua Annotation</code> もある程度付与できた。</p>
+<p><a href="https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua">https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua</a></p>
+<p>こいつで、 <code>imgui.h</code> から luajit FFI を生成する。</p>
+<h3>libclang</h3>
+<p>c(c++)ヘッダーを <code>clang_visitChildren</code> により、カーソルのTree としてパースする。
+今回は、 <code>CXChildVisit_Recurse</code> で全部のカーソルをパースすることにした。</p>
+<ul>
+<li>同じカーソルが複数個所に現れうる</li>
+<li>循環しうる(Link List ？)</li>
+</ul>
+<p>がありうることを考慮しておく。
+<code>clang-c/Index.h</code> は 6000 カーソルくらいなので問題ないが、 <code>Windows.h</code> とかは 150000 カーソルとか爆発する。</p>
+<h3>わりと色んなところで型がネストしていてつらい</h3>
+<ul>
+<li>struct の中は namespace なので何でもあり</li>
+<li>anonymous な union や struct のその場定義</li>
+<li>typedef struct などのその場定義</li>
+<li>関数ポインタのその場定義</li>
+</ul>
+<p>要するに、Cのコードの書き方によってどのようなカーソル構造になるかのパターンを知っている必要があって、
+パターン毎に分岐して情報を収集する必要がある。
+ある型のメンバーの情報を集めていると、ネストした別の型情報が現れる場合があるので切り分ける。</p>
+<h3>基本的なパターン</h3>
+<p>FFI では、対象となる関数を起点にその関数が使用するすべての型の定義を取り込む。
+カーソルはCのTranslationUnitの木構造をあらわしていて、型をあらわしていない。
+カーソルから頑張って型を得る。
+型を得られるカーソルは決まっていて、<code>CXCursorType</code> が宣言Declの系列となる。</p>
+<p>TODO</p>
+<h4>カーソル FunctionDecl</h4>
+<h4>カーソル EnumDecl</h4>
+<h4>カーソル TypedefDecl</h4>
+<h4>カーソル StructDecl</h4>
+<h4>Type Pointer</h4>
+<h4>Type Array</h4>
+<h4>Type Elaborated</h4>
+<h4>Type Record</h4>
+<h4>Type FunctionProto 関数ポインタ pointer =&gt; functionproto</h4>
+<h4>union</h4>
+<h4>typedef struct</h4>
+<h4>c++ name mangling</h4>
+<h4>マクロとの戦い</h4>
+<h3>luajit ffi</h3>
+<p><code>ffi.cdef</code> に素直に定義すればいいので、他の言語の FFI に比べて簡単。</p>
+<p>はまり。</p>
+<ul>
+<li>
+<code>ffi.load</code> の返り値が GC されると関数ポインタが死ぬ</li>
+<li>pointer は <code>ffi.new('TYPE[1]')</code> のようにサイズ１の array で運用する</li>
+<li>tostring と ffi.string は違う</li>
+<li>nullptr は nil ?</li>
+</ul>
+<p>だいたいよきに計らってくれるので、 <code>rust</code> の FFI に比べて簡単なのであった。</p>
+<p>ひとつだけはまりがあって、 <code>struct</code> の値渡しができない場合がある。</p>
+<p><a href="http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs">http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs</a></p>
+<p>そういえば、 <code>rust</code> でも <code>struct</code> の値渡しではまった記憶が。</p>
+<p><a href="https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org">https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org</a></p>
+<p>rust の場合は、 <code>struct</code> の値返しが動かなかった。
+これ、C の方で pointer 経由で値を返すラッパーを定義する必要があって回避方法はなかった。</p>
+<p><code>ImVec2 ImGui::GetContentRegionAvail()</code></p>
+<p>luajit ffi でもできるか注意が必要だな。</p>
+<h3>lfs への依存を FFI した Windows API で置き換える</h3>
+<p>現状、ファイル操作 <code>isExists</code>, <code>mkDir</code> のために lfs を使っているのだけど、
+FFI で Windows API にアクセスできるようにしたら lfs 無しにできそう。
+となれば luarocks も無しにできるので、 必要なのは luajit.exe だけになる。</p>
+</div>
+                </div>
+            </article>
+</div>
+    
+        <ul class="pager postindexpager clearfix">
+<li class="previous"><a href="." rel="prev">新しい記事</a></li>
+            <li class="next"><a href="index-14.html" rel="next">過去の記事</a></li>
+        </ul>
+<script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

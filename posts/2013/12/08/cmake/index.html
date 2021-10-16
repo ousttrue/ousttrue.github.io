@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cmakeを使ってみる(Windowsかつコマンドラインで) | 三次元日誌</title>
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2013/12/08/cmake/">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../use_cmake/" title="cmakeを使ってみる(Windowsかつコマンドラインで)" type="text/html">
+<link rel="next" href="../../../../2014/05/15/gyp/" title="python製のビルドツールgypを使ってみる" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="cmakeを使ってみる(Windowsかつコマンドラインで)">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2013/12/08/cmake/">
+<meta property="og:description" content="cmakeを使ってみる(Windowsかつコマンドラインで)
+ArUcoを使おうとしたら、msvcpdのvc10版を要求されてvc12でデバッグビルドが動かなかった。
+最新版のOpenCV-2.4.7をゲットしてきたところvc10とvc11は含まれて居るのだが、vc12ビルドは含まれていなかった(vc2013は早すぎたかw)。
+仕方ないので自前ビルドすることにした。
+ということでcmakeの使い方">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-12-08T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">cmakeを使ってみる(Windowsかつコマンドラインで)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2013-12-08T00:00:00Z" itemprop="datePublished" title="2013-12-08 00:00">2013-12-08 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2013/12/08/cmake.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>cmakeを使ってみる(Windowsかつコマンドラインで)
+ArUcoを使おうとしたら、msvcpdのvc10版を要求されてvc12でデバッグビルドが動かなかった。
+最新版のOpenCV-2.4.7をゲットしてきたところvc10とvc11は含まれて居るのだが、vc12ビルドは含まれていなかった(vc2013は早すぎたかw)。
+仕方ないので自前ビルドすることにした。
+ということでcmakeの使い方を調べてみる。
+ついでに、cmakeでビルドしたライブラリを特定のディレクトリを基準にインストールする方法を調べてみる。
+練習にzlibをビルドしてインストールしてみる
+以下のようなディレクトリ構成で運用してみることを目標に作業開始。
+local_vc12
+ + bin # dll置き場
+ + include # dllを使うのに必要なheader置き場
+ + lib # dllのimportライブラリ置き場</p>
+<p>外部依存の無い適当なライブラリで練習してみようということでzlibを選定。
+さっそくcmakeを使ってみようと思ったら、zlib-1.2.8にはCmakeLists.txtが含まれとるで。
+C:\src&gt; cd zlib-1.2.8
+C:\src\zlib-1.2.8&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\zlib-1.2.8&gt; msbuild INSTALL.vcxproj
+C:\src\zlib-1.2.8&gt; msbuild INSTALL.vcxproj /p:Configuration=Release</p>
+<p>以上で下記のようになった。
+C:/local_vc12
+C:/local_vc12/bin
+C:/local_vc12/bin/zlib.dll
+C:/local_vc12/bin/zlibd.dll
+C:/local_vc12/include
+C:/local_vc12/include/zconf.h
+C:/local_vc12/include/zlib.h
+C:/local_vc12/lib
+C:/local_vc12/lib/zlib.lib
+C:/local_vc12/lib/zlibd.lib
+C:/local_vc12/lib/zlibstatic.lib
+C:/local_vc12/lib/zlibstaticd.lib
+C:/local_vc12/share
+C:/local_vc12/share/man
+C:/local_vc12/share/man/man3
+C:/local_vc12/share/man/man3/zlib.3
+C:/local_vc12/share/pkgconfig
+C:/local_vc12/share/pkgconfig/zlib.pc</p>
+<p>素晴らしい。
+OpenCV-2.4.7でやってみる
+C:\src&gt; cd opencv-2.4.7
+C:\src\opencv-2.4.7&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>失敗する。</p>
+<p>https://github.com/SpecLad/opencv/commit/7973594a01228107dcb9d2d1f10eb64498b91aac
+http://stackoverflow.com/questions/17409956/cannot-compile-opencv-2-4-5-with-vs-2013-rtm</p>
+<p>あとIlmxxxでmin, maxのエラーが出るので”#include
+<algorithm>“する。std::min,
+maxはalgorithmに入っとる。ALL_BUILDが成功したらINSTALLする。
+C:\src\opencv-2.4.7&gt; msbuild INSTALL.vcxproj</algorithm></p>
+<p>これで”local_vc12”にopencvも入った。
+cmakeはいままで敬遠していたのだがライブラリのinstallまで面倒見てくれるのはいいですな。
+同じく敬遠していた自前dllを使う開発が捗りそうな感じだ。
+ArUcoをビルド
+cmakeを使ったアプリ(ライブラリを使う方)のビルド。
+C:\src&gt; cd aruco-1.2.4
+C:\src\aruco-1.2.4&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .</p>
+<p>ここでエラーが出る。
+OpenCVが正式ビルドと違うディレクトリにインストールされたために検知に失敗する。
+“C:/local_vc12/OpenCVConfig.cmake”を直接修正した。
+get_filename_component(OpenCV_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH CACHE)</p>
+<h2>if(OpenCV_RUNTIME AND OpenCV_ARCH)</h2>
+<h2>if(OpenCV_STATIC AND EXISTS "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib/OpenCVConfig.cmake")</h2>
+<h2>if(OpenCV_CUDA AND EXISTS "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib/OpenCVConfig.cmake")</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib")</h2>
+<h2>else()</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib")</h2>
+<h2>endif()</h2>
+<h2>elseif(EXISTS "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib/OpenCVConfig.cmake")</h2>
+<h2>if(OpenCV_CUDA AND EXISTS "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib/OpenCVConfig.cmake")</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib")</h2>
+<h2>else()</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib")</h2>
+<h2>endif()</h2>
+<h2>endif()</h2>
+<h2>endif()</h2>
+<p>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/lib")</p>
+<p>これでビルドできた。
+C:\src\aruco-1.2.4&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>しかし、OpenGLを使ったサンプルがビルドされぬ。
+どうやらglutが見つからないらいしい。せっかくなのでFreeGlutを入れてみますか。
+FreeGlut
+http://freeglut.sourceforge.net/
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+CMake Error: The source directory "C:/src/freeglut-2.8.1" does not appear to contain CMakeLists.txt.
+Specify --help for usage, or press the help button on the CMake GUI.</p>
+<p>CMakeLists.txtが無い。作ってみる。
+project (freeglut)</p>
+<p>file(GLOB SOURCES "src/*.c")
+ADD_LIBRARY(freeglut SHARED ${SOURCES})</p>
+<p>include_directories(include)</p>
+<p>ADD_DEFINITIONS(-DFREEGLUT_EXPORTS)
+ADD_DEFINITIONS(-D_USRDLL)
+ADD_DEFINITIONS(-D_WINDOWS)
+ADD_DEFINITIONS(-DWIN32)</p>
+<p>C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>ビルドできた。INSTALL.vcxprojが見当たらないのでCMakeLists.txtに追記する必要がありそう。
+インストールに関する追記。</p>
+<h2>dll</h2>
+<p>INSTALL(TARGETS freeglut RUNTIME
+    DESTINATION bin)</p>
+<h2>lib</h2>
+<p>INSTALL(TARGETS freeglut ARCHIVE
+    DESTINATION lib)</p>
+<h2>headers</h2>
+<p>INSTALL(DIRECTORY include/
+    DESTINATION include
+    PATTERN "Makefile.*" EXCLUDE
+)</p>
+<p>インストールしてみる。
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild INSTALL.vcxproj</p>
+<p>-- Install configuration: "Debug"
+ -- Installing: C:/local_vc12/bin/freeglut.dll
+ -- Installing: C:/local_vc12/lib/freeglut.lib
+ -- Installing: C:/local_vc12/include
+ -- Installing: C:/local_vc12/include/GL
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut.h
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut_ext.h
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut_std.h
+ -- Up-to-date: C:/local_vc12/include/GL/glut.h</p>
+<p>インストール成功。
+再度ArUco
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+ -- FOUND OPENGL=YES    LIBS=opengl32;glu32;C:/local_vc12/lib/freeglut.lib</p>
+<p>glutが発見されたようだ。
+どうやらcmakeはCMAKE_INSTALL_PREFIXにライブラリを探しに行くようですな。
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>gl.hの前に”#include <windows.h>“してやってビルドできた。
+Debug版の後ろに”d”をつける
+FreeGlutのCmakeLists.txtにzlibの”CmakeLists.txt”から頂いてきた。
+set(CMAKE_DEBUG_POSTFIX "d")</windows.h></p>
+<p>記述順の影響があるようで前の方(ADD_LIBRARYより前？)に書く必要があるっぽい。
+Debug版の後ろに”d”がついたライブラリを使う</p>
+<p>http://stackoverflow.com/questions/2209929/linking-different-libraries-for-debug-and-release-builds-in-cmake-on-windows
+http://stackoverflow.com/questions/5497348/debug-and-release-library-linking-with-cmake-visual-studio</p>
+<p>こういう書き方でできた。
+set (OPENGL_LIBS  general ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} optimized ${GLUT_glut_LIBRARY} debug ${GLUT_glut_DEBUG_LIBRARY})</p>
+<p>CMAKE_DEBUG_POSTFIXに関連は使われる方と使う方の双方で合わせる必要があるので変更する場合は自分で両方の面倒を見なければならない。
+一応、cmakeのひととおりの使い方が分かってきた。
+vcがmsbuildを使うようになってビルドが制御可能になっている感じ。
+makeの各ターゲットに対するmsbuildの実行方法は以下の通り。
+"target", "make", "msbuild"
+"build", "make all", "msbuild ALL_BUILD.vcxproj /t:Build"
+"release build", "?", "msbuild ALL_BUILD.vcxproj /t:Build /p:Configuration=Release"
+"debug build", "?", "msbuild ALL_BUILD.vcxproj /t:Build /p:Configuration=Debug"
+"clean", "make clean", "msbuild ALL_BUILD.vcxproj /t:Clean"
+"install", "make install", "msbuild INSTALL.vcxproj"</p>
+<p>ちょっといろいろビルドしてみる。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../use_cmake/" rel="prev" title="cmakeを使ってみる(Windowsかつコマンドラインで)">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../../../../2014/05/15/gyp/" rel="next" title="python製のビルドツールgypを使ってみる">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2013/12/08/cmake/",
+        disqus_title="cmake\u3092\u4f7f\u3063\u3066\u307f\u308b(Windows\u304b\u3064\u30b3\u30de\u30f3\u30c9\u30e9\u30a4\u30f3\u3067)",
+        disqus_identifier="cache/content/posts/2013/12/08/cmake.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

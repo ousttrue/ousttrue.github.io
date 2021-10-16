@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asio と Coroutine (c++20) | 三次元日誌</title>
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2021/summer/update_asio/">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../nvy/" title="nvim frontend nvy" type="text/html">
+<link rel="next" href="../nvimtexture/" title="NvimTexture開発開始" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="Asio と Coroutine (c++20)">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2021/summer/update_asio/">
+<meta property="og:description" content="非同期ライブラリ ASIO 
+http://think-async.com/Asio/index.html
+の知識を c++20 時代にアップデート。
+
+https://github.com/chriskohlhoff/talking-async
+
+に動画と動画のサンプルコードが有る。
+compiler を最新にする
+ASIO_HAS_CO_AWAIT が必要でこれが有効になるには新しいコンパイラ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-08-15T00:00:00Z">
+<meta property="article:tag" content="asio">
+<meta property="article:tag" content="cpp">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Asio と Coroutine (c++20)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-08-15T00:00:00Z" itemprop="datePublished" title="2021-08-15 00:00">2021-08-15 00:00</time><span class="updated"> (更新日時
+                    <time class="updated dt-updated" datetime="2021-08-18T00:00:00Z" itemprop="dateUpdated" title="2021-08-18 00:00">2021-08-18 00:00</time>)</span>
+            </a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2021/summer/update_asio.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>非同期ライブラリ ASIO </p>
+<p><a href="http://think-async.com/Asio/index.html">http://think-async.com/Asio/index.html</a></p>
+<p>の知識を <code>c++20</code> 時代にアップデート。</p>
+<ul>
+<li><a href="https://github.com/chriskohlhoff/talking-async">https://github.com/chriskohlhoff/talking-async</a></li>
+</ul>
+<p>に動画と動画のサンプルコードが有る。</p>
+<h2>compiler を最新にする</h2>
+<p><code>ASIO_HAS_CO_AWAIT</code> が必要でこれが有効になるには新しいコンパイラが必要。</p>
+<pre class="code literal-block"><span></span><span class="c1">// asio/detail/config.hpp`</span>
+
+<span class="c1">// Support the co_await keyword on compilers known to allow it.</span>
+<span class="cp">#if !defined(ASIO_HAS_CO_AWAIT)</span>
+<span class="cp"># if !defined(ASIO_DISABLE_CO_AWAIT)</span>
+<span class="cp">#  if defined(ASIO_MSVC)</span>
+<span class="cp">#   if (_MSC_VER &gt;= 1928) &amp;&amp; (_MSVC_LANG &gt;= 201705) &amp;&amp; !defined(__clang__)</span>
+<span class="cp">#    define ASIO_HAS_CO_AWAIT 1</span>
+<span class="cp">#   elif (_MSC_FULL_VER &gt;= 190023506)</span>
+<span class="cp">#    if defined(_RESUMABLE_FUNCTIONS_SUPPORTED)</span>
+<span class="cp">#     define ASIO_HAS_CO_AWAIT 1</span>
+<span class="cp">#    endif </span><span class="c1">// defined(_RESUMABLE_FUNCTIONS_SUPPORTED)</span>
+<span class="cp">#   endif </span><span class="c1">// (_MSC_FULL_VER &gt;= 190023506)</span>
+<span class="cp">#  elif defined(__clang__)</span>
+<span class="cp">#   if (__cplusplus &gt;= 201703) &amp;&amp; (__cpp_coroutines &gt;= 201703)</span>
+<span class="cp">#    if __has_include(&lt;experimental/coroutine&gt;)</span>
+<span class="cp">#     define ASIO_HAS_CO_AWAIT 1</span>
+<span class="cp">#    endif </span><span class="c1">// __has_include(&lt;experimental/coroutine&gt;)</span>
+<span class="cp">#   endif </span><span class="c1">// (__cplusplus &gt;= 201703) &amp;&amp; (__cpp_coroutines &gt;= 201703)</span>
+<span class="cp">#  elif defined(__GNUC__)</span>
+<span class="cp">#   if (__cplusplus &gt;= 201709) &amp;&amp; (__cpp_impl_coroutine &gt;= 201902)</span>
+<span class="cp">#    if __has_include(&lt;coroutine&gt;)</span>
+<span class="cp">#     define ASIO_HAS_CO_AWAIT 1</span>
+<span class="cp">#    endif </span><span class="c1">// __has_include(&lt;coroutine&gt;)</span>
+<span class="cp">#   endif </span><span class="c1">// (__cplusplus &gt;= 201709) &amp;&amp; (__cpp_impl_coroutine &gt;= 201902)</span>
+<span class="cp">#  endif </span><span class="c1">// defined(__GNUC__)</span>
+<span class="cp"># endif </span><span class="c1">// !defined(ASIO_DISABLE_CO_AWAIT)</span>
+<span class="cp">#endif </span><span class="c1">// !defined(ASIO_HAS_CO_AWAIT)</span>
+</pre>
+
+<h3>VC2019(20210818最新版いける)</h3>
+<p><a href="https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/">https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/</a></p>
+<blockquote>
+<p>C++20 coroutines in Visual Studio 2019 version 16.8.</p>
+</blockquote>
+<ul>
+<li>
+<code>16.7.3</code> だめ</li>
+<li>
+<code>16.11.1</code> 動いた。</li>
+</ul>
+<pre class="code literal-block"><span></span># CMakeListx.txt
+set(TARGET_NAME pingpong)
+add_executable(<span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> main.cpp)
+target_link_libraries(<span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> PRIVATE asio)
+set_property(TARGET <span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> PROPERTY CXX_STANDARD 20) # 必要
+target_compile_options(<span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> PUBLIC $<span class="err">&lt;</span>$<span class="nt">&lt;C</span><span class="err">_COMPILER_ID:MSVC</span><span class="nt">&gt;</span>:/await&gt;) # 必要
+target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
+</pre>
+
+<pre class="code literal-block"><span></span><span class="cp">#if defined(ASIO_HAS_STD_COROUTINE)</span>
+<span class="cp"># include &lt;coroutine&gt;</span>
+<span class="cp">#else </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
+<span class="cp"># include &lt;experimental/coroutine&gt;</span>
+<span class="cp">#endif </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
+</pre>
+
+<h3>LLVM-12(うまくいかず。追加のコマンドライン引数か)</h3>
+<p><a href="https://clang.llvm.org/cxx_status.html">https://clang.llvm.org/cxx_status.html</a></p>
+<p>LLVM-12 だと、</p>
+<pre class="code literal-block"><span></span> 'C:\Program Files\LLVM\bin\clang.exe' -v
+clang version 12.0.1
+Target: x86_64-pc-windows-msvc
+Thread model: posix
+InstalledDir: C:\Program Files\LLVM\bin
+</pre>
+
+<p>わからん。</p>
+<h2>コード</h2>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;asio/awaitable.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/co_spawn.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/detached.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/experimental/as_tuple.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/io_context.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/ip/tcp.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/read.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/streambuf.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/system_timer.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/use_awaitable.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/use_future.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;asio/write.hpp&gt;</span><span class="cp"></span>
+</pre>
+
+<h3>co_spawn で awaitable を起動する</h3>
+<p>coroutine は 戻り値の型が <code>asio::awaitable&lt;T&gt;</code> である必要がある。この関数の中で <code>co_await</code>, <code>co_yield</code>, <code>co_return</code> が使える。
+coroutine は lambda でもよいので、下記のようにできる。</p>
+<pre class="code literal-block"><span></span>  <span class="k">auto</span> <span class="n">co</span> <span class="o">=</span> <span class="p">[]()</span> <span class="o">-&gt;</span> <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="n">co_return</span> <span class="s">"result"</span><span class="p">;</span>
+  <span class="p">};</span>
+  <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span>
+      <span class="n">asio</span><span class="o">::</span><span class="n">co_spawn</span><span class="p">(</span><span class="n">client_context</span><span class="p">.</span><span class="n">get_executor</span><span class="p">(),</span> <span class="n">co</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">use_future</span><span class="p">);</span> <span class="c1">// coroutine 登録</span>
+  <span class="n">client_context</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="c1">// ループを回す</span>
+  <span class="k">auto</span> <span class="n">pong</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="n">get</span><span class="p">();</span> <span class="c1">// future から結果を得る</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"pong: "</span> <span class="o">&lt;&lt;</span> <span class="n">pong</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre>
+
+<p>asio::use_future を使うことで返り値 <code>std::future</code> になるので <code>co_return</code> の値を得ることも可能。
+結果に興味がないときは、<code>asio::detached</code> でよい。
+Completion Handler というコールバックなので、 promise に set_value する関数を自前で書いたりしてもよい様子。
+<code>asio::use_awaitable</code> で <code>co_await</code> するのも可能。</p>
+<p>返り値が <code>std::tuple&lt;asio::error_code, RESULT&gt;</code> になるハンドラ。</p>
+<pre class="code literal-block"><span></span><span class="k">constexpr</span> <span class="k">auto</span> <span class="n">use_nothrow_awaitable</span> <span class="o">=</span>
+    <span class="n">asio</span><span class="o">::</span><span class="n">experimental</span><span class="o">::</span><span class="n">as_tuple</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+</pre>
+
+<h3>client side</h3>
+<ul>
+<li>timer</li>
+<li>connect</li>
+<li>send(ping)</li>
+<li>receive(pong)</li>
+</ul>
+<pre class="code literal-block"><span></span>  <span class="k">auto</span> <span class="n">co</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">context</span> <span class="o">=</span> <span class="n">client_context</span><span class="p">,</span> <span class="n">ep</span><span class="p">]()</span> <span class="o">-&gt;</span> <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[client]wait 1000ms..."</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">asio</span><span class="o">::</span><span class="n">system_timer</span> <span class="n">timer</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+    <span class="n">timer</span><span class="p">.</span><span class="n">expires_from_now</span><span class="p">(</span><span class="mi">1000</span><span class="n">ms</span><span class="p">);</span>
+    <span class="n">co_await</span> <span class="n">timer</span><span class="p">.</span><span class="n">async_wait</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[client]connect: "</span> <span class="o">&lt;&lt;</span> <span class="n">ep</span> <span class="o">&lt;&lt;</span> <span class="s">"..."</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+    <span class="n">co_await</span> <span class="n">socket</span><span class="p">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[client]connected"</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[client]ping..."</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">ping</span><span class="p">(</span><span class="s">"ping"</span><span class="p">);</span>
+    <span class="k">auto</span> <span class="n">write_size</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">asio</span><span class="o">::</span><span class="n">async_write</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">buffer</span><span class="p">(</span><span class="n">ping</span><span class="p">),</span>
+                                                 <span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">write_size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[client]read..."</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">asio</span><span class="o">::</span><span class="n">streambuf</span> <span class="n">buf</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">read_size</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">asio</span><span class="o">::</span><span class="n">async_read</span><span class="p">(</span>
+        <span class="n">socket</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">transfer_at_least</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+    <span class="n">co_return</span> <span class="nf">to_string</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+  <span class="p">};</span>
+</pre>
+
+<h3>server side</h3>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">server</span> <span class="p">{</span>
+
+  <span class="n">asio</span><span class="o">::</span><span class="n">io_context</span> <span class="o">&amp;</span><span class="n">_context</span><span class="p">;</span>
+  <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">acceptor</span> <span class="n">_acceptor</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">server</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">io_context</span> <span class="o">&amp;</span><span class="n">context</span><span class="p">)</span> <span class="o">:</span> <span class="n">_context</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">_acceptor</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="o">~</span><span class="n">server</span><span class="p">()</span> <span class="p">{}</span>
+
+  <span class="kt">void</span> <span class="n">listen</span><span class="p">(</span><span class="k">const</span> <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[server]listen: "</span> <span class="o">&lt;&lt;</span> <span class="n">ep</span> <span class="o">&lt;&lt;</span> <span class="s">"..."</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">_acceptor</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">ep</span><span class="p">.</span><span class="n">protocol</span><span class="p">());</span>
+    <span class="n">_acceptor</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
+    <span class="n">_acceptor</span><span class="p">.</span><span class="n">listen</span><span class="p">();</span>
+
+    <span class="c1">// coroutineを起動する</span>
+    <span class="k">auto</span> <span class="n">ex</span> <span class="o">=</span> <span class="n">_context</span><span class="p">.</span><span class="n">get_executor</span><span class="p">();</span>
+    <span class="n">asio</span><span class="o">::</span><span class="n">co_spawn</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">accept_loop</span><span class="p">(),</span> <span class="n">asio</span><span class="o">::</span><span class="n">detached</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="n">accept_loop</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="c1">// 単なるループになって再起が不要に</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">auto</span> <span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="n">socket</span><span class="p">]</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">_acceptor</span><span class="p">.</span><span class="n">async_accept</span><span class="p">(</span><span class="n">use_nothrow_awaitable</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[server]accept error: "</span> <span class="o">&lt;&lt;</span> <span class="n">e</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[server]accepted"</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+      <span class="c1">// coroutineを起動する</span>
+      <span class="k">auto</span> <span class="n">ex</span> <span class="o">=</span> <span class="n">_context</span><span class="p">.</span><span class="n">get_executor</span><span class="p">();</span>
+      <span class="n">asio</span><span class="o">::</span><span class="n">co_spawn</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">session</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">socket</span><span class="p">)),</span> <span class="n">asio</span><span class="o">::</span><span class="n">detached</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="n">session</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// echo server ぽい ping pong</span>
+    <span class="n">asio</span><span class="o">::</span><span class="n">streambuf</span> <span class="n">buf</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="p">[</span><span class="n">e1</span><span class="p">,</span> <span class="n">read_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">asio</span><span class="o">::</span><span class="n">async_read</span><span class="p">(</span>
+        <span class="n">socket</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">transfer_at_least</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">use_nothrow_awaitable</span><span class="p">);</span>
+
+    <span class="k">auto</span> <span class="n">pong</span> <span class="o">=</span> <span class="n">to_string</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[server]ping: "</span> <span class="o">&lt;&lt;</span> <span class="n">pong</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">pong</span> <span class="o">+=</span> <span class="s">"pong"</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="p">[</span><span class="n">e2</span><span class="p">,</span> <span class="n">write_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">asio</span><span class="o">::</span><span class="n">async_write</span><span class="p">(</span>
+        <span class="n">socket</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">buffer</span><span class="p">(</span><span class="n">pong</span><span class="p">),</span> <span class="n">use_nothrow_awaitable</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"[server]pong: "</span> <span class="o">&lt;&lt;</span> <span class="n">write_size</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre>
+
+<pre class="code literal-block"><span></span>  <span class="k">auto</span> <span class="n">ep</span> <span class="o">=</span> <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span>
+                                    <span class="n">PORT</span><span class="p">);</span>
+
+  <span class="c1">// server</span>
+  <span class="n">asio</span><span class="o">::</span><span class="n">io_context</span> <span class="n">server_context</span><span class="p">;</span>
+  <span class="n">server</span> <span class="nf">server</span><span class="p">(</span><span class="n">server_context</span><span class="p">);</span>
+  <span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">server_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">server_context</span><span class="p">]()</span> <span class="p">{</span> <span class="n">server_context</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">});</span> <span class="c1">// thread でループを回す。</span>
+</pre>
+
+<p>ループ(io_context)が隠蔽されていないのが良いですね。</p>
+<h2>asio api</h2>
+<h3>io_context</h3>
+<p><code>c++23</code> の <code>Networking TS</code> に向けた変更？</p>
+<ul>
+<li><a href="https://amedama1x1.hatenablog.com/entry/2016/04/05/205340">Networking TS の Boost.Asio からの変更点 - その 1: Associated allocator</a></li>
+<li><a href="https://amedama1x1.hatenablog.com/entry/2016/08/20/222326">Networking TS の Boost.Asio からの変更点 - その 3: Executor</a></li>
+</ul>
+<blockquote>
+<p>io_service は Executor と ExecutionContext という概念に分割されたことで, io_context に名前が変わりました</p>
+</blockquote>
+<p><code>Boost 1.66</code></p>
+<ul>
+<li><a href="https://amedama1x1.hatenablog.com/entry/2017/12/09/102405">Networking TS の Boost.Asio からの変更点 - その 4: Associated Executor</a></li>
+</ul>
+<p>単純に io_service を io_context に追きかえるだけで動いた。</p>
+<pre class="code literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;asio.hpp&gt;</span><span class="cp"></span>
+
+<span class="n">io_context</span> <span class="n">context</span><span class="p">;</span>
+
+<span class="c1">// 全てのタスクが消化されるまでブロックする。</span>
+<span class="n">context</span><span class="p">.</span><span class="n">run</span><span class="p">();</span>
+
+<span class="c1">// スレッド上で実行する例</span>
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">run_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">context</span><span class="p">](){</span> <span class="n">context</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">});</span>
+
+<span class="c1">// 止める</span>
+<span class="n">context</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+<span class="n">run_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+</pre>
+
+<h3>endpoint</h3>
+<p>ipaddress + port</p>
+<pre class="code literal-block"><span></span><span class="n">asip</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="n">ep</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span> <span class="mi">1234</span><span class="p">);</span>
+</pre>
+
+<h3>tcp connect</h3>
+<p>socket</p>
+<pre class="code literal-block"><span></span><span class="n">io_context</span> <span class="n">context</span><span class="p">;</span>
+<span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">(</span><span class="n">coontext</span><span class="p">);</span>
+</pre>
+
+<p>basic</p>
+<pre class="code literal-block"><span></span><span class="kt">void</span> <span class="nf">connect</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">,</span> <span class="k">const</span> <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">on_connect</span> <span class="o">=</span> <span class="p">[](</span><span class="k">const</span> <span class="n">asio</span><span class="o">::</span><span class="n">error_code</span> <span class="o">&amp;</span><span class="n">ec</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"error: "</span> <span class="o">&lt;&lt;</span> <span class="n">ec</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"connected"</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  <span class="n">socket</span><span class="p">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">on_connect</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+
+<p><code>c++11 future</code></p>
+<p>std::future に対して <code>continue_with</code> する手段を用意しないと、これ単体では使いづらい</p>
+<pre class="code literal-block"><span></span><span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="n">connect_future</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">,</span> <span class="k">const</span> <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// move するのが大変な場合があるので手抜き</span>
+  <span class="k">auto</span> <span class="n">p</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">get_future</span><span class="p">();</span>
+
+  <span class="n">socket</span><span class="p">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span><span class="p">](</span><span class="n">asio</span><span class="o">::</span><span class="n">error_code</span> <span class="n">ec</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+      <span class="c1">// future value</span>
+      <span class="n">p</span><span class="o">-&gt;</span><span class="n">set_value</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+<p><code>c++20 coroutine</code></p>
+<p>有望</p>
+<pre class="code literal-block"><span></span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span> <span class="n">co</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">io_context</span> <span class="o">&amp;</span><span class="n">context</span><span class="p">,</span> <span class="k">const</span> <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">(</span><span class="n">coontext</span><span class="p">);</span>
+  <span class="n">co_await</span> <span class="n">socket</span><span class="p">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+
+<h3>tcp listen</h3>
+<h3>raed_async</h3>
+<h3>write_async</h3>
+<h2>coroutine 詳細</h2>
+<p>asio の coroutine を学んでいたらできないことが出てきた。</p>
+<pre class="code literal-block"><span></span><span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">rpc_call</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</pre>
+
+<h2>自前の Awaiter が必要？</h2>
+<pre class="code literal-block"><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span>
+<span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="n">rpc_call</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">AS</span><span class="p">...</span> <span class="n">as</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">asio</span><span class="o">::</span><span class="n">io_context</span> <span class="n">context</span><span class="p">;</span>
+  <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+
+  <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="n">ep</span><span class="p">;</span>
+
+  <span class="n">co_await</span> <span class="n">socket</span><span class="p">.</span><span class="n">connect_async</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span>
+
+  <span class="c1">// msgpack-rpc</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">request</span> <span class="o">=</span> <span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">as</span><span class="p">...);</span>
+  <span class="n">co_await</span> <span class="n">asio</span><span class="o">::</span><span class="n">write_async</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span> 
+
+  <span class="c1">// ここで実行の流れが切れる</span>
+
+  <span class="c1">// ?</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="n">p</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">p</span><span class="p">.</span><span class="n">get_future</span><span class="p">();</span>
+<span class="p">}</span>
+</pre>
+
+<p><code>co_await std::future</code> できるぽいが, <code>asio</code> と混ぜてうまくいくのだろうか。</p>
+<h2>c++20 coroutine</h2>
+<ul>
+<li><a href="https://cpprefjp.github.io/lang/cpp20/coroutines.html">https://cpprefjp.github.io/lang/cpp20/coroutines.html</a></li>
+<li><a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html</a></li>
+<li><a href="https://qiita.com/tan-y/items/ae54153ec3eb42f80638">C++ でコルーチン (async/await 準備編)</a></li>
+<li><a href="https://qiita.com/tan-y/items/6033ab9e7298999bf214#await_ready">C++ で async/await をする</a></li>
+</ul>
+<p>内部で <code>co_await</code>, <code>co_yield</code>, <code>co_return</code> の何れかを使う関数は coroutine になる。
+返り値の型から promise_type を得られるようにする必要がある。</p>
+<p>初期化は <code>promise_type::get_return_object</code> から始まるぽい。</p>
+<h3>generator の例</h3>
+<pre class="code literal-block"><span></span><span class="k">struct</span> <span class="n">generator</span> <span class="p">{</span>
+  <span class="k">struct</span> <span class="n">promise_type</span><span class="p">;</span>
+  <span class="k">using</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">;</span>  
+  <span class="k">struct</span> <span class="n">promise_type</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">get_return_object</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">generator</span><span class="p">{</span><span class="n">handle</span><span class="o">::</span><span class="n">from_promise</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)};</span> <span class="p">}</span>
+  <span class="p">};</span>
+  <span class="k">using</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">handle</span> <span class="n">coro</span><span class="p">;</span>
+  <span class="n">generator</span><span class="p">(</span><span class="n">handle</span> <span class="n">h</span><span class="p">)</span> <span class="o">:</span> <span class="n">coro</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">};</span>
+</pre>
+
+<pre class="code literal-block"><span></span><span class="n">promise_type</span> <span class="n">promise</span><span class="p">;</span>
+
+<span class="c1">// 戻り値型オブジェクトの初期化</span>
+<span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">promise</span><span class="p">.</span><span class="n">get_return_object</span><span class="p">();</span>
+</pre>
+
+<h2>Asio の実装</h2>
+<h3>asio::awaitable</h3>
+<p><code>asio::awaitable&lt;T&gt;</code> が CoroutineTrait の実装。</p>
+<p><code>include/asio/awaitable.hpp</code></p>
+<pre class="code literal-block"><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Executor</span> <span class="o">=</span> <span class="n">any_io_executor</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">ASIO_NODISCARD</span> <span class="n">awaitable</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="c1">/// The type of the awaited value.</span>
+  <span class="k">typedef</span> <span class="n">T</span> <span class="n">value_type</span><span class="p">;</span>
+
+  <span class="c1">/// The executor type that will be used for the coroutine.</span>
+  <span class="k">typedef</span> <span class="n">Executor</span> <span class="n">executor_type</span><span class="p">;</span>
+
+  <span class="c1">/// Default constructor.</span>
+  <span class="k">constexpr</span> <span class="nf">awaitable</span><span class="p">()</span> <span class="k">noexcept</span>
+    <span class="o">:</span> <span class="n">frame_</span><span class="p">(</span><span class="k">nullptr</span><span class="p">)</span>
+  <span class="p">{</span>
+  <span class="p">}</span>
+
+  <span class="c1">/// Move constructor.</span>
+  <span class="n">awaitable</span><span class="p">(</span><span class="n">awaitable</span><span class="o">&amp;&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">noexcept</span>
+    <span class="o">:</span> <span class="n">frame_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exchange</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">frame_</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">))</span>
+  <span class="p">{</span>
+  <span class="p">}</span>
+
+  <span class="c1">/// Destructor</span>
+  <span class="o">~</span><span class="n">awaitable</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">frame_</span><span class="p">)</span>
+      <span class="n">frame_</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="c1">/// Checks if the awaitable refers to a future result.</span>
+  <span class="kt">bool</span> <span class="n">valid</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="o">!!</span><span class="n">frame_</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="cp">#if !defined(GENERATING_DOCUMENTATION)</span>
+
+  <span class="c1">// Support for co_await keyword.</span>
+  <span class="kt">bool</span> <span class="n">await_ready</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Support for co_await keyword.</span>
+  <span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">U</span><span class="o">&gt;</span>
+  <span class="kt">void</span> <span class="n">await_suspend</span><span class="p">(</span>
+      <span class="n">detail</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;&gt;</span> <span class="n">h</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">frame_</span><span class="o">-&gt;</span><span class="n">push_frame</span><span class="p">(</span><span class="o">&amp;</span><span class="n">h</span><span class="p">.</span><span class="n">promise</span><span class="p">());</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Support for co_await keyword.</span>
+  <span class="n">T</span> <span class="n">await_resume</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="n">awaitable</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">awaitable</span><span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)).</span><span class="n">frame_</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">();</span>
+  <span class="p">}</span>
+
+<span class="cp">#endif </span><span class="c1">// !defined(GENERATING_DOCUMENTATION)</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span><span class="o">&gt;</span> <span class="k">friend</span> <span class="k">class</span> <span class="nc">detail</span><span class="o">::</span><span class="n">awaitable_thread</span><span class="p">;</span>
+  <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span><span class="p">,</span> <span class="k">typename</span><span class="o">&gt;</span> <span class="k">friend</span> <span class="k">class</span> <span class="nc">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="p">;</span>
+
+  <span class="c1">// Not copy constructible or copy assignable.</span>
+  <span class="n">awaitable</span><span class="p">(</span><span class="k">const</span> <span class="n">awaitable</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+  <span class="n">awaitable</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">awaitable</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+
+  <span class="c1">// Construct the awaitable from a coroutine's frame object.</span>
+  <span class="k">explicit</span> <span class="nf">awaitable</span><span class="p">(</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;*</span> <span class="n">a</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">frame_</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+  <span class="p">{</span>
+  <span class="p">}</span>
+
+  <span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;*</span> <span class="n">frame_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre>
+
+<h3>promise_type</h3>
+<p><code>include/asio/impl/awaitable.hpp</code></p>
+<p>// promise_type</p>
+<pre class="code literal-block"><span></span><span class="cp"># if defined(ASIO_HAS_STD_COROUTINE)</span>
+
+<span class="k">namespace</span> <span class="n">std</span> <span class="p">{</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Executor</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">coroutine_traits</span><span class="o">&lt;</span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">Args</span><span class="p">...</span><span class="o">&gt;</span>
+<span class="p">{</span>
+  <span class="k">typedef</span> <span class="n">asio</span><span class="o">::</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span> <span class="n">promise_type</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span> <span class="c1">// namespace std</span>
+
+<span class="cp"># else </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
+
+<span class="k">namespace</span> <span class="n">std</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">experimental</span> <span class="p">{</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Executor</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">coroutine_traits</span><span class="o">&lt;</span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">Args</span><span class="p">...</span><span class="o">&gt;</span>
+<span class="p">{</span>
+  <span class="k">typedef</span> <span class="n">asio</span><span class="o">::</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span> <span class="n">promise_type</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}}</span> <span class="c1">// namespace std::experimental</span>
+
+<span class="cp"># endif </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
+</pre>
+
+<h3>asio::detail::awaitable_frame</h3>
+<pre class="code literal-block"><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Executor</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">awaitable_frame</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span>
+  <span class="o">:</span> <span class="k">public</span> <span class="n">awaitable_frame_base</span><span class="o">&lt;</span><span class="n">Executor</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span> <span class="n">get_return_object</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">coro_</span> <span class="o">=</span> <span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">awaitable_frame</span><span class="o">&gt;::</span><span class="n">from_promise</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="kt">void</span> <span class="nf">return_void</span><span class="p">()</span>
+  <span class="p">{</span>
+  <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="nf">get</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">caller_</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">rethrow_exception</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../../categories/asio/" rel="tag">asio</a></li>
+            <li><a class="tag p-category" href="../../../../categories/cpp/" rel="tag">cpp</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../nvy/" rel="prev" title="nvim frontend nvy">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../nvimtexture/" rel="next" title="NvimTexture開発開始">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2021/summer/update_asio/",
+        disqus_title="Asio \u3068 Coroutine (c++20)",
+        disqus_identifier="cache/content/posts/2021/summer/update_asio.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

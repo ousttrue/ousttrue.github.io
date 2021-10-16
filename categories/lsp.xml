@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (lspについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/lsp.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:38:40 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Lua Language Server 解読</title><link>https://ousttrue.github.io/posts/2021/summer/lua_language_server/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/sumneko/lua-language-server"&gt;lua-language-server&lt;/a&gt; が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
+&lt;code&gt;ffi.cdef&lt;/code&gt; を読めるようにすればよいのでは。
+ということで、lua-language-server を探ってみる。&lt;/p&gt;
+&lt;h2&gt;構成&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/sumneko/lua-language-server/wiki/Command-line"&gt;https://github.com/sumneko/lua-language-server/wiki/Command-line&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;BINRARY/lua-language-server LUA_LANGUAGE_SERVER/main.lua --logpath=D:/log --metapath=D:/meta --locale=en-us --configpath="config.json"&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; .\bin\Windows\lua-language-server.exe --help
+lua-language-server.exe:unrecognized option '--help'usage: C:\Users\oustt\ghq\github.com\sumneko\lua-language-server\bin\Windows\lua-language-server.exe [options] [script [args]]
+Available options are:
+  -e stat  execute string 'stat'
+  -i       enter interactive mode after executing 'script'
+  -l name  require library 'name' into global 'name'
+  -v       show version information
+  -E       ignore environment variables
+  -W       turn warnings on
+  --       stop handling options
+  -        stop handling options and execute stdin
+&amp;gt; .\bin\Windows\lua-language-server.exe -v    
+Lua 5.4.4  Copyright (C) 1994-2021 Lua.org, PUC-Rio  
+&lt;/pre&gt;
+
+&lt;p&gt;native モジュールを埋め込んだインタープリター &lt;code&gt;lua-language-server.exe&lt;/code&gt; で &lt;code&gt;main.lua&lt;/code&gt; を実行する。&lt;/p&gt;
+&lt;h3&gt;setting&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;.vscode/settings.json&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;     &lt;span class="s2"&gt;"Lua.runtime.version"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"LuaJIT"&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+     &lt;span class="s2"&gt;"Lua.workspace.preloadFileSize"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;10000&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;LSP&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://microsoft.github.io/language-server-protocol/"&gt;https://microsoft.github.io/language-server-protocol/&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_signatureHelp"&gt;signatureHelp&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;main.lua&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;main.lua&lt;ul&gt;
+&lt;li&gt;script/service/service.lua&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nc"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;enableCloseFunction&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;await&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setErrorHandle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;pub&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;recruitBraves&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="c1"&gt;-- transport&lt;/span&gt;
+    &lt;span class="n"&gt;proto&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;report&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pulse&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reportStatus&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;testVersion&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s1"&gt;'provider'&lt;/span&gt;
+
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startTimer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;script/parser&lt;/h2&gt;
+&lt;p&gt;lua のコード解析&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;script/parser/parse.lua&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;ast.init(state)&lt;/code&gt;&lt;/p&gt;
+&lt;h3&gt;LPeg&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;script/parser/grammar.lua&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="http://www.inf.puc-rio.br/~roberto/lpeg/"&gt;LPeg&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://gist.github.com/tacigar/93b30931c879cd8a9b12380724b956aa"&gt;Lua製PEG「LPeg」を触ってみた&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://nymphium.github.io/2015/07/23/lpeg2.html"&gt;LPegの使い方 patternその2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://sceneryandfish.withnotes.net/blog/2014/07/22-lua-lpeg-how-to-use/"&gt;LPeg – Parsing Expression Grammars For Luaの使い方&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>lsp</category><category>lua</category><category>luajit</category><guid>https://ousttrue.github.io/posts/2021/summer/lua_language_server/</guid><pubDate>Fri, 06 Aug 2021 00:00:00 GMT</pubDate></item><item><title>luaメモ</title><link>https://ousttrue.github.io/posts/2021/lua_info/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://www.lua.org/docs.html"&gt;https://www.lua.org/docs.html&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Interpreter&lt;/h2&gt;
+&lt;p&gt;とりあえず &lt;code&gt;luajit-2.1.0-beta3&lt;/code&gt; 推し。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;+---+    +---+    +---+    +---+
+|5.1| -&amp;gt; |5.2| -&amp;gt; |5.3| -&amp;gt; |5.4|
++---+    +---+    +---+    +---+
+  |        |        |
+  |        |        +- ravi
+  |        |
+  |        +- moonsharp
+  |
+  +- luajit(5.1 base)
+  |   +- moonjit
+  +- luau(5.1 base)
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;lua-5.1&lt;/code&gt; をベースに分岐したものが多い？&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.lua.org/versions.html"&gt;https://www.lua.org/versions.html&lt;/a&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;url&lt;/th&gt;
+&lt;th&gt;memo&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Lua5.1&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;2012。これより古いものを使う理由は無さそう。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Lu15.2&lt;/td&gt;
+&lt;td&gt;&lt;a href="https://www.lua.org/manual/5.2/readme.html#changes"&gt;since Lua5.1&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;2015。finalizer. 関数の &lt;code&gt;_ENV&lt;/code&gt; 仕様変更&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Lua5.3&lt;/td&gt;
+&lt;td&gt;&lt;a href="https://www.lua.org/manual/5.3/readme.html#changes"&gt;since Lua5.2&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;2020。integers&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Lua5.4&lt;/td&gt;
+&lt;td&gt;&lt;a href="https://www.lua.org/manual/5.4/readme.html#changes"&gt;since Lua5.3&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;2021。const, to-be-closed&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;LuaJIT&lt;/td&gt;
+&lt;td&gt;&lt;a href="https://luajit.org/"&gt;https://luajit.org/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Lua5.1base。最終版は &lt;code&gt;2.1.0-beta3&lt;/code&gt;。neovimもこれ。&lt;code&gt;FFI&lt;/code&gt; も強力。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Luau&lt;/td&gt;
+&lt;td&gt;&lt;a href="https://luau-lang.org/"&gt;https://luau-lang.org/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Lua5.1 の superset。Roblox専用。オープンソースではない。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Ravi&lt;/td&gt;
+&lt;td&gt;&lt;a href="http://ravilang.github.io/"&gt;http://ravilang.github.io/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Lua5.3base？。limited optional static typing and MIR based JIT compiler&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;変わり種&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;headeronly&lt;/code&gt;. include するだけで使える。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/edubart/minilua"&gt;https://github.com/edubart/minilua&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LUA に更に埋め込む&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://terralang.org/"&gt;https://terralang.org/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Translator&lt;/h2&gt;
+&lt;h3&gt;&lt;a href="https://moonscript.org/"&gt;MoonScript&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href="https://typescripttolua.github.io/"&gt;TypescriptToLua&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;後で出てくる、&lt;code&gt;local-lua-debugger&lt;/code&gt; はこれで実装されているぽい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;&lt;a href="https://ifritjp.github.io/documents/lunescript/"&gt;LuneScript/&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href="https://github.com/teal-language/tl"&gt;Teal&lt;/a&gt;&lt;/h3&gt;
+&lt;h2&gt;Language server&lt;/h2&gt;
+&lt;h3&gt;&lt;a href="https://github.com/EmmyLua/EmmyLua-LanguageServer"&gt;EmmyLua&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Java製&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://emmylua.github.io/annotation.html"&gt;EmmyLua Annotation&lt;/a&gt; に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;&lt;a href="https://github.com/sumneko/lua-language-server"&gt;lua-language-server&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;⭐ &lt;a href="https://emmylua.github.io/annotation.html"&gt;EmmyLua Annotation&lt;/a&gt; に対応。これにより、組み込み型のインテリセンスを動作させることができて使い勝手が向上する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;設定例&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class="s2"&gt;"Lua.runtime.version"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"LuaJIT"&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+    &lt;span class="s2"&gt;"Lua.workspace.preloadFileSize"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;10000&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+    &lt;span class="s2"&gt;"Lua.runtime.path"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="s2"&gt;"?.lua"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"?/init.lua"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"?/?.lua"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;&lt;a href="https://github.com/Alloyed/lua-lsp"&gt;lua-lsp&lt;/a&gt;&lt;/h3&gt;
+&lt;h2&gt;Debug adapter&lt;/h2&gt;
+&lt;h3&gt;&lt;a href="https://github.com/tomblind/local-lua-debugger-vscode"&gt;local-lua-debugger-vscode&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Debugされるスクリプト側に仕込み不要&lt;/li&gt;
+&lt;li&gt;⭐ luajit 対応&lt;/li&gt;
+&lt;li&gt;__tostring でエラーが発生すると固まるので、__tostring の実装で例外が起きないように注意&lt;/li&gt;
+&lt;li&gt;起動時の引数に &lt;code&gt;\\&lt;/code&gt; が含まれているとエラーになる =&amp;gt; &lt;code&gt;0.2.2&lt;/code&gt; で修正&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;&lt;a href="https://github.com/actboy168/lua-debug"&gt;lua-debug&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Debugされるスクリプト側に仕込み不要&lt;/li&gt;
+&lt;li&gt;hook が拡張してある。途中で止めたりとかできるぽい&lt;/li&gt;
+&lt;li&gt;残念ながら luajit では動作しない&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Formatter&lt;/h2&gt;
+&lt;h3&gt;&lt;a href="https://github.com/johnnymorganz/stylua"&gt;stylua&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;⭐ rust 製でインストールしやすい&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;stylua.toml&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;column_width = 120
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 4
+quote_style = "AutoPreferDouble"
+no_call_parentheses = true
+&lt;/pre&gt;
+
+&lt;h2&gt;ソース読み&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://ousttrue.github.io/lua/"&gt;https://ousttrue.github.io/lua/&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>dap</category><category>lsp</category><category>lua</category><category>luajit</category><guid>https://ousttrue.github.io/posts/2021/lua_info/</guid><pubDate>Tue, 27 Jul 2021 00:00:00 GMT</pubDate></item></channel></rss>

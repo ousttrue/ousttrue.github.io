@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>threejs再始動 | 三次元日誌</title>
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="ja" href="../../../../rss.xml">
+<link rel="canonical" href="https://ousttrue.github.io/posts/2017/06/threejs/">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="ousttrue">
+<link rel="prev" href="../hugo_frontmatter/" title="hugoのfrontmatter" type="text/html">
+<link rel="next" href="../threejs_setup/" title="threejsとwebsocketを使った開発環境" type="text/html">
+<meta property="og:site_name" content="三次元日誌">
+<meta property="og:title" content="threejs再始動">
+<meta property="og:url" content="https://ousttrue.github.io/posts/2017/06/threejs/">
+<meta property="og:description" content="前のサイトはgulpを使ってtypescriptでthreejs.jsしていたのだけど、hugoで生成している今サイトでは素のjavascriptかなぁ。
+es6の練習を兼ねて。
+hugoのmdファイルの中に直書きしてみた
+
+
+
+
+function createScene()
+{
+    var scene=new THREE.Scene();
+
+    var geometry = new TH">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2017-06-06T00:00:00Z">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">本文を読み飛ばす</a>
+
+<!-- Header and menu bar -->
+<div class="container">
+      <header class="blog-header py-3"><div class="row nbb-header align-items-center">
+          <div class="col-md-3 col-xs-2 col-sm-2" style="width: auto;">
+            <button class="navbar-toggler navbar-light bg-light nbb-navbar-toggler" type="button" data-toggle="collapse" data-target=".bs-nav-collapsible" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse bs-nav-collapsible bootblog4-search-form-holder">
+                
+            </div>
+        </div>
+          <div class="col-md-6 col-xs-10 col-sm-10 bootblog4-brand" style="width: auto;">
+            <a class="navbar-brand blog-header-logo text-dark" href="../../../../">
+
+            <span id="blog-title">三次元日誌</span>
+        </a>
+          </div>
+            <div class="col-md-3 justify-content-end align-items-center bs-nav-collapsible collapse flex-collapse bootblog4-right-nav">
+            <nav class="navbar navbar-light bg-white"><ul class="navbar-nav bootblog4-right-nav">
+<li class="nav-item">
+    <a href="index.md" id="sourcelink" class="nav-link">ソース</a>
+    </li>
+
+
+                    
+            </ul></nav>
+</div>
+    </div>
+</header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
+            <ul class="navbar-nav nav-fill d-flex w-100">
+<li class="nav-item">
+<a href="../../../../archive.html" class="nav-link">Archives</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../categories/index.html" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../../../rss.xml" class="nav-link">RSS feed</a>
+
+                
+            </li>
+</ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+<div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        
+        
+        
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">threejs再始動</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    ousttrue
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2017-06-06T00:00:00Z" itemprop="datePublished" title="2017-06-06 00:00">2017-06-06 00:00</time></a>
+            </p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/content/posts/2017/06/threejs.html">コメント</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.md" class="sourcelink">ソース</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>前のサイトはgulpを使ってtypescriptでthreejs.jsしていたのだけど、hugoで生成している今サイトでは素のjavascriptかなぁ。
+es6の練習を兼ねて。</p>
+<p>hugoのmdファイルの中に直書きしてみた</p>
+<div id="threejs"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/85/three.min.js"></script><script type="text/javascript" src="https://threejs.org/examples/js/controls/OrbitControls.js"></script><script>
+function createScene()
+{
+    var scene=new THREE.Scene();
+
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var material = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+    var box = new THREE.Mesh(geometry, material);
+    box.position.y = 0.5;
+    scene.add(box);
+
+    var light = new THREE.DirectionalLight(0xffffff);
+    light.position.set(1, 1, 1);
+    scene.add(light);
+
+    var planeGeometry = new THREE.PlaneGeometry( 10, 10, 10, 10 );
+    var planeMaterial = new THREE.MeshBasicMaterial( { color: 0x533E25, wireframe:true} );
+    var planeMesh = new THREE.Mesh( planeGeometry, planeMaterial );
+    var toRad=Math.PI / 180;
+    planeMesh.rotation.x = 90 * toRad;
+    scene.add( planeMesh );
+
+    var axis = new THREE.AxisHelper(1000);
+    axis.position.set(0,0,0);
+    scene.add(axis);
+
+    return scene;
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(800, 600);
+    document.getElementById("threejs").appendChild(renderer.domElement);
+
+    var scene = createScene();
+
+    var camera = new THREE.PerspectiveCamera(45, 800 / 600, 1, 1000);
+    camera.position.set(2, 3, 5);
+    camera.lookAt({x:0, y:0, z:0 });
+
+    var controls = new THREE.OrbitControls(camera);
+
+    var render = function () {
+        requestAnimationFrame(render);
+        //cube.rotation.x += 1 * Math.PI / 180;
+        //cube.rotation.y += 1 * Math.PI / 180;
+        //cube.rotation.z += 1 * Math.PI / 180;
+        controls.update();
+        renderer.render(scene, camera);
+    };
+    render();
+});
+</script><p>動いた。
+なるほど。
+ToDo
+ちょっとOrbitControlsをカスタマイズしたいね。
+メタセコ的なマウスボタンのアサインにしたい</p>
+<p>左ドラッグはカメラ操作以外に開けておく
+右ドラッグがカメラ回転
+中ドラッグがカメラ移動
+ホイールがカメラドリー</p>
+<p>マウスイベントの取得はWebGLエレメントの上にマウスカーソルがあるときだけ</p>
+<p>OrbitControls.jsが原因でテキストボックスに入力できなくなった問題の解決</p>
+<pre class="code literal-block"><span></span>stage.addEventListener('mouseover', function() {
+        controls.enabled = true;
+        document.body.style.cursor = "pointer";
+        });
+
+stage.addEventListener('mouseout', function() {
+        controls.enabled = false;
+        document.body.style.cursor = "default";
+        });
+</pre>
+
+<p>function createScene()
+{
+    var scene=new THREE.Scene();</p>
+<pre class="code literal-block"><span></span><span class="nt">var</span> <span class="nt">geometry</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">BoxGeometry</span><span class="o">(</span><span class="nt">1</span><span class="o">,</span> <span class="nt">1</span><span class="o">,</span> <span class="nt">1</span><span class="o">);</span>
+<span class="nt">var</span> <span class="nt">material</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">MeshPhongMaterial</span><span class="o">(</span><span class="p">{</span> <span class="k">color</span><span class="p">:</span> <span class="mi">0</span><span class="n">x0000ff</span> <span class="p">}</span><span class="o">);</span>
+<span class="nt">var</span> <span class="nt">box</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">Mesh</span><span class="o">(</span><span class="nt">geometry</span><span class="o">,</span> <span class="nt">material</span><span class="o">);</span>
+<span class="nt">box</span><span class="p">.</span><span class="nc">position</span><span class="p">.</span><span class="nc">y</span> <span class="o">=</span> <span class="nt">0</span><span class="p">.</span><span class="nc">5</span><span class="o">;</span>
+<span class="nt">scene</span><span class="p">.</span><span class="nc">add</span><span class="o">(</span><span class="nt">box</span><span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">light</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">DirectionalLight</span><span class="o">(</span><span class="nt">0xffffff</span><span class="o">);</span>
+<span class="nt">light</span><span class="p">.</span><span class="nc">position</span><span class="p">.</span><span class="nc">set</span><span class="o">(</span><span class="nt">1</span><span class="o">,</span> <span class="nt">1</span><span class="o">,</span> <span class="nt">1</span><span class="o">);</span>
+<span class="nt">scene</span><span class="p">.</span><span class="nc">add</span><span class="o">(</span><span class="nt">light</span><span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">planeGeometry</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">PlaneGeometry</span><span class="o">(</span> <span class="nt">10</span><span class="o">,</span> <span class="nt">10</span><span class="o">,</span> <span class="nt">10</span><span class="o">,</span> <span class="nt">10</span> <span class="o">);</span>
+<span class="nt">var</span> <span class="nt">planeMaterial</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">MeshBasicMaterial</span><span class="o">(</span> <span class="p">{</span> <span class="k">color</span><span class="p">:</span> <span class="mi">0</span><span class="n">x533E25</span><span class="p">,</span> <span class="n">wireframe</span><span class="o">:</span><span class="n">true</span><span class="p">}</span> <span class="o">);</span>
+<span class="nt">var</span> <span class="nt">planeMesh</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">Mesh</span><span class="o">(</span> <span class="nt">planeGeometry</span><span class="o">,</span> <span class="nt">planeMaterial</span> <span class="o">);</span>
+<span class="nt">var</span> <span class="nt">toRad</span><span class="o">=</span><span class="nt">Math</span><span class="p">.</span><span class="nc">PI</span> <span class="o">/</span> <span class="nt">180</span><span class="o">;</span>
+<span class="nt">planeMesh</span><span class="p">.</span><span class="nc">rotation</span><span class="p">.</span><span class="nc">x</span> <span class="o">=</span> <span class="nt">90</span> <span class="o">*</span> <span class="nt">toRad</span><span class="o">;</span>
+<span class="nt">scene</span><span class="p">.</span><span class="nc">add</span><span class="o">(</span> <span class="nt">planeMesh</span> <span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">axis</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">AxisHelper</span><span class="o">(</span><span class="nt">1000</span><span class="o">);</span>
+<span class="nt">axis</span><span class="p">.</span><span class="nc">position</span><span class="p">.</span><span class="nc">set</span><span class="o">(</span><span class="nt">0</span><span class="o">,</span><span class="nt">0</span><span class="o">,</span><span class="nt">0</span><span class="o">);</span>
+<span class="nt">scene</span><span class="p">.</span><span class="nc">add</span><span class="o">(</span><span class="nt">axis</span><span class="o">);</span>
+
+<span class="nt">scene</span><span class="p">.</span><span class="nc">update</span><span class="o">=</span><span class="nt">function</span><span class="o">()</span>
+<span class="p">{</span>
+    <span class="err">box.rotation.x</span> <span class="err">+=</span> <span class="err">1</span> <span class="err">*</span> <span class="err">toRad</span><span class="p">;</span>
+    <span class="err">box.rotation.y</span> <span class="err">+=</span> <span class="err">1</span> <span class="err">*</span> <span class="err">toRad</span><span class="p">;</span>
+    <span class="err">box.rotation.z</span> <span class="err">+=</span> <span class="err">1</span> <span class="err">*</span> <span class="err">toRad</span><span class="p">;</span>
+<span class="p">}</span><span class="o">;</span>
+
+<span class="nt">return</span> <span class="nt">scene</span><span class="o">;</span>
+</pre>
+
+<p>}</p>
+<p>function onLoaded()
+{
+    var stage=document.getElementById("threejs");</p>
+<pre class="code literal-block"><span></span><span class="nt">var</span> <span class="nt">width</span><span class="o">=</span><span class="nt">stage</span><span class="p">.</span><span class="nc">clientWidth</span><span class="o">;</span>
+<span class="nt">var</span> <span class="nt">height</span><span class="o">=</span><span class="nt">stage</span><span class="p">.</span><span class="nc">clientHeight</span><span class="o">;</span>
+<span class="nt">console</span><span class="p">.</span><span class="nc">log</span><span class="o">(</span><span class="nt">width</span><span class="o">,</span> <span class="nt">height</span><span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">renderer</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">WebGLRenderer</span><span class="o">();</span>
+<span class="nt">renderer</span><span class="p">.</span><span class="nc">setSize</span><span class="o">(</span><span class="nt">width</span><span class="o">,</span> <span class="nt">height</span><span class="o">);</span>
+<span class="nt">stage</span><span class="p">.</span><span class="nc">appendChild</span><span class="o">(</span><span class="nt">renderer</span><span class="p">.</span><span class="nc">domElement</span><span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">scene</span> <span class="o">=</span> <span class="nt">createScene</span><span class="o">();</span>
+
+<span class="nt">var</span> <span class="nt">camera</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">PerspectiveCamera</span><span class="o">(</span><span class="nt">45</span><span class="o">,</span> <span class="nt">width</span> <span class="o">/</span> <span class="nt">height</span><span class="o">,</span> <span class="nt">1</span><span class="o">,</span> <span class="nt">1000</span><span class="o">);</span>
+<span class="nt">camera</span><span class="p">.</span><span class="nc">position</span><span class="p">.</span><span class="nc">set</span><span class="o">(</span><span class="nt">2</span><span class="o">,</span> <span class="nt">3</span><span class="o">,</span> <span class="nt">5</span><span class="o">);</span>
+<span class="nt">camera</span><span class="p">.</span><span class="nc">lookAt</span><span class="o">(</span><span class="p">{</span><span class="n">x</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">:</span><span class="mi">0</span> <span class="p">}</span><span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">controls</span> <span class="o">=</span> <span class="nt">new</span> <span class="nt">THREE</span><span class="p">.</span><span class="nc">OrbitControls</span><span class="o">(</span><span class="nt">camera</span><span class="o">);</span>
+<span class="nt">controls</span><span class="p">.</span><span class="nc">enabled</span> <span class="o">=</span> <span class="nt">false</span><span class="o">;</span>
+
+<span class="nt">stage</span><span class="p">.</span><span class="nc">addEventListener</span><span class="o">(</span><span class="s1">'mouseover'</span><span class="o">,</span> <span class="nt">function</span><span class="o">()</span> <span class="p">{</span>
+        <span class="err">controls.enabled</span> <span class="err">=</span> <span class="err">true</span><span class="p">;</span>
+        <span class="err">document.body.style.cursor</span> <span class="err">=</span> <span class="err">"pointer"</span><span class="p">;</span>
+        <span class="p">}</span><span class="o">);</span>
+
+<span class="nt">stage</span><span class="p">.</span><span class="nc">addEventListener</span><span class="o">(</span><span class="s1">'mouseout'</span><span class="o">,</span> <span class="nt">function</span><span class="o">()</span> <span class="p">{</span>
+        <span class="err">controls.enabled</span> <span class="err">=</span> <span class="err">false</span><span class="p">;</span>
+        <span class="err">document.body.style.cursor</span> <span class="err">=</span> <span class="err">"default"</span><span class="p">;</span>
+        <span class="p">}</span><span class="o">);</span>
+
+<span class="nt">var</span> <span class="nt">render</span> <span class="o">=</span> <span class="nt">function</span> <span class="o">()</span> <span class="p">{</span>
+    <span class="err">requestAnimationFrame(render)</span><span class="p">;</span>
+    <span class="err">scene.update()</span><span class="p">;</span>
+    <span class="err">controls.update()</span><span class="p">;</span>
+    <span class="err">renderer.render(scene,</span> <span class="err">camera)</span><span class="p">;</span>
+<span class="p">}</span><span class="o">;</span>
+<span class="nt">render</span><span class="o">();</span>
+</pre>
+
+<p>}</p>
+<p>window.addEventListener('DOMContentLoaded', onLoaded);</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../hugo_frontmatter/" rel="prev" title="hugoのfrontmatter">一つ前の記事</a>
+            </li>
+            <li class="next">
+                <a href="../threejs_setup/" rel="next" title="threejsとwebsocketを使った開発環境">次の記事</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>コメント</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="nikolademo",
+            disqus_url="https://ousttrue.github.io/posts/2017/06/threejs/",
+        disqus_title="threejs\u518d\u59cb\u52d5",
+        disqus_identifier="cache/content/posts/2017/06/threejs.html",
+        disqus_config = function () {
+            this.language = "ja";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+            Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+            
+        </footer>
+</div>
+</div>
+
+
+        <script src="../../../../assets/js/all-nocdn.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

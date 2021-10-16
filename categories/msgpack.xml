@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (msgpackについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/msgpack.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 16 Oct 2021 10:38:40 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NvimTexture開発開始</title><link>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;code&gt;Nvy&lt;/code&gt; の改造をしてだいたい構造を理解した。
+&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;msgpack-rpc-asio&lt;/a&gt; をオーバーホールして使えるようになった。
+ということで一から組みなおすで。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/NvimTexture"&gt;https://github.com/ousttrue/NvimTexture&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;部品を疎結合にする&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Window(HWND, resize, keyboard, mouse event)&lt;/li&gt;
+&lt;li&gt;NvimPipe(stdin, stdout, msgpack-rpc transport)&lt;/li&gt;
+&lt;li&gt;EventDispatcher(WindowEvent と MsgPackRPCMessage の処理)&lt;/li&gt;
+&lt;li&gt;D3D DeviceManager&lt;/li&gt;
+&lt;li&gt;D3D Renderer(RenderTarget)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;            +--------+
++----+ pipe |Renderer|redraw
+|nvim|-----&amp;gt;+--------+
+|    |&amp;lt;-----+------+
++----+      |Window|resize, keyboard, mouse event
+            +------+
+&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;MainLoop&lt;/li&gt;
+&lt;li&gt;NvimMsgPackRPC Read-Dispatch Loop&lt;/li&gt;
+&lt;li&gt;RenderLoop(30FPS)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Sample&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;FullWindow&lt;/li&gt;
+&lt;li&gt;imgui と混在させる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210910&lt;/h2&gt;
+&lt;p&gt;それなりに動くようになった。
+key-logger や msgpack-rpc の通信ログを横に表示できるようにしたい。&lt;/p&gt;&lt;/div&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</guid><pubDate>Sun, 22 Aug 2021 00:00:00 GMT</pubDate></item><item><title>nvim frontend nvy</title><link>https://ousttrue.github.io/posts/2021/summer/nvy/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;よさげなレポジトリを発見した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/RMichelsen/Nvy"&gt;https://github.com/RMichelsen/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;だいぶ前に作ろうとして頓挫した&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/nvim-dx"&gt;https://github.com/ousttrue/nvim-dx&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;の完成形。
+どこがうまくいかなかったのか忘れてしまったが。&lt;/p&gt;
+&lt;h3&gt;改造&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/Nvy"&gt;https://github.com/ousttrue/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] RenderTarget に対して Nvim をレンダリングする&lt;/li&gt;
+&lt;li&gt;[x] nvim の IO を &lt;a href="https://think-async.com/Asio/#"&gt;https://think-async.com/Asio/#&lt;/a&gt; にのせる&lt;/li&gt;
+&lt;li&gt;[ ] imgui と合体する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210815&lt;/h2&gt;
+&lt;p&gt;MsgPack-RPC のバックエンドに昔作った&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;https://github.com/ousttrue/msgpack-rpc-asio&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;におきかえる。&lt;/p&gt;
+&lt;p&gt;さらに、これのシリアライザーを自前の &lt;a href="https://github.com/ousttrue/msgpackpp"&gt;https://github.com/ousttrue/msgpackpp&lt;/a&gt; におきかえる。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CMake 化&lt;/li&gt;
+&lt;li&gt;RPC を &lt;code&gt;c++20&lt;/code&gt; 化 (co_await)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;で、最初の nvim 初期化を&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;api_info&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_get_api_info"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notity&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_set_var"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"nvy"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;co_await&lt;/span&gt; &lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_eval"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;"stdpath('config')"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="c1"&gt;// initialize&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notify&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_ui_attach"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;on_message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;dispatcher&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;のように書けるようにして整理する。&lt;/p&gt;
+&lt;h2&gt;20210829&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] MsgPack-RPC のバックエンドを置きかえた&lt;/li&gt;
+&lt;li&gt;[x] logger に RPC の内容を JSON 化して表示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;だいたいリファクタリングが終わって改造しやすい状態になった。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] &lt;code&gt;&amp;lt;C-/&amp;gt;&lt;/code&gt; できるようにする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を実装できた。
+特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;""&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",["&amp;lt;C-/&amp;gt;"]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;h3&gt;修正が必要&lt;/h3&gt;
+&lt;p&gt;非control時に&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",[""]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;GetKeyState&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VK_CONTROL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="c1"&gt;// C-/&lt;/span&gt;
+      &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;"/"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;なるほど。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ousttrue.github.io/posts/2021/summer/nvy/@/posts/2021/summer/nvimtexture.md"&gt;NvimTexture&lt;/a&gt; へ続く&lt;/p&gt;
+&lt;h2&gt;20210829  太字がずれる？&lt;/h2&gt;&lt;/div&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvy/</guid><pubDate>Sat, 07 Aug 2021 00:00:00 GMT</pubDate></item></channel></rss>
