@@ -2,7 +2,7 @@
 title = "UniJSON-unity"
 date = 2018-12-26 09:04:52+00:00
 updated = 2018-12-29 14:13:09+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 0

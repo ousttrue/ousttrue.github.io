@@ -2,7 +2,7 @@
 title = "ModelMotionIO"
 date = 2015-06-30 15:53:38+00:00
 updated = 2015-07-27 23:52:38+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

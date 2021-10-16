@@ -2,7 +2,7 @@
 title = "HydraHost"
 date = 2020-10-06 03:41:08+00:00
 updated = 2020-10-08 05:49:00+00:00
-taxonomies.tags = ["repository", "Python", "cpp", "usd"]
+tags = ["repository", "Python", "cpp", "usd"]
 [extra]
 css = "github"
 star = 0

@@ -2,7 +2,7 @@
 title = "char8"
 date = 2020-09-03 15:14:30+00:00
 updated = 2020-09-10 13:45:43+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

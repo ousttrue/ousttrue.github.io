@@ -2,7 +2,7 @@
 title = "MinTriangle"
 date = 2014-11-25 16:43:22+00:00
 updated = 2019-12-10 18:43:55+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 4

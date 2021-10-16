@@ -1,7 +1,7 @@
 +++
 title = "LuaDA"
 date = 2021-07-31
-taxonomies.tags = ["lua", "luajit", "dap"]
+tags = ["lua", "luajit", "dap"]
 +++
 
 vscode の lua デバッガーに

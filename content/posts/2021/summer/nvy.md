@@ -2,7 +2,7 @@
 title = "nvim frontend nvy"
 date = 2021-08-07
 updated = 2021-08-29
-taxonomies.tags = ["nvim", "msgpack"]
+tags = ["nvim", "msgpack"]
 [extra]
 image = "nvy.jpg"
 +++

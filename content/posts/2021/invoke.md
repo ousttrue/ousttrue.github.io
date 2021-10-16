@@ -1,7 +1,7 @@
 +++
 title = "python の task runner invoke"
 date = 2021-07-24
-taxonomies.tags = ["python"]
+tags = ["python"]
 +++
 
 python でちょっとしたツールを書くときに便利。

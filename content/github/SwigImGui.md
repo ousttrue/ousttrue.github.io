@@ -2,7 +2,7 @@
 title = "SwigImGui"
 date = 2017-07-30 04:26:14+00:00
 updated = 2017-08-06 08:43:21+00:00
-taxonomies.tags = ["repository", "Python", "python", "imgui"]
+tags = ["repository", "Python", "python", "imgui"]
 [extra]
 css = "github"
 star = 1

@@ -2,7 +2,7 @@
 title = "termgrid"
 date = 2020-09-06 08:35:15+00:00
 updated = 2020-09-10 13:55:20+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

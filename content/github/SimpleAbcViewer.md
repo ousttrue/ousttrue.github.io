@@ -2,7 +2,7 @@
 title = "SimpleAbcViewer"
 date = 2017-07-27 01:35:55+00:00
 updated = 2017-07-27 01:36:57+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 2

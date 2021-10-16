@@ -1,7 +1,7 @@
 +++
 title = "Lua Language Server 解読"
 date = 2021-08-06
-taxonomies.tags = ["lua", "luajit", "lsp"]
+tags = ["lua", "luajit", "lsp"]
 [extra]
 +++
 

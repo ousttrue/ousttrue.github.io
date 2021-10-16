@@ -2,7 +2,7 @@
 title = "bpy_module"
 date = 2019-12-02 06:13:38+00:00
 updated = 2020-11-19 00:09:57+00:00
-taxonomies.tags = ["repository", "Python", "python", "blender"]
+tags = ["repository", "Python", "python", "blender"]
 [extra]
 css = "github"
 star = 0

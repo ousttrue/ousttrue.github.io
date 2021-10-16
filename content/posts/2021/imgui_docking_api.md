@@ -1,7 +1,7 @@
 +++
 title = "ImGui の API"
 date = 2021-07-28
-taxonomies.tags = ["imgui", "luajit", "ffi"]
+tags = ["imgui", "luajit", "ffi"]
 [extra]
 image = 'dockbuilder.jpg'
 +++

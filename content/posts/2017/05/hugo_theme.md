@@ -67,7 +67,7 @@ http://text.baldanders.info/hugo/categories-and-tags-list/
 
 付ける
 frontmatterに
-taxonomies.tags = ["hugo"]
+tags = ["hugo"]
 
 のように書く。よくわからないがアルファベットの大文字は避けた方がよさげ。マルチバイト文字はOKぽい。
 single

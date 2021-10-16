@@ -2,7 +2,7 @@
 title = "CustomRenderPipeline"
 date = 2018-05-09 12:44:43+00:00
 updated = 2018-05-10 07:04:29+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

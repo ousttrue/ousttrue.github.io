@@ -2,7 +2,7 @@
 title = "mdBook もやってみる"
 date = 2021-06-14
 updated = 2021-08-31
-taxonomies.tags = ["mdbook", "ssg"]
+tags = ["mdbook", "ssg"]
 +++
 
 * <https://rust-lang.github.io/mdBook/>

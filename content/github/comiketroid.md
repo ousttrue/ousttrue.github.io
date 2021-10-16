@@ -2,7 +2,7 @@
 title = "comiketroid"
 date = 2011-12-21 20:12:13+00:00
 updated = 2011-12-23 02:19:30+00:00
-taxonomies.tags = ["repository", "Java"]
+tags = ["repository", "Java"]
 [extra]
 css = "github"
 star = 1

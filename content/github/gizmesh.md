@@ -2,7 +2,7 @@
 title = "gizmesh"
 date = 2020-02-27 02:50:52+00:00
 updated = 2021-02-17 06:19:03+00:00
-taxonomies.tags = ["repository", "C++", "3d"]
+tags = ["repository", "C++", "3d"]
 [extra]
 css = "github"
 star = 0

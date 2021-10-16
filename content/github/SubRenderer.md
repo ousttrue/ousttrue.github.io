@@ -2,7 +2,7 @@
 title = "SubRenderer"
 date = 2018-01-15 01:34:29+00:00
 updated = 2018-01-15 01:49:48+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

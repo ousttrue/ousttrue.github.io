@@ -1,7 +1,7 @@
 +++
 title = "sphinx + MyST よいのでは"
 date = 2021-09-11
-taxonomies.tags = ["ssg", "sphinx"]
+tags = ["ssg", "sphinx"]
 +++
 
 Gizmo を作る過程で GeometryShader からやりなおしていたら、記憶が飛んでいたので

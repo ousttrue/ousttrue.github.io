@@ -2,7 +2,7 @@
 title = "DXGLTF"
 date = 2018-12-15 07:42:27+00:00
 updated = 2019-09-02 16:07:48+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 5

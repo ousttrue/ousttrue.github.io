@@ -2,7 +2,7 @@
 title = "jsonprops"
 date = 2020-11-30 11:34:17+00:00
 updated = 2020-12-12 16:47:04+00:00
-taxonomies.tags = ["repository", "Rust"]
+tags = ["repository", "Rust"]
 [extra]
 css = "github"
 star = 0

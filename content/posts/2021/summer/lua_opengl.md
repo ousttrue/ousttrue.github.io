@@ -1,7 +1,7 @@
 +++
 title = "Lua で OpenGL"
 date = 2021-08-05
-taxonomies.tags = ["lua", "luajit", "OpenGL"]
+tags = ["lua", "luajit", "OpenGL"]
 [extra]
 image = "glfw_sample.jpg"
 +++

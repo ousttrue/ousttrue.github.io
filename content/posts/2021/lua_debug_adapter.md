@@ -1,7 +1,7 @@
 +++
 title = "lua の DebugAdapter を書いてみた"
 date = 2021-07-13
-taxonomies.tags = ["lua", "dap"]
+tags = ["lua", "dap"]
 +++
 
 

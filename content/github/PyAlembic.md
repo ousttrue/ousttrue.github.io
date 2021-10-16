@@ -2,7 +2,7 @@
 title = "PyAlembic"
 date = 2017-10-07 06:26:37+00:00
 updated = 2017-10-09 03:26:29+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

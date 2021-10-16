@@ -2,7 +2,7 @@
 title = "VRExperiment"
 date = 2020-01-31 20:01:33+00:00
 updated = 2020-03-27 05:53:02+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

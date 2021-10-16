@@ -2,7 +2,7 @@
 title = "NWindowsKits"
 date = 2020-06-22 23:51:37+00:00
 updated = 2020-06-30 23:22:45+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

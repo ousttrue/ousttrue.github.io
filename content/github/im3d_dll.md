@@ -2,7 +2,7 @@
 title = "im3d_dll"
 date = 2019-09-21 21:21:08+00:00
 updated = 2019-09-28 09:17:24+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 1

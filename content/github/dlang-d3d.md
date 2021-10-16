@@ -2,7 +2,7 @@
 title = "dlang-d3d"
 date = 2019-10-10 00:05:59+00:00
 updated = 2020-02-13 19:02:09+00:00
-taxonomies.tags = ["repository", "D"]
+tags = ["repository", "D"]
 [extra]
 css = "github"
 star = 0

@@ -2,7 +2,7 @@
 title = "Osaru"
 date = 2017-02-26 17:45:12+00:00
 updated = 2017-07-05 16:00:03+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

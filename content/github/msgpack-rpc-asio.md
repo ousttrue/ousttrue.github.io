@@ -2,7 +2,7 @@
 title = "msgpack-rpc-asio"
 date = 2013-05-12 16:25:59+00:00
 updated = 2017-05-28 16:38:21+00:00
-taxonomies.tags = ["repository", "C++", "cpp", "msgpack", "asio"]
+tags = ["repository", "C++", "cpp", "msgpack", "asio"]
 [extra]
 css = "github"
 star = 27

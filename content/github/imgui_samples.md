@@ -2,7 +2,7 @@
 title = "imgui_samples"
 date = 2019-07-10 01:59:58+00:00
 updated = 2021-05-11 11:45:11+00:00
-taxonomies.tags = ["repository", "C++", "cpp", "imgui"]
+tags = ["repository", "C++", "cpp", "imgui"]
 [extra]
 css = "github"
 star = 2

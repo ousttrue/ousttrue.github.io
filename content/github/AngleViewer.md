@@ -2,7 +2,7 @@
 title = "AngleViewer"
 date = 2018-08-26 04:56:23+00:00
 updated = 2019-07-05 01:10:36+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 2

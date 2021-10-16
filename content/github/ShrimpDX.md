@@ -2,7 +2,7 @@
 title = "ShrimpDX"
 date = 2019-05-18 18:15:38+00:00
 updated = 2020-03-10 11:29:35+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

@@ -2,7 +2,7 @@
 title = "moldstamp"
 date = 2019-04-20 14:38:25+00:00
 updated = 2019-04-29 22:32:48+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

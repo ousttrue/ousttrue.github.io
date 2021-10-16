@@ -2,7 +2,7 @@
 title = "MmdUtility"
 date = 2017-04-18 17:45:16+00:00
 updated = 2017-04-21 02:57:18+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

@@ -2,7 +2,7 @@
 title = "gdxtrianglesample"
 date = 2011-12-14 02:53:30+00:00
 updated = 2011-12-14 02:54:21+00:00
-taxonomies.tags = ["repository", "Java"]
+tags = ["repository", "Java"]
 [extra]
 css = "github"
 star = 2

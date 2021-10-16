@@ -2,7 +2,7 @@
 title = "VRTK_MouseGrab"
 date = 2019-01-20 06:56:44+00:00
 updated = 2019-01-20 08:23:57+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

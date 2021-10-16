@@ -2,7 +2,7 @@
 title = "ARToolKit"
 date = 2013-01-18 11:19:06+00:00
 updated = 2013-01-26 05:41:39+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 1

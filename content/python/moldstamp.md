@@ -1,6 +1,6 @@
 +++
 date = 2019-04-18T00:00:00+09:00
-taxonomies.tags = ['python']
+tags = ['python']
 title = '静的サイト生成器 MoldStamp'
 +++
 
@@ -41,7 +41,7 @@ hugo風にtomlで。
 ```toml
 +++
 date = "2012-04-06"
-taxonomies.tags = ['nvim', 'python']
+tags = ['nvim', 'python']
 +++
 ```
 

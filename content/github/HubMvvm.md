@@ -2,7 +2,7 @@
 title = "HubMvvm"
 date = 2015-07-26 15:48:29+00:00
 updated = 2015-07-26 16:11:35+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

@@ -1,7 +1,7 @@
 +++
 title = "サイトジェネレーターを Zola に変更"
 date = 2021-06-12
-taxonomies.tags = ["zola", "rust", "ssg"]
+tags = ["zola", "rust", "ssg"]
 +++
 
 最近、 rust を再開したので、

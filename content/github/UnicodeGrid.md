@@ -2,7 +2,7 @@
 title = "UnicodeGrid"
 date = 2019-04-08 19:03:09+00:00
 updated = 2019-04-15 12:22:36+00:00
-taxonomies.tags = ["repository", "D"]
+tags = ["repository", "D"]
 [extra]
 css = "github"
 star = 0

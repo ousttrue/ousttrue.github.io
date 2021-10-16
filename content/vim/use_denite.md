@@ -1,6 +1,6 @@
 +++
 date = 2019-04-21T18:13:27+09:00
-taxonomies.tags = ['vim']
+tags = ['vim']
 draft = true
 title = 'Denite練習'
 +++

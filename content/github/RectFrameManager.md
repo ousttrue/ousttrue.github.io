@@ -2,7 +2,7 @@
 title = "RectFrameManager"
 date = 2020-01-22 01:18:05+00:00
 updated = 2020-01-22 08:28:36+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

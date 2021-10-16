@@ -2,7 +2,7 @@
 title = "ReactiveConsole"
 date = 2018-12-08 03:08:51+00:00
 updated = 2019-01-27 07:36:37+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

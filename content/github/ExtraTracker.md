@@ -2,7 +2,7 @@
 title = "ExtraTracker"
 date = 2020-01-24 20:19:03+00:00
 updated = 2020-01-29 06:06:37+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 1

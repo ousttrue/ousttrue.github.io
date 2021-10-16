@@ -1,7 +1,7 @@
 +++
 title = "nvim-dap で coldelldb 動いた"
 date = 2021-06-27
-taxonomies.tags = ["nvim", "dap"]
+tags = ["nvim", "dap"]
 +++
 
 [nvim-dap](https://github.com/mfussenegger/nvim-dap) で rust をデバッグするべく悪戦苦闘中。

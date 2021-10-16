@@ -2,7 +2,7 @@
 title = "nanovg-samples"
 date = 2016-08-16 17:01:07+00:00
 updated = 2016-08-16 17:54:14+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 0

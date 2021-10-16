@@ -2,7 +2,7 @@
 title = "limgui"
 date = 2021-07-15 09:01:59+00:00
 updated = 2021-08-05 12:39:45+00:00
-taxonomies.tags = ["repository", "Lua", "lua", "imgui"]
+tags = ["repository", "Lua", "lua", "imgui"]
 [extra]
 css = "github"
 star = 0

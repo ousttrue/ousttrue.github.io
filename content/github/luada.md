@@ -2,7 +2,7 @@
 title = "luada"
 date = 2021-07-31 09:33:29+00:00
 updated = 2021-08-01 07:13:02+00:00
-taxonomies.tags = ["repository", "Lua"]
+tags = ["repository", "Lua"]
 [extra]
 css = "github"
 star = 0

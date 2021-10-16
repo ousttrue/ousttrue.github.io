@@ -2,7 +2,7 @@
 title = "glglue"
 date = 2011-12-28 17:39:02+00:00
 updated = 2021-02-17 06:54:42+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 9

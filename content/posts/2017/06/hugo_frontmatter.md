@@ -13,7 +13,7 @@ https://gohugo.io/content/archetypes/
 archetypes/default.md
 にfrontmatterのみの記事を作ればよいらしい。
 +++
-taxonomies.tags = []
+tags = []
 draft = true
 +++
 

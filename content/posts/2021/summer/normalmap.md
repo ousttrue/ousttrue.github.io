@@ -1,7 +1,7 @@
 +++
 title = "法線マップやってみる"
 date = 2021-09-05
-taxonomies.tags = ["OpenGL"]
+tags = ["OpenGL"]
 [extra]
 image = "mikk.jpg"
 +++

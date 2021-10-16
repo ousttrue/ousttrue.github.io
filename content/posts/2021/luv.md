@@ -1,7 +1,7 @@
 +++
 title = "luv"
 date = 2021-07-29
-taxonomies.tags = ["lua"]
+tags = ["lua"]
 [extra]
 +++
 

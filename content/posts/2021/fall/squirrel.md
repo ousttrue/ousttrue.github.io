@@ -1,7 +1,7 @@
 +++
 title = "Squirrel"
 date = 2021-09-27
-taxonomies.tags = ["sq"]
+tags = ["sq"]
 +++
 
 lua のコード解読しててふお思い出した Squirrel 。

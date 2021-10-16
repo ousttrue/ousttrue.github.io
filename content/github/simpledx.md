@@ -2,7 +2,7 @@
 title = "simpledx"
 date = 2012-02-03 00:08:28+00:00
 updated = 2012-02-03 00:08:58+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 1

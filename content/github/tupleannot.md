@@ -2,7 +2,7 @@
 title = "tupleannot"
 date = 2019-06-03 19:18:48+00:00
 updated = 2019-06-06 20:02:37+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 2

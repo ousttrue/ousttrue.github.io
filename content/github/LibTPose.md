@@ -2,7 +2,7 @@
 title = "LibTPose"
 date = 2020-05-14 00:10:09+00:00
 updated = 2020-05-14 01:18:21+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

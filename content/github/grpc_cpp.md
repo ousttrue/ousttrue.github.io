@@ -2,7 +2,7 @@
 title = "grpc_cpp"
 date = 2020-05-06 02:12:49+00:00
 updated = 2020-05-06 06:30:33+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

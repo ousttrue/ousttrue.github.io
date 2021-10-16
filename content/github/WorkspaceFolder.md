@@ -2,7 +2,7 @@
 title = "WorkspaceFolder"
 date = 2019-04-19 02:33:10+00:00
 updated = 2019-05-15 19:12:21+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

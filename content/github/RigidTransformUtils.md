@@ -2,7 +2,7 @@
 title = "RigidTransformUtils"
 date = 2017-07-06 15:43:22+00:00
 updated = 2017-07-06 16:18:07+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

@@ -2,7 +2,7 @@
 title = "d_natvis"
 date = 2019-11-02 14:11:45+00:00
 updated = 2019-12-09 18:01:04+00:00
-taxonomies.tags = ["repository", "D"]
+tags = ["repository", "D"]
 [extra]
 css = "github"
 star = 0

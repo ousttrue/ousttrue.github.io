@@ -1,6 +1,6 @@
 +++
 date = 2019-04-23T14:30:07+09:00
-taxonomies.tags = ['vim']
+tags = ['vim']
 draft = true
 title = 'vim の Buffer 操作のメモ'
 +++

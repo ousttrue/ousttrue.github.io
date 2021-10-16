@@ -2,7 +2,7 @@
 title = "notebook2016"
 date = 2016-03-12 07:36:58+00:00
 updated = 2016-03-12 07:56:02+00:00
-taxonomies.tags = ["repository", "Jupyter Notebook"]
+tags = ["repository", "Jupyter Notebook"]
 [extra]
 css = "github"
 star = 0

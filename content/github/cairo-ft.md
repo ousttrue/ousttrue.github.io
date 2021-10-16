@@ -2,7 +2,7 @@
 title = "cairo-ft"
 date = 2014-07-07 22:56:34+00:00
 updated = 2014-07-07 23:09:45+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 1

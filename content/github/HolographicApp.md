@@ -2,7 +2,7 @@
 title = "HolographicApp"
 date = 2017-07-04 15:13:14+00:00
 updated = 2017-07-04 15:16:10+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

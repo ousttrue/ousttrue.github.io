@@ -1,7 +1,7 @@
 +++
 title = "BlenderのAddOnを、VSCodeでデバッグする"
 date = 2017-11-23
-taxonomies.tags = ["blender", "vscode"]
+tags = ["blender", "vscode"]
 +++
 
 VSCodeのリモートデバッグを利用してBlenderのPythonにデバッガをアタッチする。

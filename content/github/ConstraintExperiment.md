@@ -2,7 +2,7 @@
 title = "ConstraintExperiment"
 date = 2020-07-01 07:44:15+00:00
 updated = 2020-07-22 06:46:06+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

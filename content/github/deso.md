@@ -2,7 +2,7 @@
 title = "deso"
 date = 2019-04-21 09:18:53+00:00
 updated = 2019-04-21 11:22:17+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

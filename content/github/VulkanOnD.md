@@ -2,7 +2,7 @@
 title = "VulkanOnD"
 date = 2016-09-11 18:27:18+00:00
 updated = 2016-09-19 15:11:17+00:00
-taxonomies.tags = ["repository", "D"]
+tags = ["repository", "D"]
 [extra]
 css = "github"
 star = 0

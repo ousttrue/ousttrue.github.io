@@ -51,4 +51,12 @@ POSTS = (
 
 * `taxonomies.tags` を `tags` に書き換える
 
+小文字強制
+```py
+METADATA_VALUE_MAPPING = {
+    "toml": {
+        "tags": lambda ls: [x.lower() for x in ls]
+     }
+}
+```
 # github action で gh-pages

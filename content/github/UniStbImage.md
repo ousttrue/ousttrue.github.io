@@ -2,7 +2,7 @@
 title = "UniStbImage"
 date = 2018-05-22 10:47:21+00:00
 updated = 2018-05-22 11:01:16+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 0

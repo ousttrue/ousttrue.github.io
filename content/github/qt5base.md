@@ -2,7 +2,7 @@
 title = "qt5base"
 date = 2013-04-22 08:47:49+00:00
 updated = 2013-04-22 08:48:22+00:00
-taxonomies.tags = ["repository", "Lua"]
+tags = ["repository", "Lua"]
 [extra]
 css = "github"
 star = 0

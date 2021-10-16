@@ -2,7 +2,7 @@
 title = "glbase"
 date = 2012-01-19 19:13:51+00:00
 updated = 2012-01-19 19:14:21+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 1

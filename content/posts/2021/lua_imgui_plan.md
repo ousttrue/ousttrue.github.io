@@ -1,7 +1,7 @@
 +++
 title = "lua による imgui 計画"
 date = 2021-07-17
-taxonomies.tags = ["lua", "imgui"]
+tags = ["lua", "imgui"]
 +++
 
 ## rust で D3D11 レンダラを進めてきたが・・・

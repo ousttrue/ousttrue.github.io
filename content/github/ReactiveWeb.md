@@ -2,7 +2,7 @@
 title = "ReactiveWeb"
 date = 2015-08-30 15:25:02+00:00
 updated = 2015-09-13 05:18:25+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

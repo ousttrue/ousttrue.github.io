@@ -1,7 +1,7 @@
 +++
 title = "Blender-3.0"
 date = 2021-08-30
-taxonomies.tags = ["blender"]
+tags = ["blender"]
 [extra]
 +++
 

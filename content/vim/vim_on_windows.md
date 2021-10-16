@@ -1,6 +1,6 @@
 +++
 date = 2019-04-18T01:00:00+09:00
-taxonomies.tags = ['vim']
+tags = ['vim']
 title = 'vim on Windows'
 +++
 

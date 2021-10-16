@@ -2,7 +2,7 @@
 title = "webgl_sample"
 date = 2018-10-24 20:07:20+00:00
 updated = 2018-10-25 09:40:18+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 0

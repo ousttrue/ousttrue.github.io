@@ -1,7 +1,7 @@
 +++
 title = "NvimTexture開発開始"
 date = 2021-08-22
-taxonomies.tags = ["nvim", "msgpack"]
+tags = ["nvim", "msgpack"]
 [extra]
 image = "nvimtexture.jpg"
 +++

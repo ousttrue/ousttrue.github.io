@@ -2,7 +2,7 @@
 title = "UpmSamples"
 date = 2020-05-24 01:36:12+00:00
 updated = 2020-05-24 03:34:45+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

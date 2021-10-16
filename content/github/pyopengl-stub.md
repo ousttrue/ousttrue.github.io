@@ -2,7 +2,7 @@
 title = "pyopengl-stub"
 date = 2019-09-02 04:42:17+00:00
 updated = 2019-09-03 01:21:06+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

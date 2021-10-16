@@ -2,7 +2,7 @@
 title = "async_websocket"
 date = 2017-12-10 08:50:00+00:00
 updated = 2017-12-10 14:50:44+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

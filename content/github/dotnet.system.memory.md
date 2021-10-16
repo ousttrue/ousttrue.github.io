@@ -2,7 +2,7 @@
 title = "dotnet.system.memory"
 date = 2019-11-18 08:10:27+00:00
 updated = 2019-11-18 09:56:58+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 8

@@ -2,7 +2,7 @@
 title = "GltfGui"
 date = 2020-06-30 22:40:46+00:00
 updated = 2020-07-02 03:56:57+00:00
-taxonomies.tags = ["repository", "C#", "gltf"]
+tags = ["repository", "C#", "gltf"]
 [extra]
 css = "github"
 star = 0

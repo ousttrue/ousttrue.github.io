@@ -1,7 +1,7 @@
 +++
 title = "nvim.init ではまる"
 date = 2021-07-01
-taxonomies.tags = ["nvim"]
+tags = ["nvim"]
 +++
 
 Windows でも環境変数 `XDG_CONFIG_HOME` を設定していると、 `%USERPROFILE%/AppData/Local/nvim` が無効になる。

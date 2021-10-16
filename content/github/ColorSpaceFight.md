@@ -2,7 +2,7 @@
 title = "ColorSpaceFight"
 date = 2018-11-22 18:03:21+00:00
 updated = 2018-11-23 19:16:16+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

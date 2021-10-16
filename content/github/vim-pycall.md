@@ -2,7 +2,7 @@
 title = "vim-pycall"
 date = 2019-04-23 10:15:44+00:00
 updated = 2019-05-14 09:58:21+00:00
-taxonomies.tags = ["repository", "Vim script"]
+tags = ["repository", "Vim script"]
 [extra]
 css = "github"
 star = 0

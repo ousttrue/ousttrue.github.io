@@ -2,7 +2,7 @@
 title = "vimfiles"
 date = 2013-12-08 07:04:20+00:00
 updated = 2014-01-21 05:44:43+00:00
-taxonomies.tags = ["repository", "VimL"]
+tags = ["repository", "VimL"]
 [extra]
 css = "github"
 star = 0

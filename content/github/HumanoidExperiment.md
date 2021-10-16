@@ -2,7 +2,7 @@
 title = "HumanoidExperiment"
 date = 2018-09-30 19:11:21+00:00
 updated = 2018-10-01 03:38:46+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 4

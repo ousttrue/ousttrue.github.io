@@ -2,7 +2,7 @@
 title = "dscvd3d"
 date = 2012-06-03 15:49:18+00:00
 updated = 2013-01-28 16:21:11+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 1

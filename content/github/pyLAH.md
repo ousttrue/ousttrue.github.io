@@ -2,7 +2,7 @@
 title = "pyLAH"
 date = 2017-09-26 18:26:54+00:00
 updated = 2017-12-09 13:13:11+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

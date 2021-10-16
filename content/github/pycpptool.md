@@ -2,7 +2,7 @@
 title = "pycpptool"
 date = 2019-04-11 14:35:47+00:00
 updated = 2019-09-13 04:04:51+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 1

@@ -2,7 +2,7 @@
 title = "rust_gtk_glarea"
 date = 2018-10-21 06:04:34+00:00
 updated = 2020-10-05 12:27:38+00:00
-taxonomies.tags = ["repository", "Rust"]
+tags = ["repository", "Rust"]
 [extra]
 css = "github"
 star = 1

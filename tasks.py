@@ -340,7 +340,7 @@ updated = {self.updated_at}'''
 title = "{self.title}"
 date = {self.created_at}
 updated = {self.updated_at}
-taxonomies.tags = {self.tags}
+tags = {self.tags}
 [extra]
 css = "qiita"
 url = "{self.url}"

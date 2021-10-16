@@ -2,7 +2,7 @@
 title = "daplauncher"
 date = 2019-04-28 13:08:20+00:00
 updated = 2019-04-28 20:38:46+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

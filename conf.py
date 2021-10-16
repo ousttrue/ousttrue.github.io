@@ -234,10 +234,10 @@ THEME_CONFIG = {
 #     )
 
 POSTS = (
-    ("content/*.rst", "posts", "post.tmpl"),
-    ("content/*.md", "posts", "post.tmpl"),
-    ("content/*.txt", "posts", "post.tmpl"),
-    ("content/*.html", "posts", "post.tmpl"),
+    ("content/posts/*.rst", "posts", "post.tmpl"),
+    ("content/posts/*.md", "posts", "post.tmpl"),
+    ("content/posts/*.txt", "posts", "post.tmpl"),
+    ("content/posts/*.html", "posts", "post.tmpl"),
 )
 PAGES = (
     ("pages/*.rst", "pages", "page.tmpl"),
@@ -1305,13 +1305,13 @@ MARKDOWN_EXTENSIONS = ['markdown.extensions.fenced_code', 'markdown.extensions.c
 # The value on the right should be a dict of callables.
 # METADATA_VALUE_MAPPING = {}
 # Examples:
-# METADATA_VALUE_MAPPING = {
-#     "yaml": {"keywords": lambda value: ', '.join(value)},  # yaml: 'keywords' list -> str
-#     "nikola": {
-#         "widgets": lambda value: value.split(', '),  # nikola: 'widgets' comma-separated string -> list
-#         "tags": str.lower  # nikola: force lowercase 'tags' (input would be string)
-#      }
-# }
+METADATA_VALUE_MAPPING = {
+    # "yaml": {"keywords": lambda value: ', '.join(value)},  # yaml: 'keywords' list -> str
+    "toml": {
+        # "widgets": lambda value: value.split(', '),  # nikola: 'widgets' comma-separated string -> list
+        "tags": lambda ls: [x.lower() for x in ls]  # nikola: force lowercase 'tags' (input would be string)
+     }
+}
 
 # Add any post types here that you want to be displayed without a title.
 # If your theme supports it, the titles will not be shown.

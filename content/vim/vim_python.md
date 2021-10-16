@@ -1,6 +1,6 @@
 +++
 date = 2019-04-28T03:17:07+09:00
-taxonomies.tags = ['vim', 'python']
+tags = ['vim', 'python']
 title = 'vim の python plugin 関連'
 +++
 

@@ -2,7 +2,7 @@
 title = "d3dserver"
 date = 2019-04-06 08:33:03+00:00
 updated = 2019-04-06 08:33:05+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 0

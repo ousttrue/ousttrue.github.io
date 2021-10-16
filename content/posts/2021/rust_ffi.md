@@ -1,7 +1,7 @@
 +++
 title = "rust の ffi"
 date = 2021-06-20
-taxonomies.tags = ["rust", "libclang", "ffi"]
+tags = ["rust", "libclang", "ffi"]
 +++
 
 rust の FFI に取り組んでいた。

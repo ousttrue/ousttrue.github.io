@@ -2,7 +2,7 @@
 title = "bullet-xna"
 date = 2015-06-23 16:02:19+00:00
 updated = 2015-06-23 16:10:34+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 0

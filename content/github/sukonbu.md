@@ -2,7 +2,7 @@
 title = "sukonbu"
 date = 2019-11-28 02:39:50+00:00
 updated = 2021-02-09 09:30:43+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

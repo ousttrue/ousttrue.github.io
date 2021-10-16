@@ -1,7 +1,7 @@
 +++
 title = "packer から luarocks を使う"
 date = 2021-07-08
-taxonomies.tags = ["nvim", "lua"]
+tags = ["nvim", "lua"]
 +++
 
 nvim のパッケージマネージャー packer に、 luarocks のモジュール機能があるのだが Windows hererocks が失敗する。

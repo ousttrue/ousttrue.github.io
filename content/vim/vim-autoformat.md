@@ -1,6 +1,6 @@
 +++
 date = 2019-04-21T13:00:17+09:00
-taxonomies.tags = ['nvim']
+tags = ['nvim']
 draft = true
 title = 'vim-autoformat を使う'
 +++

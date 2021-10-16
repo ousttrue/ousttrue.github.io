@@ -2,7 +2,7 @@
 title = "pymeshviewer"
 date = 2011-12-31 01:33:24+00:00
 updated = 2011-12-31 01:33:48+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 2

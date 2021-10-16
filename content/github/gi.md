@@ -2,7 +2,7 @@
 title = "gi"
 date = 2018-10-01 18:05:24+00:00
 updated = 2018-10-01 20:12:05+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

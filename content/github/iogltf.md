@@ -2,7 +2,7 @@
 title = "iogltf"
 date = 2018-10-02 02:55:37+00:00
 updated = 2018-10-28 14:02:10+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0

@@ -2,7 +2,7 @@
 title = "termutil"
 date = 2010-12-04 17:09:59+00:00
 updated = 2010-12-05 05:13:35+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 3

@@ -2,7 +2,7 @@
 title = "Skeletal"
 date = 2019-06-23 19:15:24+00:00
 updated = 2019-07-21 21:35:23+00:00
-taxonomies.tags = ["repository", "C"]
+tags = ["repository", "C"]
 [extra]
 css = "github"
 star = 0

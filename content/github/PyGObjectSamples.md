@@ -2,7 +2,7 @@
 title = "PyGObjectSamples"
 date = 2016-05-28 05:59:41+00:00
 updated = 2016-05-29 17:25:34+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 0

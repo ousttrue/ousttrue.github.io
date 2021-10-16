@@ -1,6 +1,6 @@
 +++
 date = 2019-04-27T19:00:26+09:00
-taxonomies.tags = ['vim', 'dap']
+tags = ['vim', 'dap']
 title = 'vim で DebugAdapterProtocol する'
 +++
 

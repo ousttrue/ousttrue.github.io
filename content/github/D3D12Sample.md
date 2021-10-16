@@ -2,7 +2,7 @@
 title = "D3D12Sample"
 date = 2015-07-02 17:29:56+00:00
 updated = 2015-07-02 17:29:56+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 0

@@ -2,7 +2,7 @@
 title = "mpack-rpc"
 date = 2014-02-17 12:28:50+00:00
 updated = 2014-02-17 12:28:50+00:00
-taxonomies.tags = ["repository"]
+tags = ["repository"]
 [extra]
 css = "github"
 star = 0

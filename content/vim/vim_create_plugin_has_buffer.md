@@ -1,6 +1,6 @@
 +++
 date = 2019-04-23T00:13:09+09:00
-taxonomies.tags = ['vim']
+tags = ['vim']
 draft = true
 title = 'buffer を持つ vim plugin を作る'
 +++

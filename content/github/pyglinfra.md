@@ -2,7 +2,7 @@
 title = "pyglinfra"
 date = 2019-08-23 22:55:59+00:00
 updated = 2019-08-28 18:38:22+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 1

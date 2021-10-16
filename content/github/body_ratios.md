@@ -2,7 +2,7 @@
 title = "body_ratios"
 date = 2018-10-28 19:40:19+00:00
 updated = 2018-11-04 18:03:12+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 1

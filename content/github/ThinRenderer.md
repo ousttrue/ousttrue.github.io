@@ -2,7 +2,7 @@
 title = "ThinRenderer"
 date = 2017-07-11 02:12:16+00:00
 updated = 2017-07-11 02:12:40+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

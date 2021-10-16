@@ -2,7 +2,7 @@
 title = "d3d12_practice"
 date = 2020-02-04 03:51:39+00:00
 updated = 2020-02-17 19:41:20+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

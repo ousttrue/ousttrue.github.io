@@ -2,7 +2,7 @@
 title = "zola のテンプレートを整備する"
 date = 2021-06-14
 updated = 2021-08-31
-taxonomies.tags = ["zola", "css", "ssg"]
+tags = ["zola", "css", "ssg"]
 +++
 
 サイト整備のメモ。共通化して部品を少なくした。

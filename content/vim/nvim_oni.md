@@ -1,6 +1,6 @@
 +++
 date = 2019-04-21T02:40:00+09:00
-taxonomies.tags = ['vim']
+tags = ['vim']
 draft = true
 title = 'nvim frontend Oni'
 +++

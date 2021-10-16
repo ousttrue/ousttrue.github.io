@@ -2,7 +2,7 @@
 title = "perilune"
 date = 2019-07-28 07:04:15+00:00
 updated = 2020-06-03 04:49:46+00:00
-taxonomies.tags = ["repository", "C++"]
+tags = ["repository", "C++"]
 [extra]
 css = "github"
 star = 0

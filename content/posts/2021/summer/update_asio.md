@@ -2,7 +2,7 @@
 title = "Asio と Coroutine (c++20)"
 date = 2021-08-15
 updated = 2021-08-18
-taxonomies.tags = ["cpp", "asio"]
+tags = ["cpp", "asio"]
 +++
 
 非同期ライブラリ ASIO 

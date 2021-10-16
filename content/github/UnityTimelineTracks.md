@@ -2,7 +2,7 @@
 title = "UnityTimelineTracks"
 date = 2018-05-14 19:06:53+00:00
 updated = 2018-05-23 15:58:51+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

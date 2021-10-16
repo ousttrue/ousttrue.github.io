@@ -1,6 +1,6 @@
 +++
 date = 2019-04-19T05:34:33+09:00
-taxonomies.tags = ['python', 'vim']
+tags = ['python', 'vim']
 draft = true
 title = 'WorkspaceFolder作成中'
 +++

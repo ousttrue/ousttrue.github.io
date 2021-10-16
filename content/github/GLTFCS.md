@@ -2,7 +2,7 @@
 title = "GLTFCS"
 date = 2019-05-17 06:10:00+00:00
 updated = 2019-05-25 18:35:38+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 2

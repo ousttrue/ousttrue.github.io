@@ -2,7 +2,7 @@
 title = "luaメモ"
 date = 2021-07-27
 updated = 2021-08-15
-taxonomies.tags = ["lua", "luajit", "lsp", "dap"]
+tags = ["lua", "luajit", "lsp", "dap"]
 [extra]
 image = "./lua.png"
 +++

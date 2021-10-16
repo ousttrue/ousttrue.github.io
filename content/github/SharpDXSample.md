@@ -2,7 +2,7 @@
 title = "SharpDXSample"
 date = 2018-12-16 15:52:44+00:00
 updated = 2018-12-16 18:41:18+00:00
-taxonomies.tags = ["repository", "C#"]
+tags = ["repository", "C#"]
 [extra]
 css = "github"
 star = 1

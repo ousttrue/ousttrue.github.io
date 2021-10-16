@@ -2,7 +2,7 @@
 title = "ljl"
 date = 2019-08-30 18:50:59+00:00
 updated = 2019-08-31 20:54:23+00:00
-taxonomies.tags = ["repository", "Python"]
+tags = ["repository", "Python"]
 [extra]
 css = "github"
 star = 0
