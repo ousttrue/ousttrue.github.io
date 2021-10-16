@@ -1,0 +1,22 @@
+name: Nikola
+
+on:
+  push:
+    branches:
+      - nikola
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    steps:
+      - uses: actions/checkout@v1
+      - run: pip install "Nikola[extras]"
+      - name: build
+        run: nikola build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
