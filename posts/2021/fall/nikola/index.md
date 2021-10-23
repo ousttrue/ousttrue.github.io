@@ -90,3 +90,24 @@ jobs:
           publish_dir: ./output
 
 ```
+
+## 動作
+
+<https://getnikola.com/internals.html>
+
+## yapsy
+
+<https://getnikola.com/extending.html>
+
+`nikola/plugin_categories.py`
+
+<http://yapsy.sourceforge.net/>
+
+## build
+
+[DoIt](https://pydoit.org/) で駆動されるらしい。
+
+nikola は DoIt の task を生成する。
+
+* <https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/>
+* [タスクランナー Doit を使ってみよう](https://qiita.com/iisaka51/items/052ffbd9ab3b12504228)

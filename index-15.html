@@ -70,14 +70,111 @@
     
         
     <div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/summer/lua_opengl/" class="u-url">Lua で OpenGL</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/summer/lua_language_server/" class="u-url">Lua Language Server 解読</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/summer/lua_language_server/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-08-06T00:00:00+09:00" itemprop="datePublished" title="2021-08-06 00:00">2021-08-06 00:00</time></a>
+            </p>
+                        <p class="commentline">
+        
+    <a href="posts/2021/summer/lua_language_server/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/summer/lua_language_server.html">コメント</a>
+
+
+                </p>
+</div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p><a href="https://github.com/sumneko/lua-language-server">lua-language-server</a> が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
+<code>ffi.cdef</code> を読めるようにすればよいのでは。
+ということで、lua-language-server を探ってみる。</p>
+<h2>構成</h2>
+<p><a href="https://github.com/sumneko/lua-language-server/wiki/Command-line">https://github.com/sumneko/lua-language-server/wiki/Command-line</a></p>
+<p><code>BINRARY/lua-language-server LUA_LANGUAGE_SERVER/main.lua --logpath=D:/log --metapath=D:/meta --locale=en-us --configpath="config.json"</code></p>
+<pre class="code literal-block"><span></span>&gt; .\bin\Windows\lua-language-server.exe --help
+lua-language-server.exe:unrecognized option '--help'usage: C:\Users\oustt\ghq\github.com\sumneko\lua-language-server\bin\Windows\lua-language-server.exe [options] [script [args]]
+Available options are:
+  -e stat  execute string 'stat'
+  -i       enter interactive mode after executing 'script'
+  -l name  require library 'name' into global 'name'
+  -v       show version information
+  -E       ignore environment variables
+  -W       turn warnings on
+  --       stop handling options
+  -        stop handling options and execute stdin
+&gt; .\bin\Windows\lua-language-server.exe -v    
+Lua 5.4.4  Copyright (C) 1994-2021 Lua.org, PUC-Rio  
+</pre>
+
+<p>native モジュールを埋め込んだインタープリター <code>lua-language-server.exe</code> で <code>main.lua</code> を実行する。</p>
+<h3>setting</h3>
+<p><code>.vscode/settings.json</code></p>
+<pre class="code literal-block"><span></span>     <span class="s2">"Lua.runtime.version"</span><span class="err">:</span> <span class="s2">"LuaJIT"</span><span class="err">,</span>
+     <span class="s2">"Lua.workspace.preloadFileSize"</span><span class="err">:</span> <span class="mi">10000</span>
+</pre>
+
+<h2>LSP</h2>
+<p><a href="https://microsoft.github.io/language-server-protocol/">https://microsoft.github.io/language-server-protocol/</a></p>
+<ul>
+<li><a href="https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_signatureHelp">signatureHelp</a></li>
+</ul>
+<h2>main.lua</h2>
+<ul>
+<li>main.lua<ul>
+<li>script/service/service.lua</li>
+</ul>
+</li>
+</ul>
+<pre class="code literal-block"><span></span><span class="kr">function</span> <span class="nc">m</span><span class="p">.</span><span class="nf">start</span><span class="p">()</span>
+    <span class="n">util</span><span class="p">.</span><span class="n">enableCloseFunction</span><span class="p">()</span>
+    <span class="n">await</span><span class="p">.</span><span class="n">setErrorHandle</span><span class="p">(</span><span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">)</span>
+    <span class="n">pub</span><span class="p">.</span><span class="n">recruitBraves</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1">-- transport</span>
+    <span class="n">proto</span><span class="p">.</span><span class="n">listen</span><span class="p">()</span>
+
+    <span class="n">m</span><span class="p">.</span><span class="n">report</span><span class="p">()</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">pulse</span><span class="p">()</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">reportStatus</span><span class="p">()</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">testVersion</span><span class="p">()</span>
+
+    <span class="nb">require</span> <span class="s1">'provider'</span>
+
+    <span class="n">m</span><span class="p">.</span><span class="n">startTimer</span><span class="p">()</span>
+<span class="kr">end</span>
+</pre>
+
+<h2>script/parser</h2>
+<p>lua のコード解析</p>
+<ul>
+<li>script/parser/parse.lua</li>
+</ul>
+<p><code>ast.init(state)</code></p>
+<h3>LPeg</h3>
+<ul>
+<li>
+<p>script/parser/grammar.lua</p>
+</li>
+<li>
+<p><a href="http://www.inf.puc-rio.br/~roberto/lpeg/">LPeg</a></p>
+</li>
+<li><a href="https://gist.github.com/tacigar/93b30931c879cd8a9b12380724b956aa">Lua製PEG「LPeg」を触ってみた</a></li>
+<li><a href="https://nymphium.github.io/2015/07/23/lpeg2.html">LPegの使い方 patternその2</a></li>
+<li><a href="https://sceneryandfish.withnotes.net/blog/2014/07/22-lua-lpeg-how-to-use/">LPeg – Parsing Expression Grammars For Luaの使い方</a></li>
+</ul>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/summer/lua_opengl/" class="u-url">Lua で OpenGL</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/summer/lua_opengl/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-08-05T00:00:00Z" itemprop="datePublished" title="2021-08-05 00:00">2021-08-05 00:00</time></a>
+            <time class="published dt-published" datetime="2021-08-05T00:00:00+09:00" itemprop="datePublished" title="2021-08-05 00:00">2021-08-05 00:00</time></a>
             </p>
                         <p class="commentline">
         
@@ -157,7 +254,7 @@
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/luada/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-31T00:00:00Z" itemprop="datePublished" title="2021-07-31 00:00">2021-07-31 00:00</time></a>
+            <time class="published dt-published" datetime="2021-07-31T00:00:00+09:00" itemprop="datePublished" title="2021-07-31 00:00">2021-07-31 00:00</time></a>
             </p>
                         <p class="commentline">
         
@@ -359,7 +456,7 @@ lua 埋め込み型の exe が作りやすそう。
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/luv/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-29T00:00:00Z" itemprop="datePublished" title="2021-07-29 00:00">2021-07-29 00:00</time></a>
+            <time class="published dt-published" datetime="2021-07-29T00:00:00+09:00" itemprop="datePublished" title="2021-07-29 00:00">2021-07-29 00:00</time></a>
             </p>
                         <p class="commentline">
         
@@ -452,7 +549,7 @@ OpenGL のレンダースレッドと、シーン更新を分離する。</p>
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/imgui_docking_api/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-28T00:00:00Z" itemprop="datePublished" title="2021-07-28 00:00">2021-07-28 00:00</time></a>
+            <time class="published dt-published" datetime="2021-07-28T00:00:00+09:00" itemprop="datePublished" title="2021-07-28 00:00">2021-07-28 00:00</time></a>
             </p>
                         <p class="commentline">
         
@@ -518,8 +615,8 @@ DockSpace     ID=0x7CF2A649 Window=0x9A404470 Pos=0,30 Size=1200,870 Split=X
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/lua_info/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-27T00:00:00Z" itemprop="datePublished" title="2021-07-27 00:00">2021-07-27 00:00</time><span class="updated"> (更新日時
-                    <time class="dt-updated" datetime="2021-08-15T00:00:00Z" itemprop="dateUpdated" title="2021-08-15 00:00">2021-08-15 00:00</time>)</span>
+            <time class="published dt-published" datetime="2021-07-27T00:00:00+09:00" itemprop="datePublished" title="2021-07-27 00:00">2021-07-27 00:00</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2021-08-15T00:00:00+09:00" itemprop="dateUpdated" title="2021-08-15 00:00">2021-08-15 00:00</time>)</span>
             </a>
             </p>
                         <p class="commentline">
@@ -671,7 +768,7 @@ no_call_parentheses = true
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/example_glfw_openg/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-25T00:00:00Z" itemprop="datePublished" title="2021-07-25 00:00">2021-07-25 00:00</time></a>
+            <time class="published dt-published" datetime="2021-07-25T00:00:00+09:00" itemprop="datePublished" title="2021-07-25 00:00">2021-07-25 00:00</time></a>
             </p>
                         <p class="commentline">
         
@@ -805,7 +902,7 @@ FFI 境界の <code>struct の value 渡し</code>, <code>デフォルト引数<
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/invoke/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-24T00:00:00Z" itemprop="datePublished" title="2021-07-24 00:00">2021-07-24 00:00</time></a>
+            <time class="published dt-published" datetime="2021-07-24T00:00:00+09:00" itemprop="datePublished" title="2021-07-24 00:00">2021-07-24 00:00</time></a>
             </p>
                         <p class="commentline">
         
@@ -889,7 +986,7 @@ hello hoge
                     </span></p>
             <p class="dateline">
             <a href="posts/2021/luajitffi/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-23T00:00:00Z" itemprop="datePublished" title="2021-07-23 00:00">2021-07-23 00:00</time></a>
+            <time class="published dt-published" datetime="2021-07-23T00:00:00+09:00" itemprop="datePublished" title="2021-07-23 00:00">2021-07-23 00:00</time></a>
             </p>
                         <p class="commentline">
         
