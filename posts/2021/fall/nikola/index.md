@@ -111,3 +111,33 @@ nikola は DoIt の task を生成する。
 
 * <https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/>
 * [タスクランナー Doit を使ってみよう](https://qiita.com/iisaka51/items/052ffbd9ab3b12504228)
+
+## Theme
+
+* <https://getnikola.com/creating-a-theme.html>
+* <https://getnikola.com/theming.html>
+* [Nikola を windows でやるぞ 2](https://iuk.hateblo.jp/entry/2016/10/28/040908)
+
+
+* `themes/custom` フォルダを作る
+* `conf.py` の `THEME = "custom"`
+
+最低限
+
+```
+bundles
+templates/archive.tmpl
+templates/gallery.tmpl
+templates/index.tmpl
+templates/list.tmpl
+templates/listing.tmpl
+templates/page.tmpl
+templates/post.tmpl
+templates/tag.tmpl
+templates/tags.tmpl
+```
+
+## ToDo
+
+* Theme 調整
+* TOC
