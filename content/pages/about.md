@@ -1,7 +1,7 @@
 ---
 title: About Me
 date: 3000-01-01
-taxonomies: {tags:[]}
+tags: []
 ---
 
 
