@@ -42,6 +42,9 @@
 </header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
             <ul class="navbar-nav nav-fill d-flex w-100">
 <li class="nav-item">
+<a href="books" class="nav-link">MemoBooks</a>
+                </li>
+<li class="nav-item">
 <a href="archive.html" class="nav-link">Archives</a>
                 </li>
 <li class="nav-item">
@@ -49,6 +52,9 @@
                 </li>
 <li class="nav-item">
 <a href="rss.xml" class="nav-link">RSS feed</a>
+                </li>
+<li class="nav-item">
+<a href="about" class="nav-link">About</a>
 
                 
             </li>
@@ -70,1109 +76,685 @@
     
         
     <div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/22/threejs_pmd_loader/" class="u-url">Three.jsでpmd読み込み</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/refrange/" class="u-url">refrange</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2015/12/22/threejs_pmd_loader/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-22T00:00:00+09:00" itemprop="datePublished" title="2015-12-22 00:00">2015-12-22 00:00</time></a>
+            <a href="github/refrange/" rel="bookmark">
+            <time class="published dt-published" datetime="2014-02-13T13:49:11Z" itemprop="datePublished" title="2014-02-13 13:49">2014-02-13 13:49</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2014-08-28T02:10:21Z" itemprop="dateUpdated" title="2014-08-28 02:10">2014-08-28 02:10</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/22/threejs_pmd_loader/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/22/threejs_pmd_loader.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>こちらのモデルを使わせていただいております。</p>
-<p>threejs_pmd_loader.ts source
-PmdLoader.ts source
-変換せずに直接Pmdを読み込むべくカスタムローダーを作ってみよう。
-まず、SJIS操作が必要なのでこちらを使わせて頂いた。
-* https://github.com/polygonplanet/encoding.js
-あとはJSONLoaderを参考にしてArrayBufferから地道に情報を切り出していく。
-ArrayBufferから情報を切り出すのはこつがわかれば簡単で以下のようなヘルパークラスを作れば
-さくさくできる。
-BinaryReader
-class BinaryReader {
-    m_buffer: ArrayBuffer;
-    m_postiion = 0;</p>
-<pre class="code literal-block"><span></span>constructor(buffer: ArrayBuffer) {
-    this.m_buffer = buffer;
-}
-
-read(length: number) {
-    var slice = this.m_buffer.slice(this.m_postiion, this.m_postiion + length);
-    this.m_postiion += length;
-    return slice;
-}
-
-readString(length: number): string {
-    var slice = new Uint8Array(this.read(length));
-    let i = 0;
-    for (; i &lt; slice.byteLength; ++i) {
-        if (slice[i] == 0) {
-            break;
-        }
-    }
-
-    return Encoding.codeToString(Encoding.convert(slice.slice(0, i), {
-        to: 'UNICODE',
-        from: 'SJIS'
-    }));
-}
-
-readFloat(): number {
-    var read = this.read(4);
-    return new Float32Array(read)[0];
-}
-
-readVector2(): THREE.Vector2 {
-    return new THREE.Vector2(this.readFloat(), this.readFloat());
-}
-
-readVector3(): THREE.Vector3 {
-    return new THREE.Vector3(this.readFloat(), this.readFloat(), this.readFloat());
-}
-
-readRGB(): THREE.Color {
-    return new THREE.Color(this.readFloat(), this.readFloat(), this.readFloat());
-}
-
-// int
-readInt16(): number {
-    var read = this.read(2);
-    return new Int16Array(read)[0];
-}
-
-readInt32(): number {
-    var read = this.read(4);
-    return new Int32Array(read)[0];
-}
-
-// uint
-readUint8(): number {
-    var read = this.read(1);
-    return new Uint8Array(read)[0];
-}
-
-readUint16(): number {
-    var read = this.read(2);
-    return new Uint16Array(read)[0];
-}
-
-readUint16Array(count: number): Uint16Array {
-    var read = this.read(2 * count);
-    return new Uint16Array(read);
-}
-</pre>
-
-<p>}</p>
-<p>先頭のVertices, Indices, Materialsを読み込むところまで実装した。
-意外とあっさりTexture読み込みまでできちゃった。Three.js便利ですなぁ。
-骨を入れる前にシェーダーをやろう。
-トゥーンシェーダーでないと見栄えが悪い。</p>
+<p><a href="https://github.com/ousttrue/refrange">https://github.com/ousttrue/refrange</a></p>
+<p>Reimplment msgpack</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/21/node_self_build/" class="u-url">node.js(Windows版)を自前ビルドする</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/vimfiles/" class="u-url">vimfiles</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2015/12/21/node_self_build/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-21T00:00:00+09:00" itemprop="datePublished" title="2015-12-21 00:00">2015-12-21 00:00</time></a>
+            <a href="github/vimfiles/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-12-08T07:04:20Z" itemprop="datePublished" title="2013-12-08 07:04">2013-12-08 07:04</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2014-01-21T05:44:43Z" itemprop="dateUpdated" title="2014-01-21 05:44">2014-01-21 05:44</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/21/node_self_build/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/21/node_self_build.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>謎のクラッシュ(FFIでネイティブプラグインがアクセス違反で死ぬ)を追跡するため、
-VCのデバッガをアタッチするべく自前ビルドする。
-node-v5.3.0.tar.xz</p>
-<p>7zipで解凍。
-python2系にpathを通してvcbuild.batをたたく。</p>
-<blockquote>
-<p>vcbuild.bat</p>
-</blockquote>
-<p>v8もlibuvも全部入りらしくあっさりとほぼビルドできた。
-SignTool Error: No certificates were found that met all the given criteria.
-Failed to sign exe</p>
-<p>document
-https://github.com/nodejs/node-v0.x-archive/wiki/Installation#building-on-windows
-debugビルドの作り方はこう。</p>
-<blockquote>
-<p>vcbuild.bat nosign debug</p>
-</blockquote>
-<p>nodeをデバッグ実行</p>
-<p>node-v5.3.0にnode.slnができているのでこれをVisualStudio2015で開く。
-nodeをスタートアッププロジェクトに指定
-nodeの設定のdebugタブで、カレントディレクトリとコマンドライン引数を指定
-f5</p>
-<p>例外が再現した
-void CallbackInfo::DispatchToV8(callback_info <em>info, void </em>retval, void **parameters, bool dispatched) {
-  Nan::HandleScope scope;</p>
-<p>static const char* errorMessage = "ffi fatal: callback has been garbage collected!";</p>
-<p>if (info-&gt;function == NULL) {
-    // throw an error instead of segfaulting.
-    // see: https://github.com/rbranson/node-ffi/issues/72
-    if (dispatched) {
-        Local<value> errorFunctionArgv[1];
-        errorFunctionArgv[0] = Nan::New<string>(errorMessage).ToLocalChecked();
-        info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
-    }
-    else {
-      Nan::ThrowError(errorMessage);
-    }
-  } else {
-    // invoke the registered callback function
-    Local<value> functionArgv[2];
-    functionArgv[0] = WrapPointer((char <em>)retval, info-&gt;resultSize);
-    functionArgv[1] = WrapPointer((char </em>)parameters, sizeof(char *) * info-&gt;argc);
-    Local<value> e = info-&gt;function-&gt;Call(2, functionArgv); // &lt;-- ここ。functionがnullptrになってるよ!
-    if (!e-&gt;IsUndefined()) {
-      if (dispatched) {
-        Local<value> errorFunctionArgv[1];
-        errorFunctionArgv[0] = e;
-        info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
-      } else {
-        Nan::ThrowError(e);
-      }
-    }
-  }
-}</value></value></value></string></value></p>
-<p>ううむ。if文でnullチェックしてるのにelse側に落ちてるな。矢張りスレッドとかGCが絡んでいそうな気がするぞ。
-ちょうどnode-ffiでjavascriptのコールバックを呼び出しているところなのではないか。
-コールスタック</p>
-<blockquote>
-<p>ffi_bindings.node!CallbackInfo::DispatchToV8(_callback_info * info, void * retval, void * * parameters, bool dispatched) 行 73   C++
-    ffi_bindings.node!CallbackInfo::WatcherCallback(uv_async_s * w, int revents) 行 94   C++
-    node.exe!uv_process_async_wakeup_req(uv_loop_s * loop, uv_async_s * handle, uv_req_s * req) 行 97    C</p>
-</blockquote>
-<p>よく見るとまさにffi_bindings.node(node-ffiのネイティブプラグイン)内で問題が発生している。
-呼び出しスレッドはメインスレッドか・・・。
-何回も試してみると例外がむしろdllのスレッド側で起こることの方が多い。
-他にWaitSingleObjectがstdcallの関数をスレッド実行しているものが４本。
-ひょっとして、コールバックの頻度が高すぎなんじゃないのか・・・。
-callback_infoはffiの構造体。こいつのデストラクタが呼ばれているのが確認できれば手がかりになるな。
-で、callback_info-&gt;functionを解放する下記の部分がメインスレッドから呼ばれて、その後に
-スレッドからのコールバック呼び出しがクラッシュしているらしいことを発見。
-node_modules/ffi/src/callback_info.cc
-/<em>
- * Called when the <code>ffi_closure *</code> pointer (actually the "code" pointer) get's
- * GC'd on the JavaScript side. In this case we have to unwrap the
- * <code>callback_info *</code> struct, dispose of the JS function Persistent reference,
- * then finally free the struct.
- </em>/</p>
-<p>void closure_pointer_cb(char <em>data, void </em>hint) {
-  callback_info *info = reinterpret_cast<callback_info>(hint);
-  // dispose of the Persistent function reference
-  delete info-&gt;function;
-  info-&gt;function = NULL;
-  // now we can free the closure data
-  ffi_closure_free(info);
-}</callback_info></p>
-<p>コールスタック</p>
-<blockquote>
-<p>ffi_bindings.node!closure_pointer_cb(char * data, void * hint) 行 42 C++
-    node.exe!node::Buffer::CallbackInfo::WeakCallback(v8::Isolate * isolate, v8::Local<:object> object) 行 159    C++</:object></p>
-</blockquote>
-<pre class="code literal-block"><span></span> 省略
-
-node.exe!v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace space, const char * gc_reason, const v8::GCCallbackFlags callbackFlags) 行 556 C++
-
- 省略
-
-node.exe!node::Buffer::New(v8::Isolate * isolate, char * data, unsigned int length, void (char *, void *) * callback, void * hint) 行 347    C++
-binding.node!`anonymous namespace'::WrapPointer(char * ptr, unsigned int length) 行 147  C++
-binding.node!`anonymous namespace'::ReadPointer(const Nan::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 261    C++
-binding.node!Nan::imp::FunctionCallbackWrapper(const v8::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 174  C++
-</pre>
-
-<p>なんか、GCが発動して回収されちゃっているぽい？
-2015/09/20
-* Nodejs GC is crashing when a C function is returning NULL
-むしろこっちか
-2015/11/05
-* Node.js v5.0.0でnode-ffiやNodObjCが動かない
-しかし、うちのnode.jsは</p>
-<blockquote>
-<p>node --version
-v5.3.0</p>
-</blockquote>
-<p>うむ。
-むしろこっちか
-2015/09/15
-* ffi.Function underlying Callback is garbage collected
-死ななくなった。これっぽいな。
-64bit版で試してみる
-これはこれで死ぬ。
-まとめ</p>
-<p>node-ffiのFunctionでGCに回収されてしまう書き方のところがある(FFI.Function内)
-32bit版のnode-ffiではSTDCALLを指定できる(ABI=2)
-64bit版のnode-ffiではIA64にされるのでSTDCALLは動かぬ</p>
-<p>gypでのIA64とX64の扱いの違いがわかったら修正できるかな。
-X86_WIN32の時にFFI_STDCALLを定義する修正をプルリクしてみよう。</p>
+<p><a href="https://github.com/ousttrue/vimfiles">https://github.com/ousttrue/vimfiles</a></p>
+<p>admin vim plugins</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/19/node_ffi/" class="u-url">node-ffiでstdcallが使いたい(頓挫)</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/12/08/cmake/" class="u-url">cmakeを使ってみる(Windowsかつコマンドラインで)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2015/12/19/node_ffi/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-19T00:00:00+09:00" itemprop="datePublished" title="2015-12-19 00:00">2015-12-19 00:00</time></a>
+            <a href="posts/2013/12/08/cmake/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-12-08T00:00:00+09:00" itemprop="datePublished" title="2013-12-08 00:00">2013-12-08 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/19/node_ffi/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/19/node_ffi.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>Windows上でnode-ffiでdllから関数を呼びだしていたのだが、
-dllにコールバックを登録した呼び出しを繰り返していると死ぬという現象に遭遇。
-調べ始めた。
-node-v5.3.0-x64.msi(Windows10)</p>
-<p>node-ffiはstdcallに対応してない
-2014/01/25</p>
-<p>http://stackoverflow.com/questions/21357502/calling-delphi-stdcall-function-with-panischar-from-node-js</p>
-<p>node-ffiはstdcall対応してないで。
-そうなのかー。
-github見るとIssueがあるけど解決されなかったぽい。
-2012/01/13
-* https://github.com/node-ffi/node-ffi/issues/34
-残念。
-ついで。node-ffiはffiにパッケージ名を改めたらしい。</p>
-<p>https://github.com/node-ffi/node-ffi/wiki/API-changes-from-v0.x-to-v1.x</p>
-<p>node-ffiを改造できないか模索する
-node-ffiはlibffiのラッパーとわかる。
-FFI_DEFAULT_ABI
-というのがcdeclになる様子でnode-ffiはそれしか対応していないのが問題。
-で、調べていくと
-node_modules/ffi/deps/libffi/src/x86/ffitarget.h
-typedef enum ffi_abi {
-  FFI_FIRST_ABI = 0,</p>
-<p>/<em> ---- Intel x86 Win32 ---------- </em>/</p>
-<h2>ifdef X86_WIN32</h2>
-<p>FFI_SYSV,
-  FFI_STDCALL,
-  FFI_THISCALL,
-  FFI_FASTCALL,
-  FFI_MS_CDECL,
-  FFI_LAST_ABI,</p>
-<h2>ifdef _MSC_VER</h2>
-<p>FFI_DEFAULT_ABI = FFI_MS_CDECL</p>
-<h2>else</h2>
-<p>FFI_DEFAULT_ABI = FFI_SYSV</p>
-<h2>endif</h2>
-<h2>elif defined(X86_WIN64)</h2>
-<p>FFI_WIN64,
-  FFI_LAST_ABI,
-  FFI_DEFAULT_ABI = FFI_WIN64</p>
-<h2>else</h2>
-<p>/<em> ---- Intel x86 and AMD x86-64 - </em>/
-  FFI_SYSV,
-  FFI_UNIX64,   /<em> Unix variants all use the same ABI for x86-64  </em>/
-  FFI_LAST_ABI,</p>
-<h2>if defined(<strong>i386</strong>) || defined(__i386)</h2>
-<p>FFI_DEFAULT_ABI = FFI_SYSV</p>
-<h2>else</h2>
-<p>FFI_DEFAULT_ABI = FFI_UNIX64</p>
-<h2>endif</h2>
-<h2>endif</h2>
-<p>} ffi_abi;</p>
-<p>STDCALL発見・・・。しかし、この書き方だと64bitビルドで消滅するのではないか？
-FFI_WIN64って何？
-X86_WIN64って何だろう。何故、STD_CALLが無いのか。もしかして、IA64のことなのか。
-どうやら、そのよう定義済みプリプロセッサー・シンボルの使用。
-うちはamd64なのでnot IA64。
-node-ffiのどこでX86_WIN64が定義されているのか
-node_modules/ffi/deps/libffi/config/win/x64
-/<em> Specify which architecture libffi is configured for. </em>/</p>
-<h2>ifndef X86_WIN64</h2>
-<h2>define X86_WIN64</h2>
-<h2>endif</h2>
-<p>とりあえず書き換えて、</p>
-<h2>ifndef X86_WIN32</h2>
-<h2>define X86_WI32</h2>
-<h2>endif</h2>
+<p>cmakeを使ってみる(Windowsかつコマンドラインで)
+ArUcoを使おうとしたら、msvcpdのvc10版を要求されてvc12でデバッグビルドが動かなかった。
+最新版のOpenCV-2.4.7をゲットしてきたところvc10とvc11は含まれて居るのだが、vc12ビルドは含まれていなかった(vc2013は早すぎたかw)。
+仕方ないので自前ビルドすることにした。
+ということでcmakeの使い方を調べてみる。
+ついでに、cmakeでビルドしたライブラリを特定のディレクトリを基準にインストールする方法を調べてみる。
+練習にzlibをビルドしてインストールしてみる
+以下のようなディレクトリ構成で運用してみることを目標に作業開始。
+local_vc12
+ + bin # dll置き場
+ + include # dllを使うのに必要なheader置き場
+ + lib # dllのimportライブラリ置き場</p>
+<p>外部依存の無い適当なライブラリで練習してみようということでzlibを選定。
+さっそくcmakeを使ってみようと思ったら、zlib-1.2.8にはCmakeLists.txtが含まれとるで。
+C:\src&gt; cd zlib-1.2.8
+C:\src\zlib-1.2.8&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\zlib-1.2.8&gt; msbuild INSTALL.vcxproj
+C:\src\zlib-1.2.8&gt; msbuild INSTALL.vcxproj /p:Configuration=Release</p>
+<p>以上で下記のようになった。
+C:/local_vc12
+C:/local_vc12/bin
+C:/local_vc12/bin/zlib.dll
+C:/local_vc12/bin/zlibd.dll
+C:/local_vc12/include
+C:/local_vc12/include/zconf.h
+C:/local_vc12/include/zlib.h
+C:/local_vc12/lib
+C:/local_vc12/lib/zlib.lib
+C:/local_vc12/lib/zlibd.lib
+C:/local_vc12/lib/zlibstatic.lib
+C:/local_vc12/lib/zlibstaticd.lib
+C:/local_vc12/share
+C:/local_vc12/share/man
+C:/local_vc12/share/man/man3
+C:/local_vc12/share/man/man3/zlib.3
+C:/local_vc12/share/pkgconfig
+C:/local_vc12/share/pkgconfig/zlib.pc</p>
+<p>素晴らしい。
+OpenCV-2.4.7でやってみる
+C:\src&gt; cd opencv-2.4.7
+C:\src\opencv-2.4.7&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>失敗する。</p>
+<p>https://github.com/SpecLad/opencv/commit/7973594a01228107dcb9d2d1f10eb64498b91aac
+http://stackoverflow.com/questions/17409956/cannot-compile-opencv-2-4-5-with-vs-2013-rtm</p>
+<p>あとIlmxxxでmin, maxのエラーが出るので”#include
+<algorithm>“する。std::min,
+maxはalgorithmに入っとる。ALL_BUILDが成功したらINSTALLする。
+C:\src\opencv-2.4.7&gt; msbuild INSTALL.vcxproj</algorithm></p>
+<p>これで”local_vc12”にopencvも入った。
+cmakeはいままで敬遠していたのだがライブラリのinstallまで面倒見てくれるのはいいですな。
+同じく敬遠していた自前dllを使う開発が捗りそうな感じだ。
+ArUcoをビルド
+cmakeを使ったアプリ(ライブラリを使う方)のビルド。
+C:\src&gt; cd aruco-1.2.4
+C:\src\aruco-1.2.4&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .</p>
+<p>ここでエラーが出る。
+OpenCVが正式ビルドと違うディレクトリにインストールされたために検知に失敗する。
+“C:/local_vc12/OpenCVConfig.cmake”を直接修正した。
+get_filename_component(OpenCV_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH CACHE)</p>
+<h2>if(OpenCV_RUNTIME AND OpenCV_ARCH)</h2>
+<h2>if(OpenCV_STATIC AND EXISTS "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib/OpenCVConfig.cmake")</h2>
+<h2>if(OpenCV_CUDA AND EXISTS "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib/OpenCVConfig.cmake")</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib")</h2>
+<h2>else()</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib")</h2>
+<h2>endif()</h2>
+<h2>elseif(EXISTS "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib/OpenCVConfig.cmake")</h2>
+<h2>if(OpenCV_CUDA AND EXISTS "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib/OpenCVConfig.cmake")</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib")</h2>
+<h2>else()</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib")</h2>
+<h2>endif()</h2>
+<h2>endif()</h2>
+<h2>endif()</h2>
+<p>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/lib")</p>
+<p>これでビルドできた。
+C:\src\aruco-1.2.4&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>しかし、OpenGLを使ったサンプルがビルドされぬ。
+どうやらglutが見つからないらいしい。せっかくなのでFreeGlutを入れてみますか。
+FreeGlut
+http://freeglut.sourceforge.net/
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+CMake Error: The source directory "C:/src/freeglut-2.8.1" does not appear to contain CMakeLists.txt.
+Specify --help for usage, or press the help button on the CMake GUI.</p>
+<p>CMakeLists.txtが無い。作ってみる。
+project (freeglut)</p>
+<p>file(GLOB SOURCES "src/*.c")
+ADD_LIBRARY(freeglut SHARED ${SOURCES})</p>
+<p>include_directories(include)</p>
+<p>ADD_DEFINITIONS(-DFREEGLUT_EXPORTS)
+ADD_DEFINITIONS(-D_USRDLL)
+ADD_DEFINITIONS(-D_WINDOWS)
+ADD_DEFINITIONS(-DWIN32)</p>
+<p>C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>ビルドできた。INSTALL.vcxprojが見当たらないのでCMakeLists.txtに追記する必要がありそう。
+インストールに関する追記。</p>
+<h2>dll</h2>
+<p>INSTALL(TARGETS freeglut RUNTIME
+    DESTINATION bin)</p>
+<h2>lib</h2>
+<p>INSTALL(TARGETS freeglut ARCHIVE
+    DESTINATION lib)</p>
+<h2>headers</h2>
+<p>INSTALL(DIRECTORY include/
+    DESTINATION include
+    PATTERN "Makefile.*" EXCLUDE
+)</p>
+<p>インストールしてみる。
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild INSTALL.vcxproj</p>
+<p>-- Install configuration: "Debug"
+ -- Installing: C:/local_vc12/bin/freeglut.dll
+ -- Installing: C:/local_vc12/lib/freeglut.lib
+ -- Installing: C:/local_vc12/include
+ -- Installing: C:/local_vc12/include/GL
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut.h
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut_ext.h
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut_std.h
+ -- Up-to-date: C:/local_vc12/include/GL/glut.h</p>
+<p>インストール成功。
+再度ArUco
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+ -- FOUND OPENGL=YES    LIBS=opengl32;glu32;C:/local_vc12/lib/freeglut.lib</p>
+<p>glutが発見されたようだ。
+どうやらcmakeはCMAKE_INSTALL_PREFIXにライブラリを探しに行くようですな。
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>gl.hの前に”#include <windows.h>“してやってビルドできた。
+Debug版の後ろに”d”をつける
+FreeGlutのCmakeLists.txtにzlibの”CmakeLists.txt”から頂いてきた。
+set(CMAKE_DEBUG_POSTFIX "d")</windows.h></p>
+<p>記述順の影響があるようで前の方(ADD_LIBRARYより前？)に書く必要があるっぽい。
+Debug版の後ろに”d”がついたライブラリを使う</p>
+<p>http://stackoverflow.com/questions/2209929/linking-different-libraries-for-debug-and-release-builds-in-cmake-on-windows
+http://stackoverflow.com/questions/5497348/debug-and-release-library-linking-with-cmake-visual-studio</p>
+<p>こういう書き方でできた。
+set (OPENGL_LIBS  general ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} optimized ${GLUT_glut_LIBRARY} debug ${GLUT_glut_DEBUG_LIBRARY})</p>
+<p>CMAKE_DEBUG_POSTFIXに関連は使われる方と使う方の双方で合わせる必要があるので変更する場合は自分で両方の面倒を見なければならない。
+一応、cmakeのひととおりの使い方が分かってきた。
+vcがmsbuildを使うようになってビルドが制御可能になっている感じ。
+makeの各ターゲットに対するmsbuildの実行方法は以下の通り。
+"target", "make", "msbuild"
+"build", "make all", "msbuild ALL_BUILD.vcxproj /t:Build"
+"release build", "?", "msbuild ALL_BUILD.vcxproj /t:Build /p:Configuration=Release"
+"debug build", "?", "msbuild ALL_BUILD.vcxproj /t:Build /p:Configuration=Debug"
+"clean", "make clean", "msbuild ALL_BUILD.vcxproj /t:Clean"
+"install", "make install", "msbuild INSTALL.vcxproj"</p>
+<p>ちょっといろいろビルドしてみる。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/12/08/use_cmake/" class="u-url">cmakeを使ってみる(Windowsかつコマンドラインで)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2013/12/08/use_cmake/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-12-08T00:00:00+09:00" itemprop="datePublished" title="2013-12-08 00:00">2013-12-08 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>ArUcoを使おうとしたら、msvcpdのvc10版を要求されてvc12でデバッグビルドが動かなかった。</p>
+<p>最新版のOpenCV-2.4.7をゲットしてきたところvc10とvc11は含まれて居るのだが、vc12ビルドは含まれていなかった(vc2013は早すぎたかw)。
+仕方ないので自前ビルドすることにした。
+ということでcmakeの使い方を調べてみる。
+ついでに、cmakeでビルドしたライブラリを特定のディレクトリを基準にインストールする方法を調べてみる。
+練習にzlibをビルドしてインストールしてみる
+以下のようなディレクトリ構成で運用してみることを目標に作業開始。
+local_vc12
+ + bin # dll置き場
+ + include # dllを使うのに必要なheader置き場
+ + lib # dllのimportライブラリ置き場</p>
+<p>外部依存の無い適当なライブラリで練習してみようということでzlibを選定。
+さっそくcmakeを使ってみようと思ったら、zlib-1.2.8にはCmakeLists.txtが含まれとるで。
+C:\src&gt; cd zlib-1.2.8
+C:\src\zlib-1.2.8&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\zlib-1.2.8&gt; msbuild INSTALL.vcxproj
+C:\src\zlib-1.2.8&gt; msbuild INSTALL.vcxproj /p:Configuration=Release</p>
+<p>以上で下記のようになった。
+C:/local_vc12
+C:/local_vc12/bin
+C:/local_vc12/bin/zlib.dll
+C:/local_vc12/bin/zlibd.dll
+C:/local_vc12/include
+C:/local_vc12/include/zconf.h
+C:/local_vc12/include/zlib.h
+C:/local_vc12/lib
+C:/local_vc12/lib/zlib.lib
+C:/local_vc12/lib/zlibd.lib
+C:/local_vc12/lib/zlibstatic.lib
+C:/local_vc12/lib/zlibstaticd.lib
+C:/local_vc12/share
+C:/local_vc12/share/man
+C:/local_vc12/share/man/man3
+C:/local_vc12/share/man/man3/zlib.3
+C:/local_vc12/share/pkgconfig
+C:/local_vc12/share/pkgconfig/zlib.pc</p>
+<p>素晴らしい。
+OpenCV-2.4.7でやってみる
+C:\src&gt; cd opencv-2.4.7
+C:\src\opencv-2.4.7&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>失敗する。</p>
+<p>https://github.com/SpecLad/opencv/commit/7973594a01228107dcb9d2d1f10eb64498b91aac
+http://stackoverflow.com/questions/17409956/cannot-compile-opencv-2-4-5-with-vs-2013-rtm</p>
+<p>あとIlmxxxでmin, maxのエラーが出るので”#include
+<algorithm>“する。std::min,
+maxはalgorithmに入っとる。ALL_BUILDが成功したらINSTALLする。
+C:\src\opencv-2.4.7&gt; msbuild INSTALL.vcxproj</algorithm></p>
+<p>これで”local_vc12”にopencvも入った。
+cmakeはいままで敬遠していたのだがライブラリのinstallまで面倒見てくれるのはいいですな。
+同じく敬遠していた自前dllを使う開発が捗りそうな感じだ。
+ArUcoをビルド
+cmakeを使ったアプリ(ライブラリを使う方)のビルド。
+C:\src&gt; cd aruco-1.2.4
+C:\src\aruco-1.2.4&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .</p>
+<p>ここでエラーが出る。
+OpenCVが正式ビルドと違うディレクトリにインストールされたために検知に失敗する。
+“C:/local_vc12/OpenCVConfig.cmake”を直接修正した。
+get_filename_component(OpenCV_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH CACHE)</p>
+<h2>if(OpenCV_RUNTIME AND OpenCV_ARCH)</h2>
+<h2>if(OpenCV_STATIC AND EXISTS "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib/OpenCVConfig.cmake")</h2>
+<h2>if(OpenCV_CUDA AND EXISTS "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib/OpenCVConfig.cmake")</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib")</h2>
+<h2>else()</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/staticlib")</h2>
+<h2>endif()</h2>
+<h2>elseif(EXISTS "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib/OpenCVConfig.cmake")</h2>
+<h2>if(OpenCV_CUDA AND EXISTS "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib/OpenCVConfig.cmake")</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/gpu/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib")</h2>
+<h2>else()</h2>
+<h2>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/lib")</h2>
+<h2>endif()</h2>
+<h2>endif()</h2>
+<h2>endif()</h2>
+<p>set(OpenCV_LIB_PATH "${OpenCV_CONFIG_PATH}/lib")</p>
+<p>これでビルドできた。
+C:\src\aruco-1.2.4&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>しかし、OpenGLを使ったサンプルがビルドされぬ。
+どうやらglutが見つからないらいしい。せっかくなのでFreeGlutを入れてみますか。
+FreeGlut
+http://freeglut.sourceforge.net/
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+CMake Error: The source directory "C:/src/freeglut-2.8.1" does not appear to contain CMakeLists.txt.
+Specify --help for usage, or press the help button on the CMake GUI.</p>
+<p>CMakeLists.txtが無い。作ってみる。
+project (freeglut)</p>
+<p>file(GLOB SOURCES "src/*.c")
+ADD_LIBRARY(freeglut SHARED ${SOURCES})</p>
+<p>include_directories(include)</p>
+<p>ADD_DEFINITIONS(-DFREEGLUT_EXPORTS)
+ADD_DEFINITIONS(-D_USRDLL)
+ADD_DEFINITIONS(-D_WINDOWS)
+ADD_DEFINITIONS(-DWIN32)</p>
+<p>C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>ビルドできた。INSTALL.vcxprojが見当たらないのでCMakeLists.txtに追記する必要がありそう。
+インストールに関する追記。</p>
+<h2>dll</h2>
+<p>INSTALL(TARGETS freeglut RUNTIME
+    DESTINATION bin)</p>
+<h2>lib</h2>
+<p>INSTALL(TARGETS freeglut ARCHIVE
+    DESTINATION lib)</p>
+<h2>headers</h2>
+<p>INSTALL(DIRECTORY include/
+    DESTINATION include
+    PATTERN "Makefile.*" EXCLUDE
+)</p>
+<p>インストールしてみる。
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+C:\src\opencv-2.4.7&gt; msbuild INSTALL.vcxproj</p>
+<p>-- Install configuration: "Debug"
+ -- Installing: C:/local_vc12/bin/freeglut.dll
+ -- Installing: C:/local_vc12/lib/freeglut.lib
+ -- Installing: C:/local_vc12/include
+ -- Installing: C:/local_vc12/include/GL
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut.h
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut_ext.h
+ -- Up-to-date: C:/local_vc12/include/GL/freeglut_std.h
+ -- Up-to-date: C:/local_vc12/include/GL/glut.h</p>
+<p>インストール成功。
+再度ArUco
+C:\src\freeglut-2.8.1&gt; cmake -D CMAKE_INSTALL_PREFIX=C:/local_vc12 .
+ -- FOUND OPENGL=YES    LIBS=opengl32;glu32;C:/local_vc12/lib/freeglut.lib</p>
+<p>glutが発見されたようだ。
+どうやらcmakeはCMAKE_INSTALL_PREFIXにライブラリを探しに行くようですな。
+C:\src\opencv-2.4.7&gt; msbuild ALL_BUILD.vcxproj</p>
+<p>gl.hの前に”#include <windows.h>“してやってビルドできた。
+Debug版の後ろに”d”をつける
+FreeGlutのCmakeLists.txtにzlibの”CmakeLists.txt”から頂いてきた。
+set(CMAKE_DEBUG_POSTFIX "d")</windows.h></p>
+<p>記述順の影響があるようで前の方(ADD_LIBRARYより前？)に書く必要があるっぽい。
+Debug版の後ろに”d”がついたライブラリを使う</p>
+<p>http://stackoverflow.com/questions/2209929/linking-different-libraries-for-debug-and-release-builds-in-cmake-on-windows
+http://stackoverflow.com/questions/5497348/debug-and-release-library-linking-with-cmake-visual-studio</p>
+<p>こういう書き方でできた。
+set (OPENGL_LIBS  general ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} optimized ${GLUT_glut_LIBRARY} debug ${GLUT_glut_DEBUG_LIBRARY})</p>
+<p>CMAKE_DEBUG_POSTFIXに関連は使われる方と使う方の双方で合わせる必要があるので変更する場合は自分で両方の面倒を見なければならない。
+一応、cmakeのひととおりの使い方が分かってきた。
+vcがmsbuildを使うようになってビルドが制御可能になっている感じ。
+makeの各ターゲットに対するmsbuildの実行方法は以下の通り。
+"target", "make", "msbuild"
+"build", "make all", "msbuild ALL_BUILD.vcxproj /t:Build"
+"release build", "?", "msbuild ALL_BUILD.vcxproj /t:Build /p:Configuration=Release"
+"debug build", "?", "msbuild ALL_BUILD.vcxproj /t:Build /p:Configuration=Debug"
+"clean", "make clean", "msbuild ALL_BUILD.vcxproj /t:Clean"
+"install", "make install", "msbuild INSTALL.vcxproj"</p>
+<p>ちょっといろいろビルドしてみる。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/12/01/sharpdx/" class="u-url">SharpDX事始め</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2013/12/01/sharpdx/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-12-01T00:00:00+09:00" itemprop="datePublished" title="2013-12-01 00:00">2013-12-01 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>SharpDX事始め
+WPFとかDirectX11とかKinectあたりのAPIに慣れておきたいということで、
+SharpDXの練習を始めた。
+SharpDXのサンプルにDirect3D10/WPFHostというのがあるのだが、
+Direct3D11版が無かったので練習がてら11で動くように改造してみた。
+Direct3D10とDirect3D11の間の違いは少ないので変更箇所は少ないのだが、
+ポイントがいくつかあるのでメモ。</p>
+<p>Direct3D11でDeviceの一部の機能がDeviceContextに分けられた。DeviceからDeviceContextを取得するには、Device.ImmediateContextを使える。
+Direct3D11でAPIからEffectが消滅した。SharpDXはこの機能をsharpdx_direct3d11_effects_x86.dllで提供しているのでこれを実行パスにコピーするべし。あとよくわからないが、CompileFromFileの第２引数には”fx_5_0”を指定するべし。”fx_4_0”だとエラーになる。適当にやってみたら動いたからよいものの謎。</p>
+<p>とりあえずこれでWPF+DirectX11な開発を始められるで。
+せっかくなので CodePlexにアップ。 https://wpfhost11.codeplex.com/
+ちょっと、C#系のクンフーを高めて行こうかと。
+追記</p>
+<p>http://stackoverflow.com/questions/18912194/sharpdx-2-5-in-directx11-in-wpf</p>
+<p>SharpDXElement使えだと？</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/11/28/pathogen_vim/" class="u-url">vim環境整備</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2013/11/28/pathogen_vim/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-11-28T00:00:00+09:00" itemprop="datePublished" title="2013-11-28 00:00">2013-11-28 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>vim環境整備
+Windows8でコーディングができるようにvim回りを整備する。
+コマンドライン環境としてPowerShellを採用してそこからvim(gvim)する方向性。
+前の日記を整理して書き直し。
+PowerShellを使えるようにしてvimとgitをインストールする
+PowerShellを管理者権限で実行して以下のように実行する。
+powershell&gt; Set-ExecutionPolicy RemoteSigned</p>
+<p>パッケージ管理として Chocolatey
+をインストール。dos窓で以下のように実行する。
+dos&gt; @powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" &amp;&amp; SET PATH=%PATH%;%systemdrive%\chocolatey\bin</p>
+<p>powershellの設定ファイル作成する。shellの.profileに相当するファイル。</p>
+<p>C:/Users/<em>USER_NAME</em>/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1</p>
+<p>とりあえずwhichコマンド的な関数を書いておく
+function which([string] $command=$(throw "need command name")){
+    $Env:Path.Split(";") | %{ ls $<em>  2&gt; $null } | ?{ $</em>.Name -match "^$command" } | % { $_.FullName }
+} </p>
+<p>改めてPowerShellを起動してchocolateyでvimをインストールする
+powershell&gt; cinst vim</p>
+<p>gitも入れる。
+powershell&gt; cinst git</p>
+<p>cinstの実行直後はいろいろPathが通っていなかったりして使えない場合があるのでその場合はpowershellを再起動。
+vimを整備する
+NerdTreeを入れようと思ったらpathogen.vim使えと書いてあったのでpathogen.vim入れる。
+powershell&gt; cd $HOME
+powershell&gt; mkdir vimfiles
+powershell&gt; cd vimfiles
+powershell&gt; mkdir autoload, bundle
+powershell&gt; git init</p>
+<p>pathogen.vim
+を入れる。downloadしてvimfiles/autoload/pathogen.vimに保存する。
+powershell&gt; git add .
+powershell&gt; git commit -m init</p>
+<p>とりあえずgitに登録した。
+_vimrc
+execute pathogen#infect()
+syntax on
+filetype plugin indent on</p>
+<p>colorscheme darkblue</p>
+<p>set hidden
+set nobackup</p>
+<p>_gvimrc
+colorscheme desert</p>
+<p>set iminsert=0
+set imsearch=-1
+set visualbell t_vb=</p>
+<p>set columns=100
+set lines=56</p>
+<p>NerdTree
+NerdTree をgit
+submoduleとしてインストールする。
+powershell&gt; cd vimfiles/bundle
+powershell&gt; git submodule add https://github.com/scrooloose/nerdtree.git</p>
+<p>以上でvim環境が始動した。
+追記
+WindowsだとNerdTreeの[m]キーのメニューにcopyが出ない問題があったがstackoverflowに
+原因と解決方法が書いてあった。
+http://stackoverflow.com/questions/11269926/nerdtree-copy-command-in-windows-7</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/11/27/vs2013/" class="u-url">VS2013 express editionを入れてみた</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2013/11/27/vs2013/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-11-27T00:00:00+09:00" itemprop="datePublished" title="2013-11-27 00:00">2013-11-27 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <p>VS2013 express editionを入れてみた
+で、DirectX9のプロジェクトをビルドしようとしてみたのだが
+D3DXが無くなっておる。
+こいつは面倒くさいことになった・・・。
+D3D9はあるのにD3DX9だけ無くなっているという。
+D3D11対応を強いられている。</p>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/11/26/unity_mmd/" class="u-url">Unity開始</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2013/11/26/unity_mmd/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-11-26T00:00:00+09:00" itemprop="datePublished" title="2013-11-26 00:00">2013-11-26 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>仕事の都合もあって、Unityの学習を開始。</p>
+<p>Unity開始
+だいぶ前にオライリーのUnity本が出たころに少し触っただけなので初見とあまり変わらない。
+今奥付、を見たら2011年9月とか書いてあった。
+とりあえずUnity4.3をインストールして、
+秀和システムの「見てわかるUnityゲーム制作超入門 (Game Developer Books)」
+にさらっと目を通した。
+これからソフトバンクの「Unityではじめるゲームづくり(DVD付)
+(ゲープロシリーズ) 」 を読むところ。
+MikuMikuDance for Unityではまった
+で、mmdモデルでもさくっと出してみようとしたところはまったのでそれについてメモ。</p>
+<p>コンパイラ エラー CS0241 既定のパラメータ指定子は使用できません</p>
+<p>が出てしまうと言うもの。
+調べたところ、パラメータの規定値は.Net4.0で導入されたものらしいのだが
+.Net3.5でコンパイルしようとしているのが原因とわかった。
+で、手動で.Net4を使うようにしたら治った。
+参考</p>
+<p>http://ufcpp.net/study/csharp/sp4_optional.html
+http://vmem.jp/2012/02/16/monodevelop%E3%81%A7%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E3%81%AEtarget-framework%E3%82%92mono-net-4-0%E3%81%AB%E5%A4%89%E6%9B%B4%E3%81%99%E3%82%8B/</p>
+<p>ところが別のマシンでやってみたら何事もなくできてしまった。
+道理でググっても同じはまりが出てこないわけだ。
+古いMonoDevelopの設定が残っているとかあったのか。</p>
+<p>２冊目の方を読み始めた。
+適当にTerrain書いただけだがわりとそれっぽい感じに。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/11/25/win8/" class="u-url">Windows8導入</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2013/11/25/win8/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-11-25T00:00:00+09:00" itemprop="datePublished" title="2013-11-25 00:00">2013-11-25 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>Windows8導入
+なんとなく去年買ってきてきてLinuxで使っていたマシンに
+SSDを買ってきてWindows8をインストールしてみた。
+UEFIインストール
+UEFIインストールしたほうが起動が早いらしいのでやってみた。</p>
+<p>起動してdelボタンを押して設定画面に入る
+その状態でインストールROMを挿入
+起動メニューからUEFIの方のROMを選択
+数秒間 ROMから起動するならなんか押せ と表示が出るのでその間にEnter
+WindowsではなくASUSのロゴが出て起動すればUEFIモードでの起動に成功</p>
+<p>あとはロムの指示に従ってインストールする
+インストール後の環境
+最近cygwinからPowerShellに移住しようとしているので、 cuiはPowerShellで。
+まずは、PowerShellの権限変更。 PowerShellを管理者権限で起動して、</p>
 <blockquote>
-<p>cd node_modules/ffi
-npm install
-node-gyp rebuild</p>
+<p>Set-ExecutionPolicy RemoteSigned</p>
 </blockquote>
-<p>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_raw_THISCALL" は未解決です。 [D:\dev_web\neuron.
-js\node_modules\ffi\build\ffi_bindings.vcxproj]
-libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_SYSV" は未解決です。 [D:\dev_web\neuron.js\node_
-modules\ffi\build\ffi_bindings.vcxproj]
-libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_STDCALL" は未解決です。 [D:\dev_web\neuron.js\no
-de_modules\ffi\build\ffi_bindings.vcxproj]
-libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_THISCALL" は未解決です。 [D:\dev_web\neuron.js\n
-ode_modules\ffi\build\ffi_bindings.vcxproj]
-libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_raw_SYSV" は未解決です。 [D:\dev_web\neuron.js\n
-ode_modules\ffi\build\ffi_bindings.vcxproj]
-libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_call_win32" は未解決です。 [D:\dev_web\neuron.js\node_mo
-dules\ffi\build\ffi_bindings.vcxproj]</p>
-<p>頓挫・・・。
-上記関数の実体がwin32.asmの中にあるが64bitでコンパイルすると失敗する・・・。
-libffiを64bitビルドしてstdcallするところから出直さねばならない。
-32bit版のnode.jsに妥協
-FFI_STDCALLで関数登録
-// stdcallのabi番号。Windowsの32bit版Node.js専用
-const FFI_STDCALL=2;
-// callbackをFFI_STDCALLに設定
-const CallbackType = FFI.Function(ref.types.void
-    , [ref.refType(ref.types.void)], FFI_STDCALL);</p>
-<p>// 関数定義をFFI_STDCALLに設定
-const DllLib = FFI.Library("hoge.dll", {
-    RegisterCallback: [ref.types.void, [ref.refType(ref.types.void), CallbackType, {abi: FFI_STDCALL}],
-}</p>
-<p>上記の記述でWindowsの32bit版Node.jsではFFI登録にSTDCALLを設定できたっぽい。
-でも、プログラムが死ぬ。
-どうやらJavascript層より下で死んでいるようでエラーを吐かずに突然死する。ううむ。
-こりゃ、Cのデバッガをアタッチせねばなるまい。
-0x016E0008 で例外がスローされました (node.exe 内): 0xC0000005: 場所 0x00000588 の読み取り中にアクセス違反が発生しました</p>
-<p>この例外のハンドラーがある場合は、プログラムを安全に続行できます。</p>
-<p>uncaughtException
-こんなの発見した。
-東京Node学園#8 Let It Crash!?
-さっそくやってみる
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-});</p>
-<p>ひっかからないな・・・
-自前ビルドしてどう死んでいるか確かめるか。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/17/toggle/" class="u-url">特定のHtmlElementを画面いっぱいにするToggleの実験</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2015/12/17/toggle/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-17T00:00:00+09:00" itemprop="datePublished" title="2015-12-17 00:00">2015-12-17 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/17/toggle/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/17/toggle.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>“W” translate | “E” rotate | “R” scale | “+” increase size | “-” decrease size
-Press “Q” to toggle world/local space, keep “Ctrl” down to snap to grid</p>
-<p>close</p>
-<p>ボタンが押されたら、最前面にposition: fixedの板($modal)を表示してそっちに
-Three.jsで使っているElement($renderer)の内容を付け替える。
-let $children=$renderer.children();</p>
-<p>$modal
-    .appendTo($('body'))
-    .css({
-        display: 'block',
-        position: 'fixed',
-        left: 0,
-        width: '100%',
-        top: 0,
-        height: '100%',
-        'z-index': 100
-    });</p>
-<p>$children.appendTo($modal);
-$(window).trigger('resize');</p>
-<p>概ねこんな感じ。
-スクロールバーをbodyじゃなくて最大化表示用のdivより後ろにまわすなどの細工はしてある。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/12/dat_gui/" class="u-url">dat-guiを試してみる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2015/12/12/dat_gui/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-12T00:00:00+09:00" itemprop="datePublished" title="2015-12-12 00:00">2015-12-12 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/12/dat_gui/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/12/dat_gui.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>view typescript
-view javascript</p>
-<p>たまにthree.jsのデモと連動して使われているGUIライブラリdat-guiを試してみる。</p>
-<p>https://code.google.com/p/dat-gui/
-http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
-https://stemkoski.github.io/Three.js/#gui</p>
-<p>ライブラリを導入</p>
-<blockquote>
-<p>bower install dat.gui
-tsd query dat-gui -rosa install</p>
-</blockquote>
-<p>dat.GuiControllerのnameプロパティがtypings/dat-gui/dat-gui.d.tsで未定義だった。
-bower_components/dat.gui/dat.gui.jsでは定義されていた。
-    /*<em>
-    * The name of <code>GUI</code>. Used for folders. i.e
-    * a folder's name
-    * @type String
-    </em>/
-    name: {
-    get: function() {
-        return params.name;
-    },
-    set: function(v) {
-        // TODO Check for collisions among sibling folders
-        params.name = v;
-        if (title_row_name) {
-        title_row_name.innerHTML = params.name;
-        }
-    }
-    },</p>
-<p>既存のd.tsにプロパティを追加する(C# partial class的な)方法があるかどうかわからないので、
-dat-gui.d.tsを改造することにした。
-dat-gui.d.tsにnameプロパティを追加
-declare module dat {</p>
-<pre class="code literal-block"><span></span><span class="c1">// 省略</span>
-
-<span class="kr">export</span> <span class="kr">class</span> <span class="nx">Controller</span> <span class="p">{</span> <span class="c1">// &lt;- dat.gui.jsに合わせて名前変えてみた</span>
-    <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-    <span class="nx">fire</span><span class="p">()</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
-    <span class="nx">getValue</span><span class="p">()</span><span class="o">:</span> <span class="nx">any</span><span class="p">;</span>
-    <span class="nx">isModified</span><span class="p">()</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">;</span>
-    <span class="nx">listen</span><span class="p">()</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
-    <span class="nx">min</span><span class="p">(</span><span class="nx">n</span>: <span class="kt">number</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
-    <span class="nx">remove</span><span class="p">(</span><span class="nx">target</span>: <span class="kt">Controller</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-    <span class="nx">setValue</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
-    <span class="nx">step</span><span class="p">(</span><span class="nx">n</span>: <span class="kt">number</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
-    <span class="nx">updateDisplay</span><span class="p">()</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-    <span class="nx">name</span><span class="p">(</span><span class="nx">newName?</span>: <span class="kt">string</span><span class="p">)</span><span class="o">:</span> <span class="kt">string</span><span class="p">;</span> <span class="c1">// &lt;- これ追加した</span>
-    <span class="nx">onChange</span><span class="o">:</span> <span class="p">(</span><span class="nx">value?</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
-    <span class="nx">onFinishChange</span><span class="o">:</span> <span class="p">(</span><span class="nx">value?</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
-<span class="p">}</span>
-</pre>
-
-<p>}</p>
-<p>サンプルコードを元にtypescript化してみる
-https://stemkoski.github.io/Three.js/GUI-Controller.html
-をベースにした。
-javscriptのコードをまるっとtsファイルにコピーして淡々と型を指定していく。
-dat.guiの場所調整の件</p>
-<p>http://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown</p>
-<p>autoPlace: falseがポインツ。そのうえでdomにposition:abusolute
-var  gui = new dat.GUI( { autoPlace: false } );</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/12/threejs_control/" class="u-url">Three.jsのトランスフォームコントロールでメッシュをマウスで移動</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2015/12/12/threejs_control/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-12T00:00:00+09:00" itemprop="datePublished" title="2015-12-12 00:00">2015-12-12 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/12/threejs_control/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/12/threejs_control.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>"W" translate | "E" rotate | "R" scale | "+" increase size | "-" decrease size
-Press "Q" to toggle world/local space, keep "Ctrl" down to snap to grid</p>
-<p>source
-今回は、本家サイトのサンプル
-http://threejs.org/examples/#misc_controls_transform
-をやってみよう。
-まず、TransformControlsのtypescriptインターフェースを用意する。
-というか書きながら作った。
-TransformControls.d.ts。モジュールの細かいところがよくわからん・・・
-declare module THREE {
-    export class TransformControls extends THREE.Mesh {
-        constructor(camera: THREE.Camera, element: Element);
-        update():void;
-        addEventListener(event: string, callback: Function): void;
-        attach(mesh: THREE.Mesh): void;</p>
-<pre class="code literal-block"><span></span>    <span class="nt">setSpace</span><span class="o">(</span><span class="nt">space</span><span class="o">:</span> <span class="nt">string</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
-    <span class="nt">setTranslationSnap</span><span class="o">(</span><span class="nt">snap</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
-    <span class="nt">setRotationSnap</span><span class="o">(</span><span class="nt">radians</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
-    <span class="nt">setMode</span><span class="o">(</span><span class="nt">mode</span><span class="o">:</span> <span class="nt">string</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
-    <span class="nt">setSize</span><span class="o">(</span><span class="nt">size</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
-
-    <span class="nt">space</span><span class="o">:</span> <span class="nt">string</span><span class="o">;</span>
-    <span class="nt">size</span><span class="o">:</span> <span class="nt">number</span><span class="o">;</span>
-<span class="err">}</span>
-</pre>
-
-<p>}</p>
-<p>TransformControlsを初期化する。カメラとhtmlノードを渡して初期化する
-CreateTransformControl(mesh: THREE.Mesh) {
-    this.transform = new THREE.TransformControls(this.camera, this.renderer.domElement);
-    this.transform.addEventListener('change', () =&gt; this.Render());
-    this.transform.attach(mesh);
-    this.scene.add(this.transform);</p>
-<pre class="code literal-block"><span></span>window.addEventListener('keydown', (event: KeyboardEvent) =&gt; {
-
-    switch (event.keyCode) {
-
-        case 81: // Q
-            this.transform.setSpace(this.transform.space === "local" ? "world" : "local");
-            break;
-
-        case 17: // Ctrl
-            this.transform.setTranslationSnap(100);
-            this.transform.setRotationSnap(THREE.Math.degToRad(15));
-            break;
-
-        case 87: // W
-            this.transform.setMode("translate");
-            break;
-
-        case 69: // E
-            this.transform.setMode("rotate");
-            break;
-
-        case 82: // R
-            this.transform.setMode("scale");
-            break;
-
-        case 187:
-        case 107: // +, =, num+
-            this.transform.setSize(this.transform.size + 0.1);
-            break;
-
-        case 189:
-        case 109: // -, _, num-
-            this.transform.setSize(Math.max(this.transform.size - 0.1, 0.1));
-            break;
-
-    }
-});
-
-window.addEventListener('keyup', (event: KeyboardEvent) =&gt; {
-
-    switch (event.keyCode) {
-
-        case 17: // Ctrl
-            this.transform.setTranslationSnap(null);
-            this.transform.setRotationSnap(null);
-            break;
-
-    }
-
-});
-</pre>
-
-<p>}</p>
-<p>マウスイベントを監視するHtmlノードと、マウスの動きをどのように解釈するかを知るためにカメラが必要ということですね。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/fontawesome/" class="u-url">FontAwesomeを取り入れる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2015/12/11/fontawesome/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-11T00:00:00+09:00" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/11/fontawesome/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/11/fontawesome.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>https://fortawesome.github.io/Font-Awesome/</p>
-<p>取り入れてみた。
-cssをセットアップして
-アイコンを選択してコピペすると。
-無駄にアイコンを配置してみよう。
- fa-lg
- fa-2x
- fa-3x
- fa-4x
- fa-5x
-なるほど。
-<i class="fa fa-wrench fa-5x"></i></p>
-<p>iでアイコンタグを導入して、クラスで種類とサイズを指定する仕組み。</p>
-<p>適当にサイトのテンプレートにアイコンを入れてみる。
-わりとお手軽におされ？なサイトに。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/express_socketio/" class="u-url">Socket.IOな実験環境</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2015/12/11/express_socketio/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-11T00:00:00+09:00" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/11/express_socketio/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/11/express_socket.io.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>Socket.IOを実験する環境のメモ。</p>
-<p>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
-coffee-scriptは無しでES6要素をなるべく入れる
-Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</p>
-<p>https://github.com/ousttrue/sio_sample
-Project生成</p>
-<blockquote>
-<p>mkdir sio_sample
-cd sio_sample
-sio_sample&gt; npm init -y
-sio_sample&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D
-sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</p>
-</blockquote>
-<p>vscodeでes6を使えるように
-jsconifg.json
-{
-    "compilerOptions": {
-        "target": "ES6"
-    }
-}</p>
-<p>後で拡張できるように以下のようなディレクトリ構成にする。
-build &lt;- srcから(加工して)コピーされる</p>
-<p>src &lt;- 加工前のファイル置き場
-  + server
-    + app.js
-  + client
-    + index.html
-    + index.js</p>
-<p>src/server/app.js
-"use strict";</p>
-<p>const http = require('http');
-const express = require('express');
-const port = process.env.port || 3000;
-const app = express();
-const server = http.createServer(app);
-const servestatic = require('serve-static');
-const serve_dir = __dirname + '/public';
-console.log('serve %s', serve_dir);
-app
-    .use(servestatic(serve_dir))
-;</p>
-<p>// socket.io
-const socketio = require('socket.io');
-const io = socketio(server);
-io.on('connection', (socket) =&gt; {
-    console.log('a client connected %s', socket);
-    socket.on('disconnect', () =&gt; {
-        console.log('a client disconnected');
-    });
-});</p>
-<p>// start
-server.listen(port);
-console.log('start port: %d...', port);</p>
-<p>src/client/index.html</p>
-
-<p>
-</p>
-    <meta charset="UTF-8">
-<title>Document</title>
-<script src="posts/2015/12/11/express_socketio/index.js"></script><div id="target"></div>
-
-<p></p>
-<p>src/client/index.js
-"use strict";</p>
-<p>function setup(target) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode('onLoad'));
-    target.appendChild(div);
-}</p>
-<p>window.onload = () =&gt; {</p>
-<pre class="code literal-block"><span></span>setup(document.getElementById('target'));
-</pre>
-
-<p>};</p>
-<p>srcからbuildに展開するgulp
-gulpfile.js
-const gulp = require('gulp');
-const $ = require('gulp-load-plugins')();</p>
-<p>const config = {
-    server_src: './src/server/<strong>/*',
-    server_dst: './build',
-    client_src: './src/client/</strong>/*',
-    client_dst: './build/public'
-};</p>
-<p>gulp.task('server', () =&gt; {
-    gulp.src(config.server_src)
-        .pipe(gulp.dest(config.server_dst));
-});</p>
-<p>gulp.task('client', () =&gt; {
-    gulp.src(config.client_src)
-        .pipe(gulp.dest(config.client_dst));
-});</p>
-<p>gulp.task('default', ['server', 'client']);</p>
-<p>build
-sio_sample&gt; gulp</p>
-<p>ブラウザで動いた。
-browserSync導入
-gulpfile.js。browserSync
-const config = { // 追加分
-    app_entry: './build/app.js',
-    app_port: 5000,  <br>
-};</p>
-<p>const browserSync = require('browser-sync').create();
-gulp.task('serve', ()=&gt;{
-    $.nodemon({
-        script: config.app_entry,
-        exp: 'js',
-        ignore: [],
-        env: {
-            port: config.app_port
-        }
-    })
-    .on('readable', ()=&gt;{
-        this.stdout.on('data', (chunk)=&gt;{
-            if (/^start /.test(chunk)){
-                console.log('reloading...');
-                browserSync.reload();
-            }
-            process.stdout.write(chunk)
-        });
-    });
-});</p>
-<p>gulp.task('browser-sync', ['serve'], ()=&gt;{
-    browserSync.init({
-        proxy: 'localhost:' + config.app_port,
-        port: 3000,
-        ws: true
-    })
-});</p>
-<p>gulpfile.js。watchタスク追加
-gulp.task('server', () =&gt; {
-    gulp.src(config.server_src)
-        .pipe(gulp.dest(config.server_dst))
-        .pipe(browserSync.stream())
-        ;
-});</p>
-<p>gulp.task('client', () =&gt; {
-    gulp.src(config.client_src)
-        .pipe(gulp.dest(config.client_dst))
-        .pipe(browserSync.stream())
-        ;
-});</p>
-<p>gulp.task('build', ['server', 'client']);</p>
-<p>gulp.task('watch', ['build', 'browser-sync'], ()=&gt;{
-    gulp.watch(config.server_src, ['server']);
-    gulp.watch(config.client_src, ['client']);
-});</p>
-<p>gulp.task('default', ['watch']);</p>
+<p>Chocolatey
+PowerShell版のapt-get的なChocolateyをインストールする。
+dos窓(powershellではない)を起動してサイトに書いてある通りにコピペ。
+@powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" &amp;&amp; SET PATH=%PATH%;%systemdrive%\chocolatey\bin</p>
+<p>putty
+powershell&gt; cinst putty</p>
+<p>vim
+powershell&gt; cinst vim</p>
+<p>~/_gvimrc
+colorscheme desert</p>
+<p>set iminsert=0
+set imsearch=-1
+set visualbell t_vb=</p>
+<p>~/_vimrc
+colorscheme darkblue</p>
+<p>set hidden
+set nobackup</p>
 <p>git
-いったんgitに登録しよう。
-.gitignore
-/node_modules/
-/build/</p>
-<p>Socket.IOの疎通</p>
-
-<p>
-</p>
-    <meta charset="UTF-8">
-<title>Document</title>
-<script type="text/javascript" src="socket.io/socket.io.js"></script><br><script src="posts/2015/12/11/express_socketio/index.js"></script><div id="target"></div>
-
-<p></p>
-<p>"use strict";</p>
-<p>function setup(target) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode('hello'));
-    target.appendChild(div);</p>
-<pre class="code literal-block"><span></span>this.socket = io.connect();
-</pre>
-
-<p>}</p>
-<p>window.onload = () =&gt; {
-    setup(document.getElementById('target'));
-};</p>
-<p>typescript導入
-sio_sample&gt; tsc --init</p>
-<p>tsconfig.json
-{
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "noImplicitAny": true,
-        "outDir": ".",
-        "rootDir": ".",
-        "sourceMap": false
-    },
-    "exclude": [
-        "node_modules"
-    ]
-}</p>
-<p>sio_sample&gt; npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D
-sio_sample&gt; cd src
-sio_sample/src&gt; tsd init
-sio_sample/src&gt; tsd query node express socket.io -rosa install</p>
-<p>gulpfile.js。typescriptのコンパイルを追加
-const path = require('path');
-const tsconfig = require('./tsconfig.json');
-const isTypescript = (file) =&gt; {
-    const ext = path.extname(file.path).toLowerCase();
-    return ext === '.ts';
-}</p>
-<p>gulp.task('server', () =&gt; {
-    gulp.src(config.server_src)
-        .pipe($.plumber())
-        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
-        .pipe($.debug('server'))
-        .pipe(gulp.dest(config.server_dst))
-        .pipe(browserSync.stream())
-    ;
-});</p>
-<p>gulp.task('client', () =&gt; {
-    gulp.src(config.client_src)
-        .pipe($.plumber())
-        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
-        .pipe($.debug('client'))
-        .pipe(gulp.dest(config.client_dst))
-        .pipe(browserSync.stream())
-    ;
-});</p>
-<p>src/server/app.jsをapp.tsにリネーム
-/// <reference path="../typings/tsd.d.ts"></reference>
-"use strict";</p>
-<p>import http = require('http');
-import express = require('express');
-const port = process.env.port || 3000;
-const app = express();
-const server = http.createServer(app);
-const servestatic = require('serve-static');
-const serve_dir = __dirname + '/public';
-console.log('serve %s', serve_dir);
-app
-    .use(servestatic(serve_dir))
-;</p>
-<p>// socket.io
-import socketio = require('socket.io');
-const io = socketio(server);
-io.on('connection', (socket) =&gt; {
-    var clientAddress=socket.client.conn.remoteAddress;
-    console.log('connected: %s', clientAddress);
-    socket.on('disconnect', () =&gt; {
-        console.log('disconnected: %s', clientAddress);
-    });
-});</p>
-<p>// start
-server.listen(port);
-console.log('start port: %d...', port);</p>
-<p>src/client/index.jsをindex.tsにリネーム
-/// <reference path="../typings/tsd.d.ts"></reference>
-"use strict";</p>
-<p>declare module io {
-    export function connect(): SocketIO.Socket;
-}</p>
-<p>function setup(target: Element) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode('hello socket.io'));
-    target.appendChild(div);</p>
-<pre class="code literal-block"><span></span>this.socket = io.connect();
-</pre>
-
-<p>}</p>
-<p>window.onload = () =&gt; {</p>
-<pre class="code literal-block"><span></span>setup(document.getElementById('target'));
-</pre>
-
-<p>};</p>
-<p>メッセージをやり取り
-src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行
-// socket.io
-import socketio = require('socket.io');
-const io = socketio(server);
-io.on('connection', (socket) =&gt; {
-    var clientAddress = socket.client.conn.remoteAddress;
-    console.log('connected: %s', clientAddress);
-    socket.on('disconnect', () =&gt; {
-        console.log('disconnected: %s', clientAddress);
-    });</p>
-<pre class="code literal-block"><span></span>socket.on('client-message', (data: any) =&gt; {
-    socket.emit('server-message', 'server clicked message');
-});
-</pre>
-
-<p>});</p>
-<p>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画
-/// <reference path="../typings/tsd.d.ts"></reference>
-"use strict";</p>
-<p>declare module io {
-    export function connect(): SocketIO.Socket;
-}</p>
-<p>class Client {
-    socket: SocketIO.Socket;</p>
-<pre class="code literal-block"><span></span>constructor() {
-    this.socket = io.connect();
-}
-
-setup(target: Element) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode('hello socket.io'));
-    target.appendChild(div);
-
-    this.socket.on('server-message', (data: any)=&gt;{
-        const div = document.createElement('div');
-        div.appendChild(document.createTextNode(data.toString()));
-        target.appendChild(div);
-    });
-
-    const button=document.createElement('button');
-    button.appendChild(document.createTextNode('send'));
-    button.onclick=(ev: MouseEvent)=&gt;{
-        this.socket.emit('client-message', 'clicked');
-    };
-    target.appendChild(button);
-}
-</pre>
-
-<p>}
-var client=new Client();</p>
-<p>window.onload = () =&gt; {</p>
-<pre class="code literal-block"><span></span>client.setup(document.getElementById('target'));
-</pre>
-
-<p>};</p>
+powershell&gt; cinst git</p>
+<p>PowerShellの起動スクリプトにパスを追加
+powershell&gt; mkdir $HOME/Documents/WindowsPowerShell
+powershell&gt; gvim $PROFILE</p>
+<p>$env:PATH+=";C:\Program Files (x86)\Git\bin"</p>
+<p>これでgit付属のssh等にPathが通る。 とりあえずEditorとGitが手に入った。
+まだまだ色々とインストールせねばならんな。</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/tree/" class="u-url">Treeを表示・操作する</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/10/29/waf/" class="u-url">pythonによるビルドスクリプトwafを使い始めた</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2015/12/11/tree/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-11T00:00:00+09:00" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
+            <a href="posts/2013/10/29/waf/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-10-29T00:00:00+09:00" itemprop="datePublished" title="2013-10-29 00:00">2013-10-29 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/11/tree/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/11/tree.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>JavascriptでTreeを表示操作するライブラリを探してみる。
-なんとなくサンプルが充実している
-jqTree
-にしてみた。</p>
-<p>このサンプルに必要だったのでFontAwesomeも取り入れてみた。
-めんどくさいので避けていたが、そろそろscssを取り入れるべきか。</p>
-</div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/10/nodejs_v4/" class="u-url">Node.jsのアップデート</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2015/12/10/nodejs_v4/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-12-10T00:00:00+09:00" itemprop="datePublished" title="2015-12-10 00:00">2015-12-10 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2015/12/10/nodejs_v4/#disqus_thread" data-disqus-identifier="cache/content/posts/2015/12/10/nodejs_v4.html">コメント</a>
-
-
-                </p>
-</div>
             </header><div class="e-content entry-content">
                     <div>
-<p>ちょうど組み込まれているv8エンジンのバージョンが3から4に上がる直前にインストールしていたようで、
-node.jsのバージョン</p>
-<blockquote>
-<p>node --version
-v0.12.7
-node -p process.versions.v8
-3.28.71.19</p>
-</blockquote>
-<p>だった。
-最新版(node-v4.2.3-x64.msi)をインストールしてみる。
-node.jsのバージョン</p>
-<blockquote>
-<p>node --version
-v4.2.3
-node -p process.versions.v8
-4.5.103.35</p>
-</blockquote>
-<p>v8 4.5搭載ということでES6の機能がいろいろ使えるぞ。</p>
-<p>http://v8project.blogspot.jp/2015/07/v8-45-release.html</p>
-<p>exp.js
-let x=1;
-console.log(x);</p>
-<blockquote>
-<p>node exp.js
-SyntaxError: Block-scoped declarations (let, const, function, class) not yet supported outside strict mode</p>
-</blockquote>
-<p>最近よく見る”use strict”が要るのか。
-exp.js。use strict
-"use strict";</p>
-<p>let x=1;
-console.log(x);</p>
-<p>としたらいけた。
-class構文も問題なし。typescript使った後だとちょっと機能的に物足りない・・・
-class Hoge
+<p>pythonによるビルドスクリプトwafを使い始めた
+pythonによるビルドシステムwafを使ってみた。
+使ってみた感触ではvcとgcc両方でビルドするとかそういうのに向いていそうなので、要するにわしのニーズに合っているように思える。
+https://code.google.com/p/waf/
+前から気にはなっていたのだけれどどうにも取っ付きが悪くて使えるところまでたどりつけていなかったのだが、やっと最初の一歩を踏み出すことができたのでメモを残す。
+早速実践から行く。
++hello/
+  +hello.cpp</p>
+<p>hello.cpp</p>
+<h2>include <iostream></iostream>
+</h2>
+<p>int main(int argc, char **argv)
 {
-    // コンストラクタと
-    constructor(name)
-    {
-        this.name=name;
-    }</p>
-<pre class="code literal-block"><span></span>// メソッドだけ定義できるらしい
-printName()
-{
-    console.log(this.name);
-}
-</pre>
-
-<p>}</p>
-<p>let hoge=new Hoge('hoge');
-hoge.printName();</p>
-<p>let fuga={
-    name: 'fuga',
-    printName: hoge.printName,
-};</p>
-<p>fuga.printName();</p>
-<p>hoge
-fuga</p>
-<p>thisは元の通り。
-arrow functionも問題なく動いた。
-ついでにbrowserでも実験してみよう。
-result</p>
-<p>source
-firefox では、
-SyntaxError: class is a reserved identifier</p>
-<p>になった。
-Chromeなら動いた。なるほど。</p>
+    std::cout &lt;&lt; "hello waf !" &lt;&lt; std::endl;
+    return 0;
+}</p>
+<p>というプロジェクトを作ったとする。
+https://code.google.com/p/waf/downloads/detail?name=waf-1.7.13
+からwaf(python
+scriptの圧縮されたもの)をダウンロードしてwscriptを記述する。
++hello/
+  +hello.cpp
+  +waf
+  +wscript</p>
+<p>wscriptは以下のようにする。
+APPNAME='hello'
+VERSION='1.0.0'</p>
+<p>def configure(conf):
+    conf.env['MSVC_TARGETS'] = ['x86']
+    conf.load('msvc')
+    conf.env.CXXFLAGS = ['/nologo', '/EHsc']</p>
+<p>def build(bld):
+    bld.program(
+            source='hello.cpp', 
+            target=APPNAME
+            )</p>
+<p>初回とwscriptのconfigureを修正する度にconfigureする。</p>
+<blockquote>
+<p>python waf configure 
+Setting top to                           : C:\work_waf\hello
+Setting out to                           : C:\work_waf\hello\build
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\amd64\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\x86_IA64\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\BIN\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\CL.exe
+Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe
+Checking for program CL                  : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\CL.exe
+Checking for program LINK                : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\LINK.exe
+Checking for program LIB                 : c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\LIB.exe
+Checking for program MT                  : C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\MT.exe
+Checking for program RC                  : C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\RC.exe
+'configure' finished successfully (6.219s)</p>
+</blockquote>
+<p>ビルドする。</p>
+<blockquote>
+<p>python waf build
+Waf: Entering directory <code>C:\work\_waf\hello\build'
+[1/2] cxx: hello.cpp -&gt; build\hello.cpp.1.o
+hello.cpp
+[2/2] cxxprogram: build\hello.cpp.1.o -&gt; build\hello.exe build\hello.exe.manifest
+Waf: Leaving directory</code>C:\work_waf\hello\build'
+'build' finished successfully (1.138s)</p>
+</blockquote>
+<p>実行してみる。</p>
+<blockquote>
+<p>.\build\hello.exe
+hello waf !</p>
+</blockquote>
+<p>ということでvcでexeをビルドするスクリプトができた。
+何もパスの設定をしなくてもvcのコンパイラを勝手に探してビルドできるのは意外だった。
+とはいえ、これだけではwafの嬉しさは発揮されないのでこれからwscriptを拡張していく。
+次回、debugとrelease, 32bitビルドと64bitビルドの管理について書く予定。</p>
 </div>
                 </div>
             </article>
@@ -1182,7 +764,7 @@ Chromeなら動いた。なるほど。</p>
 <li class="previous"><a href="index-8.html" rel="prev">新しい記事</a></li>
             <li class="next"><a href="index-6.html" rel="next">過去の記事</a></li>
         </ul>
-<script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+<!--End of body content--><footer id="footer">
             Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
             

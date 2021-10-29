@@ -42,6 +42,9 @@
 </header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
             <ul class="navbar-nav nav-fill d-flex w-100">
 <li class="nav-item">
+<a href="books" class="nav-link">MemoBooks</a>
+                </li>
+<li class="nav-item">
 <a href="archive.html" class="nav-link">Archives</a>
                 </li>
 <li class="nav-item">
@@ -49,6 +52,9 @@
                 </li>
 <li class="nav-item">
 <a href="rss.xml" class="nav-link">RSS feed</a>
+                </li>
+<li class="nav-item">
+<a href="about" class="nav-link">About</a>
 
                 
             </li>
@@ -70,997 +76,895 @@
     
         
     <div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/lua_imgui_plan/" class="u-url">lua による imgui 計画</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/17/toggle/" class="u-url">特定のHtmlElementを画面いっぱいにするToggleの実験</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2021/lua_imgui_plan/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-17T00:00:00+09:00" itemprop="datePublished" title="2021-07-17 00:00">2021-07-17 00:00</time></a>
+            <a href="posts/2015/12/17/toggle/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-17T00:00:00+09:00" itemprop="datePublished" title="2015-12-17 00:00">2015-12-17 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/lua_imgui_plan/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/lua_imgui_plan.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<h3>rust で D3D11 レンダラを進めてきたが・・・</h3>
-<p>当初 <code>rust</code> で <code>d3d11</code> のレンダラーを作ろうとして作業を進めていた。
-<code>imgui</code> を組み込んで、 <code>glTF</code> をロードして <code>unlit</code> で描画するところまで作ったが、
-<code>GUI</code> の作りこみが大変そうな感じだった。
-<code>rust</code> は関数オーバーロードが無いので　<code>imgui</code> のラッパーの使い勝手が <code>c++</code> より落ちるなど。
-ポインターを渡せるのは素敵なのだが。</p>
-<h3>nvim-0.5 はおもしろい</h3>
-<p>ここで寄り道して、 <code>nvim</code> をいじり始めた。
-ちょうどバージョン <code>0.5</code> がリリースされるタイミングで、<code>0.5</code> になると lua サポートが強化されて、設定が lua で書けるとのこと。</p>
-<ul>
-<li><a href="https://zenn.dev/hituzi_no_sippo/articles/871c06cdbc45b53181e3">NeovimとLua</a></li>
-</ul>
-<p>ということで Windows 向けのソースからのビルドシステムを作って <code>nvim</code> 環境を整備してみた。
-lua で記述された plugin をなるべく採用。</p>
-<p><a href="https://github.com/ousttrue/my_nvim">https://github.com/ousttrue/my_nvim</a></p>
-<p>最近常用していた、 <code>vscode</code> の便利さにどこまで追いつけるか。</p>
-<ul>
-<li>Language Server Protocol。nvim-0.5 から nvim-lsp (luaで書いてある) がある。組み込み</li>
-<li>Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。<a href="https://github.com/mfussenegger/nvim-dap">https://github.com/mfussenegger/nvim-dap</a>
-</li>
-</ul>
-<p>vscode から <code>lsp</code> と <code>dap</code> という重要な資産を持ってこれるので慣れればいけそうである。
-調べたところ下記のようだった。</p>
-<ul>
-<li>codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた <a href="https://github.com/ousttrue/nvim-dap">https://github.com/ousttrue/nvim-dap</a>
-</li>
-<li>rust-analyzer 動いた</li>
-<li>python: lsp, dap ともに動きそう</li>
-<li>lua: lsp, dap ともに動きそう</li>
-<li>csharp: lsp, dap ともに動きそう(Unityはうまくいかず)</li>
-</ul>
-<p>nvim-lsp も nvim-dap も lua で簡単に記述されているので、コードを読めば、たぶんわかる。
-あとは、タスクランナーを整備すれば開発環境に使えそう。</p>
-<h3>luarocks の Windows 運用</h3>
-<p>lua で記述された nvim のパッケージマネージャー <a href="https://github.com/wbthomason/packer.nvim">https://github.com/wbthomason/packer.nvim</a> を採用したのだが、
-Windows で luarocks 機能が動かなかった。<a href="https://luarocks.org/">https://luarocks.org/</a> は <code>lua</code> のパッケージマネージャー。
-ちょっと、古め(vc2017より前)の vc でないとだめぽい。
-改造した。</p>
-<ul>
-<li>https://github.com/ousttrue/packer.nvim</li>
-<li>https://github.com/ousttrue/hererocks</li>
-</ul>
-<p>hererocks は、luarocks のインストーラー。
-<code>LUA_PATH</code> <code>package.path</code> を理解した。</p>
-<h3>スタンドアロンの lua インタプリタによるプロジェクト</h3>
-<p>luarocks が無事に Windows で運用できるようになったので、プロジェクトローカルに必要なライブラリをインストールして、
-スタンドアロンの lua インタープリターを起点にしたアプリ開発ができないか探ってみた。
-lua インタプリタがアプリ組み込みだと dap の運用がしづらい(port 開けて attach とかになる)のでスタンドアロンの lua インタープリターを推す。</p>
-<pre class="code literal-block"><span></span># フォルダ構成
-project_root
-  + lua(.gitignore) # hererocks でローカルビルドする
-  + main.lua
-</pre>
+<p>“W” translate | “E” rotate | “R” scale | “+” increase size | “-” decrease size
+Press “Q” to toggle world/local space, keep “Ctrl” down to snap to grid</p>
+<p>close</p>
+<p>ボタンが押されたら、最前面にposition: fixedの板($modal)を表示してそっちに
+Three.jsで使っているElement($renderer)の内容を付け替える。
+let $children=$renderer.children();</p>
+<p>$modal
+    .appendTo($('body'))
+    .css({
+        display: 'block',
+        position: 'fixed',
+        left: 0,
+        width: '100%',
+        top: 0,
+        height: '100%',
+        'z-index': 100
+    });</p>
+<p>$children.appendTo($modal);
+$(window).trigger('resize');</p>
+<p>概ねこんな感じ。
+スクロールバーをbodyじゃなくて最大化表示用のdivより後ろにまわすなどの細工はしてある。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/12/dat_gui/" class="u-url">dat-guiを試してみる</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/12/dat_gui/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-12T00:00:00+09:00" itemprop="datePublished" title="2015-12-12 00:00">2015-12-12 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>view typescript
+view javascript</p>
+<p>たまにthree.jsのデモと連動して使われているGUIライブラリdat-guiを試してみる。</p>
+<p>https://code.google.com/p/dat-gui/
+http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+https://stemkoski.github.io/Three.js/#gui</p>
+<p>ライブラリを導入</p>
+<blockquote>
+<p>bower install dat.gui
+tsd query dat-gui -rosa install</p>
+</blockquote>
+<p>dat.GuiControllerのnameプロパティがtypings/dat-gui/dat-gui.d.tsで未定義だった。
+bower_components/dat.gui/dat.gui.jsでは定義されていた。
+    /*<em>
+    * The name of <code>GUI</code>. Used for folders. i.e
+    * a folder's name
+    * @type String
+    </em>/
+    name: {
+    get: function() {
+        return params.name;
+    },
+    set: function(v) {
+        // TODO Check for collisions among sibling folders
+        params.name = v;
+        if (title_row_name) {
+        title_row_name.innerHTML = params.name;
+        }
+    }
+    },</p>
+<p>既存のd.tsにプロパティを追加する(C# partial class的な)方法があるかどうかわからないので、
+dat-gui.d.tsを改造することにした。
+dat-gui.d.tsにnameプロパティを追加
+declare module dat {</p>
+<pre class="code literal-block"><span></span><span class="c1">// 省略</span>
 
-<p>これで、 <code>lsp</code> と <code>dap</code> が利用できれば快適になるのではないか。</p>
-<h4>lua の LanguageServer</h4>
-<ul>
-<li><a href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">https://marketplace.visualstudio.com/items?itemName=sumneko.lua</a></li>
-<li><a href="https://github.com/sumneko/lua-language-server">https://github.com/sumneko/lua-language-server</a></li>
-</ul>
-<p>がしっかり動き、<code>EmmyLua</code> の型ヒントを活用できることが分かった。</p>
-<p><a href="https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua">https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua</a> に例があって、</p>
-<pre class="code literal-block"><span></span><span class="nb">require</span><span class="s1">'lspconfig'</span><span class="p">.</span><span class="n">sumneko_lua</span><span class="p">.</span><span class="n">setup</span> <span class="p">{</span>
-  <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">Lua</span> <span class="o">=</span> <span class="p">{</span>
-      <span class="n">workspace</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="c1">-- Make the server aware of Neovim runtime files</span>
-        <span class="n">library</span> <span class="o">=</span> <span class="p">{</span>
-          <span class="p">[</span><span class="n">vim</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="s1">'$VIMRUNTIME/lua'</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- lua標準の型定義がある</span>
-          <span class="p">[</span><span class="n">vim</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="s1">'$VIMRUNTIME/lua/vim/lsp'</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- Vimの型定義がある</span>
-        <span class="p">},</span>
-      <span class="p">},</span>
-    <span class="p">},</span>
-  <span class="p">},</span>
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">Controller</span> <span class="p">{</span> <span class="c1">// &lt;- dat.gui.jsに合わせて名前変えてみた</span>
+    <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">fire</span><span class="p">()</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">getValue</span><span class="p">()</span><span class="o">:</span> <span class="nx">any</span><span class="p">;</span>
+    <span class="nx">isModified</span><span class="p">()</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">;</span>
+    <span class="nx">listen</span><span class="p">()</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">min</span><span class="p">(</span><span class="nx">n</span>: <span class="kt">number</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">remove</span><span class="p">(</span><span class="nx">target</span>: <span class="kt">Controller</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">setValue</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">step</span><span class="p">(</span><span class="nx">n</span>: <span class="kt">number</span><span class="p">)</span><span class="o">:</span> <span class="nx">Controller</span><span class="p">;</span>
+    <span class="nx">updateDisplay</span><span class="p">()</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">name</span><span class="p">(</span><span class="nx">newName?</span>: <span class="kt">string</span><span class="p">)</span><span class="o">:</span> <span class="kt">string</span><span class="p">;</span> <span class="c1">// &lt;- これ追加した</span>
+    <span class="nx">onChange</span><span class="o">:</span> <span class="p">(</span><span class="nx">value?</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+    <span class="nx">onFinishChange</span><span class="o">:</span> <span class="p">(</span><span class="nx">value?</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
 <span class="p">}</span>
 </pre>
 
-<p>インテリセンスが効くし、組み込み関数の型ヒントも追加できる。</p>
-<h4>lua の DebugAdapter</h4>
-<p>DebugAdapter も問題なく動いた。
-luajit の場合は対応しているものを使うべし。</p>
-<h5>Lua Debug</h5>
-<ul>
-<li>
-<a href="https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug">https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug</a><ul>
-<li><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></li>
-</ul>
-</li>
-</ul>
-<p><a href="https://github.com/actboy168/bee.lua">https://github.com/actboy168/bee.lua</a> の</p>
-<ul>
-<li>Add error hook (for debugger)</li>
-<li>Add resume/yield hook (for debugger)</li>
-</ul>
-<p>謎の機能で実装されているぽい。</p>
-<h5>Local Lua Debugger</h5>
-<ul>
-<li><a href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a></li>
-<li>
-<p><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></p>
-</li>
-<li>
-<p>luajit でも動く</p>
-</li>
-<li>TypeScriptToLua で書かれている</li>
-</ul>
-<h3>lua で 3D</h3>
-<p>ちょっと試したところ、 luajit の <a href="https://luajit.org/ext_ffi.html">FFI</a> を使うのが有望そうという感触を得た。
-d3d は lua でやっている人があまりいなかった。</p>
-<ul>
-<li><a href="https://github.com/sonoro1234/LuaJIT-GLFW">https://github.com/sonoro1234/LuaJIT-GLFW</a></li>
-<li><a href="https://github.com/sonoro1234/LuaJIT-ImGui">https://github.com/sonoro1234/LuaJIT-ImGui</a></li>
-</ul>
-<p>最新の luajit-2.1.0-beta3(lua-5.1仕様) でいく。</p>
-<h3>imgui の ffi</h3>
-<p><code>cimgui</code> ではなく 素の <code>imgui</code> の luajit ffi できるか実験した。</p>
-<p><a href="https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi">https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi</a></p>
-<pre class="code literal-block"><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
-<span class="s">void Test1_Method1(void) asm("_ZN5Test17Method1Ev");</span>
-<span class="s">]]</span>
-</pre>
-
-<p>のように mangling に対応すればできそう。</p>
-<h3>libclang による コード生成</h3>
-<p>ということで、 <code>luajit</code> + <code>FFI</code> を中心に <code>imgui</code> ラッパーを作ってレンダラーというか 3D ツールのインフラとなる、
-簡単なレンダラーと <code>Gizmo</code> に対応したツールキットを作るという方向になってきた。</p>
-<p><code>imgui</code> の <code>luajit</code> <code>FFI</code> の使い勝手が重要。</p>
-<p><a href="https://github.com/ousttrue/limgui">https://github.com/ousttrue/limgui</a></p>
-<ul>
-<li>[ ] libclang で <code>imgui.h</code> をパースして、luajit FFI 生成と <code>lsp</code> への EmmyLua アノテーション生成を同時にやるツール。</li>
-</ul>
+<p>}</p>
+<p>サンプルコードを元にtypescript化してみる
+https://stemkoski.github.io/Three.js/GUI-Controller.html
+をベースにした。
+javscriptのコードをまるっとtsファイルにコピーして淡々と型を指定していく。
+dat.guiの場所調整の件</p>
+<p>http://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown</p>
+<p>autoPlace: falseがポインツ。そのうえでdomにposition:abusolute
+var  gui = new dat.GUI( { autoPlace: false } );</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/fix_hererocks/" class="u-url">VS2019 向けに hererocks を修正(vswhere を使う)</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/12/threejs_control/" class="u-url">Three.jsのトランスフォームコントロールでメッシュをマウスで移動</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2021/fix_hererocks/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-15T00:00:00+09:00" itemprop="datePublished" title="2021-07-15 00:00">2021-07-15 00:00</time></a>
+            <a href="posts/2015/12/12/threejs_control/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-12T00:00:00+09:00" itemprop="datePublished" title="2015-12-12 00:00">2015-12-12 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/fix_hererocks/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/fix_hererocks.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>hererocks が VS2019BuildTools を検知して動作するように改造してみた。</p>
-<p><a href="https://github.com/luarocks/hererocks/pull/15">https://github.com/luarocks/hererocks/pull/15</a></p>
-<p>通るかどうかは微妙。
-内容的に、通りづらそう。
-古い vc を使っていたり MinGW 使っていたりすると実験できないしね。
-とりあえず、既存の動いている部分が壊れないようには配慮した。</p>
-<p>採用されれば、</p>
-<p><a href="https://github.com/wbthomason/packer.nvim/issues/302">https://github.com/wbthomason/packer.nvim/issues/302</a></p>
-<p>も進展する。
-Windows 版の luarocks 呼び出しに改造が必要なのだが、
-先に hererocks が動いている必要があるという順番。</p>
-<p>とりあえず単体で試すことができて</p>
-<pre class="code literal-block"><span></span># C:/Python38/Scripts/pip.exe
-$ pip install https://github.com/ousttrue/hererocks/archive/add_vswhere.zip
+<p>"W" translate | "E" rotate | "R" scale | "+" increase size | "-" decrease size
+Press "Q" to toggle world/local space, keep "Ctrl" down to snap to grid</p>
+<p>source
+今回は、本家サイトのサンプル
+http://threejs.org/examples/#misc_controls_transform
+をやってみよう。
+まず、TransformControlsのtypescriptインターフェースを用意する。
+というか書きながら作った。
+TransformControls.d.ts。モジュールの細かいところがよくわからん・・・
+declare module THREE {
+    export class TransformControls extends THREE.Mesh {
+        constructor(camera: THREE.Camera, element: Element);
+        update():void;
+        addEventListener(event: string, callback: Function): void;
+        attach(mesh: THREE.Mesh): void;</p>
+<pre class="code literal-block"><span></span>    <span class="nt">setSpace</span><span class="o">(</span><span class="nt">space</span><span class="o">:</span> <span class="nt">string</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setTranslationSnap</span><span class="o">(</span><span class="nt">snap</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setRotationSnap</span><span class="o">(</span><span class="nt">radians</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setMode</span><span class="o">(</span><span class="nt">mode</span><span class="o">:</span> <span class="nt">string</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+    <span class="nt">setSize</span><span class="o">(</span><span class="nt">size</span><span class="o">:</span> <span class="nt">number</span><span class="o">):</span> <span class="nt">void</span><span class="o">;</span>
+
+    <span class="nt">space</span><span class="o">:</span> <span class="nt">string</span><span class="o">;</span>
+    <span class="nt">size</span><span class="o">:</span> <span class="nt">number</span><span class="o">;</span>
+<span class="err">}</span>
 </pre>
 
-<p>とする。</p>
-<pre class="code literal-block"><span></span># C:/Python38/Scripts/hererocks.exe
-$ hererocks.exe --target vs -j 2.1.0-beta3 -r latest build_dir
-Using cl.exe found in PATH.
-Fetching LuaJIT 2.1.0-beta3 (target: vs) (cached)
-Verifying SHA256 checksum
-Building LuaJIT 2.1.0-beta3 (target: vs)
-Installing LuaJIT 2.1.0-beta3 (target: vs)
-Fetching LuaRocks 3.7.0 (cached)
-Verifying SHA256 checksum
-Building and installing LuaRocks 3.7.0
+<p>}</p>
+<p>TransformControlsを初期化する。カメラとhtmlノードを渡して初期化する
+CreateTransformControl(mesh: THREE.Mesh) {
+    this.transform = new THREE.TransformControls(this.camera, this.renderer.domElement);
+    this.transform.addEventListener('change', () =&gt; this.Render());
+    this.transform.attach(mesh);
+    this.scene.add(this.transform);</p>
+<pre class="code literal-block"><span></span>window.addEventListener('keydown', (event: KeyboardEvent) =&gt; {
+
+    switch (event.keyCode) {
+
+        case 81: // Q
+            this.transform.setSpace(this.transform.space === "local" ? "world" : "local");
+            break;
+
+        case 17: // Ctrl
+            this.transform.setTranslationSnap(100);
+            this.transform.setRotationSnap(THREE.Math.degToRad(15));
+            break;
+
+        case 87: // W
+            this.transform.setMode("translate");
+            break;
+
+        case 69: // E
+            this.transform.setMode("rotate");
+            break;
+
+        case 82: // R
+            this.transform.setMode("scale");
+            break;
+
+        case 187:
+        case 107: // +, =, num+
+            this.transform.setSize(this.transform.size + 0.1);
+            break;
+
+        case 189:
+        case 109: // -, _, num-
+            this.transform.setSize(Math.max(this.transform.size - 0.1, 0.1));
+            break;
+
+    }
+});
+
+window.addEventListener('keyup', (event: KeyboardEvent) =&gt; {
+
+    switch (event.keyCode) {
+
+        case 17: // Ctrl
+            this.transform.setTranslationSnap(null);
+            this.transform.setRotationSnap(null);
+            break;
+
+    }
+
+});
 </pre>
 
-<p>lua はシステムにインストールして全体でライブラリを共有するというよりは、
-プロジェクト単位でインストールしてローカルに必要なライブラリだけを追加するという運用になりそう。
-なので、 hererocks でプロジェクトローカルに lua をサクッとビルドできるのはなかなかよい。
-python の venv 的な運用。
-展開先は、 <code>.gitignore</code> する。</p>
-<p>ただ、外部ライブラリのラッパーがさくっと動くかというと Windows だと厳しいものがありますな・・・。
-vcpkg と連携させるとか、更なる頑張りが必要かもしれない。
-なので、 luajit の ffi が面白いかもしれない。
-standalone の lua インタプリタを使う場合は <code>hererocks</code> がいいのではないか。</p>
-<h3>vswhere メモ</h3>
-<p><a href="https://github.com/Microsoft/vswhere">https://github.com/Microsoft/vswhere</a></p>
-<p><code>cl.exe</code>, <code>msbuild.exe</code> などの探索に使う。
-<code>vs2017 version 15.2</code> 以降に入っているらしい。</p>
-<p>こんな感じに使う。</p>
-<pre class="code literal-block"><span></span># %ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
-&gt; vswhere -nologo -products *
-instanceId: 6762dfe1
-installDate: 2020/07/21 9:26:34
-installationName: VisualStudio/16.7.3+30503.244
-installationPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
-installationVersion: 16.7.30503.244
-productId: Microsoft.VisualStudio.Product.BuildTools
-productPath: C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\LaunchDevCmd.bat
-state: 4294967295
-isComplete: 1
-isLaunchable: 1
-isPrerelease: 0
-isRebootRequired: 0
-displayName: Visual Studio Build Tools 2019
-description: Visual Studio Build Tools では、Visual Studio IDE を必要とせずに、MSBuild ベースのネイティブ マネージド アプリケーションをビルドできます。また、Visual C++ のコンパイラやライブラリ、MFC、ATL、および C++/CLI サポートをインストールするオプションも用意されています。
-channelId: VisualStudio.16.Release
-channelUri: https://aka.ms/vs/16/release/channel
-enginePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service
-releaseNotes: https://go.microsoft.com/fwlink/?LinkId=660893#16.7.3
-thirdPartyNotices: https://go.microsoft.com/fwlink/?LinkId=660909
-updateDate: 2020-09-13T06:19:26.0508205Z
-catalog_buildBranch: d16.7
-catalog_buildVersion: 16.7.30503.244
-catalog_id: VisualStudio/16.7.3+30503.244
-catalog_localBuild: build-lab
-catalog_manifestName: VisualStudio
-catalog_manifestType: installer
-catalog_productDisplayVersion: 16.7.3
-catalog_productLine: Dev16
-catalog_productLineVersion: 2019
-catalog_productMilestone: RTW
-catalog_productMilestoneIsPreRelease: False
-catalog_productName: Visual Studio
-catalog_productPatchVersion: 3
-catalog_productPreReleaseMilestoneSuffix: 1.0
-catalog_productSemanticVersion: 16.7.3+30503.244
-catalog_requiredEngineVersion: 2.7.3132.26759
-properties_campaignId:
-properties_channelManifestId: VisualStudio.16.Release/16.7.3+30503.244
-properties_nickname:
-properties_setupEngineFilePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe
-</pre>
-
-<p><a href="https://github.com/microsoft/vswhere/wiki/Find-VC">https://github.com/microsoft/vswhere/wiki/Find-VC</a></p>
-<p>フィルタをかけられる。</p>
-<pre class="code literal-block"><span></span>&gt; vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
-</pre>
-
-<p>見つかったパスから先は固定であるとみなして、 <code>vcvars64.bat</code> などを見つける。</p>
+<p>}</p>
+<p>マウスイベントを監視するHtmlノードと、マウスの動きをどのように解釈するかを知るためにカメラが必要ということですね。</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/lua_debug_adapter/" class="u-url">lua の DebugAdapter を書いてみた</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/sio_sample/" class="u-url">sio_sample</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2021/lua_debug_adapter/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-13T00:00:00+09:00" itemprop="datePublished" title="2021-07-13 00:00">2021-07-13 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/lua_debug_adapter/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/lua_debug_adapter.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>nvim の nvim-dap で lua をデバッグするべく自分で書いてみた。
-手頃なのが見つからなかったので。</p>
-<p><a href="https://github.com/ousttrue/my_nvim/blob/master/luada.lua">https://github.com/ousttrue/my_nvim/blob/master/luada.lua</a></p>
-<p><a href="https://microsoft.github.io/debug-adapter-protocol/">https://microsoft.github.io/debug-adapter-protocol/</a> の自前実装。</p>
-<p><code>request</code> のうち <code>initialize</code>, <code>launch</code>, <code>setBreakpoints</code>, <code>configurationDone</code>, <code>threads</code>, <code>stackTrace</code>, <code>scopes</code>, <code>variables</code>, <code>continue</code>, <code>next</code> を実装した。
-<code>event</code> のうち <code>initialized</code>, <code>exited</code>, <code>stopped(breakpoint, step)</code> を実装した。</p>
-<p>これで最低限の breakpoint を設定して止める、ステップ実行、変数表示までできた。</p>
-<p>ログレベルを設定して</p>
-<pre class="code literal-block"><span></span><span class="nb">require</span><span class="p">(</span><span class="s1">'dap'</span><span class="p">).</span><span class="n">set_log_level</span><span class="p">(</span><span class="s1">'trace'</span><span class="p">)</span>
-</pre>
-
-<p>nvim の <code>:lua print(vim.fn.stdpath "cache")</code> に配置される <code>dap.log</code> を観察したらだいたいできた。</p>
-<p>nvim-dap の設定は以下。</p>
-<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="n">dap</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"dap"</span><span class="p">)</span>
-
-<span class="kd">local</span> <span class="n">luada</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">nvim_get_var</span><span class="p">(</span><span class="s2">"my_nvim_root"</span><span class="p">)</span> <span class="o">..</span> <span class="s2">"/luada.lua"</span>
-
-<span class="c1">-- luada adapter を登録</span>
-<span class="n">dap</span><span class="p">.</span><span class="n">adapters</span><span class="p">.</span><span class="n">luada</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c1">-- debug用のスクリプトを lua で実行し、標準入出力で DAP 通信(JSON-RPC)を開始する</span>
-    <span class="nb">type</span> <span class="o">=</span> <span class="s2">"executable"</span><span class="p">,</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">nvim_get_var</span><span class="p">(</span><span class="s2">"my_nvim_root"</span><span class="p">)</span> <span class="o">..</span> <span class="s2">"/neovim/.deps/usr/bin/luajit.exe"</span><span class="p">,</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span> <span class="n">luada</span> <span class="p">},</span>
-<span class="p">}</span>
-<span class="c1">-- filetype lua のときに luada を使用する。launch の引数</span>
-<span class="n">dap</span><span class="p">.</span><span class="n">configurations</span><span class="p">.</span><span class="n">lua</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">{</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s2">"lua debug adapter"</span><span class="p">,</span>
-        <span class="nb">type</span> <span class="o">=</span> <span class="s2">"luada"</span><span class="p">,</span>
-        <span class="n">request</span> <span class="o">=</span> <span class="s2">"launch"</span><span class="p">,</span>
-        <span class="n">program</span> <span class="o">=</span> <span class="s2">"${fileDirname}</span><span class="se">\\</span><span class="s2">${file}"</span><span class="p">,</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span> <span class="p">},</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-</pre>
-
-<pre class="code literal-block"><span></span>+---------+    DAP       +--------------------+
-| nvim dap|-------&gt;stdin |luajit.exe luada.lua|
-|         |&lt;-------stdout|                    |
-+---------+              +--------------------+
-                                              +==&gt; loadscript(target_lua_script)
-</pre>
-
-<p>入出力を DAP で占有してしまうので、それでも大丈夫なスクリプトしかデバッグできない。
-(print 関数は、stderr に出力するように退避したので、<code>dap.log</code> には出る)</p>
-<p>素の standalone の lua interpreter で簡単にできる範囲で実装する方針。</p>
-<h3>はまりポイント</h3>
-<h4>Windows 版 は、<code>io.stdout</code> で <code>CR</code> が <code>CRLF</code> に変換されるのを回避できない。</h4>
-<pre class="code literal-block"><span></span><span class="n">setmode</span><span class="p">(</span><span class="n">_fileno</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="n">_O_BINARY</span><span class="p">);</span>
-</pre>
-
-<p>を lua で呼び出す手段が無い。</p>
-<pre class="code literal-block"><span></span>Content-Leght: 123\n\n
-</pre>
-
-<p>と出力して変換されるのに任せることにした。</p>
-<h4>debug.sethook 内で coroutine.yield できない</h4>
-<p><a href="https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working">https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working</a></p>
-<p>breakpoint 等によるスクリプト中断を <code>coroutine.yield</code> で実装しようとしたのだけど断念した。
-(yield すると <code>suspend</code> にならずに <code>dead</code> になる)</p>
-<p><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a> は、coroutine で実装しているような気がするのだが・・・。</p>
-<p>yield する代わりに main.loop をネストさせてそこで通信待機させることにした、</p>
-<h4>launch で開始すると早すぎる</h4>
-<p>これは、 <code>nvim-dap</code> の実装の問題のような気がするが、
-capabilities に以下を設定して、 <code>configurationDone</code> リクエストで自開始する。</p>
-<pre class="code literal-block"><span></span><span class="n">supportsConfigurationDoneRequest</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-</pre>
-
-<h3>ToDo</h3>
-<p>luada リポジトリを作って vscode 拡張としてリリースする。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/packer_luarocks/" class="u-url">packer から luarocks を使う</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2021/packer_luarocks/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-08T00:00:00+09:00" itemprop="datePublished" title="2021-07-08 00:00">2021-07-08 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/packer_luarocks/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/packer_luarocks.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>nvim のパッケージマネージャー packer に、 luarocks のモジュール機能があるのだが Windows hererocks が失敗する。
-Linux は、 hererocks はできるがモジュールがロードできぬ。
-問題の少ない Linux から調べていく。</p>
-<h3>Linux</h3>
-<p>packer 設定で lua モジュール設定を記述すると、 <code>hererocks</code> を用いて luarocks が <code>~/.config/nvim/hererocks</code> にセットアップされることは分かった。</p>
-<pre class="code literal-block"><span></span><span class="c1">-- packer で lua の penlight モジュールをインストール</span>
-<span class="n">use_rocks</span> <span class="s2">"penlight"</span> 
-</pre>
-
-<p>しかし、</p>
-<pre class="code literal-block"><span></span><span class="nb">require</span> <span class="s2">"penlight"</span>
-</pre>
-
-<p>がエラーになる。
-<code>package.path</code> に luarocks が無くてうまくいかないぽい？</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/nvim_init/" class="u-url">nvim.init ではまる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2021/nvim_init/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-07-01T00:00:00+09:00" itemprop="datePublished" title="2021-07-01 00:00">2021-07-01 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/nvim_init/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/nvim_init.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>Windows でも環境変数 <code>XDG_CONFIG_HOME</code> を設定していると、 <code>%USERPROFILE%/AppData/Local/nvim</code> が無効になる。</p>
-<p><a href="https://neovim.io/doc/user/starting.html#%24XDG_CONFIG_HOME">https://neovim.io/doc/user/starting.html#$XDG_CONFIG_HOME</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/nvim_dap_codelldb/" class="u-url">nvim-dap で coldelldb 動いた</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2021/nvim_dap_codelldb/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-06-27T00:00:00+09:00" itemprop="datePublished" title="2021-06-27 00:00">2021-06-27 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/nvim_dap_codelldb/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/nvim_dap_codelldb.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p><a href="https://github.com/mfussenegger/nvim-dap">nvim-dap</a> で rust をデバッグするべく悪戦苦闘中。
-nvim-dap というのは、来たる nvim-0.5 で動くようになる、 <code>vscode</code> のデバッグアダプターを動作させる機能。</p>
-<p>rust(Windows) は native debugger をアタッチすればいいので、いくつか選択肢があって</p>
-<ul>
-<li><a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools">https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools</a></li>
-<li><a href="https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode">https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode</a></li>
-<li><a href="https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb">https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb</a></li>
-</ul>
-<p>最後の、<code>vscode-lldb(codelldb)</code> <a href="https://github.com/vadimcn/vscode-lldb">https://github.com/vadimcn/vscode-lldb</a> が使いたい。</p>
-<h3>codelldb の起動</h3>
-<p>nvim-dap から <code>codelldb.exe</code> プロセスは起動している様子。通信がうまくいってないように見える。</p>
-<pre class="code literal-block"><span></span>&gt; .\.cache\dein\repos\github.com\puremourning\vimspector\gadgets\windows\CodeLLDB\adapter\codelldb.exe
-Listening on port 55201
-</pre>
-
-<p>標準入出力を使うモードになっていないのでは？</p>
-<p><code>adapter/src/lib.rs</code></p>
-<pre class="code literal-block"><span></span><span class="n">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">run_debug_server</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">addr</span>: <span class="nc">net</span>::<span class="n">SocketAddr</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">adapter_settings</span>: <span class="nc">debug_protocol</span>::<span class="n">AdapterSettings</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">multi_session</span>: <span class="kt">bool</span><span class="p">,</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TcpListener</span>::<span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">).</span><span class="n">await</span><span class="p">.</span><span class="n">unwrap</span><span class="p">();</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">println</span><span class="o">!</span><span class="p">(</span><span class="s">"Listening on port {}"</span><span class="p">,</span><span class="w"> </span><span class="n">listener</span><span class="p">.</span><span class="n">local_addr</span><span class="p">().</span><span class="n">unwrap</span><span class="p">().</span><span class="n">port</span><span class="p">());</span><span class="w"></span>
-</pre>
-
-<p>遡る。 <code>main -&gt; debug_server -&gt; entry -&gt; run_debug_server</code></p>
-<pre class="code literal-block"><span></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">env_logger</span>::<span class="n">Builder</span>::<span class="n">from_default_env</span><span class="p">().</span><span class="n">init</span><span class="p">();</span><span class="w"></span>
-
-<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">App</span>::<span class="n">new</span><span class="p">(</span><span class="s">"codelldb"</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"multi-session"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"multi-session"</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"preload"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"preload"</span><span class="p">).</span><span class="n">multiple</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"liblldb"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"liblldb"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"params"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"params"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">subcommand</span><span class="p">(</span><span class="n">SubCommand</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"terminal-agent"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">Arg</span>::<span class="n">with_name</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">long</span><span class="p">(</span><span class="s">"port"</span><span class="p">).</span><span class="n">takes_value</span><span class="p">(</span><span class="kc">true</span><span class="p">)))</span><span class="w"></span>
-<span class="w">        </span><span class="p">.</span><span class="n">get_matches</span><span class="p">();</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matches</span><span class="p">.</span><span class="n">subcommand_matches</span><span class="p">(</span><span class="s">"terminal-agent"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">terminal_agent</span>::<span class="n">terminal_agent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">matches</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">debug_server</span><span class="p">(</span><span class="o">&amp;</span><span class="n">matches</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre>
-
-<p>どうやら、 <code>executable</code> かつ <code>stdio ではなく tcp</code> 通信というタイプで nvim-dap では未対応ということでよさそう。？</p>
-<ul>
-<li>起動</li>
-<li>
-<code>Listening on port XXXXX</code> メッセージから port を得る</li>
-<li>そのポートに対して TCP 接続という手順が必要</li>
-</ul>
-<p><a href="https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension">https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension</a></p>
-<p>の <code>DebugAdapterServer</code> タイプにあたる。</p>
-<h3>nvim-dap の改造を試みる</h3>
-<p>adapter.type <code>executable</code>, <code>server</code> に加えて、第3の <code>executable_server</code> を作れるか。</p>
-<pre class="code literal-block"><span></span><span class="kd">local</span> <span class="kr">function</span> <span class="nf">run_adapter</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">'[no name]'</span>
-  <span class="kd">local</span> <span class="n">options</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
-  <span class="n">opts</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">tbl_extend</span><span class="p">(</span><span class="s1">'keep'</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="p">{</span>
-    <span class="n">cwd</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">cwd</span><span class="p">,</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">env</span>
-  <span class="p">})</span>
-  <span class="kr">if</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'executable'</span> <span class="kr">then</span>
-    <span class="n">lazy</span><span class="p">.</span><span class="n">progress</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="s1">'Running: '</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
-    <span class="n">M</span><span class="p">.</span><span class="n">launch</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-  <span class="kr">elseif</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'server'</span> <span class="kr">then</span>
-    <span class="n">lazy</span><span class="p">.</span><span class="n">progress</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="s1">'Running: '</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
-    <span class="n">M</span><span class="p">.</span><span class="n">attach</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">host</span><span class="p">,</span> <span class="n">adapter</span><span class="p">.</span><span class="n">port</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-  <span class="kr">elseif</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'executable_server'</span> <span class="kr">then</span> <span class="c1">-- 👈これを追加した</span>
-    <span class="n">lazy</span><span class="p">.</span><span class="n">progress</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="s1">'Running: '</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
-    <span class="c1">-- local session = M.launch(adapter, configuration, opts)</span>
-    <span class="kd">local</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">executable_server</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-    <span class="c1">-- `Error executing luv callback: vimL function must not be called in a lua loop callback`</span>
-    <span class="n">vim</span><span class="p">.</span><span class="n">loop</span><span class="p">.</span><span class="n">read_start</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">vim</span><span class="p">.</span><span class="n">schedule_wrap</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-      <span class="c1">-- codelldb の出力から port を得る</span>
-      <span class="c1">-- Lisening on port xxxxx</span>
-      <span class="kd">local</span> <span class="n">port</span> <span class="o">=</span> <span class="nb">string.match</span><span class="p">(</span><span class="n">data</span> <span class="p">,</span> <span class="s2">"Listening on port (%d+)"</span> <span class="p">)</span>
-      <span class="n">M</span><span class="p">.</span><span class="n">attach</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-    <span class="kr">end</span><span class="p">))</span>
-  <span class="kr">else</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">'Invalid adapter type %s, expected `executable` or `server`'</span><span class="p">,</span> <span class="n">adapter</span><span class="p">.</span><span class="n">type</span><span class="p">))</span>
-  <span class="kr">end</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nf">executable_server</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">uv</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">loop</span>
-  <span class="kd">local</span> <span class="n">stdin</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_pipe</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_pipe</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_pipe</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">handle</span>
-  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">onexit</span><span class="p">()</span>
-    <span class="n">stdin</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">stdout</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">stderr</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">handle</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-  <span class="kr">end</span>
-  <span class="kd">local</span> <span class="n">options</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
-  <span class="kd">local</span> <span class="n">pid_or_err</span>
-  <span class="n">handle</span><span class="p">,</span> <span class="n">pid_or_err</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">adapter</span><span class="p">.</span><span class="n">command</span><span class="p">,</span> <span class="p">{</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">args</span><span class="p">;</span>
-    <span class="n">stdio</span> <span class="o">=</span> <span class="p">{</span><span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">};</span>
-    <span class="n">cwd</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">cwd</span><span class="p">;</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">options</span><span class="p">.</span><span class="n">env</span><span class="p">;</span>
-    <span class="n">detached</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-  <span class="p">},</span> <span class="n">onexit</span><span class="p">)</span>
-  <span class="nb">assert</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="s1">'Error running '</span> <span class="o">..</span> <span class="n">adapter</span><span class="p">.</span><span class="n">command</span> <span class="o">..</span> <span class="s1">': '</span> <span class="o">..</span> <span class="n">pid_or_err</span><span class="p">)</span>
-
-  <span class="kr">return</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">M</span><span class="p">.</span><span class="nf">attach</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="n">session</span> <span class="kr">then</span>
-    <span class="n">session</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-  <span class="kr">end</span>
-  <span class="kr">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">.</span><span class="n">request</span> <span class="kr">then</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">'config needs the `request` property which must be one of `attach` or `launch`'</span><span class="p">)</span>
-    <span class="kr">return</span>
-  <span class="kr">end</span>
-  <span class="c1">-- initialize が早すぎるので config を connect 引数に</span>
-  <span class="n">session</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'dap.session'</span><span class="p">):</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">session</span>
-<span class="kr">end</span>
-
-<span class="kr">function</span> <span class="nc">Session</span><span class="p">:</span><span class="nf">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">session</span> <span class="o">=</span> <span class="n">session_defaults</span><span class="p">(</span><span class="n">opts</span> <span class="ow">or</span> <span class="p">{})</span>
-  <span class="nb">setmetatable</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">self</span><span class="p">)</span>
-  <span class="n">self</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">self</span>
-
-  <span class="kd">local</span> <span class="n">client</span> <span class="o">=</span> <span class="n">uv</span><span class="p">.</span><span class="n">new_tcp</span><span class="p">()</span>
-  <span class="n">session</span><span class="p">.</span><span class="n">client</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">write</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> 
-        <span class="n">client</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> 
-    <span class="kr">end</span><span class="p">;</span>
-    <span class="n">close</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
-      <span class="n">client</span><span class="p">:</span><span class="n">shutdown</span><span class="p">()</span>
-      <span class="n">client</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-    <span class="kr">end</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="n">client</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span> <span class="ow">or</span> <span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">port</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="kr">then</span> <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="kr">end</span>
-    <span class="n">client</span><span class="p">:</span><span class="n">read_start</span><span class="p">(</span><span class="n">rpc</span><span class="p">.</span><span class="n">create_read_loop</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-      <span class="n">session</span><span class="p">:</span><span class="n">handle_body</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-    <span class="kr">end</span><span class="p">))</span>
-
-    <span class="c1">-- connect が成立してから initialize を送る</span>
-    <span class="n">session</span><span class="p">:</span><span class="n">initialize</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-
-  <span class="kr">end</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">session</span>
-<span class="kr">end</span>
-</pre>
-
-<p>動いた。 PR 作ろう。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/rust_ffi/" class="u-url">rust の ffi</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2021/rust_ffi/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-06-20T00:00:00+09:00" itemprop="datePublished" title="2021-06-20 00:00">2021-06-20 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/rust_ffi/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/rust_ffi.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>rust の FFI に取り組んでいた。
-結局、 sdl binding と imgui binding を自作した。</p>
-<p>両方とも、既存の crate があるのに何故わざわざ自作するのかと言えば、
-ラップされて使い方が変わったところを学ぶのが面倒くさかったからじゃ。
-<a href="https://crates.io/crates/sdl2">SDL</a> は　<code>HWND</code> を取得する方法がわかりにくくて <code>SDL_Event</code> を <code>imgui</code> に渡す方法はわからなかった。
-<a href="https://crates.io/crates/imgui">imgui</a> は最新版の <code>docking</code> ブランチが使いたかった。</p>
-<p><a href="https://crates.io/crates/clang-sys">clang-sys</a> を使って rust の FFI コードを生成し、
-<a href="https://crates.io/crates/cc">cc</a> を使って <code>build.rs</code> でライブラリをビルドした。
-これで、 <code>c</code> <code>c++</code> のライブラリをソースビルドしてスタティックリンクし、 <code>FFI</code> で関数を呼び出し放題。</p>
-<p><code>imgui</code> の FFI 生成の方が簡単で、 <code>SDL</code> の方は C のマクロに苦しんだ(雑に対応)。
-とはいえ、わりと素直に記述できるので快適であった。</p>
-<p>おかげで、 rust の FFI 周りに対する習熟度がだいぶ上がった。</p>
-<h3>できないこと</h3>
-<p>POD の struct を return する関数を呼び出すとクラッシュした。</p>
-<pre class="code literal-block"><span></span><span class="n">ImVec2</span> <span class="n">ImGui</span><span class="o">::</span><span class="n">GetContentRegionAvail</span><span class="p">();</span>
-</pre>
-
-<p>D言語だけど</p>
-<p>https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org</p>
-<p>の件らしく、C++ 側でラップした。</p>
-<pre class="code literal-block"><span></span><span class="kt">void</span> <span class="nf">pGetContentRegionAvail</span><span class="p">(</span><span class="n">ImVec2</span> <span class="o">*</span><span class="n">pOut</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">pOut</span><span class="p">)</span> <span class="p">{</span>
-    <span class="o">*</span><span class="n">pOut</span> <span class="o">=</span> <span class="n">GetContentRegionAvail</span><span class="p">();</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-
-<h3>自由に static link できる</h3>
-<p>build.rs を駆使して自由にリンクできるので、スタティックリンクとダイナミックリンクを制御できるので便利。
-特に Windows の場合、システムに共通のライブラリがインストールされていることが期待できないので、
-DLLを作ってコピーした入りパスを通すよりは、スタティックリンクする方が気楽。
-今回は <code>cc</code> でコンパイルしたけど、<code>c++/c</code> は CMake でビルドする方が管理しやすいかもしれない。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/mdbook/" class="u-url">mdBook もやってみる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2021/mdbook/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-06-14T00:00:00+09:00" itemprop="datePublished" title="2021-06-14 00:00">2021-06-14 00:00</time><span class="updated"> (更新日時
-                    <time class="dt-updated" datetime="2021-08-31T00:00:00+09:00" itemprop="dateUpdated" title="2021-08-31 00:00">2021-08-31 00:00</time>)</span>
+            <a href="github/sio_sample/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-10T17:19:31Z" itemprop="datePublished" title="2015-12-10 17:19">2015-12-10 17:19</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2015-12-15T13:55:49Z" itemprop="dateUpdated" title="2015-12-15 13:55">2015-12-15 13:55</time>)</span>
             </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/mdbook/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/mdbook.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<ul>
-<li><a href="https://rust-lang.github.io/mdBook/">https://rust-lang.github.io/mdBook/</a></li>
-<li><a href="https://github.com/rust-lang/mdBook">https://github.com/rust-lang/mdBook</a></li>
-</ul>
-<h2>作ってみた</h2>
-<ul>
-<li><a href="https://github.com/ousttrue/cmake_book">https://github.com/ousttrue/cmake_book</a></li>
-</ul>
-<p>gh-pages</p>
-<ul>
-<li><a href="https://ousttrue.github.io/cmake_book/">https://ousttrue.github.io/cmake_book/</a></li>
-</ul>
-<h2>config.toml</h2>
-<h3>base_url の設定にはまる</h3>
-<p>base_url の設定だけ探し回った。
-gh-pages の url が <code>https://ousttrue.github.io/cmake_book/</code> と root フォルダでは無いので必用。</p>
-<p><code>book.toml</code></p>
-<pre class="code literal-block"><span></span><span class="k">[output.html]</span>
-<span class="na">site-url</span> <span class="o">=</span> <span class="s">"https://ousttrue.github.io/cmake_book/"</span>
-</pre>
-
-<h3>github</h3>
-<p><code>book.toml</code></p>
-<pre class="code literal-block"><span></span><span class="k">[output.html]</span>
-<span class="na">git-repository-url</span> <span class="o">=</span> <span class="s">"https://github.com/rust-lang/mdBook/tree/master/guide"</span>
-<span class="na">edit-url-template</span> <span class="o">=</span> <span class="s">"https://github.com/rust-lang/mdBook/edit/master/guide/{path}"</span>
-</pre>
-
-<h2>github actions</h2>
-<p><a href="https://github.com/marketplace/actions/mdbook-action">https://github.com/marketplace/actions/mdbook-action</a></p>
-<p>を参考にしたのだけど、
-ちょっとはまった。</p>
-<pre class="code literal-block"><span></span><span class="n">name</span><span class="o">:</span> <span class="n">github</span> <span class="n">pages</span>
-<span class="n">on</span><span class="o">:</span> <span class="o">[</span><span class="n">push</span><span class="o">]</span> <span class="err">#</span> <span class="o">&lt;=</span> <span class="err">書き方変わってた</span><span class="o">(</span><span class="n">pushしてもjobが起動しない</span><span class="o">)</span>
-<span class="n">jobs</span><span class="o">:</span>
-  <span class="n">Explore</span><span class="o">-</span><span class="n">GitHub</span><span class="o">-</span><span class="n">Actions</span><span class="o">:</span> <span class="err">#</span> <span class="o">&lt;=</span> <span class="err">書き方変わってた？</span><span class="o">(</span><span class="err">アクションとして認識されない？</span><span class="o">)</span>
-    <span class="n">runs</span><span class="o">-</span><span class="n">on</span><span class="o">:</span> <span class="n">ubuntu</span><span class="o">-</span><span class="mf">18.04</span>
-    <span class="n">steps</span><span class="o">:</span>
-      <span class="o">-</span> <span class="n">uses</span><span class="o">:</span> <span class="n">actions</span><span class="o">/</span><span class="n">checkout</span><span class="err">@</span><span class="n">v2</span>
-
-      <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">Setup</span> <span class="n">mdBook</span>
-        <span class="n">uses</span><span class="o">:</span> <span class="n">peaceiris</span><span class="o">/</span><span class="n">actions</span><span class="o">-</span><span class="n">mdbook</span><span class="err">@</span><span class="n">v1</span>
-        <span class="k">with</span><span class="o">:</span>
-          <span class="n">mdbook</span><span class="o">-</span><span class="n">version</span><span class="o">:</span> <span class="s2">"latest"</span>
-
-      <span class="o">-</span> <span class="n">run</span><span class="o">:</span> <span class="n">mdbook</span> <span class="n">build</span>
-
-      <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">Deploy</span>
-        <span class="n">uses</span><span class="o">:</span> <span class="n">peaceiris</span><span class="o">/</span><span class="n">actions</span><span class="o">-</span><span class="n">gh</span><span class="o">-</span><span class="n">pages</span><span class="err">@</span><span class="n">v3</span>
-        <span class="err">#</span> <span class="k">if</span><span class="o">:</span> <span class="n">github</span><span class="o">.</span><span class="na">ref</span> <span class="o">==</span> <span class="s1">'refs/heads/main'</span> <span class="o">&lt;=</span> <span class="err">あると動かない</span>
-        <span class="k">with</span><span class="o">:</span>
-          <span class="n">github_token</span><span class="o">:</span> <span class="n">$</span><span class="o">{{</span> <span class="n">secrets</span><span class="o">.</span><span class="na">GITHUB_TOKEN</span> <span class="o">}}</span>
-          <span class="n">publish_dir</span><span class="o">:</span> <span class="o">./</span><span class="n">book</span>
-</pre>
-
-<p>動かないとき、特に action として認識されていないときは全く手掛かりが無くて難儀した。</p>
-<p><a href="https://docs.github.com/ja/actions/quickstart">https://docs.github.com/ja/actions/quickstart</a></p>
-<p>は動いたので、これと違うところを見比べて勘でなおした。
-よくわかっていない。</p>
-<h2>mdbook の SUMMARY.md</h2>
-<p><code>SUMMARY.md</code> にページ構成を先に記述して章立てを作ってから中身を記述していくのが面白い。
-この仕組みが合うものは、 <code>zola</code> より <code>mdbook</code> の方がサクサク作れそう。
-<code>hugo</code> とかと違って各ページに <code>frontmatter</code> が不要なので、
-ページを足したり引いたりするする場合はこちらの方が使いやすい。</p>
-<p>Scrapbox 上にあるメモを整理するかもしれない。</p>
-<p>作った。</p>
-<ul>
-<li><a href="https://ousttrue.github.io/cmake_book/">cmake_book</a></li>
-<li><a href="https://ousttrue.github.io/rust_exercise_book/">rust練習帳</a></li>
-</ul>
-<p>あと、 <code>blender の addon 作成メモ</code> とか <code>Unity のカスタムエディターメモ</code> とか作るかも。</p>
-<ul>
-<li><a href="https://ousttrue.github.io/bldner_book/">blender_book</a></li>
-<li><a href="https://ousttrue.github.io/unity_book/">unity memo</a></li>
-</ul>
-<h2>mdbook を gh-pages で初期化する手順</h2>
-<p>github に repository を作って gh-pages に公開するところまで</p>
-<ul>
-<li>new repository <code>https://github.com/GITHUB_USER_NAME/MDBOOK_REPOSITORY_NAME</code>
-</li>
-<li>git clone GIT_REPOSITORY</li>
-<li>cd GIT_REPOSITORY</li>
-<li>mdbook init</li>
-</ul>
-<p><code>book.toml</code></p>
-<pre class="code literal-block"><span></span><span class="k">[output.html]</span>
-<span class="na">site-url</span> <span class="o">=</span> <span class="s">"https://${USER_NAME}.github.io/${REPO_NAME}/"</span>
-<span class="na">git-repository-url</span> <span class="o">=</span> <span class="s">"https://github.com/${USER_NAME}/${REPO_NAME}/tree/master"</span>
-<span class="na">edit-url-template</span> <span class="o">=</span> <span class="s">"https://github.com/${USER_NAME}/${REPO_NAME}/edit/master/{path}"</span>
-</pre>
-
-<ul>
-<li>.github/workflows/gh-pages.yml</li>
-</ul>
-<pre class="code literal-block"><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">github pages</span>
-<span class="nt">on</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">push</span><span class="p p-Indicator">]</span>
-<span class="nt">jobs</span><span class="p">:</span>
-  <span class="nt">Explore-GitHub-Actions</span><span class="p">:</span>
-    <span class="nt">runs-on</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ubuntu-18.04</span>
-    <span class="nt">steps</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">actions/checkout@v2</span>
-
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup mdBook</span>
-        <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">peaceiris/actions-mdbook@v1</span>
-        <span class="nt">with</span><span class="p">:</span>
-          <span class="nt">mdbook-version</span><span class="p">:</span> <span class="s">"latest"</span>
-
-      <span class="p p-Indicator">-</span> <span class="nt">run</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mdbook build</span>
-
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deploy</span>
-        <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">peaceiris/actions-gh-pages@v3</span>
-        <span class="nt">with</span><span class="p">:</span>
-          <span class="nt">github_token</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{ secrets.GITHUB_TOKEN }}</span>
-          <span class="nt">publish_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./book</span>
-</pre>
-
-<ul>
-<li>git add .</li>
-<li>git commit -m init</li>
-<li>git push<ul>
-<li>action が発動し、mdbook がビルドした book フォルダが gh-pages ブランチに push される</li>
-</ul>
-</li>
-<li>github の settings - pages から gh-pages branch を選んで root を設定する<ul>
-<li>しばらくすると <code>https://GITHUB_USER_NAME.github.io/MDBOOK_REPOSITORY_NAME/</code> が有効になる</li>
-</ul>
-</li>
-</ul>
-<p>初回にページが表示されるまで何回か push が要るかも。</p>
-<ul>
-<li>repo 作る</li>
-<li>gh-pages branch に push する</li>
-<li>設定で gh-pages を有効にする</li>
-<li>再度 push し action を発動させる。この辺でサイトが見れることを確認する</li>
-</ul>
-<h2>参考</h2>
-<p><a href="https://o296.com/e/mdbook_as_blog.html">https://o296.com/e/mdbook_as_blog.html</a></p>
+<p><a href="https://github.com/ousttrue/sio_sample">https://github.com/ousttrue/sio_sample</a></p>
+<p>socket.io start up sample</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/zola_template/" class="u-url">zola のテンプレートを整備する</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/fontawesome/" class="u-url">FontAwesomeを取り入れる</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2021/zola_template/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-06-14T00:00:00+09:00" itemprop="datePublished" title="2021-06-14 00:00">2021-06-14 00:00</time><span class="updated"> (更新日時
-                    <time class="dt-updated" datetime="2021-08-31T00:00:00+09:00" itemprop="dateUpdated" title="2021-08-31 00:00">2021-08-31 00:00</time>)</span>
-            </a>
+            <a href="posts/2015/12/11/fontawesome/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-11T00:00:00+09:00" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/zola_template/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/zola_template.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>サイト整備のメモ。共通化して部品を少なくした。</p>
-<ul>
-<li>zola 設定</li>
-<li>template 構築</li>
-<li>場合によっては zola の改造</li>
-</ul>
-<h2>共通</h2>
-<ul>
-<li>[x] title</li>
-<li>[x] 日付</li>
-<li>[x] 見出しの見た目</li>
-</ul>
-<h2>Markdown</h2>
-<ul>
-<li>[x] url 文字列を自動でリンクにしたい。markdownで <code>&lt;url&gt;</code> と記述するべし</li>
-</ul>
-<h2>20210716: masonry 入れてみた</h2>
-<p><a href="https://masonry.desandro.com/">https://masonry.desandro.com/</a></p>
-<h2>20210717: TOC</h2>
-<ul>
-<li>[x] 目次
-だいたいできた。
-github が増えすぎてカオスなので不要なものを整理せねば・・・</li>
-</ul>
-<h2>20210725: 色</h2>
-<p>作業用に区域ごとに色分けしていたのをやめて、地味な色に変更。</p>
-<pre class="code literal-block"><span></span><span class="k">@mixin</span><span class="nf"> MAIN_COLOR</span> <span class="p">{</span>
-    <span class="nt">color</span><span class="nd">:</span> <span class="nt">black</span><span class="o">;</span>
-    <span class="nt">background-color</span> <span class="nt">white</span><span class="o">;</span>
-<span class="p">}</span>
-</pre>
-
-<p>のような方法を試してみた。</p>
-<h2>20210725: TOC 固定</h2>
-<pre class="code literal-block"><span></span><span class="nt">position</span><span class="o">:</span> <span class="nt">fixed</span><span class="o">;</span>
-</pre>
-
-<h2>20210725: 画像を入れれるようにしてみた</h2>
-<p><code>page.assets</code> や <code>section.assets</code> に想定した形で入ってこないので、
-無理やりパスを操作したのだが、さすがにこれはちょっと・・・</p>
-<pre class="code literal-block"><span></span>  {% if page.extra.image %}
-  {% set s = page.relative_path | split(pat="/") %}
-  {% set len = s | length %}
-  {% set sl = s | slice(start=0, end=len-1) %}
-  {% set j = sl | join(sep="/") %}
-  {% set image_url = resize_image(path=j ~ "/" ~ page.extra.image, width=600, op="fit_width") %}
-  <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">"{{ image_url }}"</span><span class="err">"</span><span class="p">&gt;</span>
-  {% endif %}
-</pre>
-
-<p>なんか、 <code>zola</code> がわりと融通が利かないことが分かってきた。
-<code>resize_image</code> で明示的に画像を加工するという設計は理解。なるほど。
-当方、 <code>md</code> ファイルと同じフォルダに <code>png, jpg</code> を放り込んでそれを記事内で使いたいのです。
-画像を中央の <code>static</code> フォルダにまとめて入れておくの嫌なので。
-改造して page.assets に放り込んでしまおう。</p>
-<p><code>hugo</code> ほど多機能複雑でなく、 <code>zola</code> ほど strict でない、そんなほどほどなツールが望まれる。</p>
-<h2>20210815: pagination</h2>
-<p><a href="https://www.getzola.org/documentation/templates/pagination/">https://www.getzola.org/documentation/templates/pagination/</a></p>
-<p>ドキュメントよりもソースを読もう w
-5分もかからぬ。</p>
-<pre class="code literal-block"><span></span>      {% if paginator.current_index == 1 %}
-</pre>
-
-<h2>20210829: 内部リンク記法</h2>
-<p><code>.md</code> の記法。</p>
-<p><a href="https://www.getzola.org/documentation/content/linking/#internal-links">https://www.getzola.org/documentation/content/linking/#internal-links</a></p>
-<p><code>[NvimTexture](@/posts/2021/summer/nvimtexture.md)</code></p>
-<p><code>@</code> と <code>.md</code> が必要。</p>
-<h2>20210831: search</h2>
-<p><a href="https://www.getzola.org/documentation/content/search/">https://www.getzola.org/documentation/content/search/</a></p>
-<p>設定は <code>build_search_index = true</code> するだけなのだが、
-template 作るのは大変。</p>
-<p><a href="https://github.com/aaranxu/adidoks">https://github.com/aaranxu/adidoks</a> から部品を頂いてきた。</p>
+<p>https://fortawesome.github.io/Font-Awesome/</p>
+<p>取り入れてみた。
+cssをセットアップして
+アイコンを選択してコピペすると。
+無駄にアイコンを配置してみよう。
+ fa-lg
+ fa-2x
+ fa-3x
+ fa-4x
+ fa-5x
+なるほど。
+<i class="fa fa-wrench fa-5x"></i></p>
+<p>iでアイコンタグを導入して、クラスで種類とサイズを指定する仕組み。</p>
+<p>適当にサイトのテンプレートにアイコンを入れてみる。
+わりとお手軽におされ？なサイトに。</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/init_zola/" class="u-url">サイトジェネレーターを Zola に変更</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/express_socketio/" class="u-url">Socket.IOな実験環境</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2021/init_zola/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-06-12T00:00:00+09:00" itemprop="datePublished" title="2021-06-12 00:00">2021-06-12 00:00</time></a>
+            <a href="posts/2015/12/11/express_socketio/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-11T00:00:00+09:00" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2021/init_zola/#disqus_thread" data-disqus-identifier="cache/content/posts/2021/init_zola.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>最近、 rust を再開したので、
-<code>Static Site Generator</code> を go 製の hugo から rust 製の zola に変更してみた。</p>
-<p><a href="https://www.getzola.org/">https://www.getzola.org/</a></p>
-<h2>hugo のからの引っ越し</h2>
-<h3>zola インストール</h3>
-<h3>初期化</h3>
-<h3>config.toml を hugo 版から zola 版に書き換える。</h3>
-<p>最低限 base_url。</p>
-<h3>プレビューしてみる</h3>
-<pre class="code literal-block"><span></span>$ zola serve
+<p>Socket.IOを実験する環境のメモ。</p>
+<p>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
+coffee-scriptは無しでES6要素をなるべく入れる
+Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</p>
+<p>https://github.com/ousttrue/sio_sample
+Project生成</p>
+<blockquote>
+<p>mkdir sio_sample
+cd sio_sample
+sio_sample&gt; npm init -y
+sio_sample&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D
+sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</p>
+</blockquote>
+<p>vscodeでes6を使えるように
+jsconifg.json
+{
+    "compilerOptions": {
+        "target": "ES6"
+    }
+}</p>
+<p>後で拡張できるように以下のようなディレクトリ構成にする。
+build &lt;- srcから(加工して)コピーされる</p>
+<p>src &lt;- 加工前のファイル置き場
+  + server
+    + app.js
+  + client
+    + index.html
+    + index.js</p>
+<p>src/server/app.js
+"use strict";</p>
+<p>const http = require('http');
+const express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+    .use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+const socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    console.log('a client connected %s', socket);
+    socket.on('disconnect', () =&gt; {
+        console.log('a client disconnected');
+    });
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.html</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<script src="posts/2015/12/11/express_socketio/index.js"></script><div id="target"></div>
+
+<p></p>
+<p>src/client/index.js
+"use strict";</p>
+<p>function setup(target) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('onLoad'));
+    target.appendChild(div);
+}</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block"><span></span>setup(document.getElementById('target'));
 </pre>
 
-<p>一部の記事でエラーが出る。</p>
-<pre class="code literal-block"><span></span><span class="n">Reason</span><span class="o">:</span> <span class="n">There</span> <span class="k">is</span> <span class="n">a</span> <span class="n">link</span> <span class="n">that</span> <span class="k">is</span> <span class="n">missing</span> <span class="n">a</span> <span class="n">URL</span>
+<p>};</p>
+<p>srcからbuildに展開するgulp
+gulpfile.js
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();</p>
+<p>const config = {
+    server_src: './src/server/<strong>/*',
+    server_dst: './build',
+    client_src: './src/client/</strong>/*',
+    client_dst: './build/public'
+};</p>
+<p>gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe(gulp.dest(config.server_dst));
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe(gulp.dest(config.client_dst));
+});</p>
+<p>gulp.task('default', ['server', 'client']);</p>
+<p>build
+sio_sample&gt; gulp</p>
+<p>ブラウザで動いた。
+browserSync導入
+gulpfile.js。browserSync
+const config = { // 追加分
+    app_entry: './build/app.js',
+    app_port: 5000,  <br>
+};</p>
+<p>const browserSync = require('browser-sync').create();
+gulp.task('serve', ()=&gt;{
+    $.nodemon({
+        script: config.app_entry,
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: config.app_port
+        }
+    })
+    .on('readable', ()=&gt;{
+        this.stdout.on('data', (chunk)=&gt;{
+            if (/^start /.test(chunk)){
+                console.log('reloading...');
+                browserSync.reload();
+            }
+            process.stdout.write(chunk)
+        });
+    });
+});</p>
+<p>gulp.task('browser-sync', ['serve'], ()=&gt;{
+    browserSync.init({
+        proxy: 'localhost:' + config.app_port,
+        port: 3000,
+        ws: true
+    })
+});</p>
+<p>gulpfile.js。watchタスク追加
+gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe(gulp.dest(config.server_dst))
+        .pipe(browserSync.stream())
+        ;
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe(gulp.dest(config.client_dst))
+        .pipe(browserSync.stream())
+        ;
+});</p>
+<p>gulp.task('build', ['server', 'client']);</p>
+<p>gulp.task('watch', ['build', 'browser-sync'], ()=&gt;{
+    gulp.watch(config.server_src, ['server']);
+    gulp.watch(config.client_src, ['client']);
+});</p>
+<p>gulp.task('default', ['watch']);</p>
+<p>git
+いったんgitに登録しよう。
+.gitignore
+/node_modules/
+/build/</p>
+<p>Socket.IOの疎通</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<script type="text/javascript" src="socket.io/socket.io.js"></script><br><script src="posts/2015/12/11/express_socketio/index.js"></script><div id="target"></div>
+
+<p></p>
+<p>"use strict";</p>
+<p>function setup(target) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello'));
+    target.appendChild(div);</p>
+<pre class="code literal-block"><span></span>this.socket = io.connect();
 </pre>
 
-<p>どの記事がまずいかはわかるが、何行目とか場所はわからないのかしら。
-適当になおす。</p>
-<pre class="code literal-block"><span></span>$ zola check
+<p>}</p>
+<p>window.onload = () =&gt; {
+    setup(document.getElementById('target'));
+};</p>
+<p>typescript導入
+sio_sample&gt; tsc --init</p>
+<p>tsconfig.json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "outDir": ".",
+        "rootDir": ".",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}</p>
+<p>sio_sample&gt; npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D
+sio_sample&gt; cd src
+sio_sample/src&gt; tsd init
+sio_sample/src&gt; tsd query node express socket.io -rosa install</p>
+<p>gulpfile.js。typescriptのコンパイルを追加
+const path = require('path');
+const tsconfig = require('./tsconfig.json');
+const isTypescript = (file) =&gt; {
+    const ext = path.extname(file.path).toLowerCase();
+    return ext === '.ts';
+}</p>
+<p>gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe($.plumber())
+        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+        .pipe($.debug('server'))
+        .pipe(gulp.dest(config.server_dst))
+        .pipe(browserSync.stream())
+    ;
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe($.plumber())
+        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+        .pipe($.debug('client'))
+        .pipe(gulp.dest(config.client_dst))
+        .pipe(browserSync.stream())
+    ;
+});</p>
+<p>src/server/app.jsをapp.tsにリネーム
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>import http = require('http');
+import express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+    .use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    var clientAddress=socket.client.conn.remoteAddress;
+    console.log('connected: %s', clientAddress);
+    socket.on('disconnect', () =&gt; {
+        console.log('disconnected: %s', clientAddress);
+    });
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.jsをindex.tsにリネーム
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>declare module io {
+    export function connect(): SocketIO.Socket;
+}</p>
+<p>function setup(target: Element) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello socket.io'));
+    target.appendChild(div);</p>
+<pre class="code literal-block"><span></span>this.socket = io.connect();
 </pre>
 
-<p>の方がデバッグ向け。
-いくつかなおしたら、エラーは出なくなった。</p>
-<h2>テンプレートを用意する</h2>
-<p>https://www.getzola.org/documentation/getting-started/overview/</p>
-<p>に従って基本的なテンプレートを作成。
-index.html, section.html, page.html の3種類のテンプレートがサーチされる。
-section.html と page.html は、section のフロントマター、 <code>template</code>, <code>page_template</code> で変更できる。</p>
-<h2>zola の content 構成</h2>
-<p>section(フォルダ) に page が所属するという構成みたい。
-section とうのは単なるフォルダではなくて、folder/index.md もしくは folder/_index.md をさす。</p>
-<ul>
-<li>root =&gt; index.html<ul>
-<li>section<ul>
-<li>_index.md (セクションになる) =&gt; section.html</li>
-<li>page1.md =&gt; page.html</li>
-<li>page2.md =&gt; page.html</li>
-<li>subsection (_index.md が無いのでセクションでは無い) =&gt; レンダリングされない<ul>
-<li>page3.md (orphan page) =&gt; page.html</li>
-<li>page4.md (orphan page) =&gt; page.html</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>セクションに所属しない page は orphan page となり、 <code>section.pages</code> のように列挙することができなくなる。
-すべてのフォルダに <code>_index.md</code> を配置してセクション化するという設計思想のようだ。</p>
-<p>セクションが木構造になっていて、page が leaf になる。</p>
-<ul>
-<li>section<ul>
-<li>subsections</li>
-<li>pages</li>
-</ul>
-</li>
-</ul>
-<p>が再帰的に続く。</p>
-<h3>zola を改造してみた。</h3>
-<p>orphan page が section.pages に入るようになる。
-https://github.com/ousttrue/zola/commit/7842d0b2d05eb15400dbe20b20791b57af077de1</p>
-<h2>zola 設定 config.toml</h2>
-<p>https://www.getzola.org/documentation/getting-started/configuration/</p>
-<h2>Tera テンプレート</h2>
-<p>https://tera.netlify.app/docs</p>
-<h3>extends</h3>
-<p>別ファイルを部分的に override する
-https://tera.netlify.app/docs/#inheritance</p>
-<h3>include</h3>
-<p>別ファイルの部品を読み込む
-https://tera.netlify.app/docs/#include</p>
-<h3>date format</h3>
-<p>https://tera.netlify.app/docs/#include</p>
-<h2>とりあえずメンテナンス中・・・</h2>
-<p>hugo に比べて template の構成がシンプルでわかりやすいような気がする
-(hugo に慣れているせいかもしれない)。
-そもそも hugo の時点でちゃんと管理してなかったので、
-ぼちぼち続きをやる。</p>
+<p>}</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block"><span></span>setup(document.getElementById('target'));
+</pre>
+
+<p>};</p>
+<p>メッセージをやり取り
+src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行
+// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    var clientAddress = socket.client.conn.remoteAddress;
+    console.log('connected: %s', clientAddress);
+    socket.on('disconnect', () =&gt; {
+        console.log('disconnected: %s', clientAddress);
+    });</p>
+<pre class="code literal-block"><span></span>socket.on('client-message', (data: any) =&gt; {
+    socket.emit('server-message', 'server clicked message');
+});
+</pre>
+
+<p>});</p>
+<p>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>declare module io {
+    export function connect(): SocketIO.Socket;
+}</p>
+<p>class Client {
+    socket: SocketIO.Socket;</p>
+<pre class="code literal-block"><span></span>constructor() {
+    this.socket = io.connect();
+}
+
+setup(target: Element) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello socket.io'));
+    target.appendChild(div);
+
+    this.socket.on('server-message', (data: any)=&gt;{
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(data.toString()));
+        target.appendChild(div);
+    });
+
+    const button=document.createElement('button');
+    button.appendChild(document.createTextNode('send'));
+    button.onclick=(ev: MouseEvent)=&gt;{
+        this.socket.emit('client-message', 'clicked');
+    };
+    target.appendChild(button);
+}
+</pre>
+
+<p>}
+var client=new Client();</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block"><span></span>client.setup(document.getElementById('target'));
+</pre>
+
+<p>};</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/11/tree/" class="u-url">Treeを表示・操作する</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/11/tree/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-11T00:00:00+09:00" itemprop="datePublished" title="2015-12-11 00:00">2015-12-11 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>JavascriptでTreeを表示操作するライブラリを探してみる。
+なんとなくサンプルが充実している
+jqTree
+にしてみた。</p>
+<p>このサンプルに必要だったのでFontAwesomeも取り入れてみた。
+めんどくさいので避けていたが、そろそろscssを取り入れるべきか。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/10/nodejs_v4/" class="u-url">Node.jsのアップデート</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/10/nodejs_v4/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-10T00:00:00+09:00" itemprop="datePublished" title="2015-12-10 00:00">2015-12-10 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>ちょうど組み込まれているv8エンジンのバージョンが3から4に上がる直前にインストールしていたようで、
+node.jsのバージョン</p>
+<blockquote>
+<p>node --version
+v0.12.7
+node -p process.versions.v8
+3.28.71.19</p>
+</blockquote>
+<p>だった。
+最新版(node-v4.2.3-x64.msi)をインストールしてみる。
+node.jsのバージョン</p>
+<blockquote>
+<p>node --version
+v4.2.3
+node -p process.versions.v8
+4.5.103.35</p>
+</blockquote>
+<p>v8 4.5搭載ということでES6の機能がいろいろ使えるぞ。</p>
+<p>http://v8project.blogspot.jp/2015/07/v8-45-release.html</p>
+<p>exp.js
+let x=1;
+console.log(x);</p>
+<blockquote>
+<p>node exp.js
+SyntaxError: Block-scoped declarations (let, const, function, class) not yet supported outside strict mode</p>
+</blockquote>
+<p>最近よく見る”use strict”が要るのか。
+exp.js。use strict
+"use strict";</p>
+<p>let x=1;
+console.log(x);</p>
+<p>としたらいけた。
+class構文も問題なし。typescript使った後だとちょっと機能的に物足りない・・・
+class Hoge
+{
+    // コンストラクタと
+    constructor(name)
+    {
+        this.name=name;
+    }</p>
+<pre class="code literal-block"><span></span>// メソッドだけ定義できるらしい
+printName()
+{
+    console.log(this.name);
+}
+</pre>
+
+<p>}</p>
+<p>let hoge=new Hoge('hoge');
+hoge.printName();</p>
+<p>let fuga={
+    name: 'fuga',
+    printName: hoge.printName,
+};</p>
+<p>fuga.printName();</p>
+<p>hoge
+fuga</p>
+<p>thisは元の通り。
+arrow functionも問題なく動いた。
+ついでにbrowserでも実験してみよう。
+result</p>
+<p>source
+firefox では、
+SyntaxError: class is a reserved identifier</p>
+<p>になった。
+Chromeなら動いた。なるほど。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/09/threejs_editor/" class="u-url">Three.jsのEditor</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/09/threejs_editor/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-09T00:00:00+09:00" itemprop="datePublished" title="2015-12-09 00:00">2015-12-09 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>Three.js本家のサイトにeditor (beta)というリンクあるのだけどこれ面白いなぁ。
+わりといろんなことができそうだし、いまわしの中で流行り出しているSPAとしてとてもよさげだ。
+使っている外部ライブラリ
+いろんなものが入っている。
+system.js</p>
+<p>http://www.javascriptoo.com/System-js
+System情報取得ライブラリ</p>
+<p>jszip.js</p>
+<p>http://stuk.github.io/jszip/
+JavascriptでZipを作る。そんなライブラリあるのんか。</p>
+<p>codemirror</p>
+<p>https://codemirror.net/</p>
+<p>acorn</p>
+<p>https://marijnhaverbeke.nl/acorn/</p>
+<p>ternjs</p>
+<p>http://ternjs.net/</p>
+<p>sortable</p>
+<p>https://github.com/RubaXa/Sortable</p>
+<p>js-signals</p>
+<p>https://github.com/millermedeiros/js-signals</p>
+<p>ui.js</p>
+<p>https://jqueryui.com/</p>
+<p>app.js</p>
+<p>http://code.kik.com/app/3/index.html</p>
+<p>という感じでいろんなライブラリが組み合わされている。
+最近のJavascriptはこんなことになっているのか・・・
+entrypointは・・・
+index.htmlで初期化が走っていてuiの構築はたぶんこれ。
+var editor = new Editor();</p>
+<p>var viewport = new Viewport( editor );
+document.body.appendChild( viewport.dom );</p>
+<p>var player = new Player( editor );
+document.body.appendChild( player.dom );</p>
+<p>var script = new Script( editor );
+document.body.appendChild( script.dom );</p>
+<p>var toolbar = new Toolbar( editor );
+document.body.appendChild( toolbar.dom );</p>
+<p>var menubar = new Menubar( editor );
+document.body.appendChild( menubar.dom );</p>
+<p>var sidebar = new Sidebar( editor );
+document.body.appendChild( sidebar.dom );</p>
+<p>var modal = new UI.Modal();
+document.body.appendChild( modal.dom );</p>
+<p>UI的には４つの部分に分かれていて
+見た目こういう感じ。
+menu
+viewport | sidebar
+toolbar</p>
+<p>レイアウトは、position: absoluteな感じでcssに書いてあった。
+結構な大作で簡単には把握できない感じだなぁ。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/08/threejs_05/" class="u-url">Three.jsのBuild</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/08/threejs_05/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-08T00:00:00+09:00" itemprop="datePublished" title="2015-12-08 00:00">2015-12-08 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>骨入りモデルとかやってみようかと思ったのだけど、その前にThree.jsのソースを見やすい状態で作業したい。
+結合前のThree.jsを自前ビルドしながら運用する方法を調べてみる。
+build.py, or how to generate a compressed three.js file
+と本家に書いてある。python使うんか。gulpでやりてぇな。
+全部concatしてuglifyしたらいいんじゃないか。
+やってみよう。
+とりあえずbowerで導入したthree.js関連を削除。
+threejs.srcフォルダを作ってthree.jsソースのsrcディレクトリの中身を展開した。
+gulp.task('bowerjs', function () {</p>
+<pre class="code literal-block"><span></span><span class="x">var files = [</span>
+<span class="x">    './bower_components/jquery/dist/jquery.js',</span>
+<span class="x">    './bower_components/highlightjs/highlight.pack.js',</span>
+<span class="x">    './bower_components/stats.js/build/stats.min.js',</span>
+<span class="x">    './lib/**/*.js', // &lt;-- 中にthree.jsのsrcをコピーした</span>
+<span class="x">];</span>
+<span class="x">gulp.src(files)</span>
+<span class="x">    .pipe($.plumber({ errorHandler: $.notify.onError('</span><span class="cp">&lt;%=</span> <span class="n">error</span><span class="o">.</span><span class="n">message</span> <span class="cp">%&gt;</span><span class="x">') }))</span>
+<span class="x">    .pipe($.debug({ title: 'bowerjs files:' }))</span>
+<span class="x">    .pipe($.sourcemaps.init())</span>
+<span class="x">    //.pipe($.uglify())</span>
+<span class="x">    .pipe($.concat('all.min.js'))</span>
+<span class="x">    .pipe($.sourcemaps.write('./', {</span>
+<span class="x">        sourceMappingURL: function (file) {</span>
+<span class="x">            return file.relative + '.map';</span>
+<span class="x">        }</span>
+<span class="x">    }))</span>
+<span class="x">    .pipe(gulp.dest('build/js'))</span>
+<span class="x">    .pipe(browser.reload({ stream: true }))</span>
+<span class="x">;</span>
+</pre>
+
+<p>});</p>
+<p>これで作ったall.min.jsではエラーが出てだめですね。
+単にsrcをconcatするだけではだめだ。本家のドキュメントを読み始める。
+/three.js/utils/build/</p>
+<p>でビルドできるよって書いてあります。python関係ないみたいだ。</p>
+<blockquote>
+<p>npm install
+node build.js --include common --include extras</p>
+</blockquote>
+<p>なるほどbuild.jsを見てみよう。
+includeってなんだろうと調べてみると
+/three.js/utils/build/includes</p>
+<p>にjsonファイルがあり中にjsファイルがリストされている。
+なるほど。src下を全部concatするのではなくここに書いてあるものを、書いてある順でconcatすればいいんでないか。
+// 
+gulp.task('threejs:build', function(){
+    var common=JSON.parse(fs.readFileSync('three.js/includes/common.json')).map(function(v, i){ return 'three.js/'+v; });
+    gulp.src(common)
+        .pipe($.concat('three.js'))
+        .pipe(gulp.dest('./lib'))
+        ;
+});</p>
+<p>gulp.task('bowerjs', ['threejs:build'], function () {
+    // 前と同じ
+}
+````</p>
+<p>これで実行するとそれっぽいthree.jsが出てくるが、まだエラーが出る。
+でエラー行に飛ぶとifdefがある。なんだこれは。</p>
+<p>```glsl</p>
+<h2>ifdef USE_ALPHAMAP</h2>
+<pre class="code literal-block"><span></span>diffuseColor.a *= texture2D( alphaMap, vUv ).g;
+</pre>
+
+<h2>endif</h2>
+<p>glslだ・・・。
+確かに、build.js内で拡張子がglslのファイルだけ別処理になっている。
+if( file.indexOf( '.glsl') &gt;= 0 ) {</p>
+<pre class="code literal-block"><span></span>contents = 'THREE.ShaderChunk[ \'' +
+    path.basename( file, '.glsl' ) + '\' ] =' +
+    JSON.stringify( contents ) + ';\n';
+</pre>
+
+<p>}</p>
+<p>ちょっとgulpのフィルタを作りますか。
+three.shaderchunk.js
+var through = require('through2');
+var gutil = require('gulp-util');
+var fs = require('fs');
+var path = require('path');</p>
+<p>module.exports = function () {</p>
+<pre class="code literal-block"><span></span>return through.obj(function (file, enc, cb) {
+
+    if (file.isStream()) {
+        cb(new gutil.PluginError('three.shadechunk', 'Streaming not supported'));
+        return;
+    }
+
+    if (path.extname(file.path).toLowerCase() == '.glsl') {
+        var contents = 'THREE.ShaderChunk[ \'' +
+            path.basename(file.path, '.glsl') + '\' ] =' +
+            JSON.stringify(file.contents.toString()) + ';\n';
+        file.contents = new Buffer(contents);
+        file.path = file.path + ".js";
+    }
+
+    this.push(file);
+
+    cb();
+});
+</pre>
+
+<p>}</p>
+<p>gulpファイルの呼び出しの方。これでthree.js/srcからthree.jsを作成できた。
+あとは、sourcemapが付くようにした。
+gulpfile.js
+gulp.task('threejs:build', function(){
+    var common=JSON.parse(fs.readFileSync('three.js/includes/common.json'))
+    .map(function(v, i){ return 'three.js/'+v; });
+    var extras=JSON.parse(fs.readFileSync('three.js/includes/extras.json'))
+    .map(function(v, i){ return 'three.js/'+v; });
+    gulp.src(common.concat(extras))
+        .pipe(threeShaderchunk())
+        .pipe($.concat('three.js'))
+        .pipe(gulp.dest('./lib'))
+        ;
+});</p>
+<p>FireFoxでブレイクポイントを仕掛けてステップ実行できた。
+これで、Loaderの自作とかが捗るぞ。</p>
 </div>
                 </div>
             </article>
@@ -1070,7 +974,7 @@ https://tera.netlify.app/docs/#include</p>
 <li class="previous"><a href="index-15.html" rel="prev">新しい記事</a></li>
             <li class="next"><a href="index-13.html" rel="next">過去の記事</a></li>
         </ul>
-<script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+<!--End of body content--><footer id="footer">
             Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
             

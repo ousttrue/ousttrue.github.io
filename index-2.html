@@ -42,6 +42,9 @@
 </header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
             <ul class="navbar-nav nav-fill d-flex w-100">
 <li class="nav-item">
+<a href="books" class="nav-link">MemoBooks</a>
+                </li>
+<li class="nav-item">
 <a href="archive.html" class="nav-link">Archives</a>
                 </li>
 <li class="nav-item">
@@ -49,6 +52,9 @@
                 </li>
 <li class="nav-item">
 <a href="rss.xml" class="nav-link">RSS feed</a>
+                </li>
+<li class="nav-item">
+<a href="about" class="nav-link">About</a>
 
                 
             </li>
@@ -70,701 +76,321 @@
     
         
     <div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/22/alsa/" class="u-url">alsaとかpulseaudio設定</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/01/04/qabstracttablemodel/" class="u-url">QTableViewとQAbstractTableModel</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/22/alsa/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-22T00:00:00+09:00" itemprop="datePublished" title="2013-05-22 00:00">2013-05-22 00:00</time></a>
+            <a href="posts/2013/01/04/qabstracttablemodel/" rel="bookmark">
+            <time class="published dt-published" datetime="2013-01-04T00:00:00+09:00" itemprop="datePublished" title="2013-01-04 00:00">2013-01-04 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/22/alsa/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/22/alsa.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>alsaとかpulseaudio設定
-gentooの音周り
-http://www.gentoo.org/doc/ja/alsa-guide.xml
-alsa</p>
-<h2>lspci | grep -i audio</h2>
-<p>00:01.1 Audio device: Advanced Micro Devices [AMD] nee ATI Trinity HDMI Audio Controller</p>
-<p>デジタル出力から鳴らす。 カーネル的には’Intel HD
-Audio’になるがgenkernelで組み込み済みの様子。</p>
-<h2>emerge -av alsa-utils</h2>
-<h2>rc-update add alsasaound default</h2>
-<p>userをaudio gorupに入れて再ログイン。
-$ alsamixer
-[F6]
-HD-AUDIO genericを選択して[m]でミュートを解除</p>
-<p>音の出るアプリで動作確認
-pulseaudio
-一度に音の出るアプリがひとつだと不便なのでpulseaudioを導入してみる。</p>
-<p>http://wiki.gentoo.org/wiki/PulseAudio</p>
-<p>USEにpulseaudio追加</p>
-<h2>emerge --ask --changed-use --deep @world</h2>
-<h2>emerge -av pavuconrol pavumeter</h2>
-<p>userをpulse gorupに入れて再ログイン。</p>
-<p>pavuconrolで出力のミュート解除</p>
-<p>リモートのpulseaudioで音を鳴らす
-USEにavahi追加</p>
-<h2>emerge --ask --changed-use --deep @world</h2>
-<h2>rc-update add avahi default</h2>
-<h2>emerge -av paman paprefs padevchooser</h2>
+<p>ディレクトリ表示をする専用のウィジェットがあったような気がするが、練習のため実装。</p>
+<h2>!/usr/bin/env python</h2>
+<h2>coding: utf-8</h2>
+<p>import re import operator import os import sys import stat from
+PyQt4.QtCore import * from PyQt4.QtGui import *</p>
+<p>class File(object):
+header=[</p>
+<p>‘type’, ‘name’, ‘size’, ‘mtime’ ]
+def <strong>init</strong>(self, path):
+self.path=os.path.abspath(path) self.data=[None, None, None,
+None] s=os.stat(path) mode=s[stat.ST_MODE] if
+stat.S_ISDIR(mode): self.data[0]=‘dir’ elif
+stat.S_ISLNK(mode): self.data[0]=‘link’ elif
+stat.S_ISREG(mode): self.data[0]=‘file’ else:
+self.data[0]=‘unknown’ self.data[1]=os.path.basename(path)
+self.data[2]=s[stat.ST_SIZE]
+self.data[3]=s[stat.ST_MTIME]
+def <strong>str</strong>(self):
+return “&lt;%s %s&gt;” % (self.data[0], self.data[1])
+def <strong>getitem</strong>(self, key):
+return self.data[key]
+def is_dir(self):
+return self.data[0]==‘dir’</p>
+<p>class MyTableModel(QAbstractTableModel):
+def <strong>init</strong>(self, parent, path):</p>
+<p>super(MyTableModel, self).<strong>init</strong>(parent) def
+get_stat(name): f=File(os.path.join(path, name)) return f
+self.data=[get_stat(os.path.join(path, “..”))]+[get_stat(e)
+for e in os.listdir(path)]
+def rowCount(self, parent):
+return len(self.data)
+def columnCount(self, parent):
+return len(File.header)
+def data(self, index, role):
+if not index.isValid():</p>
+<p>return None
+elif role != Qt.DisplayRole:
+return None</p>
+<p>return self.data[index.row()][index.column()]
+def headerData(self, col, orientation, role):
+if orientation == Qt.Horizontal and role == Qt.DisplayRole:</p>
+<p>return File.header[col]</p>
+<p>return None
+def sort(self, Ncol, order):
+”““Sort table by given column number.
+“”” self.emit(SIGNAL(“layoutAboutToBeChanged()”)) self.data =
+sorted(self.data,
+key=operator.itemgetter(Ncol), reverse=(order!=Qt.DescendingOrder))
+self.emit(SIGNAL(“layoutChanged()”))
+def getRow(self, index):
+return self.data[index]</p>
+<p>class MyWindow(QWidget):
+def <strong>init</strong>(self, <em>args): QWidget.<strong>init</strong>(self,</em>args)</p>
+<h2>create the view self.tv = QTableView() # hide</h2>
+<p>grid self.tv.setShowGrid(False) # hide vertical header vh
+= self.tv.verticalHeader() vh.setVisible(False) # set
+horizontal header properties hh = self.tv.horizontalHeader()
+hh.setStretchLastSection(True) # set column width to fit
+contents self.tv.resizeColumnsToContents() # enable
+sorting self.tv.setSortingEnabled(True) # layout layout
+= QVBoxLayout() layout.addWidget(self.tv) self.setLayout(layout)</p>
+<h2>double</h2>
+<p>click self.tv.doubleClicked.connect(self.onDoubleClick)</p>
+<p>def chdir(self, path):</p>
+<p>self.tm = MyTableModel(self, path) # set the table
+model self.tv.setModel(self.tm)
+def onDoubleClick(self, event):
+item=self.tm.getRow(event.row()) if not item.is_dir():
+return self.chdir(item.path)</p>
+<p>def main():
+app = QApplication(sys.argv) w = MyWindow() w.chdir(“.”) w.show()
+sys.exit(app.exec_())
+if <strong>name</strong> == “<strong>main</strong>“:
+main()</p>
+<p>ToDo</p>
+<p>種類毎のアイコン表示
+日付の表示
+数字カラムの右寄せ
+行選択
+FilterProxyModel</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/21/xorg/" class="u-url">xorgインストール</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2012/12/26/customdelegate/" class="u-url">カスタムデリゲート</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/21/xorg/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-21T00:00:00+09:00" itemprop="datePublished" title="2013-05-21 00:00">2013-05-21 00:00</time></a>
+            <a href="posts/2012/12/26/customdelegate/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-12-26T00:00:00+09:00" itemprop="datePublished" title="2012-12-26 00:00">2012-12-26 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/21/xorg/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/21/xorg.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>xorgインストール
-gentooにxorgをインストールする
-The X Server Configuration HOWTO
-http://www.gentoo.org/doc/en/xorg-config.xml
-/etc/portage/make.conf
-INPUT_DEVICES="evdev"</p>
-<h2>echo "x11-base/xorg-server udev" &gt;&gt; /etc/portage/package.use</h2>
-<h2>emerge -av xorg-server</h2>
-<h2>env-update</h2>
-<h2>source /etc/profile</h2>
-<p>fglrx
-http://wiki.gentoo.org/wiki/Fglrx
-AMD A10 向けにfglrxドライバ</p>
-<h2>cat /proc/cpuinfo | grep model</h2>
-<p>model name      : AMD A10-5700 APU with Radeon(tm) HD Graphics</p>
-<h2>lspci | grep -i vga</h2>
-<p>00:01.0 VGA compatible controller: Advanced Micro Devices [AMD] nee ATI Trinity [Radeon HD 7660D]</p>
-<p>kernel作り直し [Direct Rendering Manager]を無効にする。</p>
-<h2>genkernel --lvm2 --menuconfig --no-clean all</h2>
-<p>VIDEO_CARDS="fglrx"</p>
-<h2>emerge xorg-drivers</h2>
-<h2>aticonfig --initial</h2>
-<h2>eselect opengl set ati</h2>
-<p>intel
-VIDEO_CARDS="intel"</p>
-<p>Desktop
-gnomeとかをいれずにopenboxを素で使う。lxdeぽい感じ。</p>
-<h2>emerge -av xterm xmodmap</h2>
-<p>Window Manager</p>
-<h2>emerge -av openbox openbox-menu</h2>
-<p>メニュー設定
-./config/openbox/menu.xml</p>
-<p>Display Manager</p>
-<h2>emerge -av lxdm</h2>
-<h2>vim /etc/conf.d/xdm</h2>
-<h2>/etc/init.d/xdm start</h2>
-<h2>rc-update add xdm default</h2>
-<p>IME</p>
-<h2>emerge -av scim-anthy</h2>
-<p>Font</p>
-<h2>emerge -av ricty</h2>
-<p>Term</p>
-<h2>emerge -av xfce4-terminal</h2>
-<p>Taskbar</p>
-<h2>emerge -av tint2</h2>
-<p>Filer</p>
-<h2>pcmanfm -av pcmanfm</h2>
-<p>Desktop関連のデーモン
-USEにconsolekit, dbus追加</p>
-<h2>emerge --ask --changed-use --deep @world</h2>
-<h2>rc-update add consolekit default</h2>
-<h2>rc-update add dbus default</h2>
-<p>CapsキーをControlに変更。
-.Xmodmap
-!!
-!! Caps_Lock to Control
-!!
-remove Lock = Caps_Lock
-add Control = Caps_Lock
-keysym Caps_Lock = Control_L</p>
-<p>セッション
-~/.xsession
-xmodmap .Xmodmap</p>
-<p>export LANG=ja_JP.UTF-8</p>
-<h2>日本語入力周り</h2>
-<p>export XMODIFIERS="@im=SCIM"
-export GTK_IM_MODULE="scim-bridge"
-export QT_IM_MODULE="scim-bridge"
-scim -d &amp;</p>
-<p>exec ck-launch-session openbox-session</p>
-<p>TouchPad
-http://wiki.gentoo.org/wiki/Synaptics
-/etc/portage/make.conf
-INPUT_DEVICES="synaptics"</p>
-<p>emerge --ask --changed-use --deep world</p>
+<p>C++のQt4と平行してPyQt4を使い始めた。大概の用途にはこっちで十分な気がする。</p>
+<p>pyqtのチュートリアルには、</p>
+<p>http://zetcode.com/tutorials/pyqt4/</p>
+<p>がいい。wxWidgetsとかgtkでも世話になったが、ここのチュートリアルはサンプルが小さいので助かる。
+ビューのアイテム表示をカスタマイズするデリゲートについて調査中。</p>
+<h2>!/usr/bin/python</h2>
+<h2>-<em>- coding: utf-8 -</em>-</h2>
+<p>import sys from PyQt4 import QtGui, QtCore from random import randint</p>
+<p>class CustomDelegate(QtGui.QItemDelegate):</p>
+<dl>
+<dt>def __init__(self, parent = None):</dt>
+<dd>
+<p>super(CustomDelegate, self).__init__(parent) self.editor
+  = QtGui.QSpinBox()</p>
+</dd>
+</dl>
+<p># 編集時</p>
+<hr>
+<p># create widget def createEditor(self, parent, styleOption, index):
+  editor = QtGui.QSpinBox(parent) return editor</p>
+<p># model to editor def setEditorData(self, editor, index):
+  data=index.model().data(index, QtCore.Qt.EditRole)
+  editor.setValue(data.toInt()[0])</p>
+<p># editor to model def setModelData(self, editor, model, index):
+  model.setData(index, editor.value())</p>
+<dl>
+<dt>def updateEditorGeometry(self, editor, option, index):</dt>
+<dd>
+<p>editor.setGeometry(option.rect)</p>
+</dd>
+</dl>
+<p># 通常時</p>
+<hr>
+<p># item render def paint(self, painter, option, index): widget =
+  QtGui.QLabel() #widget = QtGui.QSpinBox()
+  data=index.model().data(index, QtCore.Qt.EditRole)
+  widget.setText(data.toString()[0])
+  #widget.setValue(data.toInt()[0]) widget.setGeometry(option.rect)
+  # border ? point=QtCore.QPoint(option.rect.left()+2,
+  option.rect.top()+2) widget.render(painter, point)</p>
+<p># item一個分の大きさ</p>
+<hr>
+<dl>
+<dt>def sizeHint(self, option, index):</dt>
+<dd>
+<p>self.editor.setGeometry(option.rect)
+  return self.editor.sizeHint()</p>
+</dd>
+<dt>def main():</dt>
+<dd>
+<p>app = QtGui.QApplication(sys.argv)</p>
+<p># setup model model = QtGui.QStandardItemModel() for n in
+range(10): item = QtGui.QStandardItem('%s' % randint(1, 100))
+model.appendRow(item)</p>
+<p>view = QtGui.QListView()
+view.setModel(model) view.setItemDelegate(CustomDelegate())
+view.show()</p>
+<p>sys.exit(app.exec_())</p>
+</dd>
+<dt>if __name__ == '__main__':</dt>
+<dd>
+<p>main()</p>
+</dd>
+</dl>
+<p>QItemDelegateは非編集時のアイテム描画にpaintメソッドを使い、編集時の描画にcreateEditor,
+setEditorData, setModelData,
+updateEditorGeometryを使う。カスタムデリゲートにするとアイテムの大きさが変わりそうなのでsizeHintも実装するとよさげ。</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/20/gentoo/" class="u-url">Gentoo再構築</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/providence/" class="u-url">providence</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/20/gentoo/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-20T00:00:00+09:00" itemprop="datePublished" title="2013-05-20 00:00">2013-05-20 00:00</time></a>
+            <a href="github/providence/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-12-09T19:38:48Z" itemprop="datePublished" title="2012-12-09 19:38">2012-12-09 19:38</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2012-12-09T20:25:12Z" itemprop="dateUpdated" title="2012-12-09 20:25">2012-12-09 20:25</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/20/gentoo/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/20/gentoo.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>Gentoo再構築
-gentooのルートファイルシステムに10Gを割り当てていたのだがいつのまにかディスクフルになってしまった。
-portageとhomeをmountしていたので大丈夫かと思っていたのだが意外と容量を使ってしまっていた様子。
-いろいろインストールしすぎなのかもしれぬ。
-とりあえず/var/logの大きいファイルをxzして急場を凌いだが、
-パーティションの割り方の都合で拡大できないので新しく作り直すことにした。
-作業記録。
-ファイルシステム準備</p>
-<h2>lvcreate -L 100G -n gentoo_root mygroup</h2>
-<h2>mkfs.ext4 /dev/mygroup/gentoo_root</h2>
-<h2>cd /mnt</h2>
-<h2>mkdir gentoo</h2>
-<h2>mount /dev/mygroup/gentoo_root</h2>
-<p>Installing the Gentoo Installation Files
-——————————————-</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=5
-stage3ファイルの取得と展開</p>
-<h2>cd /mnt/gentoo</h2>
-<h2>wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2</h2>
-<h2>tar xvjpf stage3-*.tar.bz2</h2>
-<p>portageは旧パーティションを流用</p>
-<h2>mkdir usr/portage</h2>
-<h2>mount /dev/mygroup/portage usr/portage</h2>
-<p>/etc/portage/make.conf</p>
-<h2>These settings were set by the catalyst build script that automatically</h2>
-<h2>built this stage.</h2>
-<h2>Please consult /usr/share/portage/config/make.conf.example for a more</h2>
-<h2>detailed example.</h2>
-<p>CFLAGS="-march=native -O2 -pipe"</p>
-<h2>CFLAGS="-march=bdver2 -O2 -pipe"</h2>
-<p>CXXFLAGS="${CFLAGS}"</p>
-<h2>WARNING: Changing your CHOST is not something that should be done lightly.</h2>
-<h2>Please consult http://www.gentoo.org/doc/en/change-chost.xml before changing.</h2>
-<p>CHOST="x86_64-pc-linux-gnu"</p>
-<h2>These are the USE flags that were used in addition to what is provided by the</h2>
-<h2>profile used for building.</h2>
-<p>USE=""
-USE="$USE -ldap"
-USE="$USE mmx sse sse2 sse3 ssse3"
-USE="$USE openal alsa gstreamer phonon pulseaudio xft xnest"
-USE="$USE gtk gnome xfce imlib gconf"
-USE="$USE qt4 kde"
-USE="$USE gd imlib eigen"
-USE="$USE sqlite apache2"
-USE="$USE ffmpeg theora lame mms"
-USE="$USE samba fuse udisks"
-USE="$USE icu"
-USE="$USE consolekit dbus pam policykit udev"
-USE="$USE c++0x"</p>
-<p>INPUT_DEVICES="evdev"</p>
-<h2>VIDEO_CARDS="radeon"</h2>
-<p>VIDEO_CARDS="fglrx"
-LINGUAS="ja"</p>
-<p>MAKEOPTS="-j5"
-GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/"</p>
-<p>CFLAGSに-march=nativeを使えるようになった</p>
-<p>Installing the Gentoo Base System
-————————————</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=6</p>
-<h2>cp -L /etc/resolv.conf /mnt/gentoo/etc/</h2>
-<h2>mount -t proc none /mnt/gentoo/proc</h2>
-<h2>mount --rbind /sys /mnt/gentoo/sys</h2>
-<h2>mount --rbind /dev /mnt/gentoo/dev</h2>
-<h2>chroot /mnt/gentoo /bin/bash</h2>
-<h2>source /etc/profile</h2>
-<h2>export PS1="(chroot) $PS1"</h2>
-<h2>emerge --sync</h2>
-<h2>cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime</h2>
-<h2>echo "Asia/Tokyo" &gt; /etc/timezone</h2>
-<p>Configuring the Kernel
-————————-</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=7</p>
-<h2>emerge gentoo-sources</h2>
-<p>LVMからブートするのでgenkernelを使う</p>
-<h2>emerge genkernel</h2>
-<h2>genkernel --lvm --install all</h2>
-<p>Configuring your System
-————————–</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=8</p>
-<p>Installing Necessary System Tools
-————————————</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=9</p>
-<p>Configuring the Bootloader
-——————————</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=10
-/boot/grub/menu.lst
-title genkernel 3.8.13
-root (hd0,0)
-kernel /boot/kernel-genkernel-x86_64-3.8.13-gentoo real_root=/dev/mygroup/gentoo_root rootfstype=ext4 dolvm
-initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
+<p><a href="https://github.com/ousttrue/providence">https://github.com/ousttrue/providence</a></p>
+<p>local proxy by ruby</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/19/call-with-tuple/" class="u-url">msgpack-rpc-asioの関数登録と実行</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/irrmmd/" class="u-url">irrmmd</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/19/call-with-tuple/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-19T00:00:00+09:00" itemprop="datePublished" title="2013-05-19 00:00">2013-05-19 00:00</time></a>
+            <a href="github/irrmmd/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-10-25T23:54:53Z" itemprop="datePublished" title="2012-10-25 23:54">2012-10-25 23:54</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2012-10-25T23:58:53Z" itemprop="dateUpdated" title="2012-10-25 23:58">2012-10-25 23:58</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/19/call-with-tuple/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/19/call-with-tuple.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>msgpack-rpc-asioの関数登録と実行
-msgpack-rpcのリクエストは、によると</p>
-<pre class="code literal-block"><span></span>[type, msgid, method, params]
-</pre>
-
-<p>という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。
-これをサーバ側で如何に呼び出すかについて。
-単純な実装だと以下のようにメソッド名をキーにして分岐することになる。</p>
-<pre class="code literal-block"><span></span><span class="kt">int</span> <span class="nf">and</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
-<span class="k">class</span> <span class="nc">dispatcher</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">dispatch</span><span class="p">(</span><span class="kt">int</span> <span class="n">msgid</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span>
-<span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="err">“</span><span class="n">add</span><span class="err">”</span><span class="p">){</span> <span class="c1">// 引数展開</span>
-<span class="n">std</span><span class="o">::</span><span class="n">tuple</span> <span class="n">t</span><span class="p">;</span> <span class="n">params</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
-<span class="c1">// 関数実行</span>
-<span class="kt">int</span> <span class="n">result</span><span class="o">=</span><span class="n">add</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
-
-<span class="c1">// 結果のパッキング</span>
-<span class="c1">// response [type, msgid, error, result]</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="p">;</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">packer</span><span class="o">&lt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="o">&gt;</span> <span class="n">pk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">response</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack_array</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack_nil</span><span class="p">();</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
-
-<span class="c1">// responseを送り返す</span>
-
-
-<span class="p">}</span> <span class="k">else</span><span class="p">{</span> <span class="k">throw</span> <span class="err">“</span><span class="n">unknown</span> <span class="n">func</span><span class="err">”</span><span class="p">;</span> <span class="p">}</span>
-
-<span class="p">}</span>
-</pre>
-
-<p>引数展開、関数呼び出し、結果のパッキングと一連の操作を定型処理として括りだすと下記のように書ける。</p>
-<pre class="code literal-block"><span></span><span class="c1">// ２引数展開用 class dispatcher { // 実行 void dispatcher::dispatch(int</span>
-<span class="n">msgid</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span> <span class="p">{</span>
-<span class="k">if</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="err">“</span><span class="n">add</span><span class="err">”</span><span class="p">){</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="o">=</span><span class="n">unpack_exec_pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">,</span>
-<span class="n">add</span><span class="p">,</span> <span class="n">params</span><span class="p">);</span>
-<span class="c1">// responseを送り返す</span>
-
-
-<span class="p">}</span> <span class="k">else</span><span class="p">{</span> <span class="k">throw</span> <span class="err">“</span><span class="n">unknown</span> <span class="n">func</span><span class="err">”</span><span class="p">;</span> <span class="p">}</span>
-
-<span class="p">}</span>
-<span class="c1">// ヘルパー template msgpack::sbuffer unpack_exec_pack(int msgid,</span>
-<span class="n">R</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">),</span> <span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 引数展開 std::tuple</span>
-<span class="n">t</span><span class="p">;</span> <span class="n">params</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
-<span class="c1">// 関数実行</span>
-<span class="n">R</span> <span class="n">result</span><span class="o">=</span><span class="n">add</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
-
-<span class="c1">// 結果のパッキング</span>
-<span class="c1">// response [type, msgid, error, result]</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="p">;</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">packer</span><span class="o">&lt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="o">&gt;</span> <span class="n">pk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">response</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack_array</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack_nil</span><span class="p">();</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
-
-<span class="k">return</span> <span class="n">response</span><span class="p">;</span>
-
-<span class="p">}</span>
-</pre>
-
-<p>１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。
-さらに 関数の登録と実行を分けるべく次のように拡張した。 </p>
-<pre class="code literal-block"><span></span><span class="k">class</span>
-<span class="nc">dispatcher</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span> <span class="n">m_map</span><span class="p">;</span>
-<span class="c1">// 実行 void dispatch(int msgid, const std::string &amp;method, const</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span> <span class="n">f</span><span class="o">=</span><span class="n">m_map</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">method</span><span class="p">);</span>
-<span class="k">if</span><span class="p">(</span><span class="n">f</span><span class="o">!=</span><span class="n">m_map</span><span class="p">.</span><span class="n">end</span><span class="p">()){</span> <span class="c1">// 関数実行 msgpack::sbuffer resonse=f(msgid,</span>
-<span class="n">params</span><span class="p">);</span>
-<span class="c1">// responseを送り返す</span>
-
-
-<span class="p">}</span> <span class="k">else</span><span class="p">{</span> <span class="k">throw</span> <span class="err">“</span><span class="n">unknown</span> <span class="n">func</span><span class="err">”</span><span class="p">;</span> <span class="p">}</span>
-
-<span class="p">}</span>
-<span class="c1">// 登録 template void add_handler(const std::string &amp;method, R(*f)(A1,</span>
-<span class="n">A2</span><span class="p">))</span> <span class="p">{</span>
-<span class="n">m_map</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">=</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="p">{</span>
-<span class="c1">// 引数展開</span>
-<span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="o">&gt;</span> <span class="n">t</span><span class="p">;</span>
-<span class="n">params</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
-
-<span class="c1">// 実行</span>
-<span class="n">R</span> <span class="n">result</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
-
-<span class="c1">// 結果のパッキング</span>
-<span class="c1">// response [type, msgid, error, result]</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="p">;</span>
-<span class="n">msgpack</span><span class="o">::</span><span class="n">packer</span><span class="o">&lt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="o">&gt;</span> <span class="n">pk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">response</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack_array</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">);</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack_nil</span><span class="p">();</span>
-<span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
-
-<span class="k">return</span> <span class="n">response</span><span class="p">;</span>
-
-
-<span class="p">};</span>
-
-<span class="p">}</span>
-</pre>
-
-<p><code>msgpack-&gt;引数展開-&gt;c++関数呼び出し-&gt;msgpack</code> への一連の操作を 同一のシグネチャの <code>std::function</code> に封じ込めることができる。
-次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。
-まず、std::functionから実装。</p>
-<pre class="code literal-block"><span></span>c++   // std::function用   template&lt;typname R, typename A1, typename A2&gt;   void add_handler(contt std::string &amp;method, std::function&lt;R(A1, A2)&gt; f)   {     // 中身同じ   }
-</pre>
-
-<p>呼び出し時にstd::functionを経由するようにすればあらゆる関数呼び出しを登録できる。
-例えば、ラムダ関数も以下のように登録できる。</p>
-<pre class="code literal-block"><span></span><span class="nt">c</span><span class="o">++</span> <span class="o">//</span> <span class="nt">ラムダ登録</span> <span class="nt">dispatcher</span> <span class="nt">d</span><span class="o">;</span> <span class="nt">d</span><span class="p">.</span><span class="nc">add_handler</span><span class="o">(</span><span class="s2">"add"</span><span class="o">,</span>      <span class="nt">std</span><span class="p">::</span><span class="nd">function</span><span class="o">&lt;</span><span class="nt">int</span><span class="o">(</span><span class="nt">int</span><span class="o">,</span> <span class="nt">int</span><span class="o">)&gt;(</span>       <span class="cp">[]</span><span class="o">(</span><span class="nt">int</span> <span class="nt">a</span><span class="o">,</span> <span class="nt">int</span> <span class="nt">b</span><span class="o">)</span><span class="nt">-</span><span class="o">&gt;</span><span class="nt">int</span><span class="p">{</span>          <span class="err">return</span> <span class="err">a+b</span><span class="p">;</span>        <span class="p">}</span><span class="o">));</span>
-</pre>
-
-<p>しかし、どうせなら</p>
-<pre class="code literal-block"><span></span>c++ dispatcher d; d.add_handler("add",      [](int a, int b)-&gt;int{        return a+b;      });
-</pre>
-
-<p>と書きたい。
-となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。
-c++   // ラムダの登録   template<typname f>   void add_handler(const std::string &amp;method, F f)   {     // 型がわからぬ   }
-ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。</typname></p>
-<pre class="code literal-block"><span></span><span class="k">template</span> <span class="kt">void</span> <span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">F</span> <span class="n">f</span><span class="p">,</span>
-<span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span><span class="k">const</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 中身同じ }</span>
-<span class="c1">// ラムダの登録 // std::functionも受けられる // std::bindは無理だった //</span>
-</pre>
-
-<p>operator()がひとつしかない関数オブジェクトを受け付けられる？ </p>
-<pre class="code literal-block"><span></span><span class="k">template</span>
-<span class="kt">void</span> <span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">F</span> <span class="n">f</span><span class="p">)</span> <span class="p">{</span> 
-<span class="c1">// 上の関数で型推論させる </span>
-<span class="n">add_handler</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">F</span><span class="o">::</span><span class="k">operator</span><span class="p">());</span> <span class="p">}</span> 
-</pre>
-
-<p>これでめでたくラムダも直接登録できるようになった。
-ただし、operator()のオーバーロードが解決できないらしくstd::bindが登録できない。
-std::bindに関しては、ラムダで代用できるしstd::functionでラップできるのでおいておくことにした。</p>
+<p><a href="https://github.com/ousttrue/irrmmd">https://github.com/ousttrue/irrmmd</a></p>
+<p>Irrlicht extension for mmd model</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/17/valiadic-templates/" class="u-url">可変長テンプレート引数</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/csfiler/" class="u-url">CSFiler</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/17/valiadic-templates/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-17T00:00:00+09:00" itemprop="datePublished" title="2013-05-17 00:00">2013-05-17 00:00</time></a>
+            <a href="github/csfiler/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-08-23T23:08:12Z" itemprop="datePublished" title="2012-08-23 23:08">2012-08-23 23:08</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2012-08-25T14:44:04Z" itemprop="dateUpdated" title="2012-08-25 14:44">2012-08-25 14:44</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/17/valiadic-templates/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/17/valiadic-templates.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>可変長テンプレート引数
-引き続きmsgpack-rpc-asioを実装しているのだが、可変長テンプレート引数(valiadic
-template)を使うと関数登録のような場合にうまく書けることがわかった。
-昨日は関数オブジェクトからstd::functionの型を得るのに下記のようにしていたのだけど、
-```c++ // ret template Ret helper0(Ret (F::<em>)(Rest…));
-template Ret helper0(Ret (F::</em>)(Rest…) const);
-// 1 template A1 helper1(Ret (F::<em>)(A1, Rest…));
-template A1 helper1(Ret (F::</em>)(A1, Rest…) const);
-// 2 template A2 helper2(Ret (F::<em>)(A1, A2, Rest…));
-template A2 helper2(Ret (F::</em>)(A1, A2, Rest…) const);
-template void add_handler(F handler, const std::string &amp;method) {
-typedef decltype(handler) functor; typedef
-decltype(helper0(&amp;functor::operator())) R; typedef
-decltype(helper1(&amp;functor::operator())) A1; typedef
-decltype(helper2(&amp;functor::operator())) A2;
-// register function...
-std::function<r a2> func(handler);</r></p>
-<p>} 次のように書けた。c++ template void add_handler(F handler,
-R(C::*)(A1, A2)const) { // register function… std::function
-func(handler); }
-template void add_handler(F handler, const std::string &amp;method) {
-add_handler(handler, &amp;decltype(handler)::operator()); }
-昨日参照させてもらった
-<a href="http://d.hatena.ne.jp/osyo-manga/20121205/1354674180">http://d.hatena.ne.jp/osyo-manga/20121205/1354674180</a>
-のコードがやっとわかるようになってきた。</p>
-<p>上記コードはさらに可変長テンプレート引数で</p>
-<p>template void add_handler(F handler, R(C::*)(A…)const) { // register
-function… std::function func(handler); }
-<code>`と書けるのですごく便利になる。 msgpack-rpcの関数コールバック登録や、luaのような組み込み言語への関数公開の実装が楽になりそうだ。 上記サイトでも取り上げられているが&amp;decltype(functor)::operator()</code>を関数テンプレートの型推論に投げることで
-関数オブジェクトから型情報を取れるらしい。
-気をよくして各所を可変長テンプレート引数を使うように書き換えたのだが、
-致命的な問題を発見。
-vc2010はなんと可変長テンプレート引数を未実装だった。
-c++0xの機能がわりと入っているのでできると思っていたのに。
-msgpack-rpc-asioは、明瞭にvc2010をターゲットにしているので可変長テンプレート引数の使用を断念した。
-２引数関数の操作までしか実装していない時点で気付いて良かった。
-ライブラリの不足はboost使えば済むが言語機能が無いのは困るな・・・。
-vc2012に乗り換えたくなった。</p>
+<p><a href="https://github.com/ousttrue/CSFiler">https://github.com/ousttrue/CSFiler</a></p>
+<p>wpf practice.</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/16/lambda/" class="u-url">lambdaの引数の型を得たい</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/dscvd3d/" class="u-url">dscvd3d</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/16/lambda/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-16T00:00:00+09:00" itemprop="datePublished" title="2013-05-16 00:00">2013-05-16 00:00</time></a>
+            <a href="github/dscvd3d/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-06-03T15:49:18Z" itemprop="datePublished" title="2012-06-03 15:49">2012-06-03 15:49</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2013-01-28T16:21:11Z" itemprop="dateUpdated" title="2013-01-28 16:21">2013-01-28 16:21</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/16/lambda/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/16/lambda.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>lambdaの引数の型を得たい
-msgpack-rpcの関数登録の都合上、 lambda関数から引数の型を得たい。
-下記のような書き方をしたい。 </p>
-<pre class="code literal-block"><span></span><span class="k">template</span> 
-<span class="kt">void</span> <span class="nf">register_func</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">stiring</span> <span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="o">*</span><span class="n">handler</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">))</span> <span class="p">{</span>
-<span class="c1">// 関数登録 </span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> 
-    <span class="c1">// errorになる </span>
-    <span class="n">register_func</span><span class="p">(</span><span class="err">“</span><span class="n">add</span><span class="err">”</span><span class="p">,</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">});</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span> 
-</pre>
-
-<p>上記の書き方では普通の関数ポインタを受けることはできるのだが、</p>
-<p>std::functionとlambdaは受けられない。
-std::functionを受けるには下記のようにすることでできた。</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">++</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A2</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">register_func</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span> <span class="n">handler</span><span class="p">)</span> <span class="p">{</span>     <span class="c1">// }</span>
-</pre>
-
-<p>残り、lambdaを受けられる記述方法を知りたいのだがどうしたらよいものか。
-下記のような手はうまくいかなかった・・・</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">++</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="p">,</span> <span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A2</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">add_handler</span><span class="p">(</span><span class="n">F</span> <span class="n">handler</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">)</span> <span class="p">{</span>     <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span>     <span class="c1">//add_handler }</span>
-</pre>
-
-<p>こちらのサイトから
-<a href="http://d.hatena.ne.jp/osyo-manga/20121205/1354674180">http://d.hatena.ne.jp/osyo-manga/20121205/1354674180</a>
-decltypeを使ったらなんかできそうな感じがしたので粘っていたのだが、
-目的そのものの記事を発見した。
-<a href="http://stackoverflow.com/questions/6512019/can-we-get-the-type-of-a-lambda-argument">http://stackoverflow.com/questions/6512019/can-we-get-the-type-of-a-lambda-argument</a>
-微妙にそのままではコンパイルが通らなかったので少し工夫したらうまくいった。</p>
-<pre class="code literal-block"><span></span><span class="c1">// ret template Ret helper0(Ret (F::*)(Rest…));</span>
-<span class="k">template</span> <span class="n">Ret</span> <span class="nf">helper0</span><span class="p">(</span><span class="n">Ret</span> <span class="p">(</span><span class="n">F</span><span class="o">::*</span><span class="p">)(</span><span class="n">Rest</span><span class="err">…</span><span class="p">)</span> <span class="k">const</span><span class="p">);</span>
-<span class="c1">// 1 template A1 helper1(Ret (F::*)(A1, Rest…));</span>
-<span class="k">template</span> <span class="n">A1</span> <span class="nf">helper1</span><span class="p">(</span><span class="n">Ret</span> <span class="p">(</span><span class="n">F</span><span class="o">::*</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">Rest</span><span class="err">…</span><span class="p">)</span> <span class="k">const</span><span class="p">);</span>
-<span class="c1">// 2 template A2 helper2(Ret (F::*)(A1, A2, Rest…));</span>
-<span class="k">template</span> <span class="n">A2</span> <span class="nf">helper2</span><span class="p">(</span><span class="n">Ret</span> <span class="p">(</span><span class="n">F</span><span class="o">::*</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Rest</span><span class="err">…</span><span class="p">)</span> <span class="k">const</span><span class="p">);</span>
-<span class="k">template</span> <span class="kt">void</span> <span class="nf">add_handler</span><span class="p">(</span><span class="n">F</span> <span class="n">handler</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-<span class="k">typedef</span> <span class="k">decltype</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="n">functor</span><span class="p">;</span> <span class="k">typedef</span>
-<span class="k">decltype</span><span class="p">(</span><span class="n">helper0</span><span class="p">(</span><span class="o">&amp;</span><span class="n">functor</span><span class="o">::</span><span class="k">operator</span><span class="p">()))</span> <span class="n">R</span><span class="p">;</span> <span class="k">typedef</span>
-<span class="k">decltype</span><span class="p">(</span><span class="n">helper1</span><span class="p">(</span><span class="o">&amp;</span><span class="n">functor</span><span class="o">::</span><span class="k">operator</span><span class="p">()))</span> <span class="n">A1</span><span class="p">;</span> <span class="k">typedef</span>
-<span class="k">decltype</span><span class="p">(</span><span class="n">helper2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">functor</span><span class="o">::</span><span class="k">operator</span><span class="p">()))</span> <span class="n">A2</span><span class="p">;</span>
-<span class="c1">// register function...</span>
-<span class="p">}</span> 
-</pre>
-
-<p>F handlerで関数ポインタ、lambda、std::function等全部受けられるようになったらしくoverloadが不要になった。
-decltypeなんかすごいな。</p>
+<p><a href="https://github.com/ousttrue/dscvd3d">https://github.com/ousttrue/dscvd3d</a></p>
+<p>DirectShow to OpenCV to D3D</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/05/14/msgpack-asio/" class="u-url">msgpack-rpcのasio版を作成中</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/csmeshio/" class="u-url">csmeshio</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/05/14/msgpack-asio/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-05-14T00:00:00+09:00" itemprop="datePublished" title="2013-05-14 00:00">2013-05-14 00:00</time></a>
+            <a href="github/csmeshio/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-05-14T00:05:25Z" itemprop="datePublished" title="2012-05-14 00:05">2012-05-14 00:05</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2012-05-15T23:32:26Z" itemprop="dateUpdated" title="2012-05-15 23:32">2012-05-15 23:32</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/05/14/msgpack-asio/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/05/14/msgpack-asio.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
+            </header><div class="e-content entry-content">
+                    <p><a href="https://github.com/ousttrue/csmeshio">https://github.com/ousttrue/csmeshio</a></p>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/simpledx/" class="u-url">simpledx</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="github/simpledx/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-02-03T00:08:28Z" itemprop="datePublished" title="2012-02-03 00:08">2012-02-03 00:08</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2012-02-03T00:08:58Z" itemprop="dateUpdated" title="2012-02-03 00:08">2012-02-03 00:08</time>)</span>
+            </a>
+            </p>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>msgpack-rpcのasio版を作成中
-連休から始めていたmsgpack-rpcのバックエンドをasioに置き換えてWindowsでも動くようにする試みがやっと目処が立った。</p>
-<p><a href="https://github.com/ousttrue/msgpack-asiorpc">https://github.com/ousttrue/msgpack-asiorpc</a></p>
-<p>改め</p>
-<p><a href="https://github.com/ousttrue/msgpack-rpc-asio">https://github.com/ousttrue/msgpack-rpc-asio</a></p>
-<p>当初は <code>msgpack-rpc</code> のバックエンドの <code>mpio</code> に <code>asio</code> の <code>kernel</code> を追加することで乗り切ろうとしたのだが、わりとすぐに頓挫した。
-<code>mpio</code> のファイルディスクリプタでIOを管理するAPIがasioと合わないのですな。
-次に、 <code>msgpack-rpc</code> の <code>mp::wavy::loop</code> をasioをラップしたクラスで置き換える作戦で
-進めていたのだがだいぶ改造して構造が見えてきたところで、 <code>asio</code> との設計の違いをラップするのがめんどくさく
-なってまた頓挫した。 <a href="http://dev.activebasic.com/egtra/2011/10/27/449/">http://dev.activebasic.com/egtra/2011/10/27/449/</a>
-を見ると簡単そうに見えるのだが功夫が足らないようだ。
-で、上記の反省を踏まえて <code>asio</code> で <code>msgpack-rpc</code> を自由に実装することにした。
-バイナリデータと <code>msgpack-rpc</code> の変換部分に <code>msgpack-rpc</code> のコードを借用して、
-ネットワーク通信部分は <code>asio</code> で普通に作成した。
-だいたいこんな感じのAPIになる予定。 </p>
-<pre class="code literal-block"><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">server_method</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span> 
-    <span class="kt">int</span> <span class="n">port</span><span class="o">=</span><span class="mi">18080</span><span class="p">;</span>
-    <span class="c1">// server</span>
-    <span class="n">boost</span><span class="o">::</span><span class="n">io_service</span> <span class="n">server_io</span><span class="p">;</span>
-    <span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">server</span> <span class="n">s</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span>
-    <span class="n">s</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">server_method</span><span class="p">,</span> <span class="s">"add"</span><span class="p">);</span>
-    <span class="n">s</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">v4</span><span class="p">(),</span> <span class="n">port</span><span class="p">));</span>
-    <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span> <span class="n">server_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">server_io</span><span class="p">](){</span> <span class="n">server_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">}</span>
-
-    <span class="c1">// client</span>
-    <span class="n">boost</span><span class="o">::</span><span class="n">io_service</span> <span class="n">client_io</span><span class="p">;</span>
-    <span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">session</span> <span class="n">c</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span> 
-    <span class="n">c</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span> <span class="n">port</span><span class="p">);</span>
-    <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span> <span class="n">client_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">client_io</span><span class="p">](){</span> <span class="n">client_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">}</span>
-
-    <span class="c1">// request</span>
-    <span class="k">auto</span> <span class="n">request</span><span class="o">=</span><span class="n">c</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
-
-    <span class="c1">// blocking</span>
-    <span class="kt">int</span> <span class="n">result</span><span class="p">;</span>
-    <span class="n">request</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">resut</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-
-    <span class="c1">// finalize</span>
-    <span class="n">client_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
-    <span class="n">client_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-
-    <span class="n">server_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
-    <span class="n">server_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre>
-
-<p>原型はだいたいできて <code>Windows</code> でも動いたので続きを作りこんで行きたい。
-今のうちに <code>msgpack::asiorpc</code> のネームスペースを変えたいような気もするがどうしようかね。
-<code>msgpack::rpc::asio</code> とかか？うぅむ。
-あと、クラスを <code>UpperCamelCase</code> で、関数を <code>lowerCamelCase</code> に変えよう思っていたが
-<code>boost</code> 、 <code>msgpack</code> と一緒に使うときの見栄えを考慮するとスケークケースも一理あるな。
-クラス名と同じ変数名(<code>request</code>とか)を使いたいときに変数名をreq等に変えることを強いられることがあるのが
-気に入らないところではあるのだが。
-プロジェクト名を <code>msgpack-rpc-asio</code>
-に変えてネームスペースも <code>msgpack::rpc::asio</code> に変えることに今決めた。</p>
+<p><a href="https://github.com/ousttrue/simpledx">https://github.com/ousttrue/simpledx</a></p>
+<p>simple directx window</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/04/29/release/" class="u-url">release</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/swigbullet/" class="u-url">swigbullet</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/04/29/release/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-04-29T00:00:00+09:00" itemprop="datePublished" title="2013-04-29 00:00">2013-04-29 00:00</time></a>
+            <a href="github/swigbullet/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-01-26T14:57:17Z" itemprop="datePublished" title="2012-01-26 14:57">2012-01-26 14:57</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2012-03-13T13:55:08Z" itemprop="dateUpdated" title="2012-03-13 13:55">2012-03-13 13:55</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/04/29/release/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/04/29/release.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <p>release
-githubに報告が来ていたのを修正してpymeshioを更新した。
-最近更新していて思うのだがgithubとかpypiではなんとも思わないのだが
-SourceForgeの更新はなんかプレッシャーというかストレスを感じる。
-知らないうちにメッセージが来ていてたりするし。
-コマンドラインで作業が完了しないので普通にめんどくさいというのもある。
-連休中に、SourceForgeの方は縮小してpypiに誘導するように作業しよう。そうしよう。
-他にも昔作ったまま放置されているサイトを整理しよう。
-あとpypiの仕様が変わっていてパスワードを変更しないと
-アップできなくなっていたことに今日気づいた。</p>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/04/17/qt502/" class="u-url">Qt5.0.2が来ていた</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2013/04/17/qt502/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-04-17T00:00:00+09:00" itemprop="datePublished" title="2013-04-17 00:00">2013-04-17 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/04/17/qt502/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/04/17/qt502.html">コメント</a>
-
-
-                </p>
-</div>
             </header><div class="e-content entry-content">
                     <div>
-<p>Qt5.0.2が来ていた
-Qt5.0.2がReleaseされた。
-VC版のQt5.0.1ではglewの使用に支障があったのだけど無事解決。
-これで、全面的にQt5に乗り換えて行ける。
-こちらでQt5の新機能が紹介されているのだが、
-その中のconnectのC++0x対応がよさげ。</p>
-<p>http://www.slideshare.net/takumiasaki/qt5-20121215</p>
+<p><a href="https://github.com/ousttrue/swigbullet">https://github.com/ousttrue/swigbullet</a></p>
+<p>bullet wrapper for python by siwg</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2013/03/27/long/" class="u-url">long型のサイズ</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="github/onibi/" class="u-url">onibi</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2013/03/27/long/" rel="bookmark">
-            <time class="published dt-published" datetime="2013-03-27T00:00:00+09:00" itemprop="datePublished" title="2013-03-27 00:00">2013-03-27 00:00</time></a>
+            <a href="github/onibi/" rel="bookmark">
+            <time class="published dt-published" datetime="2012-01-22T07:29:33Z" itemprop="datePublished" title="2012-01-22 07:29">2012-01-22 07:29</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2013-07-02T03:07:00Z" itemprop="dateUpdated" title="2013-07-02 03:07">2013-07-02 03:07</time>)</span>
+            </a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2013/03/27/long/#disqus_thread" data-disqus-identifier="cache/content/posts/2013/03/27/long.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
-                    <p>long型のサイズ
-x86_64ではlong型のサイズが8byteな事を知った。</p>
+                    <div>
+<p><a href="https://github.com/ousttrue/onibi">https://github.com/ousttrue/onibi</a></p>
+<p>A distribution package and python wrapper that contain Irrlicht, a bullet, etc. </p>
+</div>
                 </div>
             </article>
 </div>
@@ -773,7 +399,7 @@ x86_64ではlong型のサイズが8byteな事を知った。</p>
 <li class="previous"><a href="index-3.html" rel="prev">新しい記事</a></li>
             <li class="next"><a href="index-1.html" rel="next">過去の記事</a></li>
         </ul>
-<script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+<!--End of body content--><footer id="footer">
             Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
             

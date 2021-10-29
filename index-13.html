@@ -42,6 +42,9 @@
 </header><nav class="navbar navbar-expand-md navbar-light bg-white static-top"><div class="collapse navbar-collapse bs-nav-collapsible" id="bs-navbar">
             <ul class="navbar-nav nav-fill d-flex w-100">
 <li class="nav-item">
+<a href="books" class="nav-link">MemoBooks</a>
+                </li>
+<li class="nav-item">
 <a href="archive.html" class="nav-link">Archives</a>
                 </li>
 <li class="nav-item">
@@ -49,6 +52,9 @@
                 </li>
 <li class="nav-item">
 <a href="rss.xml" class="nav-link">RSS feed</a>
+                </li>
+<li class="nav-item">
+<a href="about" class="nav-link">About</a>
 
                 
             </li>
@@ -70,1913 +76,1407 @@
     
         
     <div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/w3m-mod/" class="u-url">w3m改造</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/07/threejs_04/" class="u-url">Three.jsのJSONモデルフォーマット</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2020/w3m-mod/" rel="bookmark">
-            <time class="published dt-published" datetime="2020-07-25T14:59:50+09:00" itemprop="datePublished" title="2020-07-25 14:59">2020-07-25 14:59</time></a>
+            <a href="posts/2015/12/07/threejs_04/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-07T00:00:00+09:00" itemprop="datePublished" title="2015-12-07 00:00">2015-12-07 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2020/w3m-mod/#disqus_thread" data-disqus-identifier="cache/content/posts/2020/w3m-mod.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>以前にも何度かやったことがあるのだけど立ち消えになっていた、 <a href="http://w3m.sourceforge.net/index.ja.html">w3m</a> の改造を試みている。
-w3m はわりと好きなテキストブラウザなのだが、 2011 年くらいの 0.5.3 で開発が終了している様子。</p>
-<p>https://github.com/ousttrue/w3m</p>
-<p>まずは <code>C++</code> 化してから、HTML処理などを再入可能にしてタブごとにスレッド独立する方向を目指す。
-同時に、 <code>boehm-GC</code> を少しずつ <code>STL</code> のコンテナや <code>std::string</code> に置き換える。
-どうも、<code>c++</code> と <code>boehm-GC</code> の共存するのに技がいるらしく、適当に置き換えていくとメモリ破壊で死ぬ。<code>boehm-GC</code> をすべて置き換える必要がありそう。<code>C++</code> クラスのメンバーに <code>GC</code> が要る、<code>GC struct</code> のメンバーに <code>C++</code> クラスが居るの両方に問題があるっぽい。一応、 <code>gc_cleanup</code> を継承したりしているのだけど、やり方がまずいぽい。</p>
-<p>改造にあたってなるべく機能を維持しようとしていたのだけど、ある程度わりきって機能を落とさないと手に負えないところがある。</p>
-<ul>
-<li>http + https 以外の通信プロトコルは落とす。NNTP とか Gopher 使ったことないしなー、FTPもいったん落とす</li>
-<li>backend, dump, halfload 等の出力に介入する機能は落とす。コードを読むのが大変</li>
-<li>M17N, COLOR, IMAGE, MENU は残す</li>
-<li>Mouse は微妙。削ってもよいかも</li>
-<li>GetText も削る</li>
-</ul>
-<p>量を減らす。思ったよりコードが多かったのだ。</p>
-<h2>下準備</h2>
-<h3>msys2 でとりあえずビルド</h3>
-<p>WSL Ubuntu だとビルドできなかった。
-しかし、msys2 ならわりと簡単にビルドできることを発見。</p>
-<pre class="code literal-block"><span></span>$ pacman -S make gcc libgc-devel openssl-devel ncurses-devel
-$ x86_64-pc-msys-gcc --version
-x86_64-pc-msys-gcc <span class="o">(</span>GCC<span class="o">)</span> <span class="m">9</span>.3.0
-Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2019</span> Free Software Foundation, Inc.
-This is free software<span class="p">;</span> see the <span class="nb">source</span> <span class="k">for</span> copying conditions.  There is NO
-warranty<span class="p">;</span> not even <span class="k">for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-$ ./configure
+<p>source
+外部のJSONに記述されたモデルを読み込む機能がある。
+External models in Three.js
+を見てやってみた。
+OnLoad(geometry: THREE.Geometry, materials: THREE.Material[]) {
+    // create a mesh with models geometry and material
+    var material = new THREE.MeshPhongMaterial(materials[0]);
+    var mesh = new THREE.Mesh(
+        geometry,
+        material
+    );</p>
+<pre class="code literal-block"><span></span>mesh.rotation.y = -Math.PI / 5;
+
+this.scene.add(mesh);
+this.Render();
 </pre>
 
-<p>コンパイル環境の方が昔と変わってしまってビルドでエラーになる。</p>
-<p>修正方法👇</p>
-<p><a href="https://qiita.com/imkitchen/items/02a9df7baaaf434fee66">[CentOS7] emacs24にemacs-w3mインストール</a></p>
-<p><code>#ifdef</code> の調整</p>
-<pre class="code literal-block"><span></span>// config.h
-//#define USE_BINMODE_STREAM 1
-//#define USE_EGD
+<p>}</p>
+<p>OnProgress(event: any) {
+    console.log('OnProgress: ', event);
+}</p>
+<p>OnError(event: any) {
+    console.log('OnError: ', event);
+}</p>
+<p>AddModelFromJson(path: string) {
+    var loader = new THREE.JSONLoader(); // init the loader util</p>
+<pre class="code literal-block"><span></span>// init loading
+loader.load(path, this.OnLoad.bind(this)
+    , this.OnProgress.bind(this)
+    , this.OnError.bind(this));
 </pre>
 
-<pre class="code literal-block"><span></span>$ make
-$ ./w3m www.google.com // 動いた
-</pre>
+<p>}</p>
+<p>JSONLoaderクラスを初期化してloadをコール、loadは非同期に完了してOnLoadコールバックでMeshを組み立ててシーンに追加するという流れ。
+OnLoadにMeshが返ってくればいいと思うのだが・・・
+モデルはサンプルファイルを探したのだが見つからなかったので、
+Three.js の JSONLoader のメモ
+を見てBlenderのThree.js exporterでお猿さんを作ってみました。
+一応、茶色いマテリアルをつけたのだけどうまくいかず。
+フォーマットはどうなっているのか？
+cubeもエクスポートしてみた。
+cube.json
+{
+    "faces": [35,2,0,1,3,0,0,1,2,3,35,3,7,6,2,0,3,4,5,0,35,7,5,4,6,0,4,6,7,5,35,0,4,5,1,0,1,7,6,2,35,0,2,6,4,0,1,0,5,7,35,5,7,3,1,0,6,4,3,2],
+    "name": "CubeGeometry.1",
+    "metadata": {
+        "generator": "io_three",
+        "vertices": 8,
+        "type": "Geometry",
+        "uvs": 0,
+        "version": 3,
+        "faces": 6,
+        "materials": 1,
+        "normals": 8
+    },
+    "vertices": [-1,-1,1,-1,1,1,-1,-1,-1,-1,1,-1,1,-1,1,1,1,1,1,-1,-1,1,1,-1],
+    "materials": [{
+        "depthWrite": true,
+        "colorDiffuse": [0,0.64,0.040691],
+        "depthTest": true,
+        "specularCoef": 50,
+        "blending": "NormalBlending",
+        "shading": "phong",
+        "colorEmissive": [0,0,0],
+        "opacity": 1,
+        "transparent": false,
+        "DbgIndex": 0,
+        "visible": true,
+        "wireframe": false,
+        "colorSpecular": [0.5,0.5,0.5],
+        "colorAmbient": [0,0.64,0.040691],
+        "DbgName": "Material",
+        "DbgColor": 15658734
+    }],
+    "uvs": [],
+    "normals": [-0.577349,-0.577349,-0.577349,-0.577349,-0.577349,0.577349,-0.577349,0.577349,0.577349,-0.577349,0.577349,-0.577349,0.577349,0.577349,-0.577349,0.577349,-0.577349,-0.577349,0.577349,0.577349,0.577349,0.577349,-0.577349,0.577349]
+}</p>
+<p>JSON Model format 3 (Soon to be deprecated)
+これっぽいですな。
+なるほど。なるほど。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/06/threejs_02/" class="u-url">Three.jsにマウスによる視点操作を入れる</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/06/threejs_02/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-06T00:00:00+09:00" itemprop="datePublished" title="2015-12-06 00:00">2015-12-06 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>source
+今回は、TrackballControlsを導入します。
+TrackballControlsはThree.jsのライブラリ内に含まれるのではなくexamples扱いなので、
+直接コードを入手。
+使い方は、TrackballControlsのソースを見ると
+以下のようにするらしい。
+controls = new THREE.TrackballControls( camera );</p>
+<p>controls.rotateSpeed = 1.0;
+controls.zoomSpeed = 1.2;
+controls.panSpeed = 0.8;</p>
+<p>controls.noZoom = false;
+controls.noPan = false;</p>
+<p>controls.staticMoving = true;
+controls.dynamicDampingFactor = 0.3;</p>
+<p>controls.keys = [ 65, 83, 68 ];</p>
+<p>controls.addEventListener( 'change', render );</p>
+<p>もうひとつ更新用に以下のコードも必要。
+function animate() {
+    requestAnimationFrame( animate );
+    controls.update();
+}</p>
+<p>やってみよう。
+ベースのレンダリングシーン
+シーンに適当にキューブを描画するコード。
+前回の記事をほぼ流用だけどいくつか変更点がある。</p>
+<p>namespaceでかこって名前衝突から防衛
+CreateCameraを独立
+キューブがアニメーションする部分をオミット</p>
+<p>threejs_02.ts
+/// <reference path="../../../../typings/tsd.d.ts"></reference></p>
+<p>namespace Renderer02 {</p>
+<pre class="code literal-block"><span></span><span class="kr">class</span> <span class="nx">Renderer</span> <span class="p">{</span>
+    <span class="nx">$container</span>: <span class="kt">JQuery</span><span class="p">;</span>
+    <span class="nx">renderer</span>: <span class="kt">THREE.Renderer</span><span class="p">;</span>
 
-<h3>WSL で GC がクラッシュする問題</h3>
-<p><code>boehm-GC</code> がランタイムにエラーになることで、 <code>make</code> 中のコード生成 <code>mktable</code> がクラッシュするのが原因でビルドステップが途中で止まるのが原因だった。なので、たとえビルド済みの <code>w3m</code> を <code>apt get</code> しても、ランタイムも同じ原因でクラッシュする。</p>
-<p>エラー。</p>
-<pre class="code literal-block"><span></span>Wrong __data_start/_end pair
-fish: './build/w3m' terminated by signal SIGABRT (Abort)
-</pre>
+    <span class="nx">scene</span>: <span class="kt">THREE.Scene</span><span class="p">;</span>
+    <span class="nx">camera</span>: <span class="kt">THREE.Camera</span><span class="p">;</span>
+    <span class="nx">mesh</span>: <span class="kt">THREE.Mesh</span><span class="p">;</span>
 
-<p>https://hitkey.nekokan.dyndns.info/diary2004.php#D200424</p>
-<p>によると、stack size の制限が原因らしい。</p>
-<pre class="code literal-block"><span></span>$ <span class="nb">ulimit</span> -s
-<span class="m">8192</span>
-</pre>
+    <span class="nx">CreateRenderer</span><span class="p">(</span><span class="nx">$container</span>: <span class="kt">JQuery</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">$container</span> <span class="o">=</span> <span class="nx">$container</span><span class="p">;</span>
 
-<p>WSL でこれを変えるには・・・。</p>
-<p>https://github.com/microsoft/WSL/issues/633</p>
-<p>無理。</p>
-<p><code>WSL2</code> ならできる？</p>
-<pre class="code literal-block"><span></span>&gt; wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-20.04    Running         2
-</pre>
+        <span class="k">this</span><span class="p">.</span><span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span><span class="nx">$container</span><span class="p">.</span><span class="nx">width</span><span class="p">(),</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">height</span><span class="p">());</span>
+        <span class="nx">$container</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span><span class="p">);</span>
+    <span class="p">}</span>
 
-<p>やってみる。</p>
-<pre class="code literal-block"><span></span>$ <span class="nb">ulimit</span> -s unlimited
-&gt; <span class="nb">ulimit</span> -s
-unlimited
-</pre>
+    <span class="nx">CreateCamera() {</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span><span class="mi">75</span>
+            <span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">$container</span><span class="p">.</span><span class="nx">width</span><span class="p">()</span> <span class="o">/</span> <span class="k">this</span><span class="p">.</span><span class="nx">$container</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span>
+            <span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<p>できた。</p>
-<pre class="code literal-block"><span></span>$ w3m
-Wrong __data_start/_end pair
-</pre>
+    <span class="nx">CreateScene() {</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span>
 
-<p>うーむ。</p>
-<pre class="code literal-block"><span></span>$ <span class="nb">ulimit</span> -s <span class="m">81920</span>
-&gt; <span class="nb">ulimit</span> -s
-<span class="m">81920</span>
-</pre>
+        <span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BoxGeometry</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">({</span> <span class="nx">color</span>: <span class="kt">0x00ff00</span> <span class="p">});</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span><span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">mesh</span><span class="p">);</span>
+    <span class="p">}</span>
 
-<p>動いた。
-8192KB では足りなく、 unlimited では多すぎるらしい。これは、難しいな。</p>
-<p>ちなみに、 <code>gdb</code> 上ならスタック問題を解決しなくても動いた。
-<code>gdb</code> がスタックを覆い隠すのかな？
-開発だけならできなくもない。</p>
-<h3>ビルドシステム</h3>
-<p>とりあえず慣れたツールに変更。
-WSL 上の vscode で作業しているのもあり、autotools から CMake に変更。
-クロスプラットフォームは後退させて、新しめの gcc(c++20) でビルドできればいいや。
-config.h や funcname 系のコード生成結果はコミットしちゃう。
-libwc が static ライブラリにわかれているのも、ひとまとめにしてしまった。
-あと、適当にソースをフォルダに移動する。</p>
-<p>生成コード一覧</p>
-<table>
-<thead><tr>
-<th>ファイル</th>
-<th>生成方法</th>
-<th>入力</th>
-<th>備考</th>
-</tr></thead>
-<tbody>
-<tr>
-<td>config.h</td>
-<td>configure</td>
-<td></td>
-<td>各種 #define など</td>
-</tr>
-<tr>
-<td>entity.h</td>
-<td>Makefile(mktable)</td>
-<td>entity.tab</td>
-<td>./mktable 100 entity.tab &gt; entity.h</td>
-</tr>
-<tr>
-<td>funcname.tab</td>
-<td>Makefile(awk)</td>
-<td>main.c, menu.c</td>
-<td></td>
-</tr>
-<tr>
-<td>funcname.c</td>
-<td>Makefile(awk)</td>
-<td>funcname.tab</td>
-<td>sort funcname.tab ｜ awk -f funcname0.awk &gt; funcname.c</td>
-</tr>
-<tr>
-<td>funcname1.h</td>
-<td>Makefile(awk)</td>
-<td>funcname.tab</td>
-<td></td>
-</tr>
-<tr>
-<td>funcname2.h</td>
-<td>Makefile(awk)</td>
-<td>funcname.tab</td>
-<td></td>
-</tr>
-<tr>
-<td>functable.c</td>
-<td>Makefile(mktable)</td>
-<td>funcname.tab</td>
-<td></td>
-</tr>
-<tr>
-<td>tagtable.c</td>
-<td>Makefile(mktable)</td>
-<td>funcname.tab</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h3>警告からエラーに引き上げ</h3>
-<p>改造していくのに <code>C</code> の緩い型制限が危険(コンパイルが通るのに型が不一致になりやすい)なので、
-以下のオプションを追加。</p>
-<pre class="code literal-block"><span></span>-Werror=implicit-function-declaration
--Werror=int-conversion
--Werror=conversion-null
-</pre>
+    <span class="nx">Render() {</span>
+        <span class="c1">// render</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">scene</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">camera</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-<p>これで、型宣言を補強しながら進める。</p>
-<h2>第1段階</h2>
-<ul>
-<li>extern "C" を追加してソースの拡張子を <code>.cpp</code> に変更</li>
-<li>extern "C" をまとめて取り除く</li>
-<li>typedef struct tag を取り除く</li>
-</ul>
-<p>ここまでやると、自由に <code>c++</code> のコードを混ぜることができる。
-<code>std::string</code>、<code>std::vector</code>, <code>std::shared_ptr</code>, <code>std::function</code>, <code>std::string_view</code>, <code>template</code>, <code>class</code>, 前方宣言, <code>auto</code>, <code>inline</code> 等使い放題 👍</p>
-<p>特に <code>std::string_view</code> の使い勝手を試したい。
-所有しない文字列はすべて、 <code>std::string_view</code> でいけると思うのだが。
-<code>split</code> の <code>std::string_view</code> 版は具合がよかった。</p>
-<h3>c++ 化 (extern "C")</h3>
-<p>手法としては、各ソースの拡張子を <code>.c</code> から <code>.cpp</code> に変更する。
-<code>CMakeLists.txt</code> を修正。
-<code>#include</code> を <code>extern "C"</code> で囲む、で <code>c++</code> 化することができる。</p>
-<pre class="code literal-block"><span></span><span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
-<span class="cp">#include</span> <span class="cpf">"xxx.h"</span><span class="cp"></span>
+<span class="kd">var</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Renderer</span><span class="p">();</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">initialize</span><span class="p">(</span><span class="nx">$container</span>: <span class="kt">JQuery</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">CreateRenderer</span><span class="p">(</span><span class="nx">$container</span><span class="p">);</span>
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">CreateCamera</span><span class="p">();</span>
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">CreateScene</span><span class="p">();</span>
+
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">Render</span><span class="p">();</span>
 <span class="p">}</span>
 </pre>
 
-<p>ただ、 <code>cpp</code> で定義する関数の宣言が <code>extern "C"</code> の中に入らないとリンクエラーになるので、
-そうなるようにソースごとにヘッダを分配してやる。
-<code>w3m</code> は関数宣言が少数のファイル <code>proto.h</code>, <code>fm.h</code> とかに集中しているのだが、いっぱいあるので雑にやる。
-コンパイルが通ればよい。</p>
-<p>分配するときに未定義の型を前方宣言ですませたいのだけど、 <code>c</code> の <code>struct</code> 定義が、<code>struct tag</code> と <code>typedef</code> に分かれているのがやっかいだった。</p>
-<pre class="code literal-block"><span></span><span class="c1">// C</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">hogeTag</span>
-<span class="p">{</span>
-
-<span class="p">}</span> <span class="n">Hoge</span><span class="p">;</span>
-</pre>
-
-<pre class="code literal-block"><span></span><span class="kt">void</span> <span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
-
-<span class="c1">// に対する前方宣言は、</span>
-
-<span class="k">struct</span> <span class="n">hogeTag</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="n">hogeTag</span> <span class="n">Hoge</span><span class="p">;</span>
-</pre>
-
-<p><code>C</code> の状態で、前方宣言を導入できずヘッダの分割が難航。
-型ごとに別のヘッダに分割することは断念して、
-ほとんど全部の <code>struct</code> 定義の入ったヘッダを <code>fm.h</code> から分離して作るのに留めた。</p>
-<h3>DEFUN</h3>
-<p><code>w3m</code> は <code>DEFUN</code> でキーアサインできる関数を定義している。</p>
-<p><a href="w3m/doc-jp/readme.func/">readme.func</a></p>
-<p>以下のように、キーボードなどのイベントをトリガーにアクションを実行するというイメージ。</p>
-<pre class="code literal-block"><span></span>Key
-    KeyMap
-        DEFUN
-    Menu
-        DEFUN
-MouseAction
-    ActionMap
-        DEFUN
-    Menu
-        DEFUN
-Alarm
-    DEFUN
-</pre>
-
-<p>ソースは、<code>main.c</code> と <code>menu.c</code> に <code>DEFUN</code> とそれの使う補助関数がまとめて定義されていて、
-ヘッダは <code>proto.h</code> に全部入れとなっている。</p>
-<p>c++ で下記のようなディスパッチャを作った。</p>
-<pre class="code literal-block"><span></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span>
-<span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">Command</span><span class="o">&gt;</span> <span class="n">g_commandMap</span><span class="p">;</span>
-</pre>
-
-<p>使い捨ての python で関数に登録するコードを生成した。</p>
-<h2>第２段階</h2>
-<ul>
-<li>PODじゃない型が動くようにする<ul>
-<li>constructor/destructor</li>
-</ul>
-</li>
-<li>脱GC<ul>
-<li>コレクションをSTLに置き換える</li>
-<li>std::string</li>
-<li>std::shared_ptr</li>
-</ul>
-</li>
-<li>機能ごとにモジュール化</li>
-<li>再入可能</li>
-</ul>
-<h3>GC_MALLOC から gc_cleanup 継承へ</h3>
-<p>boehm-GC を <code>c++</code> のクラスで使う方法を調べた。</p>
-<p>http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5</p>
-<p><code>w3m</code> では、 <code>GC</code> を多用している。</p>
-<p>おもに、</p>
-<ul>
-<li>struct Str</li>
-<li>コレクション</li>
-<li>struct の field</li>
-</ul>
-<p>という感じに。
-このうち、 struct の field で使われるタイプの単発の <code>GC_MALLOC</code> している型を <code>gc_cleanup</code> 継承にして、 <code>new</code> で初期化するようにする。</p>
-<ul>
-<li>bzero, bcopy, memcpy, sizeof</li>
-</ul>
-<p>等でメモリクリアしているところに注意する。
-これで、その型は <code>constructor/destructor</code> が動くようになり、
-メンバーに <code>std::string</code> 等を配置できるようになる。
-あとで、 <code>gc_cleanup</code> から <code>std::shared_ptr</code> に変更することも視野に入れている。</p>
-<h3>GC文字列 Str</h3>
-<p>アプリ全体で使われていて一挙になくすことはできないのだけど、構造体の末端のメンバーから <code>std::string</code> に変える。
-あと、がんばって <code>const char *</code> の範囲を増やす。
-<code>libwc</code> から <code>Str</code> を剥そうと思っていたのだが、逆に <code>libwc</code> に <code>Str</code> を封じ込める方向に軌道修正。
-<code>indep.c</code> の便利文字列関数も少しずつ変えてく。</p>
-<h3>グローバル変数を減らす</h3>
-<p>関数の中でグローバル変数にアクセスしている場合(CurrentBufferなど)、これを関数の引数経由とか、クラスのメンバー経由でもらう。面倒でも Getter と Setter を区別して、どこで変更されうるかわかりやすくする。
-クラスのメンバーは、 <code>private</code> 化を試みる。</p>
-<h3>Stream処理</h3>
-<p>多分、最難関の <code>loadGeneralFile</code> 関数。700行くらいだったか。
-goto とか longjmp があってよくわからなかったのだが、慣れてきた。
-<code>http</code>, <code>https</code>, <code>NNTP ?</code>, <code>gopher</code>, <code>ftp</code>, <code>pipe</code> 等、<code>http</code> のプロキシーやリダイレクト、 <code>www-auth</code> などを一手に処理していて容易に手を付けられない。
-何度か整理しようとして悉く撃退されたので、雑にやることにした。
-機能を <code>http(https)</code> に絞ってそれ以外をコメントアウトしてとにかく量を減らす。
-プロキシーとか、 <code>dump</code>, <code>halfload</code> などのよく知らない機能もどんどん削る。
-としてなんとか改造できるようになってきた。</p>
-<p>ここを <code>HttpClient</code>, <code>LocalFile</code>, <code>PipeReader</code> あたりに整理したい。</p>
-<h2>第３段階</h2>
-<p>Tab, Buffer, Line のリンクリストを STL のコレクションに置き換えた。</p>
-<pre class="code literal-block"><span></span><span class="k">auto</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
-<span class="n">tab</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
-</pre>
-
-<p>という形を目指す。</p>
-<p><code>loadGeneralFile</code> を解きほぐして、 <code>HTTP</code> 機能を抽出、リダイレクトまで動くようにできた。
-<code>loadGeneralFile</code> は、</p>
-<pre class="code literal-block"><span></span>* OpenStream/Send HTTP Request
-* HTTP Response
-    * 3xx =&gt; Redirect
-* content-type で分岐
-    * BufferLoader =&gt; Buffer
-</pre>
-
-<p>という感じに整理できそう。
-HttpとBufferローダーを副作用の無い関数に整理できれば再入可能が見えてくる。
-早めに分岐させて、分岐したら合流しない。同じ処理は関数で共有するという方向性で整理。</p>
-<p>Buffer が多機能なので、Document, HttpResponse, FileInfo とかに分割したい。</p>
-<h2>第４段階</h2>
-<p>mainloop の再実装。libuv, libevent 等を検討していたのだけど、 c++ との親和性の高い asio を使うことにした。
-<code>tty read (keyboard input)</code>, <code>signal callback (sigint, winresize)</code>, <code>alarm</code> の割り込みを asio 経由にする。
-アプリの終了をloop の終了にして、自然に destructor がコールされるようになる。</p>
-<h2>第５段階</h2>
-<p>html parse から term へのレンダリング部分の分解。
-やっと解読できて１パス目</p>
-<ul>
-<li>内部文字コード(wtf-8)に変換</li>
-<li>tokenize</li>
-<li>tag をパースして属性取得 =&gt; パースに成功したら行バッファに書き戻す。フォームの情報を蓄積する。テーブルのレイアウト</li>
-</ul>
-<p>結果として、行のリストと、フォーム情報を得る。</p>
-<p>２パス目</p>
-<ul>
-<li>行のリストを再度パース</li>
-<li>非タグ部分をBufferに出力</li>
-<li>Aタグやフォームを Anchor などに出力</li>
-</ul>
-<p>という感じだった。
-１パス目で html 化するときに知らない属性を捨てたり、内部属性を追加したりしている様子。
-この、内部属性がよくわからなくて難しい。</p>
-<h2>文字コード</h2>
-<p><code>content-charset</code> =&gt; <code>wtf</code> =&gt; <code>DisplayCharset</code> と文字コードを変換して動作していることがわかった。
-試しに、<code>utf-8</code> であることが分かっている <code>html</code> で <code>wtf</code> 変換を飛ばしてみたところ表示が壊れた。
-<code>wtf</code> は <code>utf-8</code> と互換性がないらしい。
-http://simonsapin.github.io/wtf-8/
-なのかと思ったのだが、違う独自形式かもしれない。</p>
-<p>w3m は、この <code>wtf</code> エンコーディングで、html タグのパース、文字のバイト幅の判定、文字のカラム幅の判定をしているのだが、
-<code>utf-8</code> では、文字のバイト幅、カラム幅の判定が狂う。
-ということで、 <code>utf-8</code> でのバイト幅判定を自作して <code>wcwidth</code> を組み合わせてみた。
-<code>*#12345;</code> 形式の <code>unicode</code> 埋め込みに対応するために、追加で <code>unicode</code> =&gt; <code>utf-8</code> 変換も作った。
-正しく表示することができた。</p>
-<p>ということで、<code>euc-jp</code> と <code>shift-jis</code> と <code>iso-2022-jp</code> から <code>utf-8</code> への変換を作れば日本語は対応できそう。
-<code>std::string_view</code>, <code>char32_t</code>, <code>char8_t</code> あたりの新しい型を使った <code>\0</code> 終端に頼らないライブラリを作ってみる。</p>
-<h2>メモ</h2>
-<h3>モジュールに分割</h3>
-<p>機能ごとにモジュールに分割する。</p>
-<ul>
-<li>UI(frontend)<ul>
-<li>Term<ul>
-<li>低レベル描画<ul>
-<li>termcap の関数を直接呼ぶ。curses の自前実装的な</li>
-<li>マルチバイト、マルチカラムの文字列と密接に関連していて libwc と不可分</li>
-</ul>
-</li>
-<li>キーボード入力</li>
-<li>マウス入力</li>
-<li>リサイズイベント</li>
-<li>SIGNALハンドリング<ul>
-<li>SIGINT =&gt; longjmp でキャンセル処理を実現している。c++ のデストラクタとかまずそう</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>高レベル描画<ul>
-<li>Lineの構築(byte ごとに char と Lineprop がペアになる)</li>
-</ul>
-</li>
-<li>Tab</li>
-<li>Buffer</li>
-<li>Message</li>
-<li>Menu</li>
-<li>Keymap</li>
-<li>LineInput<ul>
-<li>SearchKey</li>
-<li>History</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>IO(transport)</p>
-<ul>
-<li>IStream<ul>
-<li>union =&gt; class polymorphism化</li>
-<li>file descriptor</li>
-<li>FILE*</li>
-<li>ssl</li>
-<li>memory</li>
-<li>Compression</li>
-</ul>
-</li>
-<li>LocalCGI</li>
-</ul>
-</li>
-<li>
-<p>http</p>
-<ul>
-<li>HttpSession<ul>
-<li>HttpRequest</li>
-<li>HttpResponse</li>
-</ul>
-</li>
-<li>cookie</li>
-<li>redirect</li>
-<li>referer</li>
-<li>https</li>
-<li>ftp</li>
-<li>URL</li>
-</ul>
-</li>
-<li>
-<p>HTML</p>
-<ul>
-<li>HTMLtagproc1</li>
-<li>HTMLlineproc2body<ul>
-<li>process_form</li>
-<li>process_form_int</li>
-</ul>
-</li>
-<li>form</li>
-<li>table</li>
-<li>frame</li>
-<li>term rendering</li>
-</ul>
-</li>
-<li>
-<p>String</p>
-<ul>
-<li>文字コード</li>
-<li>quote</li>
-<li>url escape</li>
-<li>html escape</li>
-<li>html entity</li>
-<li>char_util<ul>
-<li>myctype</li>
-</ul>
-</li>
-<li>string_view_util<ul>
-<li>strip</li>
-</ul>
-</li>
-<li>string_util<ul>
-<li>malloc</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3>リンクをたどる(followLink)</h3>
-<p>followA();
-loadLink();
-loadGeneralFile();</p>
-<p>cmd_loadURL();
-loadGeneralFile();</p>
-<p>cmd_loadURL();
-loadGeneralFile();</p>
-<h3>描画する</h3>
-<p>displayBuffer
-redrawBuffer
-redrawNLine</p>
-<h3>key入力</h3>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/hugo-reinstall/" class="u-url">Hugo再インストール</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2020/hugo-reinstall/" rel="bookmark">
-            <time class="published dt-published" datetime="2020-07-25T13:50:27+09:00" itemprop="datePublished" title="2020-07-25 13:50">2020-07-25 13:50</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2020/hugo-reinstall/#disqus_thread" data-disqus-identifier="cache/content/posts/2020/hugo-reinstall.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>再びサイトジェネレーターを <code>hugo</code> に戻した。
-今度は、 <code>travis-ci</code> の自動ビルドを入れたし万全。
-軽くレイアウト一式を作ってみたけど、今回は前よりもよく理解できた。
-<code>partial</code>, <code>baseof</code> に加えて <code>.Render</code> をマスターしたぞ。
-変数付きの部品に分解できて、うまく引数になる変数を共有できれば部品を共有できる。</p>
-<p>とりあえず構造を理解するためにデバッグ色なので整えたいところだが、そのうちやる。
-Webものは調べる範囲が広すぎて関心が拡散してしまって、気力が保たないんよね。</p>
-<ul>
-<li>github pages</li>
-<li>hugo<ul>
-<li>layout</li>
-</ul>
-</li>
-<li>css<ul>
-<li>scss</li>
-<li>css3<ul>
-<li>grid, flexbox</li>
-</ul>
-</li>
-<li>css reset</li>
-</ul>
-</li>
-<li>font<ul>
-<li>icon</li>
-</ul>
-</li>
-</ul>
-<p>などの断片を集めてきた。
-そういえば <code>Gatsby.js</code> にしようかと考えていたのだけど、無難にある程度知っている <code>hugo</code> にした。
-Web方面は付け焼刃なので、あまり必要な知識が増えすぎても手に負えない。
-今回の hugo 作業では <code>node.js</code> には触れずにすんでいるので、いい塩梅というものである。</p>
-<p>一応過去記事をインポートしてみたが、雑多なフォーマットでできているのであまり互換性がなかった。
-<code>frontmatter</code> だけ置換とかで整えてみた。</p>
-<p>過去記事のタイトルをチェックしてみたところ、</p>
-<ul>
-<li>hatena dialy</li>
-<li>2012-11 tdiary(heroku)</li>
-<li>2013-02 octopress</li>
-<li>2013-10 tinkerer</li>
-<li>2015-11 gulp</li>
-<li>2017-02 hugo</li>
-<li>2018 自分とこで管理するのがめんどくさくて Qiitaとかに</li>
-<li>2019-04 自作のpythonスクリプト</li>
-<li>2019-08 wyam</li>
-<li>2019 自分とこで管理するのがめんどくさくて Qiitaとかに</li>
-<li>2020-07 hugo 復活</li>
-</ul>
-<p>という経緯をたどっていることが分かった。
-しばらく、hugo でいってみよう。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/vcpkg_chcp65001/" class="u-url">vcpkgでchcp 65001が必要な件</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/vcpkg_chcp65001/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-31T00:00:00+09:00" itemprop="datePublished" title="2017-08-31 00:00">2017-08-31 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/vcpkg_chcp65001/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/vcpkg_chcp65001.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>うちの環境では必要。非英語Windowsで散見される。わしも、ロシア？の人の書き込みで分かった。</p>
-<p><code>buildtrees/XXX/config-x86-windows-rel-err.log</code> に以下のような <code>rules.ninja</code> を含むメッセージが見つかった場合はこれ。</p>
-<pre class="code literal-block"><span></span>CMake Error at D:/vcpkg/downloads/cmake-3.9.0-win32-x86/share/cmake-3.9/Modules/CMakeTestCCompiler.cmake:51 <span class="o">(</span>message<span class="o">)</span>:
-  The C compiler <span class="s2">"C:/Program Files (x86)/Microsoft Visual</span>
-<span class="s2">  Studio/2017/Community/VC/Tools/MSVC/14.10.25017/bin/HostX64/x86/cl.exe"</span> is
-  not able to compile a simple <span class="nb">test</span> program.
-
-  It fails with the following output:
-
-   Change Dir: D:/vcpkg/buildtrees/opensubdiv/x86-windows-rel/CMakeFiles/CMakeTmp
-
-
-
-  Run Build Command:<span class="s2">"D:/vcpkg/downloads/tools/ninja/ninja-1.7.2/ninja.exe"</span>
-  <span class="s2">"cmTC_f5b9f"</span>
-
-  ninja: error: build.ninja:30: loading <span class="s1">'rules.ninja'</span>:
-  指定されたファイルが見つかりません。
-
-
-
-
-
-
-  include rules.ninja
-
-
-
-                     ^ near here
-
-
-
-
-
-
-  CMake will not be able to correctly generate this project.
-Call Stack <span class="o">(</span>most recent call first<span class="o">)</span>:
-  CMakeLists.txt:25 <span class="o">(</span>project<span class="o">)</span>
-</pre>
-
-<p>対処法はプロンプトの文字コードをutf-8にすること。</p>
-<p><code>&gt; chcp 65001</code></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/vcpkg_opensubdiv/" class="u-url">vcpkgのOpenSubdivパッケージを作ってみる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/vcpkg_opensubdiv/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-31T00:00:00+09:00" itemprop="datePublished" title="2017-08-31 00:00">2017-08-31 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/vcpkg_opensubdiv/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/vcpkg_opensubdiv.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>CEDEC2017のセッションを聞いてUSDビルドする気が戻ってきた。部品のひとつ、OpenSubdivのvcpkg版ビルドに取り組んでみる。</p>
-<p>packageを作る
-POWERSHELLを開いてvcpkgディレクトリに移動。</p>
-<pre class="code literal-block"><span></span>PS&gt; .<span class="se">\v</span>cpkg.exe create opensubdiv https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v3_3_0.tar.gz
--- Generated portfile: vcpkg<span class="se">\p</span>orts<span class="se">\o</span>pensubdiv<span class="se">\p</span>ortfile.cmake
--- Generated CONTROL: vcpkg<span class="se">\p</span>orts<span class="se">\o</span>pensubdiv<span class="se">\C</span>ONTROL
--- To launch an editor <span class="k">for</span> these new files, run
---     .<span class="se">\v</span>cpkg edit opensubdiv
-
-ports/opensubdiv/CONTROL
-Source: opensubdiv
-Version: <span class="m">3</span>.3.0
-Description: An Open-Source subdivision surface library.
-Build-Depends: tbb, glew, ptex
-</pre>
-
-<p><code>ports/opensubdiv/portfile.cmake</code></p>
-<p>最低限、展開するアーカイブのパスを指定。</p>
-<p><code>set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/OpenSubdiv-3_3_0)</code></p>
-<p>ビルドしてみる
-さすがにエラーになる。vcpkg の <code>buildtree/opensubdiv</code> に潜ってビルド手順を調べてみる。
-手動ビルド
-OpenSubdivのビルドシステムはCMakeだった。
-早速、CmakeGUIでやってみる。
-<code>CMAKE_INSTALL_PREFIX=VCPKG_DIR/installed/x64-windows</code> だけ設定して様子を見る。</p>
-<p>CUDAとかOpenCLとかそっち方面の依存がある様子。
-NO_CUDAとNO_OPENCLにチェックを入れてみる。
-あとNO_DOCも。
-SolutionをGenerateしてビルドしてみる。
-Debug版だけtbb_debug.libが見つからないエラーが出た。
-DEBUG版のFIND_PACKAGEの修正</p>
-<pre class="code literal-block"><span></span><span class="err">OpenSubdiv-3_3_0/cmake/FindTBB.cmake</span>
-    <span class="nb">find_library</span><span class="p">(</span><span class="s">TBB_</span><span class="o">${</span><span class="nv">TBB_LIB</span><span class="o">}</span><span class="s">_LIBRARY</span>
-        <span class="s">NAMES</span>
-            <span class="o">${</span><span class="nv">TBB_LIB</span><span class="o">}</span>
-        <span class="s">HINTS</span>
-            <span class="s2">"${TBB_LOCATION}/lib"</span>
-            <span class="s2">"${TBB_LOCATION}/bin"</span>
-            <span class="s2">"$ENV{TBB_LOCATION}/lib"</span>
-            <span class="s2">"$ENV{TBB_LOCATION}/bin"</span>
-            <span class="s2">"$ENV{PROGRAMFILES}/TBB/lib"</span>
-            <span class="s">/usr/lib</span>
-            <span class="s">/usr/lib/w32api</span>
-            <span class="s">/usr/local/lib</span>
-            <span class="s">/usr/X11R6/lib</span>
-        <span class="s">PATH_SUFFIXES</span>
-            <span class="s2">"${TBB_LIB_ARCH}"</span>
-            <span class="s2">"${TBB_LIB_ARCH}/${TBB_COMPILER}"</span>
-            <span class="s2">"${TBB_LIB_ARCH}/gcc4.4"</span>
-            <span class="s2">"${TBB_LIB_ARCH}/gcc4.1"</span>
-        <span class="s">DOC</span> <span class="s2">"Intel's Threading Building Blocks library"</span><span class="p">)</span>
-</pre>
-
-<p>vcpkgでは、<code>VCPKG_DIR/installed/x64-windows/debug/lib/tbb_debug.lib</code> にあるので見つかりませんね。
-<code>TBB_LOCATION=VCPKG_DIR/installed/x64-windows/debug</code> を指定したらうまくいった。</p>
-<p>portfile.cmakeに反映
-ports/opensubdiv/portfile.cmake
-こうなった。</p>
-<pre class="code literal-block"><span></span><span class="nb">vcpkg_configure_cmake</span><span class="p">(</span>
-    <span class="s">SOURCE_PATH</span> <span class="o">${</span><span class="nv">SOURCE_PATH</span><span class="o">}</span>
-    <span class="c">#PREFER_NINJA # Disable this option if project cannot be built with Ninja</span>
-    <span class="s">OPTIONS</span>
-        <span class="c">#-DNO_LIB=1</span>
-        <span class="s">-DNO_CUDA=1</span>
-        <span class="s">-DNO_DOC=1</span>
-        <span class="s">-DNO_OPENCL=1</span>
-        <span class="s">-DNO_OPENGL=1</span>
-        <span class="s">-DNO_METAL=1</span>
-        <span class="s">-DNO_DX=1</span>
-        <span class="c">#-DNO_OMP=1</span>
-        <span class="s">-DNO_TESTS=1</span>
-        <span class="s">-DNO_EXAMPLES=1</span>
-        <span class="s">-DNO_TUTORIALS=1</span>
-        <span class="s">-DNO_REGRESSION=1</span>
-        <span class="s">-DNO_GLTESTS=1</span>
-        <span class="c"># for tbb_debug.lib</span>
-        <span class="s">-DTBB_LOCATION=</span><span class="o">${</span><span class="nv">CURRENT_INSTALLED_DIR</span><span class="o">}</span><span class="s">/debug</span>
-    <span class="c"># OPTIONS_RELEASE -DOPTIMIZE=1</span>
-    <span class="c"># OPTIONS_DEBUG -DDEBUGGABLE=1</span>
-<span class="p">)</span>
-</pre>
-
-<p>package
-VCPKG_DIR/packages/opensubdiv_x86-windows
-packageの調整
-エラーメッセージの指示に従って。</p>
-<p>```ports/opensubdiv/portfile.cmake
-vcpkg_install_cmake()
-vcpkg_copy_pdbs()</p>
-<p>file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)</p>
-<h2>Handle copyright</h2>
-<p>file(COPY ${CURRENT_BUILDTREES_DIR}/src/OpenSubdiv-3_3_0/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/opensubdiv)
-file(RENAME ${CURRENT_PACKAGES_DIR}/share/opensubdiv/LICENSE.txt ${CURRENT_PACKAGES_DIR}/share/opensubdiv/copyright)</p>
-<pre class="code literal-block"><span></span>以下のようになった。
-
-```shell
-+---debug
-|   \---lib
-|           osdCPU.lib
-|
-+---include
-|   \---opensubdiv
-|       |   version.h
-|       |
-|       +---far
-|       |       error.h
-|       |       patchDescriptor.h
-|       |       patchMap.h
-|       |       patchParam.h
-|       |       patchTable.h
-|       |       patchTableFactory.h
-|       |       primvarRefiner.h
-|       |       ptexIndices.h
-|       |       stencilTable.h
-|       |       stencilTableFactory.h
-|       |       topologyDescriptor.h
-|       |       topologyLevel.h
-|       |       topologyRefiner.h
-|       |       topologyRefinerFactory.h
-|       |       types.h
-|       |
-|       +---hbr
-|       |       allocator.h
-|       |       bilinear.h
-|       |       catmark.h
-|       |       cornerEdit.h
-|       |       creaseEdit.h
-|       |       face.h
-|       |       faceEdit.h
-|       |       fvarData.h
-|       |       fvarEdit.h
-|       |       halfedge.h
-|       |       hierarchicalEdit.h
-|       |       holeEdit.h
-|       |       loop.h
-|       |       mesh.h
-|       |       subdivision.h
-|       |       vertex.h
-|       |       vertexEdit.h
-|       |
-|       +---osd
-|       |       bufferDescriptor.h
-|       |       cpuEvaluator.h
-|       |       cpuPatchTable.h
-|       |       cpuVertexBuffer.h
-|       |       mesh.h
-|       |       nonCopyable.h
-|       |       ompEvaluator.h
-|       |       ompKernel.h
-|       |       opengl.h
-|       |       tbbEvaluator.h
-|       |       tbbKernel.h
-|       |       types.h
-|       |
-|       +---sdc
-|       |       bilinearScheme.h
-|       |       catmarkScheme.h
-|       |       crease.h
-|       |       loopScheme.h
-|       |       options.h
-|       |       scheme.h
-|       |       types.h
-|       |
-|       \---vtr
-|               array.h
-|               componentInterfaces.h
-|               fvarLevel.h
-|               fvarRefinement.h
-|               level.h
-|               refinement.h
-|               sparseSelector.h
-|               stackBuffer.h
-|               types.h
-|
-+---lib
-|       osdCPU.lib
-|
-\---share
-    \---opensubdiv
-            copyright
-</pre>
-
-<p>OpenSubdivにはdllのビルドは無いみたい。ライブラリ構成もtemplate classを主体とするもののようだ。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/mediasink_use_dxva/" class="u-url">MediaSinkでDXVA</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/mediasink_use_dxva/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-28T00:00:00+09:00" itemprop="datePublished" title="2017-08-28 00:00">2017-08-28 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/mediasink_use_dxva/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/mediasink_use_dxva.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>MediaSinkでDXVAを使うには。</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
-<p>解読の後半。
-DXVAが何かということについてはぼんやりとしているのだけれど、VideoSampleのバッファーにD3Dのテクスチャを使うということぽい。</p>
-<p>DirectX Surface Buffer</p>
-<p>ということはPipelineのどこかのタイミングでCPU上のbitmapをCreateTextureしてGPUに移動するのだけど、DecoderなりRendererなりのなるべく上流でGPUに上げた方がうれしいという話。
-ID3D11DeviceをMediaSessionに供給する
-Pipelineでテクスチャをやりとりするのだからデバイスを共有しましょうと。MediaSessionの場合は、レンダラがデバイスを作成してIMFDXGIDeviceManagerを公開する。
-公開するのはIMFGetServiceを通してぽい。
-この辺。
-HRESULT DX11VideoRenderer::CMediaSink::GetService(__RPC__in REFGUID guidService, __RPC__in REFIID riid, __RPC__deref_out_opt LPVOID* ppvObject)
-{
-    HRESULT hr = S_OK;</p>
-<pre class="code literal-block"><span></span>if (guidService == MF_RATE_CONTROL_SERVICE)
-{
-    hr = QueryInterface(riid, ppvObject);
-}
-else if (guidService == MR_VIDEO_RENDER_SERVICE)
-{
-    hr = m_pPresenter-&gt;QueryInterface(riid, ppvObject);
-}
-else if (guidService == MR_VIDEO_ACCELERATION_SERVICE)
-{
-    // ここからIMFDXGIDeviceManagerを得る
-    hr = m_pPresenter-&gt;GetService(guidService, riid, ppvObject);
-}
-else
-{
-    hr = MF_E_UNSUPPORTED_SERVICE;
-}
-
-return hr;
-</pre>
-
 <p>}</p>
-<p>実験
-まだIMFGetServiceを実装していないVideoRendererで、
-ProcessSampleに入ってくるIMFSampleからIMFDXGIBufferが取得できるか試してみよう。
-DWORD cBuffers = 0;
-auto hr = pSample-&gt;GetBufferCount(&amp;cBuffers);
-if (FAILED(hr))
-{
-    return hr;
+<p>$(() =&gt; {
+    var $container = $('div#renderer');
+    Renderer02.initialize($container);
+});</p>
+<p>TypeScript定義を追加する
+まず、TrackballControlsの型定義を追加する。
+declare module THREE {
+    export class TrackballControls
+    {
+        constructor(camera: THREE.Camera);
+        rotateSpeed: number;
+        zoomSpeed: number;
+        panSpeed: number;
+        noZoom: boolean;
+        noPan: boolean;
+        staticMoving: boolean;
+        dynamicDampingFactor: number;
+        keys: number[];
+        addEventListener(event: string, callback: Function):void;
+        update():void;
+    }
 }</p>
-<p>Microsoft::WRL::ComPtr<imfmediabuffer> pBuffer;
-if (1 == cBuffers)
-{
-    hr = pSample-&gt;GetBufferByIndex(0, &amp;pBuffer);
-}
-else
-{
-    hr = pSample-&gt;ConvertToContiguousBuffer(&amp;pBuffer);
-}
-if (FAILED(hr))
-{
-    return hr;
-}</imfmediabuffer></p>
-<p>Microsoft::WRL::ComPtr<imfdxgibuffer> pDXGIBuffer;
-hr = pBuffer.As(&amp;pDXGIBuffer);
-if (FAILED(hr))
-{
-    // ここに来た
-    return hr;
-}</imfdxgibuffer></p>
-<p>Microsoft::WRL::ComPtr<id3d11texture2d> pTexture2D;
-hr = pDXGIBuffer-&gt;GetResource(IID_PPV_ARGS(&amp;pTexture2D));
-if (FAILED(hr))
-{
-    return hr;
-}</id3d11texture2d></p>
-<p>実験２
-StreamSinkにIMFGetServiceを実装した。
-// IMFGetService
-STDMETHODIMP GetService(__RPC__in REFGUID guidService, __RPC__in REFIID riid, __RPC__deref_out_opt LPVOID* ppvObject)override
-{
-    HRESULT hr = S_OK;</p>
-<pre class="code literal-block"><span></span>if (guidService == MR_VIDEO_ACCELERATION_SERVICE)
-{
-    if (riid == __uuidof(IMFDXGIDeviceManager))
-    {
-        if (NULL != m_pDXGIManager)
-        {
-            *ppvObject = (void*) static_cast&lt;IUnknown*&gt;(m_pDXGIManager);
-            ((IUnknown*)*ppvObject)-&gt;AddRef();
-        }
-        else
-        {
-            hr = E_NOINTERFACE;
-        }
-    }
-    else
-    {
-        hr = E_NOINTERFACE;
-    }
-}
-else
-{
-    hr = MF_E_UNSUPPORTED_SERVICE;
-}
+<p>TrackballControlsを初期化
+// Rendererのメソッドを修正
+    CreateCamera() {
+        this.camera = new THREE.PerspectiveCamera(75
+            , this.$container.width() / this.$container.height()
+            , 0.1, 1000);
+        this.camera.position.z = 5;</p>
+<pre class="code literal-block"><span></span>    // 以下を追加
+    this.controls = new THREE.TrackballControls(this.camera);
 
-return hr;
+    this.controls.rotateSpeed = 1.0;
+    this.controls.zoomSpeed = 1.2;
+    this.controls.panSpeed = 0.8;
+
+    this.controls.noZoom = false;
+    this.controls.noPan = false;
+
+    this.controls.staticMoving = true;
+    this.controls.dynamicDampingFactor = 0.3;
+
+    this.controls.keys = [65, 83, 68];
+
+    // trackballに変化があった時だけ描画を呼ぶ
+    this.controls.addEventListener('change', this.Render.bind(this));
+}
 </pre>
 
-<p>}</p>
-<p>IMFSampleからID3D11Texture2Dを取得できた。
-上流が、DXVA化されてSampleのバッファがテクスチャになった。
-どんなテクスチャなのか
-ArraySize = 13
-Format = DXGI_FORMAT_NV12</p>
-<p>中身がよくわからぬ。
-DecodeされたyuvフレームをSwapchainにコピーする</p>
-<p>deinterlace
-YUV To RGB
-サイズ調整</p>
-<p>等をしてデコード済みのフレームをRGB画像にする工程。
-２種類の実装がある。</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/cpp/Presenter.cpp</p>
-<p>の以下の部分。
-if (m_useXVP)
-{
-    BOOL bInputFrameUsed = FALSE;</p>
-<pre class="code literal-block"><span></span>hr = ProcessFrameUsingXVP( pCurrentType, pSample, pTexture2D, rcDest, ppOutputSample, &amp;bInputFrameUsed );
+<p>// Rendererのメソッドを追加
+    Animate() {
+        requestAnimationFrame(this.Animate.bind(this));
+        this.controls.update();
+    }</p>
+<p>// Animate呼び出しを追加
+    export function initialize($container: JQuery) {</p>
+<pre class="code literal-block"><span></span>    renderer.CreateRenderer($container);
+    renderer.CreateCamera();
+    renderer.CreateScene();
 
-if (SUCCEEDED(hr) &amp;&amp; !bInputFrameUsed)
-{
-    *pbProcessAgain = TRUE;
+    renderer.Render();
+    renderer.Animate(); // 追加
 }
+</pre>
+
+<p>動いたがWindow全体のマウスイベントが取られていてこれじゃない。
+canvasの親になったdivをマウスイベントの対象にしたい。
+div#rendererを操作対象にする
+TrackballControls.jsを見てたら
+THREE.TrackballControls = function ( object, domElement ) {
+}</p>
+<p>という記述を発見。第２引数にhtmlエレメントを渡せるらしい。
+定義を修正。
+// 定義
+    constructor(camera: THREE.Camera, element?: Element);</p>
+<p>// 呼び出し
+   this.controls = new THREE.TrackballControls(this.camera, this.$container[0]);</p>
+<p>想定した動きになった。
+マウスカーソルを変えてみる
+cssの話だけれど。</p>
+<div id="renderer" style="width:300px;height:200px;cursor:pointer;"></div>
+
+<pre class="code literal-block"><span></span><span class="o">$</span><span class="nt">container</span>
+    <span class="p">.</span><span class="nc">mousedown</span><span class="o">(</span><span class="nt">function</span><span class="o">(</span><span class="nt">event</span><span class="o">)</span> <span class="p">{</span>
+        <span class="err">switch</span> <span class="err">(event.button)</span> <span class="err">{</span>
+            <span class="err">case</span> <span class="err">0:</span>
+                <span class="err">$(this).css({</span> <span class="k">cursor</span><span class="p">:</span> <span class="s1">'pointer'</span> <span class="p">}</span><span class="o">);</span>
+                <span class="nt">break</span><span class="o">;</span>
+
+            <span class="nt">case</span> <span class="nt">1</span><span class="o">:</span>
+                <span class="o">$(</span><span class="nt">this</span><span class="o">)</span><span class="p">.</span><span class="nc">css</span><span class="o">(</span><span class="p">{</span> <span class="k">cursor</span><span class="p">:</span> <span class="s1">'n-resize'</span> <span class="p">}</span><span class="o">);</span>
+                <span class="nt">break</span><span class="o">;</span>
+
+            <span class="nt">case</span> <span class="nt">2</span><span class="o">:</span>
+                <span class="o">$(</span><span class="nt">this</span><span class="o">)</span><span class="p">.</span><span class="nc">css</span><span class="o">(</span><span class="p">{</span> <span class="k">cursor</span><span class="p">:</span> <span class="s1">'move'</span> <span class="p">}</span><span class="o">);</span>
+                <span class="nt">break</span><span class="o">;</span>
+        <span class="err">}</span>
+    <span class="err">}</span><span class="o">)</span>
+    <span class="p">.</span><span class="nc">mouseup</span><span class="o">(</span><span class="nt">function</span><span class="o">(</span><span class="nt">event</span><span class="o">)</span><span class="p">{</span>
+        <span class="err">$(this).css({</span><span class="k">cursor</span><span class="p">:</span> <span class="s1">'pointer'</span><span class="p">}</span><span class="o">);</span>
+    <span class="err">}</span><span class="o">)</span>
+<span class="o">;</span>
+</pre>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/06/threejs_01/" class="u-url">TypeScriptでThree.jsことはじめ</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/12/06/threejs_01/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-06T00:00:00+09:00" itemprop="datePublished" title="2015-12-06 00:00">2015-12-06 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>source
+TypeScriptを学び始めた目的のひとつであるThree.jsをようやくはじめた。
+「Node.jsとSocket.IOで連結してリアルタイムにシーンをアニメーションするっ」とか
+遠大な構想だったのだが小さいところから始めよう。
+hello world的な
+本家のgetting started
+htmlにスクリプトを追加。</p>
+<script src="posts/2015/12/06/threejs_01/threejs_01.js"></script><p>threejs_01.js
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75
+    , window.innerWidth / window.innerHeight
+    , 0.1, 1000);</p>
+<p>var renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);</p>
+<p>var geometry = new THREE.BoxGeometry(1, 1, 1);
+var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+var cube = new THREE.Mesh(geometry, material);
+scene.add(cube);</p>
+<p>camera.position.z = 5;</p>
+<p>var render = function() {
+    requestAnimationFrame(render);</p>
+<pre class="code literal-block"><span></span>cube.rotation.x += 0.1;
+cube.rotation.y += 0.1;
+
+renderer.render(scene, camera);
+</pre>
+
+<p>};</p>
+<p>render();</p>
+<p>typescript化する。
+gulpにタスクを仕込んだので拡張子をtsにして待つのみ。
+error TS2304: Cannot find name 'THREE'</p>
+<p>three.jsの型定義が無いので追加。</p>
+<blockquote>
+<p>tsd query three -rosa install</p>
+</blockquote>
+<p>tsの先頭にtsdの参照を追加
+/// <reference path="../../../../typings/tsd.d.ts"></reference></p>
+<p>無事typescript化に成功。
+tsconfig.jsonはこんな感じ。
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "outDir": ".",
+        "rootDir": ".",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}</p>
+<p>canvasの作成先を変える
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);</p>
+<p>を変えよう。
+dom操作等にjqueryを使う意向なのでjquery導入。</p>
+<blockquote>
+<p>tsd query jquery -rosa install</p>
+</blockquote>
+<p>htmlにdivを追加して</p>
+<div id="renderer" style="width:300px;height:200px;"></div>
+
+<p>レンダラのサイズと親を変える。
+var $container=$('div#renderer');
+renderer.setSize($container.width(), $container.height());
+$container.append(renderer.domElement);</p>
+<p>カメラのアスペクト比も変える。
+var camera = new THREE.PerspectiveCamera(75
+    , $container.width()/$container.height()
+    , 0.1, 1000);</p>
+<p>TypeScript風に書き換えてみる
+せっかくTypeScriptにしているのでフリーダムに書き換えてみる。
+/// <reference path="../../../../typings/tsd.d.ts"></reference></p>
+<p>class Renderer {
+    $container: JQuery;
+    renderer: THREE.Renderer;</p>
+<pre class="code literal-block"><span></span><span class="n">scene</span><span class="o">:</span> <span class="n">THREE</span><span class="o">.</span><span class="na">Scene</span><span class="o">;</span>
+<span class="n">camera</span><span class="o">:</span> <span class="n">THREE</span><span class="o">.</span><span class="na">Camera</span><span class="o">;</span>
+<span class="n">mesh</span><span class="o">:</span> <span class="n">THREE</span><span class="o">.</span><span class="na">Mesh</span><span class="o">;</span>
+
+<span class="n">CreateRenderer</span><span class="o">(</span><span class="n">$container</span><span class="o">:</span> <span class="n">JQuery</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">$container</span> <span class="o">=</span> <span class="n">$container</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">THREE</span><span class="o">.</span><span class="na">WebGLRenderer</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">renderer</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="n">$container</span><span class="o">.</span><span class="na">width</span><span class="o">(),</span> <span class="n">$container</span><span class="o">.</span><span class="na">height</span><span class="o">());</span>
+    <span class="n">$container</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">renderer</span><span class="o">.</span><span class="na">domElement</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="n">CreateScene</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="n">THREE</span><span class="o">.</span><span class="na">Scene</span><span class="o">();</span>
+
+    <span class="n">var</span> <span class="n">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="n">THREE</span><span class="o">.</span><span class="na">BoxGeometry</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+    <span class="n">var</span> <span class="n">material</span> <span class="o">=</span> <span class="k">new</span> <span class="n">THREE</span><span class="o">.</span><span class="na">MeshBasicMaterial</span><span class="o">({</span> <span class="n">color</span><span class="o">:</span> <span class="mh">0x00ff00</span> <span class="o">});</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="n">THREE</span><span class="o">.</span><span class="na">Mesh</span><span class="o">(</span><span class="n">geometry</span><span class="o">,</span> <span class="n">material</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">scene</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mesh</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="n">THREE</span><span class="o">.</span><span class="na">PerspectiveCamera</span><span class="o">(</span><span class="mi">75</span>
+        <span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">$container</span><span class="o">.</span><span class="na">width</span><span class="o">()</span> <span class="o">/</span> <span class="k">this</span><span class="o">.</span><span class="na">$container</span><span class="o">.</span><span class="na">height</span><span class="o">()</span>
+        <span class="o">,</span> <span class="mf">0.1</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">camera</span><span class="o">.</span><span class="na">position</span><span class="o">.</span><span class="na">z</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="n">Render</span><span class="o">(){</span>
+    <span class="n">requestAnimationFrame</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">Render</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">this</span><span class="o">));</span>
+
+    <span class="c1">// update scene</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mesh</span><span class="o">.</span><span class="na">rotation</span><span class="o">.</span><span class="na">x</span> <span class="o">+=</span> <span class="mf">0.1</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mesh</span><span class="o">.</span><span class="na">rotation</span><span class="o">.</span><span class="na">y</span> <span class="o">+=</span> <span class="mf">0.1</span><span class="o">;</span>
+
+    <span class="c1">// render</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">renderer</span><span class="o">.</span><span class="na">render</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">scene</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">camera</span><span class="o">);</span>
+<span class="o">}</span>
 </pre>
 
 <p>}
-else
-{
-    hr = ProcessFrameUsingD3D11( pTexture2D, pEVTexture2D, dwViewIndex, dwEVViewIndex, rcDest, *punInterlaceMode, ppOutputSample );</p>
-<pre class="code literal-block"><span></span>// 省略
+var renderer = new Renderer();</p>
+<p>$(() =&gt; {
+    var $container = $('div#renderer');
+    renderer.CreateRenderer($container);
+    renderer.CreateScene();</p>
+<pre class="code literal-block"><span></span>renderer.Render();
 </pre>
 
-<p>}</p>
-<p>どちらでもだいたい同じ動きになると思う。
-ProcessFrameUsingXVP</p>
-<p>Video Processor MFT</p>
-<p>初期化時にIDXGIDeviceManagerを直接渡してDXVAを有効にしている。
-hr = CoCreateInstance(CLSID_VideoProcessorMFT, nullptr, CLSCTX_INPROC_SERVER, IID_IMFTransform, (void**)&amp;m_pXVP);
-if (FAILED(hr))
-{
-    break;
-}</p>
-<p>// MFTにDirectXを渡す
-hr = m_pXVP-&gt;ProcessMessage(MFT_MESSAGE_SET_D3D_MANAGER, ULONG_PTR(m_pDXGIManager));
-if (FAILED(hr))
-{
-    break;
-}</p>
-<p>Textureの入ったサンプルを処理して、Textureの入ったサンプルに出力できる。
-ProcessFrameUsingD3D11
-D3D11VideoDeviceを使う。
-こっちの方が手順が長くて大変。
-おそらく、VideoProcessorMFTはD3D11VideoDeviceを使って実装していてこちらの方がローレベルなのであろう。
-Decode
-APIの説明としてはこれ。</p>
-<p>Supporting Direct3D 11 Video Decoding in Media Foundation</p>
-<p>DX11VideoRendererサンプルでは、直接使っていない。
-Video Processing
-DX11VideoRendererサンプルでは、D3D11VideoDeviceを最後の色変換等で使っている。</p>
-<p>DXVA Video Processing</p>
-<p>Video Process Blit</p>
-<p>DXVA2.0+D3D9のドキュメントぽい。
-D3D11ではこの関数。</p>
-<p>D3D11VideoContext::VideoProcessorBlt</p>
+<p>});</p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/create_mediasink/" class="u-url">MediaSinkを実装する</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/12/06/threejs_03/" class="u-url">グリッドと軸と光源とFPS表示を入れる</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         ousttrue
                     </span></p>
             <p class="dateline">
-            <a href="posts/2017/08/create_mediasink/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-27T00:00:00+09:00" itemprop="datePublished" title="2017-08-27 00:00">2017-08-27 00:00</time></a>
+            <a href="posts/2015/12/06/threejs_03/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-12-06T00:00:00+09:00" itemprop="datePublished" title="2015-12-06 00:00">2015-12-06 00:00</time></a>
             </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/create_mediasink/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/create_mediasink.html">コメント</a>
-
-
-                </p>
-</div>
+                </div>
             </header><div class="e-content entry-content">
                     <div>
-<p>DX11VideoRendererを解読して、VideoRenderer要件を探る。</p>
-<p>Microsoftのサンプルがあり参考になる。</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
-<p>これは結構がっつり作ってあるので、削って最低限必要な要素を探る。
-IMFMediaSinkを作る
-手抜きしてIMFActivate抜きで。
-https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h
-を参考に最低限を実装してみる。
-guidgen.exeでguidを決めた。
-CustomVideoRenderer.h</p>
-<h2>pragma once</h2>
-<h2>include <windows.h></windows.h>
-</h2>
-<p>// {8C5C51AD-F400-4B2A-BD36-4990D07420B4}
-DEFINE_GUID(CLSID_CustomVideoRenderer, 
-0x8c5c51ad, 0xf400, 0x4b2a, 0xbd, 0x36, 0x49, 0x90, 0xd0, 0x74, 0x20, 0xb4);</p>
-<p>STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject);</p>
-<p>DX11VideoRendererから必要な部分をコピペしてくるだけである。
-CustomVideoRenderer.c++</p>
-<h2>include "CustomVideoRenderer.h"</h2>
-<h2>include <mfidl.h></mfidl.h>
-</h2>
-<p>class CustomVideoRenderer: public IMFMediaSink
-{
-    ULONG m_nRefCount = 1;</p>
-<p>public:
-    // IUnknown
-    STDMETHODIMP_(ULONG) AddRef(void)override
-    {
-        return InterlockedIncrement(&amp;m_nRefCount);
-    }</p>
-<pre class="code literal-block"><span></span>STDMETHODIMP QueryInterface(REFIID iid, __RPC__deref_out _Result_nullonfailure_ void** ppv)override
-{
-    if (!ppv)
-    {
-        return E_POINTER;
-    }
-    if (iid == IID_IUnknown)
-    {
-        *ppv = static_cast&lt;IUnknown*&gt;(static_cast&lt;IMFMediaSink*&gt;(this));
-    }
-    else if (iid == __uuidof(IMFMediaSink))
-    {
-        *ppv = static_cast&lt;IMFMediaSink*&gt;(this);
-    }
-    else
-    {
-        *ppv = NULL;
-        return E_NOINTERFACE;
-    }
-    AddRef();
-    return S_OK;
-}
+<p>source
+シーンを強化してみる。
+軸
+先人が記事を残してくれていたので楽ちん。
+Three.js　AxisHelper
+//軸の長さ１０００
+var axis = new THREE.AxisHelper(1000); <br>
+//sceneに追加
+this.scene.add(axis);</p>
+<p>グリッド
+Three.js GridHelper
+//GridHelper(大きさ, １マスの大きさ)
+var grid = new THREE.GridHelper(100, 10);
+//シーンオブジェクトに追加
+this.scene.add(grid);</p>
+<p>光源
+ライトを追加して、マテリアルを光に反応するタイプに付け替える。
+// lights
+var directionalLight = new THREE.DirectionalLight(0xffffff);
+directionalLight.position.set(0, 0.7, 0.7);
+this.scene.add(directionalLight);</p>
+<p>// materialを交換
+//var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });</p>
+<p>FPS状態表示
+WebGLのデモでよく見かけるFPS表示を入れてみる。
+https://github.com/mrdoob/stats.js
+ライブラリと定義をインストール。</p>
+<blockquote>
+<p>bower install stats.js --save
+tsd query stats -rosa install</p>
+</blockquote>
+<p>２箇所更新になる。
+// add stats
+$container.css({ position: 'relative' });
+this.stats = new Stats();
+this.stats.domElement.style.position = 'absolute';
+this.stats.domElement.style.top = '0px';
+this.stats.domElement.style.zIndex = '100';
+$container.append(this.stats.domElement);</p>
+<p>// update stats
+Animate() {
+    requestAnimationFrame(this.Animate.bind(this));
+    this.controls.update();
+    this.stats.update();
+}</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="qiita/typescripthuan-jing-nofen-karinikuitokoro/" class="u-url">TypeScript環境の分かりにくいところ</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="qiita/typescripthuan-jing-nofen-karinikuitokoro/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-11-29T04:37:44+09:00" itemprop="datePublished" title="2015-11-29 04:37">2015-11-29 04:37</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2015-11-29T05:53:41+09:00" itemprop="dateUpdated" title="2015-11-29 05:53">2015-11-29 05:53</time>)</span>
+            </a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <p><a href="https://qiita.com/ousttrue/items/8bd21094cb7b58d2a016">https://qiita.com/ousttrue/items/8bd21094cb7b58d2a016</a></p>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/11/21/mondo_crud/" class="u-url">MongoDBでCRUD</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/11/21/mondo_crud/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-11-21T00:00:00+09:00" itemprop="datePublished" title="2015-11-21 00:00">2015-11-21 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>“シングルページWebアプリケーション”に説明されている
+mongodbをバックエンドに、node.js + expressをフロントエンドにする構成のおさらい。
+MongoDB &lt;-&gt; node.js Express &lt;-&gt; Browser</p>
+<p>グローバルなnpmパッケージ</p>
+<blockquote>
+<p>npm install -g gulp typescript tsd bower</p>
+</blockquote>
+<p>Windowsの場合、
+%USERPROFILE%\AppData\Roaming\npm</p>
+<p>にインストールされるのでパスを通しておく。
+Expressの準備
+app.js</p>
+<blockquote>
+<p>mkdir mongocrud
+cd mongocrud
+mongocrud&gt; npm init -y
+mongocrud&gt; npm install express --save</p>
+</blockquote>
+<p>// app.js
+var http=require('http');
+var express=require('express');</p>
+<p>var port=process.env.port || 3000;
+var app=express();
+var server=http.createServer(app);</p>
+<p>app.get('/', function(request, response){
+    response.send('Hello Express');
+});</p>
+<p>server.listen(port);</p>
+<p>起動</p>
+<blockquote>
+<p>node app.js</p>
+</blockquote>
+<p>http://localhost:3000
+で動作を確認する。
+loggerや静的ファイル提供などのミドルウェアを追加
+mongocrud&gt; npm install body-parser method-override connect-logger errorhandler serve-static --save</p>
+<p>// app.js
+// app.getの前
+var bodyparser=require('body-parser');
+var methodoverride = require('method-override');
+var logger = require('connect-logger');
+var errorhandler = require('errorhandler');
+var servestatic = require('serve-static');
+var serve_dir=__dirname + "/client";
+console.log("serve %s", serve_dir);
+app
+.use(bodyparser())
+.use(methodoverride())
+.use(logger())
+.use(errorhandler({
+    dumpExceptioons: true,
+    showStack: true
+}));
+.use(servestatic(serve_dir))</p>
+<p>gulpで静的なファイルを’./build/client’下にコピーするタスクを定義する</p>
+<h2>gulpfile.coffeeにタスクを追加</h2>
+<h2></h2>
+<h2>client</h2>
+<h2></h2>
+<p>gulp.task 'client', -&gt;
+    gulp.src config.src_client
+        .pipe gulp.dest config.dst_client
+        .pipe browserSync.stream()</p>
+<h2>tasks</h2>
+<p>gulp.task 'watch', -&gt;
+    gulp.watch config.src_ts, ['ts']
+    gulp.watch config.src_client, ['client']</p>
+<p>gulpでサーバー起動とブラウザの自動オープンタスクを定義する
+いろいろ入用になるのでgulpを準備する。
+まずは、nodemonとbrowser-syncを導入して
+app.js起動と起動したアプリをブラウザで自動で開くタスクを定義する。
+mongocrud&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D</p>
+<p>// gulpfile.js
+var gulp = require('gulp');
+var $ = require("gulp-load-plugins")();
+var browserSync = require("browser-sync").create();
+var port = 5000;</p>
+<p>gulp.task('serve', function () {
+    $.nodemon({
+        script: 'app.js',
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: port
+        }
+    })
+    .on('restart', function () { browserSync.reload(); });
+});</p>
+<p>gulp.task('browser-sync', ['serve'], function () {
+    browserSync.init({
+        proxy: "localhost:" + port
+    });
+});</p>
+<p>gulp.task('default', ['browser-sync']);</p>
+<p>BrowserSyncのReloadが動くには出力がhtmlである必要がある(bodyタグの中に細工をするため)。
+// app.jsの修正
+app.get('/', function(request, response){
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello html');
+});
+<p>mongocrud&gt; gulp</p>
+<p>でnodemonが起動してブラウザが自動で開始される。
+app.jsの内容を変えるとブラウザがリロードされる。
+が、リロードが速すぎて内容が更新されないことが判明。
+リロードを遅延させる策を講じる。
+// app.jsの最後尾に追加
+console.log('start %d', port);</p>
+<p>app.jsからのコンソール出力を監視する。
+// gulpfile.jsの修正</p>
+<pre class="code literal-block"><span></span><span class="o">$</span><span class="nf">.nodemon</span><span class="p">({</span>
+    <span class="n">script</span><span class="o">:</span> <span class="n">config.app_entry</span><span class="p">,</span>
+    <span class="n">exp</span><span class="o">:</span> <span class="s">'js'</span><span class="p">,</span>
+    <span class="n">ignore</span><span class="o">:</span> <span class="n">[]</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">:</span> <span class="p">{</span>
+        <span class="n">port</span><span class="o">:</span> <span class="n">config.app_port</span>
+    <span class="p">},</span>
+    <span class="n">stdout</span><span class="o">:</span> <span class="n">false</span> <span class="o">//</span> <span class="o">&lt;-</span> 必要
+<span class="p">})</span>
+<span class="o">//</span><span class="nf">.on</span><span class="p">(</span><span class="s">'restart'</span><span class="p">,</span> <span class="nf">function </span><span class="p">()</span> <span class="p">{</span> <span class="nf">browserSync.reload</span><span class="p">();</span> <span class="p">});</span>
+<span class="nf">.on</span><span class="p">(</span><span class="s">'readable'</span><span class="p">,</span> <span class="nf">function</span><span class="p">(){</span>
+    <span class="nf">this.stdout.on</span><span class="p">(</span><span class="s">'data'</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">chunk</span><span class="p">){</span>
+        <span class="nf">if </span><span class="p">(</span><span class="o">/</span><span class="n">^start</span> <span class="o">/</span><span class="nf">.test</span><span class="p">(</span><span class="n">chunk</span><span class="p">)){</span>
+            <span class="nf">console.log</span><span class="p">(</span><span class="s">'reloading...'</span><span class="p">);</span>
+            <span class="nf">browserSync.reload</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="nf">process.stdout.write</span><span class="p">(</span><span class="n">chunk</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre>
 
-STDMETHODIMP_(ULONG) Release(void)override
+<p>gulpfile.jsをgulpfile.coffeeにする
+gulpcrud&gt; npm install coffee-script -D</p>
+<p>gulpfile.jsを書き換える。gulp-3.9.0では既にcoffee script対応が成されているようで、
+gulpfile.jsの拡張子を変えてgulpfile.coffeeとリネームして中身を書き換えてから
+mongocrud&gt; gulp</p>
+<p>としたら特にオプション等を指定することなくgulpはgulpfile.coffeeを見つけてくれて動いた。</p>
+<h2>gulpfile.coffee</h2>
+<p>gulp = require('gulp');
+$ = require("gulp-load-plugins")();
+browserSync = require("browser-sync").create();
+port = 5000;</p>
+<p>gulp.task 'serve', -&gt;
+    $.nodemon({
+        script: 'app.js',
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: port
+        }
+    })
+    .on 'readable', -&gt;
+        this.stdout.on 'data', (chunk) -&gt;
+            if (/^start /.test(chunk))
+                console.log('reloading...')
+                browserSync.reload()
+            process.stdout.write(chunk);</p>
+<p>gulp.task 'browser-sync', ['serve'], -&gt;
+    browserSync.init({
+        proxy: "localhost:" + port
+    })</p>
+<p>gulp.task('default', ['browser-sync']);</p>
+<p>TypeScriptにする
+app.jsをsrc/app.tsに移動する。
+// src/app.ts
+declare function require(name: string):any;
+declare var process;</p>
+<p>var http=require('http');
+var express=require('express');</p>
+<p>var port=process.env.port || 3000;
+var app=express();
+var server=http.createServer(app);</p>
+<p>app.get('/', function(request, response){
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello');
+});
+<p>server.listen(port);
+console.log('start %d', port);</p>
+<p>コンパイルが通るようにアンビエント宣言を追加した。
+gulpにコンパイルタスクを定義する。
+serveタスクの前にtsタスクを実行し、
+tsファイルの更新をwatchしてtsタスクを起動するように調整した。</p>
+<h2>gulpfile.coffee</h2>
+<p>gulp = require('gulp');
+$ = require("gulp-load-plugins")();
+browserSync = require("browser-sync").create();</p>
+<p>config = {
+    src_ts: './src/<strong>/*.ts', <br>
+    dst_js_dir: './build/js',
+    dst_watch: './build/</strong>/*.js',
+    app_entry: './build/js/app.js',
+    app_port: 5000
+}</p>
+<h2></h2>
+<h2>compile typescript</h2>
+<h2></h2>
+<p>gulp.task 'ts', -&gt;
+  gulp.src config.src_ts
+    .pipe $.typescript({
+      target: 'ES6'
+      removeComments: true
+    }).js
+    .pipe gulp.dest config.dst_js_dir</p>
+<h2></h2>
+<h2>start js app</h2>
+<h2></h2>
+<p>gulp.task 'serve', ['ts'], -&gt;
+    $.nodemon({
+        script: config.app_entry,
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: config.app_port
+        },
+        stdout: false
+    })
+    #.on 'restart', -&gt;
+    #    browserSync.reload();
+    .on 'readable', -&gt;
+        this.stdout.on 'data', (chunk) -&gt;
+            if (/^start /.test(chunk))
+                console.log('reloading...')
+                browserSync.reload()
+            process.stdout.write(chunk);</p>
+<h2></h2>
+<h2>start browser-sync</h2>
+<h2></h2>
+<p>gulp.task 'browser-sync', ['serve'], -&gt;
+    browserSync.init({
+        proxy: "http://localhost:" + config.app_port
+    })</p>
+<h2>tasks</h2>
+<p>gulp.task 'watch', -&gt;
+    gulp.watch config.src_ts, ['ts']</p>
+<p>gulp.task('default', ['watch', 'browser-sync']);</p>
+<p>typescriptを型安全にする
+コンパイラオプションを定義するtsconfig.jsonを生成する(要tsc-1.6以上)。
+mongocrud&gt; tsc --init</p>
+<p>手で作ってもよし
+tsconfig.json
 {
-    ULONG uCount = InterlockedDecrement(&amp;m_nRefCount);
-    if (uCount == 0)
-    {
-        delete this;
-    }
-    // For thread safety, return a temporary variable.
-    return uCount;
-}
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "outDir": "build",
+        "rootDir": ".",
+        "sourceMap": false
+    },
+    "filesGlob": [
+        "./typings/<strong>/*.d.ts",
+        "./src/</strong>/*.ts"
+    ]
+}</p>
+<p>VSCodeの場合、tsconfig.jsonを変えたらVSCodeを再起動するべし。
+filesGlobは必要で、無いとインテリセンスが遅くなる(Loading…)。
+tsタスクがtsconfig.jsonを使うようにする。</p>
+<h2>gulpfile.coffee</h2>
+<p>gulp.task 'ts', -&gt;
+  tsconfig = require('tsconfig.json')<br>
+  gulp.src config.src_ts
+    .pipe $.typescript(tsconfig.compilerOptions).js
+    .pipe gulp.dest config.dst_js_dir</p>
+<p>tsdを初期化して、node.jsとexpressのtypescript定義を取得する。
+mongocrud&gt; tsd init
+mongocrud&gt; tsd query node express -rosa install</p>
+<p>src/app.ts
+/// <reference path="../typings/tsd.d.ts"></reference>
+import http = require('http');
+import express=require('express');</p>
+<p>var port=process.env.port || 3000;
+var app=express();
+var server=http.createServer(app);</p>
+<p>app.get('/', (request, response) =&gt; {
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello ts');
+});
+<p>server.listen(port);
+console.log('start %d', port);</p>
+<p>MongoDBのCRUDを定義する
+mongodbをインストールする。
+Windowsの場合、MongoDBがデフォルトの”Program Files”にインストールされるとパスにスペースが入って
+gulpからの起動時にエスケープと戦う必要が生じるので、
+C:\MongoDB</p>
+<p>にインストールした。
+gulpでmongodbを起動する
+mongocrud&gt; npm i sprintf-js -D</p>
+<h2>gulpfile.coffee</h2>
+<p>MONGO_EXE = 'C:/MongoDB/bin/mongod.exe';</p>
+<h2></h2>
+<h2>Running mongo</h2>
+<h2></h2>
+<h2>http://stackoverflow.com/a/28048696/46810</h2>
+<p>sprintf = require('sprintf-js').sprintf;
+fs = require('fs');
+exec = require('child_process').exec;
+gulp.task 'mongodb:start', (cb)-&gt;
+    command=sprintf('%s --dbpath %s'
+        , MONGO_EXE, config.mongo_data);
+    if(!fs.existsSync(config.mongo_data))
+        fs.mkdirSync(config.mongo_data);
+    exec command, (err, stdout, stderr) -&gt;
+        console.log(stdout);
+        console.log(stderr);
+    cb();</p>
+<p>app.tsからmongodbにアクセスする
+mongocrud&gt; npm install mongodb --save
+mongocrud&gt; tsd query mongodb -rosa install</p>
+<p>src/app.ts
+/// <reference path="../typings/tsd.d.ts"></reference></p>
+<p>// mongodb
+import mongodb = require('mongodb');
+let mongoServer = new mongodb.Server(
+    'localhost', 27017
+);
+let dbHandle = new mongodb.Db(
+    'crud', mongoServer, {w: 1}
+);
+dbHandle.open(()=&gt;{
+   console.log("connected to mongoDB"); 
+});</p>
+<p>// http
+import http = require('http');
+import express = require('express');
+let port = process.env.port || 3000;
+let app = express();
+let server = http.createServer(app);
+app.get('/', (request, response) =&gt; {
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello ts');
+});
+<p>server.listen(port);
+console.log('start %d', port);</p>
+<p>CRUDを定義する
+Creating a REST API using Node.js, Express, and MongoDB
+を参考に実装。
+src/app.tsのデータにアクセスする部分をsrc/mongodb.tsに分離した。
+src/app.ts
+/// <reference path="../typings/tsd.d.ts"></reference>
+import mongocrud = require('./mongocrud');</p>
+<p>//
+// Express
+//
+import http = require('http');
+import express = require('express');</p>
+<p>let port = process.env.port || 3000;
+let app = express();
+let server = http.createServer(app);</p>
+<p>let bodyparser=require('body-parser');
+let methodoverride = require('method-override');
+let logger = require('connect-logger');
+let errorhandler = require('errorhandler');
+app
+.use(bodyparser())
+.use(methodoverride())
+.use(logger())
+.use(errorhandler({
+    dumpExceptioons: true,
+    showStack: true
+}));</p>
+<p>app.get('/', (request, response) =&gt; {
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello ts');
+});
+server.listen(port);
+<p>// restful
+app.all('/api/:obj_type/*', (req, res, next)=&gt;{
+   res.contentType('json');
+   next(); 
+});
+app.get('/api/:obj_type', mongocrud.findAll);
+app.get('/api/:obj_type/:id', mongocrud.findById);
+app.post('/api/:obj_type', mongocrud.add);
+app.put('/api/:obj_type/:id', mongocrud.update);
+app.delete('/api/:obj_type/:id', mongocrud.del);</p>
+<p>// launchded
+console.log('start %d', port);</p>
+<p>src/mongocrud.ts
+/// <reference path="../typings/tsd.d.ts"></reference>
+//
+// MongoDB
+//
+import mongodb = require('mongodb');
+let mongoServer = new mongodb.Server(
+    'localhost', 27017
+);
+let db = new mongodb.Db(
+    'crud', mongoServer, { w: 1 }
+);
+db.open(() =&gt; {
+    console.log("connected to mongoDB");
+    populateDB();  <br>
+});</p>
+<p>//
+// CRUD
+//
+import express = require('express');
+export var findById = (req: express.Request, res: express.Response) =&gt; {
+    let obj_type = req.params.obj_type;
+    let id = req.params.id;
+    console.log('Retrieving %s: %s', obj_type, id);
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.findOne({ '_id': new mongodb.ObjectID(id) }, (err, item) =&gt; {
+            res.send(item);
+        });
+    });
+};</p>
+<p>export var findAll = (req: express.Request, res: express.Response) =&gt; {
+    let obj_type = req.params.obj_type;
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.find().toArray((err, items) =&gt; {
+            res.send(items);
+        });
+    });
+};</p>
+<p>export var add = (req: express.Request, res: express.Response) =&gt; {
+    let obj_type = req.params.obj_type;
+    let body = req.body;
+    console.log('Adding %s: %s', obj_type, JSON.stringify(body));
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.insert(body, { safe: true }, (err, result) =&gt; {
+            if (err) {
+                res.send({ 'error': 'An error has occurred' });
+            } else {
+                console.log('Success: ' + JSON.stringify(result[0]));
+                res.send(result[0]);
+            }
+        });
+    });
+}</p>
+<p>export var update = (req: express.Request, res: express.Response) =&gt; {
+    let obj_type = req.params.obj_type;
+    let id = req.params.id;
+    let body = req.body;
+    console.log('Updating %s: %s', obj_type, id);
+    console.log(JSON.stringify(body));
+    db.collection('wines', (err, collection) =&gt; {
+        collection.update({ '_id': new mongodb.ObjectID(id) },
+            body, { safe: true }, (err, result) =&gt; {
+                if (err) {
+                    console.log('Error updating wine: ' + err);
+                    res.send({ 'error': 'An error has occurred' });
+                } else {
+                    console.log('%s document(s) updated', result);
+                    res.send(body);
+                }
+            });
+    });
+}</p>
+<p>export function del(req: express.Request, res: express.Response){
+    let obj_type = req.params.obj_type;
+    var id = req.params.id;
+    console.log('Deleting %s: %s', obj_type, id);
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.remove({ '_id': new mongodb.ObjectID(id) },
+            { safe: true }, (err, result) =&gt; {
+                if (err) {
+                    res.send({ 'error': 'An error has occurred - ' + err });
+                } else {
+                    console.log('%s document(s) deleted', result);
+                    res.send(req.body);
+                }
+            });
+    });
+}</p>
+<p>// Populate database with sample data -- Only used once: the first time the application is started.
+// You'd typically not find this code in a real-life app, since the database would already exist.
+function populateDB() {
+    console.log('populateDB...');</p>
+<pre class="code literal-block"><span></span><span class="nt">var</span> <span class="nt">wines</span> <span class="o">=</span> <span class="cp">[</span>
+    <span class="p">{</span>
+        <span class="nx">name</span><span class="p">:</span> <span class="s2">"CHATEAU DE SAINT COSME"</span><span class="p">,</span>
+        <span class="nx">year</span><span class="p">:</span> <span class="s2">"2009"</span><span class="p">,</span>
+        <span class="nx">grapes</span><span class="p">:</span> <span class="s2">"Grenache / Syrah"</span><span class="p">,</span>
+        <span class="nx">country</span><span class="p">:</span> <span class="s2">"France"</span><span class="p">,</span>
+        <span class="nx">region</span><span class="p">:</span> <span class="s2">"Southern Rhone"</span><span class="p">,</span>
+        <span class="nx">description</span><span class="p">:</span> <span class="s2">"The aromas of fruit and spice..."</span><span class="p">,</span>
+        <span class="nx">picture</span><span class="p">:</span> <span class="s2">"saint_cosme.jpg"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nx">name</span><span class="p">:</span> <span class="s2">"LAN RIOJA CRIANZA"</span><span class="p">,</span>
+        <span class="nx">year</span><span class="p">:</span> <span class="s2">"2006"</span><span class="p">,</span>
+        <span class="nx">grapes</span><span class="p">:</span> <span class="s2">"Tempranillo"</span><span class="p">,</span>
+        <span class="nx">country</span><span class="p">:</span> <span class="s2">"Spain"</span><span class="p">,</span>
+        <span class="nx">region</span><span class="p">:</span> <span class="s2">"Rioja"</span><span class="p">,</span>
+        <span class="nx">description</span><span class="p">:</span> <span class="s2">"A resurgence of interest in boutique vineyards..."</span><span class="p">,</span>
+        <span class="nx">picture</span><span class="p">:</span> <span class="s2">"lan_rioja.jpg"</span>
+    <span class="p">}</span><span class="cp">]</span><span class="o">;</span>
 
-// IMFMediaSink methods
-STDMETHODIMP AddStreamSink(DWORD dwStreamSinkIdentifier, __RPC__in_opt IMFMediaType* pMediaType, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
-STDMETHODIMP GetCharacteristics(__RPC__out DWORD* pdwCharacteristics)override;
-STDMETHODIMP GetPresentationClock(__RPC__deref_out_opt IMFPresentationClock** ppPresentationClock)override;
-STDMETHODIMP GetStreamSinkById(DWORD dwIdentifier, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
-STDMETHODIMP GetStreamSinkByIndex(DWORD dwIndex, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
-STDMETHODIMP GetStreamSinkCount(__RPC__out DWORD* pcStreamSinkCount)override;
-STDMETHODIMP RemoveStreamSink(DWORD dwStreamSinkIdentifier)override;
-STDMETHODIMP SetPresentationClock(__RPC__in_opt IMFPresentationClock* pPresentationClock)override;
-STDMETHODIMP Shutdown(void)override;
+<span class="nt">db</span><span class="p">.</span><span class="nc">collection</span><span class="o">(</span><span class="s1">'wines'</span><span class="o">,</span> <span class="o">(</span><span class="nt">err</span><span class="o">,</span> <span class="nt">collection</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="err">collection.find().toArray((err,</span> <span class="err">items)</span> <span class="err">=&gt;</span> <span class="err">{</span>
+        <span class="err">if(items.length==0){</span>
+            <span class="err">//</span> <span class="err">if</span> <span class="err">empty</span>
+            <span class="err">console.log('insert</span> <span class="n">wines</span><span class="p">:</span> <span class="s1">' + JSON.stringify(wines));</span>
+<span class="s1">            db.collection('</span><span class="n">wines</span><span class="err">'</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span> <span class="err">{</span>
+                <span class="n">collection</span><span class="o">.</span><span class="nf">insert</span><span class="p">(</span><span class="n">wines</span><span class="p">,</span> <span class="err">{</span> <span class="n">safe</span><span class="err">:</span> <span class="n">true</span> <span class="err">}</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="err">{</span> <span class="err">}</span><span class="p">);</span>
+            <span class="p">}</span><span class="o">);</span>
+        <span class="err">}</span>
+    <span class="err">}</span><span class="o">);</span>
+<span class="err">}</span><span class="o">);</span>
 </pre>
 
 <p>};</p>
-<p>STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject)
-{
-    if(!ppvObject){
-        return E_FAIL;
-    }</p>
-<pre class="code literal-block"><span></span>auto sink=new CustomVideoRenderer();
-*ppvObject=sink;
-return S_OK;
+<p>ブラウザ向けのGUIを作る
+ざっくりレイアウト</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<link rel="stylesheet" href="posts/2015/11/21/mondo_crud/css/style.css">
+<script src="posts/2015/11/21/mondo_crud/js/client.js"></script><div class="header">
+    <form action="posts/2015/11/21/mondo_crud/select">
+        <span class="label">collection name</span>
+        <input type="text"><button>Select</button>
+    </form>
+</div>
+<div class="body">
+    <div class="left">
+        <div class="list">
+
+        </div>
+        <form action="posts/2015/11/21/mondo_crud/add">
+            <button>Add</button>
+        </form>
+    </div>
+    <div class="right">
+        <form>
+            <textarea name="detail"></textarea><button>Load</button>
+            <button>Save</button>
+        </form>
+    </div>
+</div>
+<div class="footer">
+    <ul class="log"></ul>
+</div>
+
+<p></p>
+<ul>
+<li>{
+margin: 0;
+padding: 0;
+}</li>
+</ul>
+<p>html{
+    font-size: 62.5%;
+}</p>
+<p><em>, </em>::before, *::after {
+    box-sizing: border-box;
+}</p>
+<p>.header{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background-color: #faa;
+}
+.body{
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 128px;
+    background-color: #afa;
+}
+.body .left {
+    position: absolute;
+    left: 0;
+    width: 200px;
+    top: 0;
+    bottom: 0;
+    background-color: #282;
+}
+.body .right {
+    position: absolute;
+    left: 200px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #828; <br>
+}
+.footer{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 128px;
+    background-color: #aaf;
+}</p>
+<p>alert('hello');</p>
+<p>jqueryを追加
+mongocrud&gt; cd client
+mongocrud/client&gt; bower init
+mongocrud/client&gt; bower install jquery --save</p>
+<p>まとまりが無くなってきた。
+別のページに整理しなおそう。
+あとから、coffee-scriptやtypescritpを導入すると手順としては冗長になりすぎるな。
+最初から、NoDemon, Express, BrowserSyync, gulpfile.coffee, typescript, scssの構成にしよう。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/11/20/starting_jade/" class="u-url">Jadeを入れてみる</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/11/20/starting_jade/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-11-20T00:00:00+09:00" itemprop="datePublished" title="2015-11-20 00:00">2015-11-20 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>練習用に入手してきた”HTML5/CSS3 モダンコーディング”を写経しながらjadeを取り入れてみる。
+extendでlayoutを共有したかったのでejsからjadeに取り換えてみた。
+sassも取り入れようかと思ったが思いとどまった。
+どんどん拡大・拡散していくgulp環境なので控えめにしないと手に負えなくなりそうな感じだ。
+gulp向けにjade適用plugin(ejs版の改造)を作ってみた。
+既にそういうプラグインも存在していそうであるが、
+このくらいなら自作した方が早かったり。
+jade-applyer.js
+var through = require('through2');
+var gutil = require('gulp-util');
+var fs = require('fs');
+var jade = require('jade');</p>
+<p>module.exports = function (options, map) {</p>
+<pre class="code literal-block"><span></span>options = options || {};
+if (!options.filename) {
+    throw new gutil.PluginError('jade-applyer', '`filename` required');
+}
+options.pretty = true;
+
+map = map || {};
+
+return through.obj(function (file, enc, cb) {
+
+    if (file.isStream()) {
+        cb(new gutil.PluginError('jade-applyer', 'Streaming not supported'));
+        return;
+    }
+
+    try {
+        //console.log(file.frontMatter);
+        var template = fs.readFileSync(options.filename, 'utf-8');
+        var data = JSON.parse(JSON.stringify(file.frontMatter || {}));
+        if (!file.isNull()) {
+            data.page = file.contents.toString();
+        }
+        for (var key in map) {
+            data[key] = map[key];
+        }
+        file.contents = new Buffer(jade.compile(template, options)(data));
+        file.path = gutil.replaceExtension(file.path, ".html");
+        this.push(file);
+    } catch (err) {
+        this.emit('error', new gutil.PluginError('jade-applyer', err));
+    }
+
+    cb();
+});
 </pre>
 
 <p>}</p>
-<p>使う
-IMFStreamSinkからIMFTopologyNodeを作る。</p>
-<p>Creating Output Nodes</p>
-<pre class="code literal-block"><span></span><span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFTopologyNode</span><span class="o">&gt;</span> <span class="nt">pOutputNode</span><span class="o">;</span>
-<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span> <span class="o">=</span> <span class="nt">MFCreateTopologyNode</span><span class="o">(</span><span class="nt">MF_TOPOLOGY_OUTPUT_NODE</span><span class="o">,</span> <span class="o">&amp;</span><span class="nt">pOutputNode</span><span class="o">)))</span>
-<span class="p">{</span>
-    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<p>シンタックスハイライトも適用してある程度体裁が整ってきた。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="qiita/gulpdesutateitsukunasaitowosheng-cheng-surugithub-pagesniburoguwozuo-ruxiang-ding/" class="u-url">gulpでスタティックなサイトを生成する(github-pagesにブログを作る想定)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="qiita/gulpdesutateitsukunasaitowosheng-cheng-surugithub-pagesniburoguwozuo-ruxiang-ding/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-11-15T04:45:49+09:00" itemprop="datePublished" title="2015-11-15 04:45">2015-11-15 04:45</time><span class="updated"> (更新日時
+                    <time class="dt-updated" datetime="2015-11-16T04:36:37+09:00" itemprop="dateUpdated" title="2015-11-16 04:36">2015-11-16 04:36</time>)</span>
+            </a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <p><a href="https://qiita.com/ousttrue/items/7f19291b8cee110a947a">https://qiita.com/ousttrue/items/7f19291b8cee110a947a</a></p>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/11/15/websocket_upgrade/" class="u-url">BrowserSyncのws設定を知らなかったせいでWebSocketのUpgradeがうまくいかなくてはまる</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/11/15/websocket_upgrade/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-11-15T00:00:00+09:00" itemprop="datePublished" title="2015-11-15 00:00">2015-11-15 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>前から写経しながら読んでいる
+「シングルページWebアプリケーション」がようやく終盤に差し掛かってきた。
+Socket.IOで接続するところがあるのだけど、独自にgulpからbrowserSyncを使っていてWebSocketがupgradeできずにはまる。
+Firefoxのconsoleにエラーが出て気になる気になる。
+gulpfile.js
+gulp.task('server', ['nodemon'], function () {
+    browser.init(null, {
+        proxy: 'http://localhost:7000',
+        port: 3000,
+        ws: true // &lt;- これが無いとTransportがpollingからupgradeできない
+    });
+});</p>
+<p>なかなか気付けなかった。
+その前に、socket.ioのnamespaceの指定でもはまってたのだが・・・。
+しかし、この本は実にいい本だ。自分のWebの知識レベルにちょうどあっていて、昨今の技術をキャッチアップして行く足がかりに
+すごく役にたった。
+この本が提唱する、
+mongodb -&gt; node.js + express + socket.IO -&gt; JQuery
+な構成をベースにgulpによる開発環境と、typescript、mithril、bootstrapなんかを盛って行く路線で
+寄り道しながら修行中。</p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/11/14/gulp_static_site/" class="u-url">gulpで静的サイト生成その２</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        ousttrue
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2015/11/14/gulp_static_site/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-11-14T00:00:00+09:00" itemprop="datePublished" title="2015-11-14 00:00">2015-11-14 00:00</time></a>
+            </p>
+                </div>
+            </header><div class="e-content entry-content">
+                    <div>
+<p>gulpで静的サイト生成その２
+引き続き、サイト生成作業を続行中。見た目は置いておいて(bootstrap入れたけど)機能を優先して作ろう。
+「次へ」と「前へ」のリンクを作れば内部リンクは揃う。
+gulpは自由度が高いのでなんとでもなるな。
+強まったmakeのようで非常にポテンシャルを感じる。
+中期的なも目標としてはローカルもしくはLAN内のnode.jsがホストとなるGUIをさくっと作れるようになるというものがあるのだが、
+関連項目が多すぎてひたすら拡がっていくのが危険だ。
+特に、インターネットで調べながらだと収束せずにひたすら拡散する傾向がある。
+anglar, backboneは避けようと思ったのだがmithrilは気になっているし、electronも気になっている。
+あと、typescriptもはやめに使いこなしたい。
+だいぶgulpがわかってきた
+「前へ」と「次へ」は全部のファイルをリストに投入してソートして隣通しのパスを得る必要がある。
+一度リストに投入してから前へと次へを処理した後で、再度リストの中身を一個ずつ後ろに渡せばいいじゃない。
+ということでやってみたらあっさりできた。
+野良プラグインの作り方が分かるとgulp面白いな。
+make-toc.js
+var through = require('through2');
+var gutil = require('gulp-util');
+var path = require('path');</p>
+<p>module.exports = function (outputFileName, options) {</p>
+<pre class="code literal-block"><span></span><span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
+<span class="kd">var</span> <span class="nx">dest</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dest</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">filelist</span> <span class="o">=</span> <span class="p">[];</span>
+
+<span class="kd">function</span> <span class="nx">transform</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">encoding</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// ファイルを集める</span>
+    <span class="nx">filelist</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+
+    <span class="c1">// callback()は必ず実行</span>
+    <span class="nx">callback</span><span class="p">();</span>
 <span class="p">}</span>
 
-<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFMediaSink</span><span class="o">&gt;</span> <span class="nt">pSink</span><span class="o">;</span>
-<span class="o">//</span> <span class="nt">自前のIMFMediaSinkを作る</span>
-<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span><span class="o">=</span><span class="nt">CreateCustomVideoRenderer</span><span class="o">(</span><span class="nt">IID_PPV_ARGS</span><span class="o">(&amp;</span><span class="nt">pSink</span><span class="o">))))</span><span class="p">{</span>
-    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">flush</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">filelist</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="c1">// sortすることで日付順に並ぶ</span>
+        <span class="nx">filelist</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span> <span class="nx">compareNumbers</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">path</span> <span class="o">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+        <span class="kd">var</span> <span class="nx">file</span> <span class="o">=</span> <span class="nx">filelist</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+        <span class="c1">// 目次</span>
+        <span class="kd">var</span> <span class="nx">output_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">cwd</span>: <span class="kt">file.cwd</span><span class="p">,</span>
+            <span class="nx">base</span>: <span class="kt">file.base</span><span class="p">,</span>
+            <span class="nx">path</span>: <span class="kt">file.base</span> <span class="o">+</span> <span class="nx">outputFileName</span><span class="p">,</span>
+        <span class="p">};</span>
+       <span class="c1">// console.log(output_map);</span>
+        <span class="kd">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">gutil</span><span class="p">.</span><span class="nx">File</span><span class="p">(</span><span class="nx">output_map</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s1">'&lt;ul&gt;\n'</span><span class="p">;</span>
+        <span class="c1">//console.log(filelist.length);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">filelist</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">filelist</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="kd">var</span> <span class="nx">rel</span> <span class="o">=</span> <span class="nx">dest</span> <span class="o">+</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="nx">f</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">base</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">);</span>
+            <span class="c1">//console.log(rel);              </span>
+            <span class="nx">html</span> <span class="o">+=</span> <span class="s1">'&lt;li&gt;&lt;a href="'</span> <span class="o">+</span> <span class="nx">rel</span> <span class="o">+</span> <span class="s1">'"&gt;'</span> <span class="o">+</span> <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">title</span> <span class="o">+</span> <span class="s1">'&lt;/a&gt;&lt;/li&gt;\n'</span><span class="p">;</span>
+
+            <span class="c1">// 各アイテムのfrontMatterにnextとprevを付ける</span>
+            <span class="c1">// 降順に並んでいる</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// 先頭</span>
+                <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+                <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">prev</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">path</span><span class="p">),</span> <span class="nx">filelist</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="nx">path</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">filelist</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// 終端</span>
+                <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">path</span><span class="p">),</span> <span class="nx">filelist</span><span class="p">[</span><span class="nx">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">path</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">);</span>
+                <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">prev</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">path</span><span class="p">),</span> <span class="nx">filelist</span><span class="p">[</span><span class="nx">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">path</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">);</span>
+                <span class="nx">f</span><span class="p">.</span><span class="nx">frontMatter</span><span class="p">.</span><span class="nx">prev</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">path</span><span class="p">),</span> <span class="nx">filelist</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="nx">path</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">html</span> <span class="o">+=</span> <span class="s1">'&lt;/ul&gt;\n'</span><span class="p">;</span>
+        <span class="nx">output</span><span class="p">.</span><span class="nx">contents</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Buffer</span><span class="p">(</span><span class="nx">html</span><span class="p">);</span>
+
+        <span class="c1">// filelistをoutputにくっつける</span>
+        <span class="nx">output</span><span class="p">.</span><span class="nx">filelist</span> <span class="o">=</span> <span class="nx">filelist</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">output</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// callback()は必ず実行</span>
+    <span class="nx">callback</span><span class="p">();</span>
 <span class="p">}</span>
 
-<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFStreamSink</span><span class="o">&gt;</span> <span class="nt">pSSink</span><span class="o">;</span>
-<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span><span class="o">=</span><span class="nt">pSink-</span><span class="o">&gt;</span><span class="nt">GetStreamSinkByIndex</span><span class="o">(</span><span class="nt">0</span><span class="o">,</span> <span class="o">&amp;</span><span class="nt">pSSink</span><span class="o">)))</span><span class="p">{</span>
-    <span class="err">//</span> <span class="err">まだ作っていないのでここでエラーになる</span>
-    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nt">if</span> <span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span> <span class="o">=</span> <span class="nt">pOutputNode-</span><span class="o">&gt;</span><span class="nt">SetObject</span><span class="o">(</span><span class="nt">pSSink</span><span class="p">.</span><span class="nc">Get</span><span class="o">())))</span>
-<span class="p">{</span>
-    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
-<span class="p">}</span>
-</pre>
-
-<p>IMFStreamSinkがひとつは必要
-作る。
-class CustomVideoStreamSink: public IMFStreamSink
-{
-    ULONG m_nRefCount = 1;</p>
-<pre class="code literal-block"><span></span><span class="nt">const</span> <span class="nt">DWORD</span>                 <span class="nt">STREAM_ID</span><span class="o">;</span>
-<span class="nt">CCritSec</span><span class="o">&amp;</span>                   <span class="nt">m_critSec</span><span class="o">;</span>                      <span class="o">//</span> <span class="nt">critical</span> <span class="nt">section</span> <span class="nt">for</span> <span class="nt">thread</span> <span class="nt">safety</span>
-<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFMediaSink</span><span class="o">&gt;</span>               <span class="nt">m_pSink</span><span class="o">;</span>
-</pre>
-
-<p>public:
-    CustomVideoStreamSink(DWORD dwStreamId, CCritSec&amp; critSec
-            , IMFMediaSink *parent)
-        : STREAM_ID(dwStreamId)
-          , m_critSec(critSec)
-          , m_pSink(parent)
-    {
-    }</p>
-<pre class="code literal-block"><span></span>// IUnknown
-STDMETHODIMP_(ULONG) AddRef(void)override;
-STDMETHODIMP QueryInterface(REFIID iid, __RPC__deref_out _Result_nullonfailure_ void** ppv)override;
-STDMETHODIMP_(ULONG) Release(void)override;
-
-// IMFStreamSink
-STDMETHODIMP Flush(void)override;
-STDMETHODIMP GetIdentifier(__RPC__out DWORD* pdwIdentifier)override;
-STDMETHODIMP GetMediaSink(__RPC__deref_out_opt IMFMediaSink** ppMediaSink)override;
-STDMETHODIMP GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)override;
-STDMETHODIMP PlaceMarker(MFSTREAMSINK_MARKER_TYPE eMarkerType, __RPC__in const PROPVARIANT* pvarMarkerValue, __RPC__in const PROPVARIANT* pvarContextValue)override;
-STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override;
-
-// IMFMediaEventGenerator (from IMFStreamSink)
-STDMETHODIMP BeginGetEvent(IMFAsyncCallback* pCallback,IUnknown* punkState)override;
-STDMETHODIMP EndGetEvent(IMFAsyncResult* pResult, _Out_ IMFMediaEvent** ppEvent)override;
-STDMETHODIMP GetEvent(DWORD dwFlags, __RPC__deref_out_opt IMFMediaEvent** ppEvent)override;
-STDMETHODIMP QueueEvent(MediaEventType met, __RPC__in REFGUID guidExtendedType, HRESULT hrStatus, __RPC__in_opt const PROPVARIANT* pvValue)override;
+<span class="k">return</span> <span class="nx">through</span><span class="p">.</span><span class="nx">obj</span><span class="p">(</span><span class="nx">transform</span><span class="p">,</span> <span class="nx">flush</span><span class="p">);</span>
 </pre>
 
 <p>};</p>
-<p>メソッドの中身は
-return E_FAIL;</p>
-<p>でお茶を濁した。
-IMFMediaSink::AddStreamSink実装
-IMFMediaSink::GetStreamSinkById実装
-IMFMediaSink::GetStreamSinkByIndex実装
-IMFMediaSink::GetStreamSinkCount実装
-IMFMediaSink::RemoveStreamSink実装
-実行してみる。
-// Handler for Media Session events.
-void OnPlayerEvent(HWND hwnd, WPARAM pUnkPtr)
-{
-    HRESULT hr = g_pPlayer-&gt;HandleEvent(pUnkPtr);
-    if (FAILED(hr))
-    {
-        // ここに来る
-        NotifyError(hwnd, L"An error occurred.", hr);
-    }
-    UpdateUI(hwnd, g_pPlayer-&gt;GetState());
-}</p>
-<pre class="code literal-block"><span></span>// Get the event status. If the operation that triggered the event 
-// did not succeed, the status is a failure code.
-HRESULT hrStatus = S_OK;
-hr = pEvent-&gt;GetStatus(&amp;hrStatus);
+<p>resplit.js
+var through = require('through2');
+var gutil = require('gulp-util');
+var path = require('path');</p>
+<p>module.exports = function () {</p>
+<pre class="code literal-block"><span></span><span class="kd">function</span> <span class="nx">transform</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">encoding</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
-// Check if the async operation succeeded.
-if (SUCCEEDED(hr) &amp;&amp; FAILED(hrStatus)) 
-{
-    // ここに来る
-    hr=hrStatus;
-}
+    <span class="c1">// ファイルがnullの場合</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">isNull</span><span class="p">())</span> <span class="p">{</span>
+        <span class="c1">// 次のプラグインに処理を渡すためにthis.push(file)しておく</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+        <span class="c1">// callback()は必ず実行</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ファイルがstreamの場合（このサンプルプラグインはstreamに対応しない）</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">isStream</span><span class="p">())</span> <span class="p">{</span>
+        <span class="c1">// emit('error')を使って、プラグイン呼び出し側に'error'イベントを発生させる</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="k">new</span> <span class="nx">gutil</span><span class="p">.</span><span class="nx">PluginError</span><span class="p">(</span><span class="s1">'gulp-diff'</span><span class="p">,</span> <span class="s1">'Streaming not supported'</span><span class="p">));</span>
+        <span class="c1">// callback()は必ず実行</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="c1">// do something</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">file</span><span class="p">.</span><span class="nx">filelist</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">output</span><span class="o">=</span><span class="nx">file</span><span class="p">.</span><span class="nx">filelist</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">output</span><span class="p">);</span>           
+    <span class="p">}</span>
+
+    <span class="c1">// callback()は必ず実行</span>
+    <span class="nx">callback</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">return</span> <span class="nx">through</span><span class="p">.</span><span class="nx">obj</span><span class="p">(</span><span class="nx">transform</span><span class="p">);</span>
 </pre>
 
-<p>デバッガで調べたらIMFStreamSink::GetMediaSinkの直後にエラーになることがわかった。
-IMFStreamSink::GetMediaSink実装
-たんたんとエラーを直していく。
-IMFStreamSink::GetMediaTypeHandler実装
-HRESULT DX11VideoRenderer::CStreamSink::GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)
-{
-    CAutoLock lock(&amp;m_critSec);</p>
-<pre class="code literal-block"><span></span>if (ppHandler == NULL)
-{
-    return E_POINTER;
-}
-
-HRESULT hr = CheckShutdown();
-
-// This stream object acts as its own type handler, so we QI ourselves.
-if (SUCCEEDED(hr))
-{
-    hr = this-&gt;QueryInterface(IID_IMFMediaTypeHandler, (void**)ppHandler);
-}
-
-return hr;
-</pre>
-
-<p>}</p>
-<p>IMFMediaTypeHandlerが必要。
-StreamSinkにIMFMediaTypeHandlerを実装
-このインタフェースはStreamSinkが処理できるMediaTypeを示すので必要。
-サポートするフォーマットを決める。
-// IMFMediaTypeHandler
-STDMETHODIMP GetCurrentMediaType(<em>Outptr</em> IMFMediaType<strong> ppMediaType);
-STDMETHODIMP GetMajorType(__RPC__out GUID* pguidMajorType);
-STDMETHODIMP GetMediaTypeByIndex(DWORD dwIndex, <em>Outptr</em> IMFMediaType</strong> ppType);
-STDMETHODIMP GetMediaTypeCount(__RPC__out DWORD<em> pdwTypeCount);
-STDMETHODIMP IsMediaTypeSupported(IMFMediaType</em> pMediaType, <em>Outptr_opt_result_maybenull</em> IMFMediaType*<em> ppMediaType);
-STDMETHODIMP SetCurrentMediaType(IMFMediaType</em> pMediaType);</p>
-<p>PresentationClockが必要</p>
-<p>Presentation Clock</p>
-<p>IMFMediaSink::GetPresentationClock実装
-IMFMediaSink::SetPresentationClock実装
-MediaSinkにIMFClockStateSinkを実装
-// IMFClockStateSink methods
-STDMETHODIMP OnClockPause(MFTIME hnsSystemTime);
-STDMETHODIMP OnClockRestart(MFTIME hnsSystemTime);
-STDMETHODIMP OnClockSetRate(MFTIME hnsSystemTime, float flRate);
-STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset);
-STDMETHODIMP OnClockStop(MFTIME hnsSystemTime);</p>
-<p>Data Flow
-ここまでの実装でIMFSession::Startの呼び出しに応じてIMFClockStateSink::OnClockStartが呼ばれるようになった。
-Data Flow</p>
-<p>Media sinks use a pull model</p>
-<p>MesiaSink側からサンプルを取りに行かないといけない。</p>
-<p>[1] The client sets the media types and the presentation clock. The media sink registers itself with the presentation clock to receive notifications about clock state changes.
-[2][3][4] はPreroll。ミニマムを目指す今回は省略。
-[5] The client calls IMFPresentationClock::Start to start the presentation clock.
-[6] The presentation clock notifies the media sink that the clock is starting, by calling IMFClockStateSink::OnClockStart.
-[7] To get more data, each stream sink sends MEStreamSinkRequestSample events. In response to each of these events, the client gets the next sample and calls ProcessSample. This step is repeated until the presentation ends.</p>
-<p>State Changes
-IMFClockStateSinkの実装について。</p>
-<p>In addition, stream sinks must send the following events when they have completed the state transitions:</p>
-<p>OnClockStart, OnClockRestart: MEStreamSinkStarted event
-OnClockPause: MEStreamSinkPaused event
-OnClockStop: MEStreamSinkStopped event</p>
-<p>なるほど。
-STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset)override
-{
-    CAutoLock lock(&amp;m_csMediaSink);</p>
-<pre class="code literal-block"><span></span>HRESULT hr = CheckShutdown();
-if (SUCCEEDED(hr))
-{
-    //
-    // これが必要。このあとMEStreamSinkRequestSampleを受け付ける
-    //
-    hr = m_pStream-&gt;QueueEvent(MEStreamSinkStarted, GUID_NULL, hr, NULL);
-}
-if (SUCCEEDED(hr))
-{
-    hr = m_pStream-&gt;QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
-}
-
-return hr;
-</pre>
-
-<p>}</p>
-<p>ついにIMFStreamSink::ProcessSampleがコールされた。
-試しに下記のような実装にしてみたがこれではClock無視で最速でフレームを消化してしまうのでだめ。
-int m_count = 0;
-STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
-{
-    ++m_count;</p>
-<pre class="code literal-block"><span></span>auto hr = S_OK;
-hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
-
-return hr;
-</pre>
-
-<p>}</p>
-<p>MEStreamSinkRequestSampleをスケジューリングする</p>
-<p>Scheduled Work Items</p>
-<p>これを使ってみる。
-BOOL NeedMoreSamples(void)
-{
-    const DWORD cSamplesInFlight = /<em>m_SamplesToProcess.GetCount() +</em>/ m_cOutstandingSampleRequests;</p>
-<pre class="code literal-block"><span></span>return cSamplesInFlight &lt; SAMPLE_QUEUE_HIWATER_THRESHOLD;
-</pre>
-
-<p>}</p>
-<p>HRESULT RequestSamples(IMFAsyncResult* pAsyncResult)
-{
-    HRESULT hr = S_OK;</p>
-<pre class="code literal-block"><span></span>while (NeedMoreSamples())
-{
-    hr = CheckShutdown();
-    if (FAILED(hr))
-    {
-        break;
-    }
-
-    m_cOutstandingSampleRequests++;
-
-    hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, S_OK, NULL);
-}
-
-// 再突入
-hr=QueueRequest();
-
-return hr;
-</pre>
-
-<p>}</p>
-<p>// 正しいRateにする必要がある
-const INT64 interval = 1000 / 30;</p>
-<p>HRESULT QueueRequest()
-{
-    HRESULT hr = S_OK;</p>
-<pre class="code literal-block"><span></span>if (SUCCEEDED(hr))
-{
-    // Enqueue
-    MFWORKITEM_KEY cancelKey;
-    hr = MFScheduleWorkItem(&amp;m_WorkQueueCB, nullptr, -interval, &amp;cancelKey);
-}
-
-return hr;
-</pre>
-
-<p>}</p>
-<p>int m_count = 0;
-STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
-{
-    ++m_count;</p>
-<pre class="code literal-block"><span></span>m_cOutstandingSampleRequests--;
-
-// do something
-
-return  S_OK;
-</pre>
-
-<p>}</p>
-<p>DX11VideoRenderer::CSchedulerを使えばよいと思う。
-だいたい仕組みがわかった。
-DX11VideoRendererから引き算して最小限の構成にする(ProcessSampleが何もしない)場合、
-以下の部品を残す必要がありそう。</p>
-<p>Scheduler
-StreamSink: IMFStreamSink, IMFMediaTypeHandler
-MesiaSink: IMFMediaSink, IMFClockStateSink</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/media_foundation/" class="u-url">MeidaFoundation情報収集</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/media_foundation/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-25T00:00:00+09:00" itemprop="datePublished" title="2017-08-25 00:00">2017-08-25 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/media_foundation/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/media_foundation.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>DirectShow後継の動画・音声フレームワーク。</p>
-<p>sampleのありか</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation</p>
-<p>Win7Samplesに気付かず・・・
-はじめの一歩
-ここから始めるのがよい。</p>
-<p>Audio/Video Playback</p>
-<p>How to Play Media Files with Media Foundation</p>
-<p>Media Session Playback Example。ソースあり</p>
-<p>MediaSessionPlaybackExampleで動画を開くとこんな感じのTopologyになる。
-動画(MediaSource)---&gt;video-&gt; EVR(MediaSink)
-                 |
-                 +-&gt;audio-&gt; SAR(MediaSink)</p>
-<p>MediaSourceとMediaSinkを作ってつなぐのがMediaFoundationの基本概念。
-CMakeでビルドできるように取りまとめた。</p>
-<p>https://github.com/ousttrue/MediaFoundationSample/tree/master/MediaSessionPlaybackExample</p>
-<p>構成
-DirectShowとは違う感じのところがある。</p>
-<p>IMFMediaSourceがストレージとDemuxerを内包している
-なので途中で枝分かれするというよりも、IMFMediaStream -&gt; IMFTransform -&gt; IMFStreamSinkというラインが複数ある感じになる。</p>
-<p>+---------------+
-|IMFMediaSource |
-+---------------+
-|+-------------+|
-||IMFByteStream||
-|+-------------+|                                          VideoRenderer
-|  |  |Read     |                                          +------------+
-|  |  v         |     (compressed) decoder (uncompressed)  |IMFMediaSink|
-|  | +--------------+ IMFSample +------------+ IMFSample +-------------+|
-|  | |IMFMediaStream|----------&gt;|IMFTransform|----------&gt;|IMFStreamSink|+
-|  v +--------------+           +------------+           +-------------+
-| +--------------+              +------------+           +-------------+
-| |IMFMediaStream|-------------&gt;|IMFTransform|----------&gt;|IMFStreamSink|+
-| +--------------+  IMFSample   +------------+ IMFSample +-------------+|
-+---------------+   (compressed)           (uncompressed)  |IMFMediaSink|
-                                                           +------------+
-                                                           AudioRendrer</p>
-<p>TopoEdit</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/topoedit
-http://blogs.microsoft.co.il/pavely/2011/03/11/introduction-to-topoedit/</p>
-<p>いろんなAPI
-MediaSource(入力)とMediaSink(出力)を駆動する高レベルのAPIが複数ある。
-[Obsolete]古のPlayer</p>
-<p>IMFPMediaPlayer</p>
-<p>Important  Deprecated. This API may be removed from future releases of Windows. Applications should use the Media Session for playback.</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/mediafoundation/SimplePlay
-https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/MFPlayer2</p>
-<p>[Desktop]再生向けのSession
-Player向けのAPI。UWPには無い。</p>
-<p>Media Session
-http://blog.firefly-vj.net/2009/06/01/mediafoundation-play-with-mediasession.html
-Media Foundationの再生サンプルの状態管理をMSMで行う</p>
-<p>Topology</p>
-<p>Topologies</p>
-<p>変換向けのReader
-Clockが必要ない用途に向いている。
-各フレームを最速で処理したい場合や、MediaSourceがWebCamである場合など。</p>
-<p>Source Reader
-Using the Source Reader to Process Media Data
-The Source Reader does not support reverse playback, even if the media source does.
-MediaFoundationでID3D11Texture2Dに動画のフレームを読み込む 覚書β
-MediaFoundation — 動画の読み込み</p>
-<p>[Desktop][UWP]WinRTのEngine
-Windows.Mediaのバックエンド？。UWPとDesktopの両方で使える。</p>
-<p>Supported Microsoft Media Foundation APIs for Windows Phone 8
-Walkthrough: Using Microsoft Media Foundation for Windows Phone 8</p>
-<p>using a MediaElement control is a much quicker and easier way
-You also must use MF if you want to use video as a texture on 3-D geometry</p>
-<p>DXVAが簡単にできる。むしろUWPではDXVAしかない様子。情報少ないけど。</p>
-<p>Media engine native C++ video playback sample</p>
-<p>MediaSource</p>
-<p>Media Sources</p>
-<p>Writing a Custom Media Source
-Case Study: MPEG-1 Media Source</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/mpeg1source
-https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/wavsource</p>
-<p>Source Resolver</p>
-<p>Using the Source Resolver</p>
-<p>URL</p>
-<p>IMFSourceResolver::CreateObjectFromURL</p>
-<p>ByteStream</p>
-<p>IMFSourceResolver::CreateObjectFromByteStream</p>
-<p>ByteStreamを自作する
-MP3 File Source</p>
-<p>https://msdn.microsoft.com/en-us/library/windows/desktop/ff685299(v=vs.85).aspx</p>
-<p>MPEG-4 File Source</p>
-<p>https://msdn.microsoft.com/en-us/library/windows/desktop/dd757766(v=vs.85).aspx</p>
-<p>MediaSink</p>
-<p>Media Sinks</p>
-<p>EVR</p>
-<p>Enhanced Video Renderer
-MediaSink
-HWNDを渡してWindowに描画させることが出来る。
-Presenterを自作して描画をカスタマイズできる。
-D3D9 ?
-EVR カスタムプレゼンタを実装する</p>
-<p>SAR</p>
-<p>Streaming Audio Renderer</p>
-<p>AudioSink自作</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/wavsink</p>
-<p>VideoSink自作</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
-<p>Playbackに対応した自前描画を作るには。</p>
-<p>MediaSinkを自作する
-MediaSinkでDXVAを使う</p>
-<p>SampleGrabberSink</p>
-<p>MFCreateSampleGrabberSinkActivate</p>
-<p>MediaTransform</p>
-<p>Media Foundation Transforms</p>
-<p>About MFTs</p>
-<p>Comparison of MFTs and DMOs</p>
-<p>H.264</p>
-<p>H.264 Video Decoder</p>
-<p>DXVA
-DirectX Video Acceleration。</p>
-<p>About DXVA 2.0
-Adding a Decoder to a Topology</p>
-<p>MR_VIDEO_ACCELERATION_SERVICE
-D3d9</p>
-<p>Supporting DXVA 2.0 in Media Foundation
-DXVA Video Processing
-IDirect3DDeviceManager9</p>
-<p>D3D11</p>
-<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer
-Supporting Direct3D 11 Video Decoding in Media Foundation
-IMFDXGIDeviceManager</p>
-<p>Sample &amp; Buffer
-Sampleの中にBufferが入っている。</p>
-<p>Media Samples</p>
-<p>Video Samples</p>
-<p>Media Buffers
-https://github.com/loskutov/VideoCapture/blob/master/src/DesktopDuplicationSampleProvider.cpp</p>
-<p>MediaType</p>
-<p>Media Types</p>
-<p>Presentation Clock</p>
-<p>Presentation Clock</p>
-<p>Media Event</p>
-<p>Media Event Generators</p>
-<p>linkするライブラリ
-関数はドキュメントでわかるが定数はどれに入っているかわからない。
-わりと総当たりで試すはめになる。</p>
-<p>mf.lib
-mfplat.lib
-mfuuid.lib
-strmiids.lib
-wmcodecdspuuid.lib</p>
-<p>参考</p>
-<p>Media Foundation Programming Guide</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/usd/" class="u-url">PixarのUniversal Scene Descriptionをビルドしてみる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/usd/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-14T00:00:00+09:00" itemprop="datePublished" title="2017-08-14 00:00">2017-08-14 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/usd/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/usd.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>20170902。実はビルドスクリプトがあって、簡単になっていた。</p>
-<p>動画でCEDEC2017のセッションを聞いてよさげな気がしたので再度やってみた(ちょっと前に途中までやって放置していた)。
-usdviewが使えるようにするとよいらしい。</p>
-<h3>Pixar USD の Windows ビルド方法（2017/9 版）</h3>
-<p>自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
-環境は、Windows10(64bit) + VisualStudio2017 + VisualStudio2015のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)
-visualstudio補足
-VisualStudioは、最近のバージョンに限ってもいろいろある。</p>
-<p>VisualStudio2017(MSVC14.1)のみ
-VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)
-VisualStudio2015(MSVC14.0)のみ
-Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</p>
-<p>ものによってvcvars.batの場所が違って、bjamとかdistutilsがコンパイラの発見に失敗したりする場合があるようだ。
-cl.exeが見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
-一応、
-VisualStudio2017 - x64 native tools command promptからはじめる。
-CMakeはVisualStudioの検出にあまり失敗しないので、おもにBoostのビルド対策。
-効果があったかは不明。
-D:\work&gt; cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.10.25019 for x64
-Copyright (C) Microsoft Corporation.  All rights reserved.</p>
-<p>使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]</p>
-<p>VS2017しか入っていないとき
-build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラはVS2008(MSVC9.0)らしい。</p>
-<p><a href="https://www.microsoft.com/en-us/download/details.aspx?id=44266">https://www.microsoft.com/en-us/download/details.aspx?id=44266</a></p>
-<p>python補足
-Python27以外のPythonが入っているとはまる率が上がる。</p>
-<pre class="code literal-block"><span></span><span class="nt">D</span><span class="o">:</span><span class="err">\</span><span class="nt">work</span><span class="o">&gt;</span> <span class="nt">python</span> <span class="nt">-V</span>
-<span class="nt">Python</span> <span class="nt">3</span><span class="p">.</span><span class="nc">6</span><span class="p">.</span><span class="nc">0</span> <span class="o">::</span> <span class="nt">Anaconda</span> <span class="nt">4</span><span class="p">.</span><span class="nc">3</span><span class="p">.</span><span class="nc">0</span> <span class="o">(</span><span class="nt">64-bit</span><span class="o">)</span>
-
-<span class="nt">違うPythonだー</span><span class="err">。</span>
-<span class="nt">D</span><span class="o">:</span><span class="err">\</span><span class="nt">work</span><span class="o">&gt;</span> <span class="nt">set</span> <span class="nt">PATH</span><span class="o">=</span><span class="nt">D</span><span class="o">:</span><span class="err">\</span><span class="nt">Python27</span><span class="o">;</span><span class="nt">D</span><span class="o">:</span><span class="err">\</span><span class="nt">Python27</span><span class="err">\</span><span class="nt">Scripts</span><span class="o">;%</span><span class="nt">PATH</span><span class="o">%</span>
-<span class="nt">D</span><span class="o">:</span><span class="err">\</span><span class="nt">work</span><span class="o">&gt;</span> <span class="nt">python</span> <span class="nt">-V</span>
-<span class="nt">Python</span> <span class="nt">2</span><span class="p">.</span><span class="nc">7</span><span class="p">.</span><span class="nc">14rc1</span>
-<span class="nt">D</span><span class="o">:</span><span class="err">\</span><span class="nt">work</span><span class="o">&gt;</span> <span class="nt">pip</span> <span class="nt">install</span> <span class="nt">pyside</span>
-<span class="nt">Collecting</span> <span class="nt">pyside</span>
-  <span class="nt">Downloading</span> <span class="nt">PySide-1</span><span class="p">.</span><span class="nc">2</span><span class="p">.</span><span class="nc">4-cp27-none-win_amd64</span><span class="p">.</span><span class="nc">whl</span> <span class="o">(</span><span class="nt">45</span><span class="p">.</span><span class="nc">0MB</span><span class="o">)</span>
-    <span class="nt">100</span><span class="o">%</span> <span class="o">|</span><span class="err">################################</span><span class="o">|</span> <span class="nt">45</span><span class="p">.</span><span class="nc">0MB</span> <span class="nt">36kB</span><span class="o">/</span><span class="nt">s</span>
-<span class="nt">Installing</span> <span class="nt">collected</span> <span class="nt">packages</span><span class="o">:</span> <span class="nt">pyside</span>
-<span class="nt">Successfully</span> <span class="nt">installed</span> <span class="nt">pyside-1</span><span class="p">.</span><span class="nc">2</span><span class="p">.</span><span class="nc">4</span>
-</pre>
-
-<p>python使いたるもの２系、３系両方入っていたりするものである。
-cloneしてビルドスクリプトを実行</p>
-<pre class="code literal-block"><span></span>D:\work&gt; git clone https://github.com/PixarAnimationStudios/USD
-
-D:\work&gt; mkdir USD_build
-D:\work&gt; cd USD_build
-D:\work\USD_build&gt;
-
-D:\work\USD_build&gt; python ..\USD\build_scripts\build_usd.py
-usage: build_usd.py [-h] [-n] [-v | -q] [--build BUILD]
-                    [--generator GENERATOR]
-                    [--build-shared | --build-monolithic] [--src SRC]
-                    [--inst INST] [--force FORCE_BUILD] [--force-all]
-                    [--tests | --no-tests] [--docs | --no-docs]
-                    [--imaging | --usd-imaging | --no-imaging]
-                    [--ptex | --no-ptex] [--embree | --no-embree]
-                    [--embree-location EMBREE_LOCATION]
-                    [--alembic | --no-alembic] [--hdf5 | --no-hdf5]
-                    [--maya | --no-maya] [--maya-location MAYA_LOCATION]
-                    [--katana | --no-katana]
-                    [--katana-api-location KATANA_API_LOCATION]
-                    [--houdini | --no-houdini]
-                    [--houdini-location HOUDINI_LOCATION]
-                    install_dir
-build_usd.py: error: too few arguments
-
-D:\work\USD_build&gt; python ..\USD\build_scripts\build_usd.py .
-ERROR: CMake not found -- please install it and adjust your PATH
-</pre>
-
-<p>こんな風に足りないツールのメッセージが出るのでせっせとインストールしてパスを設定する。</p>
-<blockquote>
-<p>set PATH=D:\Program Files\CMake\bin;%PATH%
-set PATH=D:\Program Files\NASM;%PATH%</p>
-</blockquote>
-<p>build…</p>
-<h3>Alembicとか無しの最小ビルド。</h3>
-<pre class="code literal-block"><span></span>D:\work\USD_build&gt; python ..\USD\build_scripts\build_usd.py .
-
-Building with settings:
-  USD source directory          D:\work\USD
-  USD install directory         D:\work\USD_build
-  3rd-party source directory    D:\work\USD_build\src
-  3rd-party install directory   D:\work\USD_build
-  Build directory               D:\work\USD_build\build
-
-  Building                      Shared libraries
-    Imaging                     On
-      Ptex support:             Off
-    UsdImaging                  On
-    Documentation               Off
-    Tests                       Off
-    Alembic Plugin              Off
-      HDF5 support:             Off
-    Maya Plugin                 Off
-    Katana Plugin               Off
-    Houdini Plugin              Off
-
-    Dependencies                zlib, boost, TBB, JPEG, TIFF, PNG, OpenEXR, GLEW, OpenImageIO, OpenSubdiv, PyOpenGL
-
-STATUS: Installing zlib...
-STATUS: Installing boost...
-STATUS: Installing TBB...
-STATUS: Installing JPEG...
-STATUS: Installing TIFF...
-STATUS: Installing PNG...
-</pre>
-
-<p>こんな感じに順番にビルドが進んでいく。
-pngのビルドでこけた
-pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。</p>
-<p>何故か、zlibへのリンクがうまくいっていない？
-CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
-pythonをフルパスで指定したらなんか治った。違うPythonが意図せず使われていたか。
-dos窓は、whichコマンドが無いしよくわからん。</p>
-<pre class="code literal-block"><span></span>work\USD_build&gt; D:\python27\python ..\USD\build_scripts\build_usd.py . --force png
-
-STATUS: Installing PNG...
-STATUS: Installing OpenEXR...
-STATUS: Installing GLEW...
-STATUS: Installing OpenImageIO...
-STATUS: Installing OpenSubdiv...
-STATUS: Installing PyOpenGL...
-STATUS: Installing PyOpenGL...
-STATUS: Installing USD...
-
-Success! To use USD, please ensure that you have:
-  The following in your PYTHONPATH environment variable:
-    D:\dev\_alembic\USD_build\lib\python
-
-  The following in your PATH environment variable:
-    D:\dev\_alembic\USD_build\bin
-    D:\dev\_alembic\USD_build\lib
-</pre>
-
-<p>ビルドできた。</p>
-<h3>Boost.Pythonメモ</h3>
-<p>boost_python-vc140-mt-1_61.dllがpython36.dllとか違うのにリンクしてしまう場合。
-最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。
-USD_BUILD/user-conifg.jam
-using python
-    : 2.7                   # Version
-    : C:\Python27\python.exe      # Python Path
-    : C:\Python27\include         # include path
-    : C:\Python27\libs            # lib path(s)
-    ;</p>
-<p>を作って環境変数BOOST_BUILD_PATHをuser-config.jamのあるディレクトリに指定する。
-%USERROFILE%\user-config.jamに作ってBOOST_BUILD_PATH無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。</p>
-<p>http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</p>
-<p>WindowsのBoost.Pythonは作るときも使うときもリンクではまる。
-usdviewを使ってみる
-USD_BUILD/bin/usdviewがある。
-USD_BUILD\bin&gt; D:\python27\python usdview</p>
-<p>sys.path
-Traceback (most recent call last):
-  File "usdview", line 25, in <module>
-    import pxr.Usdviewq as Usdviewq
-ImportError: No module named pxr.Usdviewq</module></p>
-<p>environ[‘PATH’]
-Traceback (most recent call last):
-  File "usdview", line 37, in <module>
-    Usdviewq.Launcher().Run()
-  File "D:\dev_alembic\USD_build\lib\python\pxr\Usdviewq__init__.py", line 54, in Run
-    valid = self.ValidateOptions(arg_parse_result)
-  File "D:\dev_alembic\USD_build\lib\python\pxr\Usdviewq__init__.py", line 167, in ValidateOptions
-    from pxr import Sdf
-  File "D:\dev_alembic\USD_build\lib\python\pxr\Sdf__init__.py", line 24, in <module>
-    import _sdf
-ImportError: DLL load failed: 指定されたモジュールが見つかりません。</module></module></p>
-<p>usdviewを改造してしまおう。
-環境変数PATHとPYTHONPATHを追加。
-usdview.cmd改造でもよいがpythonの方が書きやすいので。
-usdviewの冒頭のimport前に下記を追加。
-import os
-import sys</p>
-<p>basepath=os.path.dirname(os.path.dirname(os.path.abspath(<strong>file</strong>)))
-bin_dir=os.path.join(basepath, 'bin')
-lib_dir=os.path.join(basepath, 'lib')
-libpython_dir=os.path.join(lib_dir, 'python')</p>
-<p>sys.path.append(libpython_dir)
-os.environ['PATH']="%s;%s;" % (bin_dir, lib_dir) + os.environ['PATH']</p>
-<p>import pxr.Usdviewq as Usdviewq</p>
-<p>実行。
-USD_BUILD\bin&gt; D:\python27\python usdview
-usage: usdview [-h] [--renderer {opt,simple}] [--select PRIMPATH]
-               [--camera CAMERA] [--mask PRIMPATH[,PRIMPATH...]]
-               [--clearsettings] [--norender] [--unloaded] [--timing]
-               [--memstats {none,stage,stageAndImaging}]
-               [--numThreads NUMTHREADS] [--ff FIRSTFRAME] [--lf LASTFRAME]
-               [--complexity COMPLEXITY] [--quitAfterStartup]
-               usdFile
-usdview: error: too few arguments</p>
-<p>引数が必要と。
-cube.usd</p>
-<h2>usda 1.0</h2>
-<p>def Cube "Cube"
-{
-}</p>
-<p>実行。
-Warning: in Link at line 180 of D:\dev_alembic\USD\pxr\imaging\lib\hd\glslProgram.cpp -- Failed to link shader:
-Geometry shader(s) failed to link.
-Geometry link error: HW_UNSUPPORTED.
-ERROR: Internal compile error, error code: E_SC_LITERAL_NOT_DEFINED
-Shader not supported by HW</p>
-<p>Windowは出た。しかしglslのエラーで3DViewの描画ができぬ。
-Rx480がだめなのだろうか。
-GTX買わねば・・・
-Alembic追加する
-ToDo</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/pybullet/" class="u-url">PyBulletを使ってみる</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/pybullet/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-14T00:00:00+09:00" itemprop="datePublished" title="2017-08-14 00:00">2017-08-14 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/pybullet/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/pybullet.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>BulletPhysicsの公式Pythonバインディングが出てたので使ってみる。</p>
-<p>Windows10(64bit) + Python3.6
-pip</p>
-<blockquote>
-<p>C:\Python36\Scripts\pip.exe install pybullet</p>
-</blockquote>
-<p>cl.exe not found的な
-msvc-14.0なコンパイラがインストールされているにも関わらず出るなら
-これ
-かもしれない
-C:\Python36\Lib\distutils_msvccompiler.pyを修正すればいけるかも。
-    try:
-        out = subprocess.check_output(
-            'cmd /u /c "{}" {} &amp;&amp; set'.format(vcvarsall, plat_spec),
-            stderr=subprocess.STDOUT,
-        ).decode('utf-16le', errors='replace')
-        #######################################################################
-        if out.startswith("Error in script usage"):
-            out = subprocess.check_output(
-                'cmd /u /c "{}" {} &amp;&amp; set'.format("C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools.bat", plat_spec),
-                stderr=subprocess.STDOUT,
-            ).decode('utf-16le', errors='replace')
-        #######################################################################
-    except subprocess.CalledProcessError as exc:
-        log.error(exc.output)
-        raise DistutilsPlatformError("Error executing {}"
-                .format(exc.cmd))</p>
-<p>utf-8がどうこう的な
-いい加減WindowsはCP932を使うのやめて欲しいのだけど。
-chcp65001</p>
-<p>インストールできた。
-使ってみる</p>
-<p>pybullet quickstart guide</p>
-<p>日付が2017で思ったより新しい。むしろ、記述中くらいか。
-hello pybullet
-import pybullet as p
-physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
-p.setGravity(0,0,-10)
-planeId = p.loadURDF("plane.urdf")
-cubeStartPos = [0,0,1]
-cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
-boxId = p.loadURDF("r2d2.urdf",cubeStartPos, cubeStartOrientation)
-p.stepSimulation()
-cubePos, cubeOrn = p.getBasePositionAndOrientation(boxId)
-print(cubePos,cubeOrn)
-p.disconnect()</p>
-<p>plane.urdfはどこにあるのか。
-bullet3のソースの中にあった。bullet3/build/data/plane.urdf</p>
-<?xml version="0.0" ?><p><robot name="plane"><link name="planeLink">
-<contact><lateral_friction value="1"></lateral_friction></contact><inertial><origin rpy="0 0 0" xyz="0 0 0"></origin><mass value=".0"></mass><inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"></inertia></inertial><visual><origin rpy="0 0 0" xyz="0 0 0"></origin><geometry><mesh filename="plane.obj" scale="1 1 1"></mesh></geometry><material name="white"><color rgba="1 1 1 1"></color></material></visual><collision><origin rpy="0 0 0" xyz="0 0 -5"></origin><geometry><box size="30 30 10"></box></geometry></collision></robot></p>
-<p>なるほどー。
-ちょっとhelloを改造
-import os
-os.chdir('D:/dev/_python/bullet3/build/data') # urdfのあるところに移動</p>
-<p>import pybullet as p
-physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
-p.setGravity(0,0,-10)
-planeId = p.loadURDF("plane.urdf")
-cubeStartPos = [0,0,1]
-cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
-boxId = p.loadURDF("r2d2.urdf",cubeStartPos, cubeStartOrientation)</p>
-<p>while True: # とりあえずpythonを抜けないように
-    p.stepSimulation()
-    cubePos, cubeOrn = p.getBasePositionAndOrientation(boxId)
-    print(cubePos,cubeOrn)</p>
-<p>p.disconnect()</p>
-<p>面白そう。</p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/08/cmake_find_boost_python/" class="u-url">CMakeでBoost.Pythonを使う</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        ousttrue
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2017/08/cmake_find_boost_python/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-08-09T00:00:00+09:00" itemprop="datePublished" title="2017-08-09 00:00">2017-08-09 00:00</time></a>
-            </p>
-                        <p class="commentline">
-        
-    <a href="posts/2017/08/cmake_find_boost_python/#disqus_thread" data-disqus-identifier="cache/content/posts/2017/08/cmake_find_boost_python.html">コメント</a>
-
-
-                </p>
-</div>
-            </header><div class="e-content entry-content">
-                    <div>
-<p>Windows上のCMakeでFIND_PACKAGE(Boost)する件について。</p>
-<p>Boost.Pythonのビルド
-C:/boost_1_61_0に解凍して、b2 --with-pythonしたとする。
-のようなディレクトリ構成。
-C:/boost_1_61_0
-    stage
-        lib
-            boost_python.lib</p>
-<p>FIND_PACKAGE
-BOOST.Pythonを使う場合は下記の記述をして、-DBOOST_ROOT=C:/boost_1_61_0を指定してやるとcmakeはBoost.Pythonを見つけることができる。
-ただし、検索パスが${BOOST_ROOT}/stage/lib決め打ち。
-FIND_PACKAGE (Boost COMPONENTS PYTHON REQUIRED)
-MESSAGE(STATUS ${Boost_LIBRARIES})</p>
-<p>見つかった
-optimizedD:/lib/boost_1_61_0/stage/lib/boost_python-vc140-mt-1_61.libdebugD:/lib/boost_1_61_0/stage/lib/boost_python-vc140-mt-gd-1_61.lib</p>
-<p>Python3は？
-FIND_PACKAGE (Boost COMPONENTS python3 REQUIRED)
-MESSAGE(STATUS ${Boost_LIBRARIES})</p>
-<p>でいける。
-しかし、警告が出た。
-CMake Warning at D:/Program Files/CMake/share/cmake-3.9/Modules/FindBoost.cmake:1564 (message):
-  No header defined for python3; skipping header check
-Call Stack (most recent call first):
-  CMakeLists.txt:42 (FIND_PACKAGE)</p>
-<p>3がついてなくても同じだった
-stage/libに出力されているboost_python3.dllとboost_python.dllは同じバイナリぽい。
-static, sharedの呼び分けは？
-後で。
-FindBoost</p>
-<p>https://cmake.org/cmake/help/latest/module/FindBoost.html</p>
-<p>しかし
-FIND_PACKAGEした結果のBoost_LIBRARIESを使うのには注意が必要。
-ネイティブモジュール開発で、デバッグ版にRelease版のPythonをリンクする場合(通常そうする)に、Boost.PytnonもRelease版にリンクするべきなのでここではまりうる(コンパイルは通るが実行時に謎エラーが出る)。LINK_DIRECTORIESを使って、リンク対象はBOOSTのautolink頼りの方が確実かもしれない。</p>
-<p>BOOST_ALL_NO_LIB を定義して Boost_LIBRARIESにリンクする
-Boost_LIBRARIESを使わずに、BoostのAutoLinkに従う</p>
-<p>のいずれかになるが、ネイティブモジュール開発では後者がおすすめか。</p>
+<p>};</p>
+<p>gulfile.js
+gulp.task('posts', function () {
+    gulp.src(config.posts)
+    // frontMatter処理してhtml化する
+        .pipe($.frontMatter({ remove: true }))
+        .pipe(myFrontmatter())
+        .pipe($.markdown())
+    // まとめてsortしてメタ情報を付与して目次を出力する
+        .pipe(makeToc('index.html', { dest: 'posts' }))
+        .pipe(gulp.dest('build'))
+    // 再び分解する
+        .pipe(resplit())
+    // 以降通常
+        .pipe($.debug({ title: 'files:' }))
+    // テンプレートを適用して
+        .pipe(ejsApplyer({ filename: 'templates/page.ejs' }, { root_path: '../../../../' }))
+    // 出力
+        .pipe(gulp.dest('build/posts'))
+    ;
+});</p>
 </div>
                 </div>
             </article>
@@ -1986,7 +1486,7 @@ Boost_LIBRARIESを使わずに、BoostのAutoLinkに従う</p>
 <li class="previous"><a href="index-14.html" rel="prev">新しい記事</a></li>
             <li class="next"><a href="index-12.html" rel="next">過去の記事</a></li>
         </ul>
-<script>var disqus_shortname="nikolademo";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><!--End of body content--><footer id="footer">
+<!--End of body content--><footer id="footer">
             Contents © 2021         <a href="mailto:ousttrue@gmail.com">ousttrue</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
             
