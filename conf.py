@@ -236,10 +236,10 @@ POSTS = (
     ("content/posts/*.html", "posts", "post.tmpl"),
 )
 PAGES = (
-    ("pages/*.rst", "pages", "page.tmpl"),
-    ("pages/*.md", "pages", "page.tmpl"),
-    ("pages/*.txt", "pages", "page.tmpl"),
-    ("pages/*.html", "pages", "page.tmpl"),
+    ("content/pages/*.rst", "", "page.tmpl"),
+    ("content/pages/*.md", "", "page.tmpl"),
+    ("content/pages/*.txt", "", "page.tmpl"),
+    ("content/pages/*.html", "", "page.tmpl"),
 )
 
 # Below this point, everything is optional
@@ -1291,17 +1291,25 @@ MARKDOWN_EXTENSIONS = [
 # }
 # Other examples: https://getnikola.com/handbook.html#mapping-metadata-from-other-formats
 
+
 # Map metadata between types/values. (Runs after METADATA_MAPPING.)
 # Supported formats: nikola, yaml, toml, rest_docinfo, markdown_metadata
 # The value on the right should be a dict of callables.
 # METADATA_VALUE_MAPPING = {}
 # Examples:
+def fix_tag(tag: str):
+    tag = tag.lower()
+    if tag == 'c#':
+        tag = 'cs'
+    return tag
+
+
 METADATA_VALUE_MAPPING = {
     # "yaml": {"keywords": lambda value: ', '.join(value)},  # yaml: 'keywords' list -> str
     "toml": {
         # "widgets": lambda value: value.split(', '),  # nikola: 'widgets' comma-separated string -> list
         "tags":
-        lambda ls: [x.lower() for x in ls
+        lambda ls: [fix_tag(x) for x in ls
                     ]  # nikola: force lowercase 'tags' (input would be string)
     }
 }
