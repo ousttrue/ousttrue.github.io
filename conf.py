@@ -138,9 +138,11 @@ TRANSLATIONS_PATTERN = '{path}.{lang}.{ext}'
 
 NAVIGATION_LINKS = {
     DEFAULT_LANG: (
+        ("/books", "MemoBooks"),
         ("/archive.html", "Archives"),
         ("/categories/index.html", "Tags"),
         ("/rss.xml", "RSS feed"),
+        ("/about", "About"),
     ),
 }
 
@@ -234,6 +236,9 @@ POSTS = (
     ("content/posts/*.md", "posts", "post.tmpl"),
     ("content/posts/*.txt", "posts", "post.tmpl"),
     ("content/posts/*.html", "posts", "post.tmpl"),
+    ("content/github/*.md", "github", "post.tmpl"),
+    ("content/gist/*.md", "gist", "post.tmpl"),
+    ("content/qiita/*.md", "qiita", "post.tmpl"),
 )
 PAGES = (
     ("content/pages/*.rst", "", "page.tmpl"),
@@ -1002,7 +1007,7 @@ RSS_COPYRIGHT_FORMATS = CONTENT_FOOTER_FORMATS
 # systems.  The following comment systems are supported by Nikola:
 #   disqus, facebook, intensedebate, isso, muut, commento, utterances
 # You can leave this option blank to disable comments.
-# COMMENT_SYSTEM = "disqus"
+COMMENT_SYSTEM = ""
 # And you also need to add your COMMENT_SYSTEM_ID which
 # depends on what comment system you use. The default is
 # "nikolademo" which is a test account for Disqus. More information
@@ -1013,11 +1018,11 @@ RSS_COPYRIGHT_FORMATS = CONTENT_FOOTER_FORMATS
 # WARNING: if a page would conflict with the index file (usually
 #          caused by setting slug to `index`), the PAGE_INDEX
 #          will not be generated for that directory.
-# PAGE_INDEX = False
+PAGE_INDEX = False
 # Enable comments on pages (i.e. not posts)?
-# COMMENTS_IN_PAGES = False
+COMMENTS_IN_PAGES = False
 # Enable comments on picture gallery pages?
-# COMMENTS_IN_GALLERIES = False
+COMMENTS_IN_GALLERIES = False
 
 # What file should be used for directory indexes?
 # Defaults to index.html
