@@ -124,20 +124,95 @@ nikola は DoIt の task を生成する。
 
 最低限
 
+| path                   | url | 必須   |                                                    |
+|------------------------|-----|--------|----------------------------------------------------|
+| bundles                |     | 必須   | 空ファイルでもOk                                   |
+| templates/index.tmpl   | /   | 必須   | top page                                           |
+| templates/post.tmpl    |     | 必須   | 各記事                                             |
+| templates/page.tmpl    |     | 必須   | 各記事                                             |
+| templates/archive.tmpl |     | 必須   |                                                    |
+| templates/gallery.tmpl |     | 必須   |                                                    |
+| templates/list.tmpl    |     | 必須   |                                                    |
+| templates/listing.tmpl |     | 必須   |                                                    |
+| templates/tag.tmpl     |     | 必須   |                                                    |
+| templates/tags.tmpl    |     | 必須   |                                                    |
+| THEME_NAME.theme       |     | option | Theme meta files                                   |
+| templates/base.tmpl    |     | option | すべての tmpl が継承することで一貫した見た目にする |
+
+### base.tmpl
+
+```html
+<html>
+
+<body>
+    <h1 id="brand">
+        <a href="{{ _link('root', None, lang) }}" title="{{ blog_title|e }}" rel="home">
+            <span id="blog-title">{{ blog_title|e }}</span>
+        </a>
+    </h1>
+    <hr>
+    <main id="content">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>
 ```
-bundles
-templates/archive.tmpl
-templates/gallery.tmpl
-templates/index.tmpl
-templates/list.tmpl
-templates/listing.tmpl
-templates/page.tmpl
-templates/post.tmpl
-templates/tag.tmpl
-templates/tags.tmpl
+
+### index.tmpl
+
+```html
+{% extends 'base.tmpl' %}
+
+{% block content %}
+{% if prevlink %}
+<a href="{{ prevlink }}" rel="prev">prev</a>
+{% endif %}
+
+{% for post in posts %}
+<h1 class="p-name entry-title">
+    <a href="{{ post.permalink() }}" class="u-url">{{ post.title()|e }}</a>
+</h1>
+{% endfor %}
+
+{% if nextlink %}
+<a href="{{ nextlink }}" rel="next">next</a>
+{% endif %}
+{% endblock %}
+```
+
+### post.tmpl
+
+```html
+{% extends 'base.tmpl' %}
+
+{% block content %}
+<h1 class="p-name entry-title" itemprop="headline name">
+    <a href="{{ post.permalink() }}" class="u-url">{{ post.title()|e}}</a>
+</h1>
+{{ post.text() }}
+{% endblock %}
+```
+
+### THEME_NAME.theme
+
+```
+[Theme]
+engine = jinja
+```
+
+## vscode
+
+`settings.json`
+
+```json
+    "files.associations": {
+        "*.tmpl": "html",
+    },
 ```
 
 ## ToDo
 
 * Theme 調整
 * TOC
+* syntax highlight
