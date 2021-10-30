@@ -124,20 +124,25 @@ nikola は DoIt の task を生成する。
 
 最低限
 
-| path                   | url | 必須   |                                                    |
-|------------------------|-----|--------|----------------------------------------------------|
-| bundles                |     | 必須   | 空ファイルでもOk                                   |
-| templates/index.tmpl   | /   | 必須   | top page                                           |
-| templates/post.tmpl    |     | 必須   | 各記事                                             |
-| templates/page.tmpl    |     | 必須   | 各記事                                             |
-| templates/archive.tmpl |     | 必須   |                                                    |
-| templates/gallery.tmpl |     | 必須   |                                                    |
-| templates/list.tmpl    |     | 必須   |                                                    |
-| templates/listing.tmpl |     | 必須   |                                                    |
-| templates/tag.tmpl     |     | 必須   |                                                    |
-| templates/tags.tmpl    |     | 必須   |                                                    |
-| THEME_NAME.theme       |     | option | Theme meta files                                   |
-| templates/base.tmpl    |     | option | すべての tmpl が継承することで一貫した見た目にする |
+| path                   | url | 必須   |                                                             |
+|------------------------|-----|--------|-------------------------------------------------------------|
+| bundles                |     | 必須   | 空ファイルでもOk。copy from nikola/data/themes/base/bundles |
+| assets                 |     | option | copy from nikola/data/themes/base/assets                    |
+| templates/index.tmpl   | /   | 必須   | top page                                                    |
+| templates/post.tmpl    |     | 必須   | 各記事                                                      |
+| templates/page.tmpl    |     | 必須   | 各記事                                                      |
+| templates/archive.tmpl |     | 必須   |                                                             |
+| templates/gallery.tmpl |     | 必須   |                                                             |
+| templates/list.tmpl    |     | 必須   |                                                             |
+| templates/listing.tmpl |     | 必須   |                                                             |
+| templates/tag.tmpl     |     | 必須   |                                                             |
+| templates/tags.tmpl    |     | 必須   |                                                             |
+| THEME_NAME.theme       |     | option | Theme meta files                                            |
+| templates/base.tmpl    |     | option | すべての tmpl が継承することで一貫した見た目にする          |
+
+### bundles and assets
+
+`lib/python3.9/site-packages/nikola/data/themes/base` からコピーするとよさそう。
 
 ### base.tmpl
 

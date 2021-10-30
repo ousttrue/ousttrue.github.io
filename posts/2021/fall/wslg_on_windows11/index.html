@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../assets/js/all-nocdn.js"></script><title>Windows11 で wslg する | 三次元日誌</title>
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+    <hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">Windows11 で wslg する</a>
+</h1>
+<div>
+<p>PCを新調したので <code>Windows11</code> にアップグレードして wslg を試してみた。</p>
+<h3>WSLG</h3>
+<p><code>Ubuntu-CommPrev</code> をインストールすると <code>wslg</code> できる。</p>
+<pre class="code literal-block"><span></span>&gt; wsl -l
+Linux 用 Windows サブシステム ディストリビューション:
+Ubuntu-CommPrev (既定)
+Ubuntu-20.04
+</pre>
+
+<h3>mpd から pluse audio に出力してみる</h3>
+<ul>
+<li><a href="https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu">https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu</a></li>
+<li><a href="https://github.com/microsoft/wslg/issues/306">https://github.com/microsoft/wslg/issues/306</a></li>
+</ul>
+<pre class="code literal-block"><span></span>echo $PULSE_SERVER
+/mnt/wslg/PulseServer
+</pre>
+
+<p>環境変数 <code>$PULSE_SERVER</code> にファイルパスが入っているときは <code>unix socket</code> を使うという意味。</p>
+<p><code>/etc/mpd.conf</code></p>
+<pre class="code literal-block"><span></span>audio_output {
+       type     "pulse"
+       name     "My PULSE Device"
+       server   "/mnt/wslg/PulseServer" # $PULSE_SERVER
+}
+</pre>
+
+<p>という設定になる。<code>TCP</code> 経由ではなく <code>UNIX SOCKET</code> 経由なのに注意。</p>
+<pre class="code literal-block"><span></span>load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+</pre>
+
+<p>は使われない。</p>
+<h3>raw device の mount</h3>
+<p>予備の HDD を raw device としてマウントして mpd の sotrage として使ってみる。
+(OSが吹き飛ぶなどそれなりに危険な作業なので注意)</p>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-mount-disk">https://docs.microsoft.com/en-us/windows/wsl/wsl2-mount-disk</a></li>
+</ul>
+<h4>on windows</h4>
+<p>未使用のディスクだったので、管理から volume 削除してディスクをオフラインに変更した。</p>
+<p><code>&gt; wsl --mount &lt;DiskPath&gt; --bare</code></p>
+<p>でディスクを丸ごと <code>wsl</code> に送る。</p>
+<h4>on wsl</h4>
+<pre class="code literal-block"><span></span>$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      <span class="m">8</span>:0    <span class="m">0</span>   256G  <span class="m">0</span> disk
+sdb      <span class="m">8</span>:16   <span class="m">0</span> <span class="m">339</span>.7M  <span class="m">1</span> disk
+sdc      <span class="m">8</span>:32   <span class="m">0</span>   256G  <span class="m">0</span> disk /
+sdd      <span class="m">8</span>:48   <span class="m">0</span> <span class="m">931</span>.5G  <span class="m">0</span> disk
+</pre>
+
+<p>/dev/sdd となった。</p>
+<ul>
+<li>parted</li>
+<li>mkfs.ext4</li>
+<li>mount</li>
+</ul>
+<pre class="code literal-block"><span></span>$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      <span class="m">8</span>:0    <span class="m">0</span>   256G  <span class="m">0</span> disk
+sdb      <span class="m">8</span>:16   <span class="m">0</span> <span class="m">339</span>.7M  <span class="m">1</span> disk
+sdc      <span class="m">8</span>:32   <span class="m">0</span>   256G  <span class="m">0</span> disk /
+sdd      <span class="m">8</span>:48   <span class="m">0</span> <span class="m">931</span>.5G  <span class="m">0</span> disk
+<span class="sb">`</span>-sdd1   <span class="m">8</span>:49   <span class="m">0</span> <span class="m">465</span>.8G  <span class="m">0</span> part /mnt/data
+</pre>
+</div>
+    </main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>
