@@ -1,18 +1,26 @@
-<!--
-.. title: Windows11 で wslg する
-.. slug: wslg_on_windows11
-.. date: 2021-10-31 00:18:23 UTC+09:00
-.. tags:
-.. category: 
-.. link: 
-.. description: 
-.. type: text
--->
++++
+title = "Windows11 で wslg する"
+date = 2021-10-31 00:18:23 UTC+09:00
+tags = ["wsl"]
++++
+
 
 PCを新調したので `Windows11` にアップグレードして wslg を試してみた。
 
-## WSLG
+# WSLg
 
+## WSLg とは
+
+* <https://github.com/microsoft/wslg>
+* <https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/>
+* <https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/>
+
+ビジュアルを `Wayland` 、音声を `PulseAudio` を代行する WSLg 仮想マシンに転送することで、
+Linux の GUI アプリを使えるようにする仕組み。
+
+## Windows11 で試す
+
+Windows11 では、 `Windows Insider Program` にせずとも、
 `Ubuntu-CommPrev` をインストールすると `wslg` できる。
 
 ```
@@ -22,12 +30,16 @@ Ubuntu-CommPrev (既定)
 Ubuntu-20.04
 ```
 
-## mpd
+# X
+
+特に何も設定しなくても `xterm` とか `gvim` などの X11 のアプリは動作する。
+日本語Windows で 101 キーボード使っていると違うのになるとかあったので、その辺は設定ありそう。
+
+# PluseAudio
+
+## mpd から pluse audio に出力してみる
 
 * <https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu>
-
-### mpd から pluse audio に出力してみる
-
 * <https://github.com/microsoft/wslg/issues/306>
 
 ```
@@ -54,48 +66,6 @@ load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
 ```
 は使われない。
 
-### client
+### mpd client
 
-* <https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx?activetab=pivot:overviewtab>
-
-## raw device の mount
-
-予備の HDD を raw device としてマウントして mpd の sotrage として使ってみる。
-(OSが吹き飛ぶなどそれなりに危険な作業なので注意)
-
-* <https://docs.microsoft.com/en-us/windows/wsl/wsl2-mount-disk>
-
-### on windows
-
-未使用のディスクだったので、管理から volume 削除してディスクをオフラインに変更した。
-
-`> wsl --mount <DiskPath> --bare`
-
-でディスクを丸ごと `wsl` に送る。
-
-### on wsl
-
-```
-$ lsblk
-NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-sda      8:0    0   256G  0 disk
-sdb      8:16   0 339.7M  1 disk
-sdc      8:32   0   256G  0 disk /
-sdd      8:48   0 931.5G  0 disk
-```
-
-/dev/sdd となった。
-
-* parted
-* mkfs.ext4
-* mount
-
-```
-$ lsblk
-NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-sda      8:0    0   256G  0 disk
-sdb      8:16   0 339.7M  1 disk
-sdc      8:32   0   256G  0 disk /
-sdd      8:48   0 931.5G  0 disk
-`-sdd1   8:49   0 465.8G  0 part /mnt/data
-```
+* <https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx>

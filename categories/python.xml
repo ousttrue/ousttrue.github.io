@@ -1,5 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (pythonについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 31 Oct 2021 10:32:05 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>python の task runner invoke</title><link>https://ousttrue.github.io/posts/2021/invoke/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;python でちょっとしたツールを書くときに便利。
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (pythonについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 31 Oct 2021 17:57:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>サイトジェネレーターを nikola にしてみる</title><link>https://ousttrue.github.io/posts/2021/fall/nikola/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;また生成システムを変えてみる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/"&gt;https://getnikola.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;init&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; pip install "Nikola[extras]"
+&amp;gt; nikola init .
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href="https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore"&gt;https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore&lt;/a&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# nikola
+.doit.db*
+*.pyc
+/cache/
+/output/
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;conf.py&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# とりあえず &lt;/span&gt;
+&lt;span class="n"&gt;POSTS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.rst"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.txt"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; nikola auto --browser
+&lt;/pre&gt;
+
+&lt;p&gt;なんとなくプレビューできた。
+ええやん。&lt;/p&gt;
+&lt;h2&gt;zola から記事移植&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;POSTS&lt;/code&gt; のパス調整でもうできているのだけど、 &lt;code&gt;frontmatter&lt;/code&gt; の非互換がある。
+それを調べる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/handbook.html#metadata-fields"&gt;https://getnikola.com/handbook.html#metadata-fields&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;taxonomies.tags&lt;/code&gt; を &lt;code&gt;tags&lt;/code&gt; に書き換える&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;小文字強制&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;METADATA_VALUE_MAPPING&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="s2"&gt;"toml"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"tags"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+     &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h2&gt;github action で gh-pages&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;.github/workflows/nikola.yml&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;こんなもんかな。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Nikola&lt;/span&gt;
+
+&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;push&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;branches&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;nikola&lt;/span&gt;
+
+&lt;span class="n"&gt;jobs&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;runs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;latest&lt;/span&gt;
+    &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="n"&gt;ACTIONS_ALLOW_UNSECURE_COMMANDS&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+    &lt;span class="n"&gt;steps&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;checkout&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="s2"&gt;"Nikola[extras]"&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt;
+        &lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;nikola&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Deploy&lt;/span&gt;
+        &lt;span class="n"&gt;uses&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;v3&lt;/span&gt;
+        &lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+          &lt;span class="n"&gt;github_token&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;$&lt;/span&gt;&lt;span class="o"&gt;{{&lt;/span&gt; &lt;span class="n"&gt;secrets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;GITHUB_TOKEN&lt;/span&gt; &lt;span class="o"&gt;}}&lt;/span&gt;
+          &lt;span class="n"&gt;publish_dir&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;./&lt;/span&gt;&lt;span class="n"&gt;output&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;動作&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/internals.html"&gt;https://getnikola.com/internals.html&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;yapsy&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/extending.html"&gt;https://getnikola.com/extending.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;nikola/plugin_categories.py&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://yapsy.sourceforge.net/"&gt;http://yapsy.sourceforge.net/&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;build&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://pydoit.org/"&gt;DoIt&lt;/a&gt; で駆動されるらしい。&lt;/p&gt;
+&lt;p&gt;nikola は DoIt の task を生成する。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/"&gt;https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/iisaka51/items/052ffbd9ab3b12504228"&gt;タスクランナー Doit を使ってみよう&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Theme&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://getnikola.com/creating-a-theme.html"&gt;https://getnikola.com/creating-a-theme.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://getnikola.com/theming.html"&gt;https://getnikola.com/theming.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://iuk.hateblo.jp/entry/2016/10/28/040908"&gt;Nikola を windows でやるぞ 2&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;themes/custom&lt;/code&gt; フォルダを作る&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;conf.py&lt;/code&gt; の &lt;code&gt;THEME = "custom"&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最低限&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;path&lt;/th&gt;
+&lt;th&gt;url&lt;/th&gt;
+&lt;th&gt;必須&lt;/th&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;bundles&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;空ファイルでもOk。copy from nikola/data/themes/base/bundles&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;assets&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;option&lt;/td&gt;
+&lt;td&gt;copy from nikola/data/themes/base/assets&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/index.tmpl&lt;/td&gt;
+&lt;td&gt;/&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;top page&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/post.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;各記事&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/page.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;各記事&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/list.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;archive.html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/archive.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;{YEARE}/ archive.html から 年別 リンクをたどったところ&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/tags.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;categories/index.html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/tag.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;categories/{TAG_NAME}/index.html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/gallery.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/listing.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;THEME_NAME.theme&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;option&lt;/td&gt;
+&lt;td&gt;Theme meta files&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/base.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;option&lt;/td&gt;
+&lt;td&gt;すべての tmpl が継承することで一貫した見た目にする&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4&gt;bundles and assets&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;lib/python3.9/site-packages/nikola/data/themes/base&lt;/code&gt; からコピーするとよさそう。&lt;/p&gt;
+&lt;h4&gt;base.tmpl&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"brand"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ _link('root', None, lang) }}"&lt;/span&gt; &lt;span class="na"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ blog_title|e }}"&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"home"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;span&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"blog-title"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;{{ blog_title|e }}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;span&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;main&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"content"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        {% block content %}{% endblock %}
+    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;main&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h4&gt;index.tmpl&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;{% extends 'base.tmpl' %}
+
+{% block content %}
+{% if prevlink %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ prevlink }}"&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"prev"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;prev&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{% endif %}
+
+{% for post in posts %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"p-name entry-title"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ post.permalink() }}"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"u-url"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;{{ post.title()|e }}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{% endfor %}
+
+{% if nextlink %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ nextlink }}"&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"next"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;next&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{% endif %}
+{% endblock %}
+&lt;/pre&gt;
+
+&lt;h4&gt;post.tmpl&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;{% extends 'base.tmpl' %}
+
+{% block content %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"p-name entry-title"&lt;/span&gt; &lt;span class="na"&gt;itemprop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"headline name"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ post.permalink() }}"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"u-url"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;{{ post.title()|e}}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{{ post.text() }}
+{% endblock %}
+&lt;/pre&gt;
+
+&lt;h4&gt;THEME_NAME.theme&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Theme]&lt;/span&gt;
+&lt;span class="na"&gt;engine&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;jinja&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;vscode&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;settings.json&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class="s2"&gt;"files.associations"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nt"&gt;"*.tmpl"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;ToDo&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Theme 調整&lt;/li&gt;
+&lt;li&gt;TOC&lt;/li&gt;
+&lt;li&gt;syntax highlight&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>python</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/fall/nikola/</guid><pubDate>Fri, 15 Oct 2021 15:00:00 GMT</pubDate></item><item><title>python の task runner invoke</title><link>https://ousttrue.github.io/posts/2021/invoke/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;python でちょっとしたツールを書くときに便利。
 &lt;code&gt;make&lt;/code&gt; みたいにタスクを定義して、コマンドラインから実行する。
 task として定義した関数の引数に応じてコマンドライン引数をさばけるので &lt;code&gt;argparse&lt;/code&gt; せずにすませることができる。&lt;/p&gt;
 &lt;h3&gt;install&lt;/h3&gt;
@@ -161,5 +417,4 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
 &lt;p&gt;hydra viewer sample&lt;/p&gt;&lt;/div&gt;</description><category>cpp</category><category>python</category><category>repository</category><category>usd</category><guid>https://ousttrue.github.io/github/hydrahost/</guid><pubDate>Tue, 06 Oct 2020 03:41:08 GMT</pubDate></item><item><title>Windows で USD ことはじめ</title><link>https://ousttrue.github.io/qiita/windows-de-usd-kotohazime/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://qiita.com/ousttrue/items/b5f34e0f2441ca74467e"&gt;https://qiita.com/ousttrue/items/b5f34e0f2441ca74467e&lt;/a&gt;&lt;/p&gt;</description><category>c++</category><category>pixarusd</category><category>python</category><category>qiita</category><category>usd</category><category>vcpkg</category><guid>https://ousttrue.github.io/qiita/windows-de-usd-kotohazime/</guid><pubDate>Sun, 20 Sep 2020 05:07:09 GMT</pubDate></item><item><title>bpy_module</title><link>https://ousttrue.github.io/github/bpy_module/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/ousttrue/bpy_module"&gt;https://github.com/ousttrue/bpy_module&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;build blender as module&lt;/p&gt;&lt;/div&gt;</description><category>blender</category><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/bpy_module/</guid><pubDate>Mon, 02 Dec 2019 06:13:38 GMT</pubDate></item><item><title>cpptypeinfo</title><link>https://ousttrue.github.io/github/cpptypeinfo/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/ousttrue/cpptypeinfo"&gt;https://github.com/ousttrue/cpptypeinfo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;python clang cindex utility&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/cpptypeinfo/</guid><pubDate>Fri, 13 Sep 2019 17:52:42 GMT</pubDate></item><item><title>pyopengl-stub</title><link>https://ousttrue.github.io/github/pyopengl-stub/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/ousttrue/pyopengl-stub"&gt;https://github.com/ousttrue/pyopengl-stub&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;experimental pyi&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/pyopengl-stub/</guid><pubDate>Mon, 02 Sep 2019 04:42:17 GMT</pubDate></item><item><title>ljl</title><link>https://ousttrue.github.io/github/ljl/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/ousttrue/ljl"&gt;https://github.com/ousttrue/ljl&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;python launch.json launcher&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/ljl/</guid><pubDate>Fri, 30 Aug 2019 18:50:59 GMT</pubDate></item></channel></rss>
+&lt;p&gt;experimental pyi&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/pyopengl-stub/</guid><pubDate>Mon, 02 Sep 2019 04:42:17 GMT</pubDate></item></channel></rss>

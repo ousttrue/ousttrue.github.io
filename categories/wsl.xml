@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (wslについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/wsl.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 31 Oct 2021 17:57:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Windows11 で wslg する</title><link>https://ousttrue.github.io/posts/2021/fall/wslg_on_windows11/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;PCを新調したので &lt;code&gt;Windows11&lt;/code&gt; にアップグレードして wslg を試してみた。&lt;/p&gt;
+&lt;h2&gt;WSLg&lt;/h2&gt;
+&lt;h3&gt;WSLg とは&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/microsoft/wslg"&gt;https://github.com/microsoft/wslg&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/"&gt;https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/"&gt;https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ビジュアルを &lt;code&gt;Wayland&lt;/code&gt; 、音声を &lt;code&gt;PulseAudio&lt;/code&gt; を代行する WSLg 仮想マシンに転送することで、
+Linux の GUI アプリを使えるようにする仕組み。&lt;/p&gt;
+&lt;h3&gt;Windows11 で試す&lt;/h3&gt;
+&lt;p&gt;Windows11 では、 &lt;code&gt;Windows Insider Program&lt;/code&gt; にせずとも、
+&lt;code&gt;Ubuntu-CommPrev&lt;/code&gt; をインストールすると &lt;code&gt;wslg&lt;/code&gt; できる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&amp;gt; wsl -l
+Linux 用 Windows サブシステム ディストリビューション:
+Ubuntu-CommPrev (既定)
+Ubuntu-20.04
+&lt;/pre&gt;
+
+&lt;h2&gt;X&lt;/h2&gt;
+&lt;p&gt;特に何も設定しなくても &lt;code&gt;xterm&lt;/code&gt; とか &lt;code&gt;gvim&lt;/code&gt; などの X11 のアプリは動作する。
+日本語Windows で 101 キーボード使っていると違うのになるとかあったので、その辺は設定ありそう。&lt;/p&gt;
+&lt;h2&gt;PluseAudio&lt;/h2&gt;
+&lt;h3&gt;mpd から pluse audio に出力してみる&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu"&gt;https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/microsoft/wslg/issues/306"&gt;https://github.com/microsoft/wslg/issues/306&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;echo $PULSE_SERVER
+/mnt/wslg/PulseServer
+&lt;/pre&gt;
+
+&lt;p&gt;環境変数 &lt;code&gt;$PULSE_SERVER&lt;/code&gt; にファイルパスが入っているときは &lt;code&gt;unix socket&lt;/code&gt; を使うという意味。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/etc/mpd.conf&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;audio_output {
+       type     "pulse"
+       name     "My PULSE Device"
+       server   "/mnt/wslg/PulseServer" # $PULSE_SERVER
+}
+&lt;/pre&gt;
+
+&lt;p&gt;という設定になる。&lt;code&gt;TCP&lt;/code&gt; 経由ではなく &lt;code&gt;UNIX SOCKET&lt;/code&gt; 経由なのに注意。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+&lt;/pre&gt;
+
+&lt;p&gt;は使われない。&lt;/p&gt;
+&lt;h4&gt;mpd client&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx"&gt;https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>wsl</category><guid>https://ousttrue.github.io/posts/2021/fall/wslg_on_windows11/</guid><pubDate>Sat, 30 Oct 2021 15:18:23 GMT</pubDate></item><item><title>wsl で HDD を mount する</title><link>https://ousttrue.github.io/posts/2021/fall/wsl_rawdevice/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;h2&gt;raw device の mount&lt;/h2&gt;
+&lt;p&gt;予備の HDD を raw device としてマウントして mpd の sotrage として使ってみる。
+(OSが吹き飛ぶなどそれなりに危険な作業なので注意)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-mount-disk"&gt;https://docs.microsoft.com/en-us/windows/wsl/wsl2-mount-disk&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;on windows&lt;/h3&gt;
+&lt;p&gt;未使用のディスクだったので、管理から volume 削除してディスクをオフラインに変更した。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;&amp;gt; wsl --mount &amp;lt;DiskPath&amp;gt; --bare&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;でディスクを丸ごと &lt;code&gt;wsl&lt;/code&gt; に送る。&lt;/p&gt;
+&lt;h3&gt;on wsl&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      &lt;span class="m"&gt;8&lt;/span&gt;:0    &lt;span class="m"&gt;0&lt;/span&gt;   256G  &lt;span class="m"&gt;0&lt;/span&gt; disk
+sdb      &lt;span class="m"&gt;8&lt;/span&gt;:16   &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;339&lt;/span&gt;.7M  &lt;span class="m"&gt;1&lt;/span&gt; disk
+sdc      &lt;span class="m"&gt;8&lt;/span&gt;:32   &lt;span class="m"&gt;0&lt;/span&gt;   256G  &lt;span class="m"&gt;0&lt;/span&gt; disk /
+sdd      &lt;span class="m"&gt;8&lt;/span&gt;:48   &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;931&lt;/span&gt;.5G  &lt;span class="m"&gt;0&lt;/span&gt; disk
+&lt;/pre&gt;
+
+&lt;p&gt;/dev/sdd となった。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;parted&lt;/li&gt;
+&lt;li&gt;mkfs.ext4&lt;/li&gt;
+&lt;li&gt;mount&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      &lt;span class="m"&gt;8&lt;/span&gt;:0    &lt;span class="m"&gt;0&lt;/span&gt;   256G  &lt;span class="m"&gt;0&lt;/span&gt; disk
+sdb      &lt;span class="m"&gt;8&lt;/span&gt;:16   &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;339&lt;/span&gt;.7M  &lt;span class="m"&gt;1&lt;/span&gt; disk
+sdc      &lt;span class="m"&gt;8&lt;/span&gt;:32   &lt;span class="m"&gt;0&lt;/span&gt;   256G  &lt;span class="m"&gt;0&lt;/span&gt; disk /
+sdd      &lt;span class="m"&gt;8&lt;/span&gt;:48   &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;931&lt;/span&gt;.5G  &lt;span class="m"&gt;0&lt;/span&gt; disk
+&lt;span class="sb"&gt;`&lt;/span&gt;-sdd1   &lt;span class="m"&gt;8&lt;/span&gt;:49   &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;465&lt;/span&gt;.8G  &lt;span class="m"&gt;0&lt;/span&gt; part /mnt/data
+&lt;/pre&gt;&lt;/div&gt;</description><category>wsl</category><guid>https://ousttrue.github.io/posts/2021/fall/wsl_rawdevice/</guid><pubDate>Sat, 30 Oct 2021 15:18:23 GMT</pubDate></item><item><title>最近のWayland</title><link>https://ousttrue.github.io/posts/2021/fall/wayland/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://gitlab.freedesktop.org/wayland"&gt;https://gitlab.freedesktop.org/wayland&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/wayland-project/wayland"&gt;Core Wayland protocol and libraries (mirror)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/NilsBrause/waylandpp"&gt;https://github.com/NilsBrause/waylandpp&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/danvd/wlroots-eglstreams"&gt;https://github.com/danvd/wlroots-eglstreams&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://wayland-book.com/"&gt;https://wayland-book.com/&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;(2021) &lt;a href="https://gihyo.jp/admin/serial/01/ubuntu-recipe/0666"&gt;Ubuntu Weekly Recipe
+第666回　Waypipeを用いてWayland環境で「X転送 over SSH」っぽいことをしてみる&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;(2017) &lt;a href="https://qiita.com/maueki/items/34323b2762e3c3342c51"&gt;作って学ぶWayland&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;(2016) &lt;a href="https://qiita.com/naohikowatanabe/items/06a8b988b89b4b1ec899"&gt;Wayland の Client と Compositor の概念を理解する&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;Waypipe&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://gitlab.freedesktop.org/mstoeckl/waypipe"&gt;https://gitlab.freedesktop.org/mstoeckl/waypipe&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;(2019) &lt;a href="https://mstoeckl.com/notes/gsoc/blog.html"&gt;Network transparency with Wayland&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;WSLg&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/microsoft/wslg"&gt;https://github.com/microsoft/wslg&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;(2021) https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps
+(2020) &lt;a href="https://www.phoronix.com/scan.php?page=news_item&amp;amp;px=Microsoft-Writing-Wayland-Comp"&gt;Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>wayland</category><category>wsl</category><guid>https://ousttrue.github.io/posts/2021/fall/wayland/</guid><pubDate>Fri, 22 Oct 2021 15:00:00 GMT</pubDate></item></channel></rss>

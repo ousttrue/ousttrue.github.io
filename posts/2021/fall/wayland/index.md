@@ -1,7 +1,7 @@
 +++
 title = "最近のWayland"
 date = 2021-10-23
-tags = ["wayland"]
+tags = ["wayland", "wsl"]
 +++
 
 * <https://gitlab.freedesktop.org/wayland>
