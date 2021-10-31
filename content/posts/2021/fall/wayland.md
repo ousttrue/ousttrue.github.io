@@ -23,10 +23,3 @@ tags = ["wayland", "wsl"]
 * <https://gitlab.freedesktop.org/mstoeckl/waypipe>
 
 (2019) [Network transparency with Wayland](https://mstoeckl.com/notes/gsoc/blog.html)
-
-## WSLg
-
-<https://github.com/microsoft/wslg>
-
-(2021) https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps
-(2020) [Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts](https://www.phoronix.com/scan.php?page=news_item&px=Microsoft-Writing-Wayland-Comp)
