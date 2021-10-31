@@ -12,8 +12,10 @@ PCを新調したので `Windows11` にアップグレードして wslg を試�
 ## WSLg とは
 
 * <https://github.com/microsoft/wslg>
+* <https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps>
 * <https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/>
 * <https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/>
+(2020) [Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts](https://www.phoronix.com/scan.php?page=news_item&px=Microsoft-Writing-Wayland-Comp)
 
 ビジュアルを `Wayland` 、音声を `PulseAudio` を代行する WSLg 仮想マシンに転送することで、
 Linux の GUI アプリを使えるようにする仕組み。
