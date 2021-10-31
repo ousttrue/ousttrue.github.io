@@ -22,9 +22,12 @@ Ubuntu-CommPrev (既定)
 Ubuntu-20.04
 ```
 
-## mpd から pluse audio に出力してみる
+## mpd
 
 * <https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu>
+
+### mpd から pluse audio に出力してみる
+
 * <https://github.com/microsoft/wslg/issues/306>
 
 ```
@@ -50,6 +53,10 @@ audio_output {
 load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
 ```
 は使われない。
+
+### client
+
+* <https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx?activetab=pivot:overviewtab>
 
 ## raw device の mount
 

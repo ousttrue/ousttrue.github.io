@@ -1,3 +1,28 @@
+{% macro html_navigation_links_entries(navigation_links_source) %}
+{% for url, text in navigation_links_source[lang] %}
+{% if isinstance(url, tuple) %}
+<li> {{ text }}
+    <ul>
+        {% for suburl, text in url %}
+        {% if rel_link(permalink, suburl) == "#" %}
+        <li class="active"><a href="{{ permalink }}">{{ text }}<span class="sr-only"> {{ messages("(active)", lang)
+                    }}</span></a></li>
+        {% else %}
+        <li><a href="{{ suburl }}">{{ text }}</a></li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% else %}
+    {% if rel_link(permalink, url) == "#" %}
+<li class="active"><a href="{{ permalink }}">{{ text }}<span class="sr-only"> {{ messages("(active)", lang)
+            }}</span></a></li>
+{% else %}
+<li><a href="{{ url }}">{{ text }}</a></li>
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
 <!DOCTYPE html>
 <html>
 
@@ -22,7 +47,18 @@
             <span id="blog-title">{{ blog_title|e }}</span>
         </a>
     </h1>
+
+    <nav id="menu">
+        <ul>
+            {{ html_navigation_links_entries(navigation_links) }}
+            {{ html_navigation_links_entries(navigation_alt_links) }}
+            {{ template_hooks['menu']() }}
+            {{ template_hooks['menu_alt']() }}
+        </ul>
+    </nav>
+
     <hr>
+
     <main id="content">
         {% block content %}{% endblock %}
     </main>
