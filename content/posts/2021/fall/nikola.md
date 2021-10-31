@@ -131,12 +131,12 @@ nikola は DoIt の task を生成する。
 | templates/index.tmpl   | /   | 必須   | top page                                                    |
 | templates/post.tmpl    |     | 必須   | 各記事                                                      |
 | templates/page.tmpl    |     | 必須   | 各記事                                                      |
-| templates/archive.tmpl |     | 必須   |                                                             |
+| templates/list.tmpl    |     | 必須   | archive.html                                                |
+| templates/archive.tmpl |     | 必須   | {YEARE}/ archive.html から 年別 リンクをたどったところ      |
+| templates/tags.tmpl    |     | 必須   | categories/index.html                                       |
+| templates/tag.tmpl     |     | 必須   | categories/{TAG_NAME}/index.html                            |
 | templates/gallery.tmpl |     | 必須   |                                                             |
-| templates/list.tmpl    |     | 必須   |                                                             |
 | templates/listing.tmpl |     | 必須   |                                                             |
-| templates/tag.tmpl     |     | 必須   |                                                             |
-| templates/tags.tmpl    |     | 必須   |                                                             |
 | THEME_NAME.theme       |     | option | Theme meta files                                            |
 | templates/base.tmpl    |     | option | すべての tmpl が継承することで一貫した見た目にする          |
 
