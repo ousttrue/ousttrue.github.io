@@ -1,8 +1,31 @@
 {% extends 'base.tmpl' %}
+{% import 'post_title.tmpl' as post_title with context %}
 
 {% block content %}
 <h1 class="p-name entry-title" itemprop="headline name">
-    <a href="{{ post.permalink() }}" class="u-url">{{ post.title()|e}}</a>
+    {{ post_title.headline(post) }}
 </h1>
+
 {{ post.text() }}
+
+{% if post.prev_post or post.next_post %}
+<ul class="pager hidden-print">
+    {% if post.prev_post %}
+    <li class="previous">
+        <a href="{{ post.prev_post.permalink() }}" rel="prev" title="{{ post.prev_post.title()|e }}">
+            {{ post.prev_post.title()|e }} 👈
+        </a>
+    </li>
+    {% endif %}
+    {% if post.next_post %}
+    <li style="flex-grow: 1"></li>
+    <li class="next">
+        <a href="{{ post.next_post.permalink() }}" rel="next" title="{{ post.next_post.title()|e }}">
+            👉 {{ post.next_post.title()|e }}
+        </a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+
 {% endblock %}

@@ -1,7 +1,7 @@
 +++
-title = "nikola にしてみる"
+title = "サイトジェネレーターを nikola にしてみる"
 date = 2021-10-16
-tags = ["ssg"]
+tags = ["ssg", "python"]
 +++
 
 また生成システムを変えてみる。

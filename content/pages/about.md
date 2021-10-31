@@ -17,8 +17,8 @@ tags: []
 
 ## [github](https://github.com/ousttrue/)
 
-* [repositories](https://ousttrue.github.io/tags/repository/)
+* [repositories](/categories/repository/)
 
 ## [qiita](https://qiita.com/ousttrue)
 
-* [articles](https://ousttrue.github.io/tags/qiita/)
+* [articles](/categories/qiita/)
