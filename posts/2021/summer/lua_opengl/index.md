@@ -2,8 +2,7 @@
 title = "Lua で OpenGL"
 date = 2021-08-05
 tags = ["lua", "luajit", "OpenGL"]
-[extra]
-image = "glfw_sample.jpg"
+previewimage = "glfw_sample.jpg"
 +++
 
 imgui bind がだいたいできて軌道に乗ったので、glTF viewer の作成にとりかかる。

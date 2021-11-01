@@ -2,8 +2,7 @@
 title = "ImGui の API"
 date = 2021-07-28
 tags = ["imgui", "luajit", "ffi"]
-[extra]
-image = 'dockbuilder.jpg'
+previewimage = 'dockbuilder.jpg'
 +++
 
 <https://github.com/ousttrue/limgui>

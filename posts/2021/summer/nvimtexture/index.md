@@ -2,8 +2,7 @@
 title = "NvimTexture開発開始"
 date = 2021-08-22
 tags = ["nvim", "msgpack"]
-[extra]
-image = "nvimtexture.jpg"
+previewimage = "nvimtexture.jpg"
 +++
 
 `Nvy` の改造をしてだいたい構造を理解した。

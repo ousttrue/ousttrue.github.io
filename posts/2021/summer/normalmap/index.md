@@ -2,8 +2,7 @@
 title = "法線マップやってみる"
 date = 2021-09-05
 tags = ["OpenGL"]
-[extra]
-image = "mikk.jpg"
+previewimage = "mikk.jpg"
 +++
 
 glTFViewerの実装がてら法線マップの実装をやってみる。
