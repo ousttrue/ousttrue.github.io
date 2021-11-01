@@ -2,8 +2,7 @@
 title = "imgui の FFI が luajit で動くところまで作った"
 date = 2021-07-25
 tags = ["luajit", "ffi", "imgui", "libclang"]
-[extra]
-image = "./imgui_from_luajit.jpg"
+previewimage = "imgui_from_luajit.jpg"
 +++
 
 <https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua>

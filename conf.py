@@ -850,8 +850,8 @@ GALLERIES_DEFAULT_THUMBNAIL = None
 # (the thumbnail has ``.thumbnail`` added before the file extension by default,
 # but a different naming template can be configured with IMAGE_THUMBNAIL_FORMAT).
 
-IMAGE_FOLDERS = {'images': 'images'}
-# IMAGE_THUMBNAIL_SIZE = 400
+IMAGE_FOLDERS = {'content': 'images'}
+IMAGE_THUMBNAIL_SIZE = 100
 # IMAGE_THUMBNAIL_FORMAT = '{name}.thumbnail{ext}'
 
 # #############################################################################
@@ -1310,13 +1310,19 @@ def fix_tag(tag: str):
     return tag
 
 
+def fix_path(path: str):
+    path = f'../{path}'
+    print(path)
+    return path
+
+
 METADATA_VALUE_MAPPING = {
     # "yaml": {"keywords": lambda value: ', '.join(value)},  # yaml: 'keywords' list -> str
     "toml": {
         # "widgets": lambda value: value.split(', '),  # nikola: 'widgets' comma-separated string -> list
-        "tags":
-        lambda ls: [fix_tag(x) for x in ls
-                    ]  # nikola: force lowercase 'tags' (input would be string)
+        # nikola: force lowercase 'tags' (input would be string)
+        "tags": lambda ls: [fix_tag(x) for x in ls],
+        "previewimage": fix_path,
     }
 }
 

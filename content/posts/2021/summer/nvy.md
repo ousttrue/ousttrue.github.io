@@ -3,8 +3,7 @@ title = "nvim frontend nvy"
 date = 2021-08-07
 updated = 2021-08-29
 tags = ["nvim", "msgpack"]
-[extra]
-image = "nvy.jpg"
+previewimage = "nvy.jpg"
 +++
 
 よさげなレポジトリを発見した。

@@ -3,8 +3,7 @@ title = "luaメモ"
 date = 2021-07-27
 updated = 2021-08-15
 tags = ["lua", "luajit", "lsp", "dap"]
-[extra]
-image = "./lua.png"
+previewimage = "lua.png"
 +++
 
 <https://www.lua.org/docs.html>
