@@ -1,6 +1,6 @@
 +++
 title = "wsl で HDD を mount する"
-date = 2021-10-31 00:18:23 UTC+09:00
+date = 2021-10-30 00:18:23 UTC+09:00
 tags = ["wsl"]
 +++
 
@@ -46,3 +46,7 @@ sdc      8:32   0   256G  0 disk /
 sdd      8:48   0 931.5G  0 disk
 `-sdd1   8:49   0 465.8G  0 part /mnt/data
 ```
+
+## auto mount したい
+
+* <https://github.com/microsoft/WSL/issues/6073>
