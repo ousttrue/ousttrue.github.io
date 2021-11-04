@@ -11,4 +11,4 @@ tags: []
 
 * [rust練習帳](https://ousttrue.github.io/rust_exercise_book/)
 
-* [vimメモ](https://ousttrue.github.io/vim_memo/)
+* [vimメモ](https://ousttrue.github.io/my_nvim/)
