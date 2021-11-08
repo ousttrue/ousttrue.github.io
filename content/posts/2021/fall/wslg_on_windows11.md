@@ -7,35 +7,40 @@ tags = ["wsl"]
 
 PCを新調したので `Windows11` にアップグレードして wslg を試してみた。
 
+# その前に
+
+* [Windows 10と同じコンテキストメニューを使う](https://news.mynavi.jp/article/win11tips-6/)
+
 # WSLg
 
 ## WSLg とは
 
 * <https://github.com/microsoft/wslg>
 * <https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps>
-* <https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/>
-* <https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/>
-(2020) [Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts](https://www.phoronix.com/scan.php?page=news_item&px=Microsoft-Writing-Wayland-Comp)
+* (2021.10) <https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/>
+* (2021.04) <https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/>
+* (2020) [Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts](https://www.phoronix.com/scan.php?page=news_item&px=Microsoft-Writing-Wayland-Comp)
 
 ビジュアルを `Wayland` 、音声を `PulseAudio` を代行する WSLg 仮想マシンに転送することで、
 Linux の GUI アプリを使えるようにする仕組み。
 
 ## Windows11 で試す
 
-Windows11 では、 `Windows Insider Program` にせずとも、
-`Ubuntu-CommPrev` をインストールすると `wslg` できる。
+Windows11 では、 `Windows Insider Program` にせずとも使える。
 
-```
-> wsl -l
-Linux 用 Windows サブシステム ディストリビューション:
-Ubuntu-CommPrev (既定)
-Ubuntu-20.04
-```
+~~`Ubuntu-CommPrev` をインストールすると `wslg` できる。~~
+WSLで `/mnt/wslg` が存在していれば動作する状態になっている。
+Distribution による特別な設定は不要？
 
 # X
 
 特に何も設定しなくても `xterm` とか `gvim` などの X11 のアプリは動作する。
-日本語Windows で 101 キーボード使っていると違うのになるとかあったので、その辺は設定ありそう。
+
+## 101キーボード
+
+* [Windows 10 HomeでWSLgをさっそく試してみた](https://www.eisbahn.jp/yoichiro/2021/06/wslg.html)
+
+`setxkbmap -layout us` でなおった。
 
 # PluseAudio
 
@@ -71,3 +76,4 @@ load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
 ### mpd client
 
 * <https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx>
+
