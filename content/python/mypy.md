@@ -1,7 +1,7 @@
 ---
 title: "mypyでPythonい型チェックを取り入れる"
 date: 2017-10-15
-taxonomies: {tags: ["python"]}
+tags: ["python"]
 ---
 
 Pythonの型Annotationで型チェックする件について。

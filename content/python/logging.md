@@ -1,7 +1,7 @@
 ---
 title: python の logger
 date: 2019-04-30T23:19:20+09:00
-taxonomies: {tags: ['python']}
+tags: ['python']
 ---
 
 loggerメモ

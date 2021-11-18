@@ -1,7 +1,7 @@
 ---
 title: "hugoで作ったサイトにSphinxを埋めこむ"
 date: 2017-09-16
-taxonomies: {tags: []}
+tags: []
 ---
 
 MarkdownできるらしいのでSphinxを入れてみる。

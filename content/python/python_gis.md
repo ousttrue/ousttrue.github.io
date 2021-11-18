@@ -1,7 +1,7 @@
 ---
 title: pythonでGIS
 date: 2019-08-27
-taxonomies: {tags: ["python"]}
+tags: ["python"]
 ---
 
 Windows10。

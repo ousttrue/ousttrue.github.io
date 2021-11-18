@@ -1,7 +1,7 @@
 ---
 title: "Pythonのlogger"
 date: 2017-10-09
-taxonomies: {tags: ["python"]}
+tags: ["python"]
 ---
 
 Pythonのロガーの設定をどうすればいいのか。

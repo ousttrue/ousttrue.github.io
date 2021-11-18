@@ -1,7 +1,7 @@
 ---
 title: "PyQtのTreeWidget"
 date: 2017-10-14
-taxonomies: {tags: ["python", "qt"]}
+tags: ["python", "qt"]
 ---
 
 QTreeWigetの使い方
@@ -11,6 +11,7 @@ PyQt QTreeWidget サンプル
 PySide 編集可能なQTreeWidgetを作る
 
 Sample
+```python
 from logging import getLogger
 logger = getLogger(__name__)
 
@@ -74,6 +75,7 @@ if __name__ == '__main__':
     window.show()
     window.resize(640, 480)
     sys.exit(app.exec_())
+```
 
 TreeWidget
 scrollToItem
@@ -82,3 +84,4 @@ indexFromItem
 TreeWidgetItem
 setText
 childCount
+

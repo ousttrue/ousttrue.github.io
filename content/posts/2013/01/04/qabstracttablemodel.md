@@ -1,12 +1,12 @@
 ---
 title: "QTableViewとQAbstractTableModel"
 date: 2013-01-04
-taxonomies: {tags: []}
+tags: ["python", "qt"]
 ---
 
 ディレクトリ表示をする専用のウィジェットがあったような気がするが、練習のため実装。
 
-
+```python
 # !/usr/bin/env python
 # coding: utf-8
 
@@ -95,6 +95,7 @@ app = QApplication(sys.argv) w = MyWindow() w.chdir(“.”) w.show()
 sys.exit(app.exec_())
 if __name__ == “__main__“:
 main()
+```
 
 ToDo
 

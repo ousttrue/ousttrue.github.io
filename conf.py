@@ -237,6 +237,7 @@ POSTS = (
     ("content/posts/*.md", "posts", "post.tmpl"),
     ("content/posts/*.txt", "posts", "post.tmpl"),
     ("content/posts/*.html", "posts", "post.tmpl"),
+    ("content/python/*.md", "python", "post.tmpl"),
     ("content/github/*.md", "github", "post.tmpl"),
     ("content/gist/*.md", "gist", "post.tmpl"),
     ("content/qiita/*.md", "qiita", "post.tmpl"),

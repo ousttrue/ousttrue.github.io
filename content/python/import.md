@@ -1,7 +1,7 @@
 ---
 title: "pythonのmoduleとpackage周り"
 date: 2019-05-01T00:47:39+09:00
-taxonomies: {tags: ['python']}
+tags: ['python']
 ---
 
 `ImportError: attempted relative import with no known parent package`

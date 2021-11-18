@@ -34,6 +34,10 @@ open_action.triggered.connect(self.open_dialog)  # type: ignore
 
 * <https://doc.qt.io/qtforpython/tutorials/index.html>
 
+# Widgets
+
+* <https://doc.qt.io/qtforpython/PySide6/QtWidgets/index.html>
+
 # QMainWindow
 
 * <https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QMainWindow.html>
@@ -89,6 +93,17 @@ if __name__ == "__main__":
 
 * <https://ousttrue.github.io/glglue/samples/pyside6.html>
 
+# Signal
+
+* <https://www.pythoncentral.io/pysidepyqt-tutorial-creating-your-own-signals-and-slots/>
+
+# Timeline
+
+* <https://doc.qt.io/qtforpython/PySide6/QtCore/QTimeLine.html>
+
+# Tree
+
+* <https://fereria.github.io/reincarnation_tech/11_PySide/02_Tips/ViewModelDelegate/custom_model/>
 
 # メモ
 
