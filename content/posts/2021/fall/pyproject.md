@@ -14,6 +14,10 @@ tags = ["python"]
 `setup.py` を宣言的に書けるよ、詳しくは `setup.py` のリファンンスを見て。みたいになっているのだけど、
 書き方がよくわからんことが多かった。
 
+* (2016)[Python パッケージ管理技術まとめ (pip, setuptools, easy_install, etc)](https://www.yunabe.jp/docs/python_package_management.html)
+
+> 2013年に distribute は setuptools にマージされた
+
 ## pyproject.toml
 
 * (2019)[pyproject.toml とは何か](https://tech.515hikaru.net/post/2019-11-23-pyproject/)
@@ -55,6 +59,16 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
 `pyproject.toml` には `build-backend` の指定だけを記述して、 `setup.cfg` と併用するということでよさそう。
 
 * (2018)[Python の setup.py の内容を setup.cfg で管理する](https://astropengu.in/posts/23/)
+
+#### setup.cfg: metadata
+
+* https://packaging.python.org/specifications/core-metadata/
+
+#### setup.cfg: options
+
+##### setup.cfg: options.entry_points
+
+* <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>
 
 ### poetry
 
