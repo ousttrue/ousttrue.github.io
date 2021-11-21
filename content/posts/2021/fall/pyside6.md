@@ -30,7 +30,7 @@ open_action.triggered.connect(self.open_dialog)  # type: ignore
 * <https://github.com/microsoft/pylance-release/issues/196>
 * <https://github.com/microsoft/pylance-release/issues/333>
 
-# tutorials
+# Tutorials
 
 * <https://doc.qt.io/qtforpython/tutorials/index.html>
 

@@ -54,6 +54,8 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
 
 `pyproject.toml` には `build-backend` の指定だけを記述して、 `setup.cfg` と併用するということでよさそう。
 
+* (2018)[Python の setup.py の内容を setup.cfg で管理する](https://astropengu.in/posts/23/)
+
 ### poetry
 
 ```
