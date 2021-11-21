@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../assets/js/all-nocdn.js"></script><title>hugoで作ったサイトにSphinxを埋めこむ | 三次元日誌</title>
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../archive.html">Archives</a></li>
+<li><a href="../../categories/index.html">Tags</a></li>
+<li><a href="../../rss.xml">RSS feed</a></li>
+<li><a href="../../about">About</a></li>
+<li><a href="../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">hugoで作ったサイトにSphinxを埋めこむ
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2017-09-16T00:00:00+09:00" title="2017-09-16">2017-09-16</time>
+</li>
+</ul>
+</h1>
+
+<div>
+<p>MarkdownできるらしいのでSphinxを入れてみる。</p>
+<p>テストページ</p>
+<p>Sphinx install
+pyenvでpython-3.6.2を導入した。
+$ pyenv global 3.6.2
+$ python -V
+Python 3.6.2
+$ pip install sphinx</p>
+<p>http://www.sphinx-doc.org/en/stable/markdown.html</p>
+<p>ドキュメントを作ってみる</p>
+<p>project_name
+author_name
+version</p>
+<p>は必須で作る時に決めなければならない。
+$ sphinx-quickstart</p>
+<p>いろいろ質問が出てくるが面倒なのでリターン連打。
+ウイザード方式ではなくコマンドラインで一息に入力する方式だとこんな感じか。
+$ sphinx-quickstart -q -p project_name -a author_name -v 1.0 --sep directory_name
+Creating file directory_name↲/source/conf.py.
+Creating file directory_name↲/source/index.rst.
+Creating file directory_name↲/Makefile.
+Creating file directory_name↲/make.bat.</p>
+<p>Finished: An initial directory structure has been created.</p>
+<p>You should now populate your master file directory_name↲/source/index.rst and create other documentation
+source files. Use the Makefile to build the docs, like so:
+   make builder
+   where "builder" is one of the supported builders, e.g. html, latex or linkcheck.</p>
+<p>ディレクトリ構成はこんな感じに。
+directory_name
+    + souce
+        + conf.py
+        + index.rst
+    + Makefile
+    + build
+        + html # make htmlの出力</p>
+<p>hugoのサブフォルダにビルド結果をコピーする
+hugoroot
+    + sphinxroot
+        + build
+            +html
+    + public
+        sphinx # ../sphinxroot/build/html/*をコピーする</p>
+<p>hugosite$ sphinx-quickstart -q -p project_name -a author_name -v 1.0 --sep sphinxroot
+hugosite$ hugo
+hugosite$ pushd shphinxroot
+hugosite/sphinxroot$ make html
+hugosite/sphinxroot$ rsync -av build/html ../public/sphinx
+sending incremental file list
+created directory ../public/sphinx
+html/
+html/.buildinfo
+html/genindex.html
+html/index.html
+html/objects.inv
+html/search.html
+html/searchindex.js
+html/_sources/
+html/_sources/index.rst.txt
+html/_static/
+html/_static/ajax-loader.gif
+html/_static/alabaster.css
+html/_static/basic.css
+html/_static/comment-bright.png
+html/_static/comment-close.png
+html/_static/comment.png
+html/_static/custom.css
+html/_static/doctools.js
+html/_static/down-pressed.png
+html/_static/down.png
+html/_static/file.png
+html/_static/jquery-3.1.0.js
+html/_static/jquery.js
+html/_static/minus.png
+html/_static/plus.png
+html/_static/pygments.css
+html/_static/searchtools.js
+html/_static/underscore-1.3.1.js
+html/_static/underscore.js
+html/_static/up-pressed.png
+html/_static/up.png
+html/_static/websupport.js
+hugosite/sphinxroot$ popd</p>
+<p>rsyncの呼び方変更。ソースの指定の最後を/にすることでディレクトリそのものではなく中身を送る意味になる。
+$ rsync -av build/html/ ../public/sphinx
+sending incremental file list
+created directory ../public/sphinx
+./
+.buildinfo
+genindex.html
+index.html
+objects.inv
+search.html
+searchindex.js
+_sources/
+_sources/index.rst.txt
+_static/
+_static/ajax-loader.gif
+_static/alabaster.css
+_static/basic.css
+_static/comment-bright.png
+_static/comment-close.png
+_static/comment.png
+_static/custom.css
+_static/doctools.js
+_static/down-pressed.png
+_static/down.png
+_static/file.png
+_static/jquery-3.1.0.js
+_static/jquery.js
+_static/minus.png
+_static/plus.png
+_static/pygments.css
+_static/searchtools.js
+_static/underscore-1.3.1.js
+_static/underscore.js
+_static/up-pressed.png
+_static/up.png
+_static/websupport.js</p>
+<p>hugosite/public$ python -m http.server</p>
+<p>http://localhost:8000/sphinx/
+で生成したサイトが表示できた。
+livereloadで自動更新サーバー</p>
+<p>Python Livereload を使って Sphinx でドキュメントを書く
+https://pypi.python.org/pypi/livereload</p>
+<h2>!/usr/bin/env python</h2>
+<p>import os</p>
+<p>os.system('make html')</p>
+<p>from livereload import Server, shell</p>
+<p>server = Server()
+server.watch('source/<strong>/*.rst', shell('make html'))
+server.watch('source/</strong>/*.md', shell('make html'))
+server.serve(
+        open_url=False,
+        root='build/html',
+        port=8080,
+        host='0.0.0.0'
+        )</p>
+<p>markdownを使う</p>
+<p>Markdownを使う
+http://www.sphinx-doc.org/en/stable/markdown.html</p>
+<p>ImportError: cannot import name DocParser</p>
+<p>SphinxでMarkdownを使うときに注意すること</p>
+<p>バージョン固定
+いろいろエラーが出る。
+TypeError: 'NoneType' object is not callable</p>
+<p>documented that 1.6 breaks recommonmark
+Sphinx 1.5.x was the last working version for recommonmark 0.4.0</p>
+<p>$ pip install recommonmark==0.4.0
+$ pip install sphix==1.5</p>
+<p>1.5にすると・・・
+AttributeError: module 'locale' has no attribute 'normalize'</p>
+<p>localeがsphinx.localeで置き換えられとる。
+仕方ないので
+強制的に再インポートするコードを入れた。
+site-packages/sphinx/<strong>init</strong>.py
+def main(argv=sys.argv):
+    # reimport locale
+    if 'locale' in sys.modules:
+        del sys.modules['locale']
+    if sys.path[0].find('sphinx')!=-1:↲
+        head=sys.path.pop(0)↲
+    import locale↲</p>
+<pre class="code literal-block"><span></span>if sys.argv[1:2] == ['-M']:↲
+    sys.exit(make_main(argv))↲
+else:↲
+    sys.exit(build_main(argv))↲
+</pre>
+
+<p>とりあえず動くようになった。ぐぬぬ・・・
+TOC
+AutoStructifyでできると書いてあるがバージョンを0.4.0に固定したからかうまく動かぬ。
+eval_rstで。
+'''eval_rst
+.. toctree::</p>
+<p>item
+'''</p>
+<p>エラー
+TOCツリーにこの指定を入れるとエラーになる
+.. toctree::
+   :caption: Contents:↲</p>
+<p>themeを変える</p>
+<p>見やすいテーマを設定する</p>
+<p>日本語</p>
+<p>日本語セクションにアンカーが貼られるようにする</p>
+<p>github
+.nojekyllでいいらしいがうまくいかなかったので。</p>
+<p>https://github.com/michaeljones/sphinx-to-github</p>
+<p>python3だと修正が要る。python2では試していない。</p>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../posts/2017/08/vcpkg_chcp65001/" rel="prev" title="vcpkgでchcp 65001が必要な件">
+            vcpkgでchcp 65001が必要な件 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../github/pymsgpack/" rel="next" title="pyMsgPack">
+            👉 pyMsgPack
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

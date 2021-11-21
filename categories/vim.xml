@@ -1,2 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (vimについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/vim.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Mon, 08 Nov 2021 16:37:18 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>vimscriptからpythonするのを補助するpycallを作る</title><link>https://ousttrue.github.io/qiita/vimscriptkarapythonsurunowobu-zhu-surupycallwozuo-ru/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://qiita.com/ousttrue/items/d2f831199e4764d89bbc"&gt;https://qiita.com/ousttrue/items/d2f831199e4764d89bbc&lt;/a&gt;&lt;/p&gt;</description><category>plugin</category><category>python</category><category>qiita</category><category>vim</category><guid>https://ousttrue.github.io/qiita/vimscriptkarapythonsurunowobu-zhu-surupycallwozuo-ru/</guid><pubDate>Tue, 23 Apr 2019 17:29:17 GMT</pubDate></item></channel></rss>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (vimについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/vim.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 21 Nov 2021 10:03:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>vimscriptからpythonするのを補助するpycallを作る</title><link>https://ousttrue.github.io/qiita/vimscriptkarapythonsurunowobu-zhu-surupycallwozuo-ru/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://qiita.com/ousttrue/items/d2f831199e4764d89bbc"&gt;https://qiita.com/ousttrue/items/d2f831199e4764d89bbc&lt;/a&gt;&lt;/p&gt;</description><category>plugin</category><category>python</category><category>qiita</category><category>vim</category><guid>https://ousttrue.github.io/qiita/vimscriptkarapythonsurunowobu-zhu-surupycallwozuo-ru/</guid><pubDate>Tue, 23 Apr 2019 17:29:17 GMT</pubDate></item><item><title>WorkspaceFolder作成中</title><link>https://ousttrue.github.io/python/workspacefolder/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;https://github.com/ousttrue/WorkspaceFolder&lt;/p&gt;
+&lt;p&gt;要件は、&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WindowsとLinuxで共用にできる&lt;/li&gt;
+&lt;li&gt;実行時に、親フォルダを遡って設定(プロジェクトルートに &lt;code&gt;Duck.toml&lt;/code&gt; を配置する約束`)を探しに行く能力がある&lt;/li&gt;
+&lt;li&gt;Task間の依存関係が記述できる &lt;/li&gt;
+&lt;li&gt;コマンド呼び出し時のパスを調整できる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;こんなもん。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;augroup MyAutoCmd
+    autocmd &lt;span class="nb"&gt;BufWritePost&lt;/span&gt; *.md :&lt;span class="p"&gt;!&lt;/span&gt;duck build
+augroup END
+&lt;/pre&gt;
+
+&lt;p&gt;としておいて保存時に呼ぶようにしてみた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;# Duck.toml
+[generate]
+cwd = 'build'
+command = ['cmake', '..', '-G', 'Unix Makefiles']
+
+[build]
+depends = ['generate']
+cwd = 'build'
+command = ['make']
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;duck build&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;のように呼ぶ。&lt;/p&gt;
+&lt;h3&gt;vimのカレントフォルダ問題&lt;/h3&gt;
+&lt;p&gt;親フォルダを遡って設定を探しに行くというのが重要です。例えば &lt;code&gt;vim&lt;/code&gt; でサブフォルダのファイルを編集しているときに、親フォルダの &lt;code&gt;Makefile&lt;/code&gt; でビルドしたい場合がある。このときに、&lt;code&gt;vim&lt;/code&gt; のカレントフォルダを考慮するのが無理なのです。
+そういうわけで &lt;code&gt;vim&lt;/code&gt; では単純に &lt;code&gt;autocd&lt;/code&gt; して、カレントフォルダを意識しないことにしました。
+代わりにツール側で親フォルダに遡れるようにして、そのツールがプロジェクトのルートから指定のコマンドを呼び出すのです。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;make を呼ぶ&lt;/li&gt;
+&lt;li&gt;cmake を呼ぶ&lt;/li&gt;
+&lt;li&gt;dub を呼ぶ&lt;/li&gt;
+&lt;li&gt;setup.py を呼ぶ&lt;/li&gt;
+&lt;li&gt;MSBuild を呼ぶ&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;などのように、言語毎に専門のツールを呼ぶ補助的なツールです。&lt;/p&gt;
+&lt;p&gt;特定の &lt;code&gt;LSP&lt;/code&gt; (D言語向けの &lt;code&gt;dls&lt;/code&gt; ) がカレントフォルダをプロジェクトルートに移動してから起動しないといけないなどの癖があるようなので、その辺を吸収させるのも狙っている。&lt;/p&gt;
+&lt;h3&gt;WindowsでCMakeをどうやって見つけるのか&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;unix&lt;/code&gt; 的なシステムでは、&lt;code&gt;/usr/bin/cmake&lt;/code&gt; であろうことが期待できるのだけど、
+&lt;code&gt;Windows&lt;/code&gt; ではそうはいかない。でも最近の &lt;code&gt;VisualStudio&lt;/code&gt; がインストールされていれば、その中に &lt;code&gt;cmake&lt;/code&gt; が入っている。だから &lt;code&gt;Program Files&lt;/code&gt; から決め打ちで探してくるという方法があるのだけど、もう一歩進めて &lt;code&gt;VisualStudio&lt;/code&gt; のインストールパスを &lt;code&gt;registry&lt;/code&gt; から取ってくるという手法がある。しかし、たくさんのバージョンとエディションで少しずつ違うのでやってられない。で、これに対応するツールとして &lt;code&gt;vswhere&lt;/code&gt; というツールがある。たぶん、&lt;a href="https://github.com/Microsoft/vcpkg"&gt;vcpkg&lt;/a&gt;のために作られたのだと思うのだけど、これでインストールされている &lt;code&gt;VisualStudio&lt;/code&gt; の情報を得ることができる。まだ、 &lt;code&gt;vswhere&lt;/code&gt; をどうやって得るのか問題があるのだが、小さいので自分のプロジェクトに入れておくとか、ダウンロードするとか、 &lt;code&gt;VisualStudio&lt;/code&gt; に入っているので決め打ちでパスを探すといったことになろうと思う。&lt;/p&gt;
+&lt;p&gt;要するに &lt;code&gt;vc&lt;/code&gt; が入っている環境では、9割くらいの確率で &lt;code&gt;cmake&lt;/code&gt; を発見できます。
+&lt;code&gt;duck&lt;/code&gt; にもこの機能を入れようとしている。&lt;/p&gt;
+&lt;p&gt;https://github.com/ChaosinaCan/pyvswhere&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>vim</category><guid>https://ousttrue.github.io/python/workspacefolder/</guid><pubDate>Thu, 18 Apr 2019 20:34:33 GMT</pubDate></item></channel></rss>

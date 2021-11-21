@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../assets/js/all-nocdn.js"></script><title>WorkspaceFolder作成中 | 三次元日誌</title>
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../archive.html">Archives</a></li>
+<li><a href="../../categories/index.html">Tags</a></li>
+<li><a href="../../rss.xml">RSS feed</a></li>
+<li><a href="../../about">About</a></li>
+<li><a href="../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">WorkspaceFolder作成中
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-04-19T05:34:33+09:00" title="2019-04-19">2019-04-19</time>
+</li>
+    <li><a class="tag p-category" href="../../categories/python/" rel="tag">python</a></li>
+    <li><a class="tag p-category" href="../../categories/vim/" rel="tag">vim</a></li>
+</ul>
+</h1>
+
+<div>
+<p>https://github.com/ousttrue/WorkspaceFolder</p>
+<p>要件は、</p>
+<ul>
+<li>WindowsとLinuxで共用にできる</li>
+<li>実行時に、親フォルダを遡って設定(プロジェクトルートに <code>Duck.toml</code> を配置する約束`)を探しに行く能力がある</li>
+<li>Task間の依存関係が記述できる </li>
+<li>コマンド呼び出し時のパスを調整できる</li>
+</ul>
+<p>こんなもん。</p>
+<pre class="code literal-block"><span></span>augroup MyAutoCmd
+    autocmd <span class="nb">BufWritePost</span> *.md :<span class="p">!</span>duck build
+augroup END
+</pre>
+
+<p>としておいて保存時に呼ぶようにしてみた。</p>
+<pre class="code literal-block"><span></span># Duck.toml
+[generate]
+cwd = 'build'
+command = ['cmake', '..', '-G', 'Unix Makefiles']
+
+[build]
+depends = ['generate']
+cwd = 'build'
+command = ['make']
+</pre>
+
+<p><code>duck build</code></p>
+<p>のように呼ぶ。</p>
+<h3>vimのカレントフォルダ問題</h3>
+<p>親フォルダを遡って設定を探しに行くというのが重要です。例えば <code>vim</code> でサブフォルダのファイルを編集しているときに、親フォルダの <code>Makefile</code> でビルドしたい場合がある。このときに、<code>vim</code> のカレントフォルダを考慮するのが無理なのです。
+そういうわけで <code>vim</code> では単純に <code>autocd</code> して、カレントフォルダを意識しないことにしました。
+代わりにツール側で親フォルダに遡れるようにして、そのツールがプロジェクトのルートから指定のコマンドを呼び出すのです。</p>
+<ul>
+<li>make を呼ぶ</li>
+<li>cmake を呼ぶ</li>
+<li>dub を呼ぶ</li>
+<li>setup.py を呼ぶ</li>
+<li>MSBuild を呼ぶ</li>
+</ul>
+<p>などのように、言語毎に専門のツールを呼ぶ補助的なツールです。</p>
+<p>特定の <code>LSP</code> (D言語向けの <code>dls</code> ) がカレントフォルダをプロジェクトルートに移動してから起動しないといけないなどの癖があるようなので、その辺を吸収させるのも狙っている。</p>
+<h3>WindowsでCMakeをどうやって見つけるのか</h3>
+<p><code>unix</code> 的なシステムでは、<code>/usr/bin/cmake</code> であろうことが期待できるのだけど、
+<code>Windows</code> ではそうはいかない。でも最近の <code>VisualStudio</code> がインストールされていれば、その中に <code>cmake</code> が入っている。だから <code>Program Files</code> から決め打ちで探してくるという方法があるのだけど、もう一歩進めて <code>VisualStudio</code> のインストールパスを <code>registry</code> から取ってくるという手法がある。しかし、たくさんのバージョンとエディションで少しずつ違うのでやってられない。で、これに対応するツールとして <code>vswhere</code> というツールがある。たぶん、<a href="https://github.com/Microsoft/vcpkg">vcpkg</a>のために作られたのだと思うのだけど、これでインストールされている <code>VisualStudio</code> の情報を得ることができる。まだ、 <code>vswhere</code> をどうやって得るのか問題があるのだが、小さいので自分のプロジェクトに入れておくとか、ダウンロードするとか、 <code>VisualStudio</code> に入っているので決め打ちでパスを探すといったことになろうと思う。</p>
+<p>要するに <code>vc</code> が入っている環境では、9割くらいの確率で <code>cmake</code> を発見できます。
+<code>duck</code> にもこの機能を入れようとしている。</p>
+<p>https://github.com/ChaosinaCan/pyvswhere</p>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../python_clang/" rel="prev" title="pythonモジュール clang で C++ ヘッダーを変換する">
+            pythonモジュール clang で C++ ヘッダーを変換する 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../github/workspacefolder/" rel="next" title="WorkspaceFolder">
+            👉 WorkspaceFolder
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

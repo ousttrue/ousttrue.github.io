@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../assets/js/all-nocdn.js"></script><title>python で process を起動して PIPE 通信する | 三次元日誌</title>
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../archive.html">Archives</a></li>
+<li><a href="../../categories/index.html">Tags</a></li>
+<li><a href="../../rss.xml">RSS feed</a></li>
+<li><a href="../../about">About</a></li>
+<li><a href="../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">python で process を起動して PIPE 通信する
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-04-28T19:47:41+09:00" title="2019-04-28">2019-04-28</time>
+</li>
+    <li><a class="tag p-category" href="../../categories/python/" rel="tag">python</a></li>
+</ul>
+</h1>
+
+<div>
+<p>https://docs.python.org/3/library/subprocess.html</p>
+<p>こういうやつ</p>
+<pre class="code literal-block"><span></span>      +-------+
+      | child |
+      |process|
+      +-------+
+   stdin ^ | stdout
+         | v
+      +-------+
+      |process|
+      +-------+
+-&gt; stdin     stdout -&gt;
+</pre>
+
+<h3>subprocess モジュール</h3>
+<p>subprocess は、</p>
+<p>```
+os.system
+os.spawn*</p>
+<pre class="code literal-block"><span></span>の置き換え。
+
+ ### subprocess.run
+
+* https://docs.python.org/3/library/subprocess.html#subprocess.run
+
+中でPopenして結果を集めて `CompletedProcess` として返す。
+
+```python
+# 抜粋
+def run(...):
+    with Popen(*popenargs, **kwargs) as process:
+        try:
+            stdout, stderr = process.communicate(input, timeout=timeout) 
+
+    return CompletedProcess(process.args, retcode, stdout, stderr)
+</pre>
+
+<p>実行して結果の文字列を得て終わりというタイプの用途向け。
+旧 <code>os.system</code> の代替になると思う。</p>
+<h4>subprocess.Popen</h4>
+<ul>
+<li>https://docs.python.org/3/library/subprocess.html#popen-constructor</li>
+</ul>
+<p>標準入力、標準出力を制御するのはこっち。</p>
+<pre class="code literal-block"><span></span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">'cmd_name'</span><span class="p">,</span> <span class="s1">'arg0'</span><span class="p">,</span> <span class="s1">'arg1'</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+    <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+    <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+    <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">text</span><span class="o">=</span><span class="bp">False</span>
+    <span class="p">)</span>
+</pre>
+
+<p>Readループが一個しかない時はこれでいいんでないかな。</p>
+<h3>今回のテーマ</h3>
+<pre class="code literal-block"><span></span>      +-------+
+      | child |
+      |process|
+      +-------+
+   stdin ^ | @stdout
+         | v
+      +-------+
+      |process| ここでロギングして通信内容を確認したい
+      +-------+
+  @stdin ^ | stdout
+         | v
+      +-------+
+      | parent|
+      |process|
+      +-------+
+</pre>
+
+<ul>
+<li>@のところを常時読み込みにしたい(2つのReadループ)</li>
+<li>@stdin をReadするとブロックして固まるのでつらい</li>
+</ul>
+<p>つらいのだ。</p>
+<h3>asyncio</h3>
+<p>２つのReaderを非同期で制御しようということで 。</p>
+<h4>asyncio の基本</h4>
+<p>loop を露出させる。</p>
+<pre class="code literal-block"><span></span>
+</pre>
+
+<p>loop は暗黙。
+基本的にこちらでよいと思う。
+必要に応じて取得する。</p>
+<pre class="code literal-block"><span></span>
+</pre>
+
+<h5>asyncio.create_task で新しいスタックを開始する</h5>
+<p>新しいスタックなのでエラーハンドリングが無いことに注意。</p>
+<h5>StreamReaderProtocol と StreamWriterProtocol</h5>
+<p>コールバックと Stream を結び付ける。</p>
+<h4>Windowsの標準入出力はIOCPできない</h4>
+<p>IOCPできるハンドルは決まっていて、</p>
+<ul>
+<li>通常のファイル</li>
+<li>Socket</li>
+<li>
+<p>NamedPipe</p>
+</li>
+<li>
+<p>https://tim.mcnamara.nz/post/176613307022/iocp-and-stdio</p>
+</li>
+</ul>
+<h5>python3.7 で <code>asyncio.create_subprocess</code> ができた</h5>
+<p>child process 側はこれで助かった。</p>
+<ul>
+<li>https://docs.python.org/3/library/asyncio-subprocess.html</li>
+</ul>
+<p>なんか、たまに <code>socket.exception</code> が出るので、
+tcpのlocalhost接続にリダイレクトするとか謎の技使っているのかもしれぬ。</p>
+<p>おかげで、子プロセスの標準入出力から <code>StreamReader</code> と <code>StreamWriter</code>
+を楽に取得できる。</p>
+<h5>重い NativeCoroutine は、ThreadPoolExecutorに逃がす</h5>
+<p>標準入力側</p>
+<p>GILを回避して、別スレッドで待てるのではないか。</p>
+<p>どんな処理が、NativeCoroutine なのか。</p>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../qiita/vimscriptkarapythonsurunowobu-zhu-surupycallwozuo-ru/" rel="prev" title="vimscriptからpythonするのを補助するpycallを作る">
+            vimscriptからpythonするのを補助するpycallを作る 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../github/daplauncher/" rel="next" title="daplauncher">
+            👉 daplauncher
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

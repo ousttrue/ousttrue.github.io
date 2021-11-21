@@ -35,84 +35,103 @@
 <li>
         <time datetime="2013-01-04T00:00:00+09:00" title="2013-01-04">2013-01-04</time>
 </li>
+    <li><a class="tag p-category" href="../../../../../categories/python/" rel="tag">python</a></li>
+    <li><a class="tag p-category" href="../../../../../categories/qt/" rel="tag">qt</a></li>
 </ul>
 </h1>
 
 <div>
 <p>ディレクトリ表示をする専用のウィジェットがあったような気がするが、練習のため実装。</p>
-<h2>!/usr/bin/env python</h2>
-<h2>coding: utf-8</h2>
-<p>import re import operator import os import sys import stat from
-PyQt4.QtCore import * from PyQt4.QtGui import *</p>
-<p>class File(object):
-header=[</p>
-<p>‘type’, ‘name’, ‘size’, ‘mtime’ ]
-def <strong>init</strong>(self, path):
-self.path=os.path.abspath(path) self.data=[None, None, None,
-None] s=os.stat(path) mode=s[stat.ST_MODE] if
-stat.S_ISDIR(mode): self.data[0]=‘dir’ elif
-stat.S_ISLNK(mode): self.data[0]=‘link’ elif
-stat.S_ISREG(mode): self.data[0]=‘file’ else:
-self.data[0]=‘unknown’ self.data[1]=os.path.basename(path)
-self.data[2]=s[stat.ST_SIZE]
-self.data[3]=s[stat.ST_MTIME]
-def <strong>str</strong>(self):
-return “&lt;%s %s&gt;” % (self.data[0], self.data[1])
-def <strong>getitem</strong>(self, key):
-return self.data[key]
-def is_dir(self):
-return self.data[0]==‘dir’</p>
-<p>class MyTableModel(QAbstractTableModel):
-def <strong>init</strong>(self, parent, path):</p>
-<p>super(MyTableModel, self).<strong>init</strong>(parent) def
-get_stat(name): f=File(os.path.join(path, name)) return f
-self.data=[get_stat(os.path.join(path, “..”))]+[get_stat(e)
-for e in os.listdir(path)]
-def rowCount(self, parent):
-return len(self.data)
-def columnCount(self, parent):
-return len(File.header)
-def data(self, index, role):
-if not index.isValid():</p>
-<p>return None
-elif role != Qt.DisplayRole:
-return None</p>
-<p>return self.data[index.row()][index.column()]
-def headerData(self, col, orientation, role):
-if orientation == Qt.Horizontal and role == Qt.DisplayRole:</p>
-<p>return File.header[col]</p>
-<p>return None
-def sort(self, Ncol, order):
-”““Sort table by given column number.
-“”” self.emit(SIGNAL(“layoutAboutToBeChanged()”)) self.data =
-sorted(self.data,
-key=operator.itemgetter(Ncol), reverse=(order!=Qt.DescendingOrder))
-self.emit(SIGNAL(“layoutChanged()”))
-def getRow(self, index):
-return self.data[index]</p>
-<p>class MyWindow(QWidget):
-def <strong>init</strong>(self, <em>args): QWidget.<strong>init</strong>(self,</em>args)</p>
-<h2>create the view self.tv = QTableView() # hide</h2>
-<p>grid self.tv.setShowGrid(False) # hide vertical header vh
-= self.tv.verticalHeader() vh.setVisible(False) # set
-horizontal header properties hh = self.tv.horizontalHeader()
-hh.setStretchLastSection(True) # set column width to fit
-contents self.tv.resizeColumnsToContents() # enable
-sorting self.tv.setSortingEnabled(True) # layout layout
-= QVBoxLayout() layout.addWidget(self.tv) self.setLayout(layout)</p>
-<h2>double</h2>
-<p>click self.tv.doubleClicked.connect(self.onDoubleClick)</p>
-<p>def chdir(self, path):</p>
-<p>self.tm = MyTableModel(self, path) # set the table
-model self.tv.setModel(self.tm)
-def onDoubleClick(self, event):
-item=self.tm.getRow(event.row()) if not item.is_dir():
-return self.chdir(item.path)</p>
-<p>def main():
-app = QApplication(sys.argv) w = MyWindow() w.chdir(“.”) w.show()
-sys.exit(app.exec_())
-if <strong>name</strong> == “<strong>main</strong>“:
-main()</p>
+<pre class="code literal-block"><span></span><span class="c1"># !/usr/bin/env python</span>
+<span class="c1"># coding: utf-8</span>
+
+
+<span class="kn">import</span> <span class="nn">re</span> <span class="nn">import</span> <span class="nn">operator</span> <span class="nn">import</span> <span class="nn">os</span> <span class="nn">import</span> <span class="nn">sys</span> <span class="nn">import</span> <span class="nn">stat</span> <span class="nn">from</span>
+<span class="n">PyQt4</span><span class="o">.</span><span class="n">QtCore</span> <span class="kn">import</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">PyQt4.QtGui</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="n">header</span><span class="o">=</span><span class="p">[</span>
+
+<span class="err">‘</span><span class="nb">type</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">name</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">size</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">mtime</span><span class="err">’</span> <span class="p">]</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span>
+<span class="bp">None</span><span class="p">]</span> <span class="n">s</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="n">mode</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_MODE</span><span class="p">]</span> <span class="k">if</span>
+<span class="n">stat</span><span class="o">.</span><span class="n">S_ISDIR</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="err">‘</span><span class="nb">dir</span><span class="err">’</span> <span class="k">elif</span>
+<span class="n">stat</span><span class="o">.</span><span class="n">S_ISLNK</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="err">‘</span><span class="n">link</span><span class="err">’</span> <span class="k">elif</span>
+<span class="n">stat</span><span class="o">.</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="err">‘</span><span class="nb">file</span><span class="err">’</span> <span class="k">else</span><span class="p">:</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="err">‘</span><span class="n">unknown</span><span class="err">’</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_SIZE</span><span class="p">]</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_MTIME</span><span class="p">]</span>
+<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">return</span> <span class="err">“</span><span class="o">&lt;%</span><span class="n">s</span> <span class="o">%</span><span class="n">s</span><span class="o">&gt;</span><span class="err">”</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">is_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="err">‘</span><span class="nb">dir</span><span class="err">’</span>
+
+<span class="k">class</span> <span class="nc">MyTableModel</span><span class="p">(</span><span class="n">QAbstractTableModel</span><span class="p">):</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+
+<span class="nb">super</span><span class="p">(</span><span class="n">MyTableModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="k">def</span>
+<span class="nf">get_stat</span><span class="p">(</span><span class="n">name</span><span class="p">):</span> <span class="n">f</span><span class="o">=</span><span class="n">File</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span> <span class="k">return</span> <span class="n">f</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">get_stat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="err">“</span><span class="o">..</span><span class="err">”</span><span class="p">))]</span><span class="o">+</span><span class="p">[</span><span class="n">get_stat</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)]</span>
+<span class="k">def</span> <span class="nf">rowCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">File</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+
+<span class="k">return</span> <span class="bp">None</span>
+<span class="k">elif</span> <span class="n">role</span> <span class="o">!=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+<span class="k">return</span> <span class="bp">None</span>
+
+<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">()][</span><span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()]</span>
+<span class="k">def</span> <span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span> <span class="ow">and</span> <span class="n">role</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+
+<span class="k">return</span> <span class="n">File</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+
+<span class="k">return</span> <span class="bp">None</span>
+<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ncol</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+<span class="err">”““</span><span class="n">Sort</span> <span class="n">table</span> <span class="n">by</span> <span class="n">given</span> <span class="n">column</span> <span class="n">number</span><span class="o">.</span>
+<span class="err">“””</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">SIGNAL</span><span class="p">(</span><span class="err">“</span><span class="n">layoutAboutToBeChanged</span><span class="p">()</span><span class="err">”</span><span class="p">))</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span>
+<span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+<span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="n">Ncol</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="o">!=</span><span class="n">Qt</span><span class="o">.</span><span class="n">DescendingOrder</span><span class="p">))</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">SIGNAL</span><span class="p">(</span><span class="err">“</span><span class="n">layoutChanged</span><span class="p">()</span><span class="err">”</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">getRow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">MyWindow</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span> <span class="n">QWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+<span class="c1"># create the view self.tv = QTableView() # hide</span>
+<span class="n">grid</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">setShowGrid</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="c1"># hide vertical header vh</span>
+<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">verticalHeader</span><span class="p">()</span> <span class="n">vh</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="c1"># set</span>
+<span class="n">horizontal</span> <span class="n">header</span> <span class="n">properties</span> <span class="n">hh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span>
+<span class="n">hh</span><span class="o">.</span><span class="n">setStretchLastSection</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># set column width to fit</span>
+<span class="n">contents</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">resizeColumnsToContents</span><span class="p">()</span> <span class="c1"># enable</span>
+<span class="n">sorting</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">setSortingEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># layout layout</span>
+<span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span> <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="p">)</span> <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+<span class="c1"># double</span>
+<span class="n">click</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">doubleClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onDoubleClick</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">chdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">tm</span> <span class="o">=</span> <span class="n">MyTableModel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="c1"># set the table</span>
+<span class="n">model</span> <span class="bp">self</span><span class="o">.</span><span class="n">tv</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tm</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">onDoubleClick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="n">item</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tm</span><span class="o">.</span><span class="n">getRow</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">row</span><span class="p">())</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="n">w</span> <span class="o">=</span> <span class="n">MyWindow</span><span class="p">()</span> <span class="n">w</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="err">“</span><span class="o">.</span><span class="err">”</span><span class="p">)</span> <span class="n">w</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="err">“</span><span class="n">__main__</span><span class="err">“</span><span class="p">:</span>
+<span class="n">main</span><span class="p">()</span>
+</pre>
+
 <p>ToDo</p>
 <p>種類毎のアイコン表示
 日付の表示
@@ -121,6 +140,7 @@ main()</p>
 FilterProxyModel</p>
 </div>
 
+<hr>
 <ul class="pager hidden-print">
 <li class="previous">
         <a href="../../../../2012/12/26/customdelegate/" rel="prev" title="カスタムデリゲート">
