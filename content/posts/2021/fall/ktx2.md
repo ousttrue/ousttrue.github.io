@@ -17,7 +17,6 @@ tags = ["gltf"]
 
 # samples
 
-* <https://github.com/KhronosGroup/glTF-Sample-Environments>
 * <https://github.com/KhronosGroup/glTF/issues/1750>
     * <https://github.com/KhronosGroup/glTF/issues/1750#issuecomment-665965234>
 * <https://github.com/oframe/ogl/tree/master/examples/assets/gltf>
@@ -26,4 +25,14 @@ tags = ["gltf"]
 
 * <https://github.com/alecazam/kram>
 * <https://github.com/sandramariamachon/gltf_to_ktx2>
+
+# pyktx2
+
+ヘッダーを読んで情報を表示する。
+
+* <https://github.com/ousttrue/pyktx2>
+
+無圧縮の場合は画像も表示できる。
+
+* <https://github.com/KhronosGroup/glTF-Sample-Environments>
 

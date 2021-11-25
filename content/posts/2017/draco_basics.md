@@ -1,16 +1,19 @@
 ---
 title: "dracoの基本"
 date: 2017-12-12
-taxonomies: {tags: ["gltf"]}
+tags: ["gltf"]
 ---
 
 Googleのメッシュ圧縮ライブラリDracoの使い方を調査中。
 
-https://github.com/google/draco
-コマンドラインツールからobjとply形式の読み書きができるのでそこから解読する。
+<https://github.com/google/draco>
+
+コマンドラインツールから `obj` と `ply` 形式の読み書きができるのでそこから解読する。
 ポイントクラウドの読み書き
-点群を表すdraco::PointCloud型があって、それを継承して面を追加したdraco::Mesh型がある。
-まずは、基本となるPointCloudの読み書き。
+点群を表す `draco::PointCloud` 型があって、それを継承して面を追加した `draco::Mesh` 型がある。
+まずは、基本となる `PointCloud` の読み書き。
+
+```c++
 #include "draco/point_cloud/point_cloud.h"
 #include "draco/point_cloud/point_cloud_builder.h"
 #include "draco/compression/encode.h"
@@ -105,14 +108,17 @@ int main(int argc, char **argv)
 
     return 0;
 }
+```
 
 参考になるファイルは、
 
-point_cloud_builder_test.cc(build point cloud)
-draco_encoder.cc(obj to draco)
-draco_decoder.cc(draco to obj)
+* point_cloud_builder_test.cc(build point cloud)
+* draco_encoder.cc(obj to draco)
+* draco_decoder.cc(draco to obj)
 
-PointCloud -> dracoとdraco->PointCloud->get pointsは簡単でAPIを素直に呼び出せばいい。
-問題は如何にPointCloudを構築するか。draco_encoderから解読したローレベルのAPIでやってみたらうまくいかなかったのだが、draco::PointCloudBuilderを発見した。
+PointCloud -> dracoとdraco->PointCloud->get points は簡単でAPIを素直に呼び出せばいい。
+問題は如何に PointCloud を構築するか。 draco_encoder から解読したローレベルのAPIでやってみたらうまくいかなかったのだが、draco::PointCloudBuilderを発見した。
 Meshの読み書き
+
 ToDo…
+
