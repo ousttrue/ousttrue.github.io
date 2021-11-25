@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>wyam ことはじめ | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">wyam ことはじめ
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-08-17T00:00:00+09:00" title="2019-08-17">2019-08-17</time>
+</li>
+</ul>
+</h1>
+
+<div>
+<p>ソースの方のリポジトリがハードディスククラッシュで失われて
+更新できなくなっていたので、サイトを作りなおし。
+<a href="https://wyam.io/">wyam</a>を使ってみる。</p>
+<h3>インストール</h3>
+<pre class="code literal-block"><span></span>$ dotnet tool install -g Wyam.Tool
+</pre>
+
+<h3>初期化する</h3>
+<pre class="code literal-block"><span></span>$ mkdir site
+$ <span class="nb">cd</span> site
+$ wyam new --recipe blog
+</pre>
+
+<ul>
+<li>config.wyam(siteの設定)</li>
+<li>input(記事置き場)</li>
+<li>about.md</li>
+<li>posts<ul>
+<li>first-post.md</li>
+</ul>
+</li>
+</ul>
+<h4>設定ファイル</h4>
+<p>config.wyam がそれで、C# を Roslyn で処理するらしい。
+おもしろい。</p>
+<pre class="code literal-block"><span></span>// config.wyam
+#recipe Blog
+#theme Phantom
+
+// Customize your settings and add new ones here
+Settings[Keys.Host] = "ousttrue.github.io";
+Settings[BlogKeys.Title] = "三次元日誌";
+Settings[BlogKeys.Description] = "programming とか";
+
+// Add any pipeline customizations here
+</pre>
+
+<p><code>#recipe Blog</code> がパイプライン設定で、 input フォルダの構成と処理を設定している。
+設定ファイルに展開したものを記述することもできるみたい。</p>
+<h4>gitignore</h4>
+<p>https://wyam.io/docs/advanced/what_to_exclude_from_source_control</p>
+<pre class="code literal-block"><span></span>#.gitignore
+.vs/
+output/
+config.wyam.hash
+config.wyam.dll
+config.wyam.packages.xml
+</pre>
+
+<h3>生成する</h3>
+<pre class="code literal-block"><span></span>$ wyam
+</pre>
+
+<ul>
+<li>output</li>
+<li>index.html</li>
+</ul>
+<p><code>$ wyam --watch --preview</code> で更新を監視して livereload できる。</p>
+<h4>動作</h4>
+<ul>
+<li>input/posts/ 配下の markdown が /posts/ 下にhtml化される</li>
+<li>input/posts/**/hoge.md が /posts/hoge.html のように階層は無くなる</li>
+</ul>
+<h3>テーマを変えてみる</h3>
+<ul>
+<li>https://wyam.io/recipes/blog/themes/</li>
+</ul>
+<p>コマンドラインに、 <code>--theme THEME_NAME</code> とするか config.wyam に</p>
+<pre class="code literal-block"><span></span>// config.wyam
+#theme THEME_NAME
+</pre>
+
+<p>とすれば OK。</p>
+<h3>appveyor で GitHub-Pages に展開</h3>
+<p>https://wyam.io/docs/deployment/appveyor</p>
+<p>CIよくわかってないので難航したが動くようになった。</p>
+<p>GitHub-pages のユーザー頁を使ったので、
+ソースのリポジトリと、html置き場のリポジトリを分けた。</p>
+<p>ソースのリポジトリに AppVeyor を仕掛けて、
+push したときにビルドして、html置き場に push する。</p>
+<pre class="code literal-block"><span></span><span class="nt">branches</span><span class="p">:</span>
+  <span class="nt">only</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
+
+<span class="nt">environment</span><span class="p">:</span>
+  <span class="nt">access_token</span><span class="p">:</span>
+    <span class="c1"># EDIT the encrypted version of your GitHub access token</span>
+    <span class="c1"># https://www.appveyor.com/docs/deployment/github/</span>
+    <span class="nt">secure</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">E+wmFkBHvRVLnVcg9mIBXP7iTXKIqJyi/DewA+0SEtkpWmtiNFKKhYzD4bs0nw2L</span>
+
+<span class="nt">install</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mkdir ..\Wyam</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mkdir ..\output</span>
+  <span class="c1"># Fetch the latest version of Wyam </span>
+  <span class="p p-Indicator">-</span> <span class="s">"curl</span><span class="nv"> </span><span class="s">-s</span><span class="nv"> </span><span class="s">https://raw.githubusercontent.com/Wyamio/Wyam/master/RELEASE</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">..\\Wyam\\wyamversion.txt"</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set /P WYAMVERSION=&lt; ..\Wyam\wyamversion.txt</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo %WYAMVERSION%</span>
+  <span class="c1"># Get and unzip the latest version of Wyam</span>
+  <span class="p p-Indicator">-</span> <span class="nt">ps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Start-FileDownload "https://github.com/Wyamio/Wyam/releases/download/$env:WYAMVERSION/Wyam-$env:WYAMVERSION.zip" -FileName "..\Wyam\Wyam.zip"</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">7z x ..\Wyam\Wyam.zip -o..\Wyam -r</span>
+
+<span class="nt">build_script</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dotnet ..\Wyam\Wyam.dll --output ..\output</span>
+
+<span class="nt">on_success</span><span class="p">:</span>
+  <span class="c1"># Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push</span>
+  <span class="c1"># See http://www.appveyor.com/docs/how-to/git-push for more info</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.helper store</span>
+  <span class="c1"># EDIT your Git email and name</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global user.email ousttrue@gmail.com</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global user.name ousttrue</span>
+  <span class="p p-Indicator">-</span> <span class="nt">ps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git checkout gh-pages</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git rm -rf .</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">xcopy ..\output . /E</span>
+  <span class="c1"># EDIT your domain name or remove if not using a custom domain</span>
+  <span class="c1"># - echo wyam.io &gt; CNAME</span>
+  <span class="c1"># EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes</span>
+
+  <span class="c1"># 送り先(push できるように environment access token をセットしている)</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git remote set-url origin https://github.com/ousttrue/ousttrue.github.io.git</span>
+  <span class="c1"># 空の gh-pages ブランチに変更を追加</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git add -A</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git commit -a -m "Commit from AppVeyor"</span>
+  <span class="c1"># gh-pages ブランチから origin の master に送る(use の GitHubPages を使っているので master ブランチ運用)</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git push -f origin gh-pages:master</span>
+</pre>
+
+<h3>vscode で編集する</h3>
+<p>watch タスクを作成してバックグランドで <code>input</code> の変更を監視。</p>
+<pre class="code literal-block"><span></span>{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "watch",
+            "type": "shell",
+            "command": "wyam",
+            "args": [
+                "--watch", "--preview",
+            ],
+            "problemMatcher": [
+            ],
+            "isBackground": true
+        },
+    ]
+}
+</pre>
+
+<p>launch.json を作成して F5 でブラウザを開く。</p>
+<pre class="code literal-block"><span></span>{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:5080",
+            "webRoot": "<span class="cp">${</span><span class="n">workspaceFolder</span><span class="cp">}</span>"
+        }
+    ]
+}
+</pre>
+
+<p>自動でリロードがかかるので快適。</p>
+<h3>参考</h3>
+<ul>
+<li>https://www.staticgen.com/wyam</li>
+<li>
+<p>https://wyam.io/docs/resources/built-with-wyam</p>
+</li>
+<li>
+<p><a href="https://qiita.com/MeilCli/items/425a5436aced08ba7062">静的サイトジェネレーターでC#を使いたかったからWyamを試したら最高だった</a></p>
+</li>
+</ul>
+<p>日本語で wyam に言及しているサイトはこれしかなかった。
+マイナーでござる。</p>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../wyam-theme/" rel="prev" title="wyam のテーマをカスタマイズする">
+            wyam のテーマをカスタマイズする 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../../github/ousttruegithubio-source/" rel="next" title="ousttrue.github.io-source">
+            👉 ousttrue.github.io-source
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

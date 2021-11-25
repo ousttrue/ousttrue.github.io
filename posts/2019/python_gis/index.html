@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>pythonでGIS | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">pythonでGIS
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-08-27T00:00:00+09:00" title="2019-08-27">2019-08-27</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/python/" rel="tag">python</a></li>
+</ul>
+</h1>
+
+<div>
+<p>Windows10。</p>
+<h3>vcpkgでCの関連ライブラリをインストール</h3>
+<pre class="code literal-block"><span></span>$ vcpkg install --triplet x64-windows geos gdal
+</pre>
+
+<p>30分くらいかかった。</p>
+<p>環境変数、 <code>GDAL_DATA</code> に <code>%VCPKG_DIR%\installed\x64-windows\share\gdal</code> ビルド先のフォルダを指定する。</p>
+<h3>GDAL</h3>
+<ul>
+<li>https://gdal.org/</li>
+</ul>
+<h4>python</h4>
+<ul>
+<li>https://pypi.org/project/GDAL/</li>
+</ul>
+<pre class="code literal-block"><span></span>$ pip install gdal
+fatal error C1083: Cannot open include file: <span class="s1">'cpl_port.h'</span>: No such file or directory
+</pre>
+
+<p>事前にVCPKGでビルドしてある。 <code>INLUCDE</code> を指し示す。</p>
+<pre class="code literal-block"><span></span>$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> gdal
+<span class="s1">'GDALGetSpatialRef'</span>: identifier not found
+</pre>
+
+<p>バージョンをCのGDALに合わせる。vcpkg でインストールしたのは <code>2.4.1</code> だった。
+gdalの <code>2.4.1</code> は欠番みたいなので、 <code>2.4.2</code> にしてみた。</p>
+<pre class="code literal-block"><span></span>$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> --global-option<span class="o">=</span><span class="s2">"-LC:\vcpkg\installed\x64-windows\lib"</span> <span class="s1">'gdal==2.4.2'</span>
+LINK : fatal error LNK1181: cannot open input file <span class="s1">'gdal_i.lib'</span>
+</pre>
+
+<p><code>gdal_i.lib</code> inline の static library かな？
+探したら、 <code>vcpkg</code> のビルドフォルダにあったので lib にコピーする。</p>
+<pre class="code literal-block"><span></span>$ copy C:<span class="se">\v</span>cpkg<span class="se">\b</span>uildtrees<span class="se">\g</span>dal<span class="se">\s</span>rc-x64-windows-release<span class="se">\g</span>dal-2.4.1<span class="se">\g</span>dal_i.lib C:<span class="se">\v</span>cpkg<span class="se">\i</span>nstalled<span class="se">\x</span><span class="m">64</span>-windows<span class="se">\l</span>ib<span class="se">\</span>
+$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> --global-option<span class="o">=</span><span class="s2">"-LC:\vcpkg\installed\x64-windows\lib"</span> <span class="s1">'gdal==2.4.2'</span>
+Successfully installed gdal-2.4.2
+</pre>
+
+<p>OK</p>
+<ul>
+<li>https://www.gis-py.com/entry/py-gdal</li>
+<li>https://pcjericks.github.io/py-gdalogr-cookbook/index.html</li>
+</ul>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../vim_colorscheme/" rel="prev" title="Vimのカラースキーム">
+            Vimのカラースキーム 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../../github/ljl/" rel="next" title="ljl">
+            👉 ljl
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

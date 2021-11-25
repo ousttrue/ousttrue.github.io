@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>久しぶりにGentooインストール | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">久しぶりにGentooインストール
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2017-09-04T00:00:00+09:00" title="2017-09-04">2017-09-04</time>
+</li>
+</ul>
+</h1>
+
+<div>
+<p>Linux成分が不足してきたので久しぶりにデスクトップを構築してみる。</p>
+<p>ISO入手からUEFI bootのUSBメモリ作成</p>
+<p>SystemRescueCdがよい
+Rufasで起動するUSBメモリを作成する</p>
+<p>パーティション構成とターゲットシステムの種類をGPT UEFIコンピュータ用のパーティション構成を選択するべし</p>
+<p>起動
+USBメモリを差し込んでPCを起動し、delキーでUEFI画面に入る。
+UEFIの起動メニューからUSBメモリを選択してSystemRescueCdを起動する。</p>
+<blockquote>
+<p>efibootmgr # UEFIモードで起動したか確認
+passwd # sshログイン用のパスワードを決める
+startx
+ifconfig # ip確認</p>
+</blockquote>
+<p>Handbook(Preparing the disks)</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks</p>
+<h2>parted /dev/sda</h2>
+<p>(parted) print
+Model: ATA ST3500418AS (scsi)
+Disk /dev/sda: 476940MiB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:</p>
+<p>Number  Start    End        Size       File system     Name     Flags
+ 1      1.00MiB  129MiB     128MiB                     efi      boot, esp
+ 2      129MiB   641MiB     512MiB     linux-swap(v1)  primary
+ 3      641MiB   102401MiB  101760MiB                  gentoo</p>
+<h2>mkswap /dev/sda2</h2>
+<h2>swapon /dev/sda2</h2>
+<h2>mkfs.ext4/dev/sda3</h2>
+<h2>mount /dev/sda3 /mnt/gentoo</h2>
+<h2>mkfs.vfat /dev/sda1</h2>
+<h2>mkdir /mnt/gentoo/boot</h2>
+<h2>mount /dev/sda1 /mnt/gentoo/boot</h2>
+<p>Installing the Gentoo installation files
+clock設定。</p>
+<h2>ntpd -q -g</h2>
+<p>Stage3のdownloadと解凍</p>
+<h2>cd /mnt/gentoo</h2>
+<h2>wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/autobuilds/20170831/stage3-amd64-20170831.tar.bz2</h2>
+<h2>tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner</h2>
+<p>portage設定</p>
+<h2>nano -w /mnt/gentoo/etc/portage/make.conf</h2>
+<p>CFLAGS="-march=native -O2 -pipe"</p>
+<h2>Use the same settings for both variables</h2>
+<p>CXXFLAGS="${CFLAGS}"</p>
+<p>MAKEOPTS="-j5" # 4コアなので</p>
+<p>Installing the Gentoo base system</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base</p>
+<p>mirror設定
+日本のサーバーを選択</p>
+<h2>mirrorselect -i -o &gt;&gt; /mnt/gentoo/etc/portage/make.conf</h2>
+<p>repository設定
+ここよくわからぬ</p>
+<h2>mkdir /mnt/gentoo/etc/portage/repos.conf</h2>
+<h2>cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf</h2>
+<p>chroot準備</p>
+<h2>cp -L /etc/resolv.conf /mnt/gentoo/etc/</h2>
+<h2>mount -t proc /proc /mnt/gentoo/proc</h2>
+<h2>mount --rbind /sys /mnt/gentoo/sys</h2>
+<h2>mount --make-rslave /mnt/gentoo/sys</h2>
+<h2>mount --rbind /dev /mnt/gentoo/dev</h2>
+<h2>mount --make-rslave /mnt/gentoo/dev</h2>
+<p>chroot</p>
+<h2>chroot /mnt/gentoo /bin/bash</h2>
+<h2>source /etc/profile</h2>
+<h2>export PS1="(chroot) $PS1"</h2>
+<p>(chroot) livecd / #</p>
+<p>構築</p>
+<h2>emerge-webrsync</h2>
+<h2>eselect news read</h2>
+<h2>emerge --ask --update --deep --newuse @world</h2>
+<p>profile選択は後で起動するようになってからやればいいのでここではやらない。
+timezone。</p>
+<h2>echo "Asia/Tokyo" &gt; /etc/timezone</h2>
+<h2>emerge --config sys-libs/timezone-data</h2>
+<p>nanoでなくてvimを使いたいので入れとく。</p>
+<h2>emerge -av vim</h2>
+<p>locale。日本語を有効にして、システムはen_us.UTF-8に。</p>
+<h2>vim /etc/locale.gen</h2>
+<p>en_US.UTF-8 UTF-8
+ja_JP.EUC-JP EUC-JP
+ja_JP.UTF-8 UTF-8</p>
+<h2>locale-gen</h2>
+<h2>eselect locale list</h2>
+<p>Available targets for the LANG variable:
+  [1]   C
+  [2]   en_US.utf8 *
+  [3]   ja_JP
+  [4]   ja_JP.eucjp
+  [5]   ja_JP.ujis
+  [6]   ja_JP.utf8
+  [7]   japanese
+  [8]   japanese.euc
+  [9]   POSIX
+  [ ]   (free form)</p>
+<p>Configuring the Linux kernel</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel</p>
+<p>source</p>
+<h2>emerge --ask sys-kernel/gentoo-sources</h2>
+<p>genkernel
+bootパーティションは分けなかった。</p>
+<h2>emerge --ask sys-kernel/genkernel</h2>
+<h2>genkernel all # 長時間かかる</h2>
+<h2>emerge --ask sys-kernel/linux-firmware</h2>
+<p>Configuring the system</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/System</p>
+<p>/etc/fstab
+/dev/sda3               /               ext4            noatime         0 1</p>
+<h2>EFI。EFI起動するときに使ったデバイスでないといかん</h2>
+<h2>/dev/sda1              /boot           vfat            noatime         0 1</h2>
+<p>/dev/sdb2               /boot           vfat            noatime         0 1</p>
+<p>/dev/cdrom              /mnt/cdrom      auto            noauto,ro       0 0
+/dev/sda2               none            swap            sw              0 0</p>
+<p>network</p>
+<h2>vim /etc/conf.d/hostname</h2>
+<h2>vim /etc/conf.d/net</h2>
+<p>config_eth0="192.168.0.2 netmask 255.255.255.0 brd 192.168.0.255"
+routes_eth0="default via 192.168.0.1"</p>
+<h2>emerge --ask --noreplace net-misc/netifrc</h2>
+<h2>cd /etc/init.d</h2>
+<h2>ln -s net.lo net.eth0</h2>
+<h2>rc-update add net.eth0 default</h2>
+<p>root password</p>
+<h2>root passwd</h2>
+<p>Installing system tools</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Tools</p>
+<p>logger</p>
+<h2>emerge --ask app-admin/sysklogd</h2>
+<h2>rc-update add sysklogd default</h2>
+<p>cron</p>
+<h2>emerge --ask sys-process/cronie</h2>
+<h2>rc-update add cronie default</h2>
+<p>sshd</p>
+<h2>rc-update add sshd default</h2>
+<p>Configuring the bootloader</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Bootloader</p>
+<p>efibootmgrではまる</p>
+<p>https://wiki.gentoo.org/wiki/EFI_stub_kernel
+https://wiki.gentoo.org/wiki/Efibootmgr</p>
+<h2>emerge --ask sys-boot/efibootmgr</h2>
+<h2>mkdir -p /boot/efi/boot</h2>
+<h2>cp /boot/kernel-genkernel-x86_64-4.12.5-gentoo /boot/efi/boot/bootx64.efi</h2>
+<h2>efibootmgr -c -d /dev/sda -p 1 -L "Gentoo" -l "\efi\boot\bootx64.efi" initrd='\initramfs-genkernel-x86_64-4.12.5-gentoo'</h2>
+<p>EFI variables are not supported on this system.</p>
+<p>ぐぬぬ。</p>
+<h2>mount | grep efivars</h2>
+<h2>mount -t efivarfs efivarfs /sys/firmware/efi/efivars</h2>
+<p>mount: mount point /sys/firmware/efi/efivars does not exist</p>
+<p>EFIモードになっていないぽい？
+UEFI軌道のusbメモリの作成ができていない？
+minimal.isoじゃなくてlivedvd.isoで起動して続きからやってみる。</p>
+<p>SystemRescueCd</p>
+<p>efiがリードオンリー</p>
+<h2>efibootmgr -c -d /dev/sdb -p 2 -L "Gentoo" -l "\efi\gentoo\kernel-genkernel-x86_64-4.12.5-gentoo" initrd='\efi\gentoo\initramfs-genkernel-x86_64-4.12.5-gentoo'</h2>
+<p>Could not prepare Boot variable: Read-only file system</p>
+<h2>mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime</h2>
+<p>https://wiki.archlinuxjp.org/index.php/EFISTUB</p>
+<h2>efibootmgr -c -d /dev/sdb -p 2 -L "Gentoo" -l "/EFI/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo" -u "root=/dev/sda3 rw initrd=/EFI/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo"</h2>
+<p>BootCurrent: 000C
+Timeout: 0 seconds
+BootOrder: 0001,0000,000C,000D,0008,0009
+Boot0000<em> Windows Boot Manager
+Boot0008</em> CD/DVD Drive
+Boot0009<em> Hard Drive
+Boot000C</em> UEFI: Sony Storage Media PMAP
+Boot000D<em> ubuntu
+Boot0001</em> Gentoo</p>
+<p>しかし、起動するとカーネルパニック。うまくいかぬ。
+GRUB2のシェルから起動</p>
+<p>https://jp.linux.com/news/linuxcom-exclusive/418274-lco20140625</p>
+<p>SystemRescueCdの起動時のgrubメニューでcを押してgrubのシェルに入る。
+grub&gt; ls (hd2,gpt2)/
+efi
+grub&gt; set root=(hd2,gpt2)
+grub&gt; linux /efi/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo root=/dev/sda3
+grub&gt; initrd /efi/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo</p>
+<p>起動できた。カーネルパニックになるのはブートパラメーターの与え方が間違っているぽい。
+efibootmgr
+うまくいった手順。
+-uでカーネルパラメーターを指定する？</p>
+<h2>mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime</h2>
+<h2>efibootmgr -c -d /dev/sdb -p 2 -L "Gentoo" -l "/EFI/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo1" -u "root=/dev/sda3 rw initrd=/EFI/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo"</h2>
+<p>なんとか起動。
+Finalizing</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Finalizing</p>
+<p>eth0の修正
+net.eth0で起動するようにenp3s0を修正する。
+/etc/udev/rules.d/50-ether.rules
+SUBSYSTEM=="net", ATTR{address}=="XX:XX:XX:XX:XX:XX", NAME="eth0"</p>
+<h2>udevadm test /sys/class/net/enp3s0</h2>
+<p>changing net interface name from 'enp3s0' to 'eth0'</p>
+<h2>/etc/init.d/net.eth0 start</h2>
+<h2>ping www.google.com</h2>
+<p>...</p>
+<p>user追加</p>
+<h2>useradd -m -G users,wheel,audio -s /bin/bash larry</h2>
+<h2>passwd larry</h2>
+<p>sshで外部から新しく作ったユーザーでアクセスできることを確認。
+shell設定
+/etc/inputrc
+set bell-style none</p>
+<p>"\C-n":history-search-forward
+"\C-p":history-search-backward</p>
+<p>完成
+リモートからsshログインできるところまでできた。
+efibootmgr周りがなんかドキュメントが間違っている気がするが誰も使っていないのであろうか。
+その他
+追加インストールメモ。
+eix
+USE=sqlite</p>
+<h2>emerge -av eix</h2>
+<p>/etc/cron.daily</p>
+<p>eix-sync</p>
+<p>cpuflag</p>
+<h2>emerge -av app-portage/cpuid2cpuflags</h2>
+<p>$ cpuinfo2cpuflags-x86
+CPU_FLAGS_X86="aes avx fma3 fma4 mmx mmxext pclmul popcnt sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3 xop"</p>
+<p>ntp</p>
+<h2>emerge -av ntp</h2>
+<h2>rc-update add ntpd default</h2>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../08/vcpkg_chcp65001/" rel="prev" title="vcpkgでchcp 65001が必要な件">
+            vcpkgでchcp 65001が必要な件 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../gentoo_xorg/" rel="next" title="GentooでX11を設定する">
+            👉 GentooでX11を設定する
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

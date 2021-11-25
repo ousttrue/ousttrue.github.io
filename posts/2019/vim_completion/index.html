@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>vim の Completion について調べる | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">vim の Completion について調べる
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-04-22T02:17:20+09:00" title="2019-04-22">2019-04-22</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/lsp/" rel="tag">lsp</a></li>
+    <li><a class="tag p-category" href="../../../categories/vim/" rel="tag">vim</a></li>
+</ul>
+</h1>
+
+<div>
+<p><code>omnicompletion</code> とかいろいろあるけどどう違うねん。ということで調べる。
+<code>help ins-completion</code>
+<code>help complete-functions</code></p>
+<h3>いろいろな補完</h3>
+<h3>補完関数を定義</h3>
+<p><code>&lt;C-X&gt;&lt;C-U&gt;</code> を <code>set completefunc</code> で、
+<code>&lt;C-X&gt;&lt;C-O&gt;</code> を <code>set omnifunc</code> でユーザー定義できる。</p>
+<pre class="code literal-block"><span></span><span class="k">function</span><span class="p">!</span> s:my_omni_complete<span class="p">(</span>findstart<span class="p">,</span> base<span class="p">)</span>
+    <span class="k">if</span> <span class="k">a</span>:findstart
+<span class="c">        " 補完の開始列を返す</span>
+        <span class="k">return</span> <span class="k">col</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+    <span class="k">endif</span>
+
+<span class="c">    " 補完候補を返す</span>
+    <span class="k">let</span> <span class="k">l</span>:matches <span class="p">=</span>  [<span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span>]
+    <span class="k">return</span> {<span class="s1">'words'</span>: matches<span class="p">,</span> <span class="s1">'refresh'</span>: <span class="s1">'always'</span>}
+
+<span class="k">endfunction</span>
+
+<span class="c">"setlocal complefunc = </span>
+<span class="k">setlocal</span> <span class="nb">omnifunc</span> <span class="p">=</span> s:my_omni_complete
+<span class="c">" menuone</span>
+<span class="k">setlocal</span> <span class="nb">completeopt</span> <span class="p">=</span> menu<span class="p">,</span>preview<span class="p">,</span>longest
+<span class="c">" default</span>
+<span class="k">setlocal</span> <span class="nb">previewheight</span> <span class="p">=</span> <span class="m">3</span>
+<span class="c">"setlocal pumheight</span>
+<span class="k">setlocal</span> pumwidth <span class="p">=</span> <span class="m">15</span>
+</pre>
+
+<p>のように定義する。</p>
+<h4>最初の実行時</h4>
+<blockquote>
+<p>On the first invocation the arguments are:
+   a:findstart  1
+   a:base empty</p>
+</blockquote>
+<h4>候補の取得</h4>
+<blockquote>
+<p>On the second invocation the arguments are:
+   a:findstart  0
+   a:base the text with which matches should match; the text that was
+      located in the first call (can be empty)</p>
+</blockquote>
+<h4>補完候補</h4>
+<p>単なる文字列か以下のdictionary</p>
+<pre class="code literal-block"><span></span>{
+    word        the text that will be inserted, mandatory
+    abbr        abbreviation of "word"; when not empty it is used in
+            the menu instead of "word"
+    menu        extra text for the popup menu, displayed after "word"
+            or "abbr"
+    info        more information about the item, can be displayed in a
+            preview window
+    kind        single letter indicating the type of completion
+
+        v   variable
+        f   function or method
+        m   member of a struct or class
+        t   typedef
+        d   #define or macro
+
+    icase       when non-zero case is to be ignored when comparing
+            items to be equal; when omitted zero is used, thus
+            items that only differ in case are added
+    dup     when non-zero this match will be added even when an
+            item with the same word is already present.
+    empty       when non-zero this match will be added even when it is
+            an empty string
+    user_data   custom data which is associated with the item and
+            available in |v:completed_item|
+}
+</pre>
+
+<h4>非同期で更新</h4>
+<h4>自動的にsuggest</h4>
+<ul>
+<li>deoplete</li>
+</ul>
+<h4>呼び出し例</h4>
+<pre class="code literal-block"><span></span><span class="nb">inoremap</span> <span class="p">&lt;</span>expr<span class="p">&gt;</span> . MayComplete<span class="p">()</span>
+func MayComplete<span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span>can <span class="nb">complete</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">".\&lt;C-X&gt;\&lt;C-O&gt;"</span>
+    <span class="k">endif</span>
+    <span class="k">return</span> <span class="s1">'.'</span>
+endfunc
+</pre>
+
+<h4>実装例</h4>
+<h5>vim-lsp</h5>
+<pre class="code literal-block"><span></span><span class="k">function</span><span class="p">!</span> <span class="nb">lsp</span>#omni#<span class="nb">complete</span><span class="p">(</span>findstart<span class="p">,</span> base<span class="p">)</span> abort
+    <span class="k">if</span> <span class="k">a</span>:findstart
+        <span class="k">return</span> <span class="k">col</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+    <span class="k">else</span>
+<span class="c">        " language serverに補完候補ををリクエスト</span>
+        <span class="k">call</span> s:send_completion_request<span class="p">(</span><span class="k">l</span>:info<span class="p">)</span>
+
+<span class="c">        " 空で抜ける</span>
+        <span class="k">redraw</span>
+        <span class="k">return</span> <span class="k">v</span>:none
+    <span class="k">endif</span>
+endfunc
+</pre>
+
+<pre class="code literal-block"><span></span><span class="c">" call s:send_completion_request(l:info) のコールバック</span>
+<span class="k">call</span> <span class="nb">complete</span><span class="p">(</span><span class="k">col</span><span class="p">(</span><span class="s1">'.'</span><span class="p">),</span> <span class="k">l</span>:matches<span class="p">)</span>
+</pre>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../../github/deso/" rel="prev" title="deso">
+            deso 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../vim_create_plugin_has_buffer/" rel="next" title="buffer を持つ vim plugin を作る">
+            👉 buffer を持つ vim plugin を作る
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

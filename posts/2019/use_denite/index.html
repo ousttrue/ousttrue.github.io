@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>Denite練習 | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">Denite練習
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-04-21T18:13:27+09:00" title="2019-04-21">2019-04-21</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/vim/" rel="tag">vim</a></li>
+</ul>
+</h1>
+
+<div>
+<p>nvim 環境が軌道に乗ってきたので、 <code>denite</code> やってみよう。</p>
+<h3>source 作る</h3>
+<h4>リポジトリ</h4>
+<p>https://github.com/ousttrue/deso</p>
+<p>作った</p>
+<p>とりあえず <code>dein.toml</code> に登録。</p>
+<pre class="code literal-block"><span></span><span class="k">[[plugins]]</span>
+<span class="na">repo</span> <span class="o">=</span>  <span class="s">'ousttrue/deso'</span>
+</pre>
+
+<p>nvim 再起動して <code>~/.cache/dein/repose/github.com/ousttrue/deso</code></p>
+<p>にクローンされるところまで確認。</p>
+<h4>deso.py</h4>
+<p><code>rplugin/python3/denite/source/deso.py</code> を作る</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span>
+
+
+<span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">vim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'deso'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="s1">'word'</span>
+
+    <span class="k">def</span> <span class="nf">gather_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">candidates</span>
+</pre>
+
+<p><code>:UpdateRemotePlugin</code></p>
+<p>して、<code>Denite deso</code> で空のリストが返るところまで確認した。</p>
+<h3>中身作る</h3>
+<p><code>help denite-create_-source</code> を読む。</p>
+<p><code>gather_candidates</code> は <code>dictionary</code> の <code>list</code> を返す。</p>
+<p><code>dictionary</code> の様式は、 <code>help denite-candidate-attributes</code> を読む。</p>
+<pre class="code literal-block"><span></span><span class="p">{</span>
+    <span class="s2">"word"</span><span class="p">:</span> <span class="s2">"hogehoge"</span><span class="p">,</span>  <span class="c1"># required</span>
+    <span class="s2">"abbr"</span><span class="p">:</span> <span class="s2">"hoge"</span><span class="p">,</span> <span class="c1"># 表示用。無くてもよい</span>
+<span class="p">}</span>
+</pre>
+
+<p>なるほど。</p>
+<pre class="code literal-block"><span></span>    <span class="k">def</span> <span class="nf">gather_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"word"</span><span class="p">:</span>  <span class="n">date</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+</pre>
+
+<p>しかし、うまくいかず。どうも変更が反映されないなーと悩んでいたのだが、</p>
+<p><code>~/.cache/dein/.cache/init.vim/.dein/rplugin/python3/denite/source/deso.py</code></p>
+<p>を見たら最初に作った空の候補を返す状態だった。</p>
+<p><code>:UpdateRemotePlugin</code> 
+で元のファイルに更新があっても置き換えてくれないように見えた。</p>
+<p>dein で <code>denite</code> を入れなおしたら更新できた。
+もっと楽に更新する方法は無いのかしら。</p>
+<p>シンボリックリンクにしてごまかした w</p>
+<pre class="code literal-block"><span></span>ln -s ~/.cache/dein/repos/github.com/ousttrue/deso/rplugin/python3/denite/source/deso.py
+~/.cache/dein/.cache/init.vim/.dein/rplugin/python3/denite/source/deso.py
+</pre>
+
+<p>これで、 <code>neovim</code> を再起動すればリロードできるようになった。
+そのうち正しいやり方がわかるだろう・・・</p>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../vim-autoformat/" rel="prev" title="vim-autoformat を使う">
+            vim-autoformat を使う 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../../github/deso/" rel="next" title="deso">
+            👉 deso
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

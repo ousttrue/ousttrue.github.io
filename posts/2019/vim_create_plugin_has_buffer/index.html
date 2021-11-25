@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>buffer を持つ vim plugin を作る | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">buffer を持つ vim plugin を作る
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-04-23T00:13:09+09:00" title="2019-04-23">2019-04-23</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/vim/" rel="tag">vim</a></li>
+</ul>
+</h1>
+
+<div>
+<p>独自のバッファを持つpluginを作りたい</p>
+<h3>BufferList読んでみる</h3>
+<ul>
+<li>https://github.com/vim-scripts/bufferlist.vim/blob/master/plugin/bufferlist.vim</li>
+</ul>
+<p>273行</p>
+<p>この量なら読める。</p>
+<h4>インクルードガード</h4>
+<pre class="code literal-block"><span></span><span class="k">if</span> exists<span class="p">(</span><span class="s1">'g:BufferListLoaded'</span><span class="p">)</span>
+  <span class="k">finish</span>
+<span class="k">endif</span>
+<span class="k">let</span> <span class="k">g</span>:BufferListLoaded <span class="p">=</span> <span class="m">1</span>
+</pre>
+
+<h4>初期値決め</h4>
+<pre class="code literal-block"><span></span><span class="c">" vimrcで先に値を決められるようにしている？</span>
+<span class="c">" vimrc より plugin の方が後に実行されるからか？</span>
+<span class="k">if</span> <span class="p">!</span>exists<span class="p">(</span><span class="s1">'g:BufferListWidth'</span><span class="p">)</span>
+  <span class="k">let</span> <span class="k">g</span>:BufferListWidth <span class="p">=</span> <span class="m">20</span>
+<span class="k">endif</span>
+
+<span class="k">if</span> <span class="p">!</span>exists<span class="p">(</span><span class="s1">'g:BufferListMaxWidth'</span><span class="p">)</span>
+  <span class="k">let</span> <span class="k">g</span>:BufferListMaxWidth <span class="p">=</span> <span class="m">40</span>
+<span class="k">endif</span>
+</pre>
+
+<h4>BufferList関数</h4>
+<p><code>__BUFFERLIST__</code> という Buffer を専用のバッファとして扱う。</p>
+<pre class="code literal-block"><span></span><span class="c">" toggled the buffer list on/off</span>
+<span class="k">function</span><span class="p">!</span> BufferList<span class="p">()</span>
+<span class="c">  " if we get called and the list is open --&gt; close it</span>
+  <span class="k">if</span> bufexists<span class="p">(</span>bufnr<span class="p">(</span><span class="s2">"__BUFFERLIST__"</span><span class="p">))</span>
+<span class="c">    " 既に開いていたら閉じる</span>
+    exec <span class="s1">':'</span> . bufnr<span class="p">(</span><span class="s2">"__BUFFERLIST__"</span><span class="p">)</span> . <span class="s1">'bwipeout'</span>
+    <span class="k">return</span>
+  <span class="k">endif</span>
+</pre>
+
+<p><code>bufnr</code> でバッファ名からバッファ番号を得て、<code>bufexists</code> で存在を確認する。
+<code>bufnr</code> には特別な名前を指定出来て以下のような効果があるようだ。</p>
+<pre class="code literal-block"><span></span>  <span class="k">let</span> <span class="k">l</span>:bufcount <span class="p">=</span> bufnr<span class="p">(</span><span class="s1">'$'</span><span class="p">)</span>
+  <span class="k">let</span> <span class="k">l</span>:activebuf <span class="p">=</span> bufnr<span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+</pre>
+
+<h5>バッファを作る</h5>
+<p>作ったバッファがアクティブになり、以降の操作対象になる。</p>
+<pre class="code literal-block"><span></span><span class="c">  " now, create the buffer &amp; set it up</span>
+  exec <span class="s1">'silent! '</span> . <span class="k">l</span>:width . <span class="s1">'vne __BUFFERLIST__'</span>
+</pre>
+
+<h5>色決め</h5>
+<pre class="code literal-block"><span></span><span class="c">  " set up syntax highlighting</span>
+  <span class="k">if</span> has<span class="p">(</span><span class="s2">"syntax"</span><span class="p">)</span>
+    <span class="k">syn</span> clear
+    <span class="k">syn</span> <span class="k">match</span> BufferNormal <span class="sr">/  .*/</span>
+    <span class="k">syn</span> <span class="k">match</span> BufferSelected <span class="sr">/&gt; .*/</span>hs<span class="p">=</span>s<span class="p">+</span><span class="m">1</span>
+    <span class="k">hi</span> <span class="nb">def</span> BufferNormal ctermfg<span class="p">=</span>black ctermbg<span class="p">=</span>white
+    <span class="k">hi</span> <span class="nb">def</span> BufferSelected ctermfg<span class="p">=</span>white ctermbg<span class="p">=</span>black
+  <span class="k">endif</span>
+</pre>
+
+<h5>Buffer構築</h5>
+<p><code>setlocal nomodifiable</code> で編集不可に</p>
+<pre class="code literal-block"><span></span>  <span class="k">setlocal</span> <span class="nb">modifiable</span>
+  <span class="k">if</span> <span class="k">l</span>:displayedbufs <span class="p">&gt;</span> <span class="m">0</span>
+<span class="c">    " input the buffer list, delete the trailing newline, &amp; fill with blank lines</span>
+    <span class="k">put</span><span class="p">!</span> <span class="p">=</span><span class="k">l</span>:buflist
+<span class="c">    " is there any way to NOT delete into a register? bummer...</span>
+<span class="c">    "norm Gdd$</span>
+    norm GkJ
+    <span class="k">while</span> <span class="nb">winheight</span><span class="p">(</span><span class="m">0</span><span class="p">)</span> <span class="p">&gt;</span> line<span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+      <span class="k">put</span> <span class="p">=</span><span class="k">l</span>:fill
+    <span class="k">endwhile</span>
+  <span class="k">else</span>
+    <span class="k">let</span> <span class="k">l</span>:<span class="k">i</span> <span class="p">=</span> <span class="m">0</span> <span class="p">|</span> <span class="k">while</span> <span class="k">l</span>:<span class="k">i</span> <span class="p">&lt;</span> <span class="nb">winheight</span><span class="p">(</span><span class="m">0</span><span class="p">)</span> <span class="p">|</span> <span class="k">let</span> <span class="k">l</span>:<span class="k">i</span> <span class="p">=</span> <span class="k">l</span>:<span class="k">i</span> <span class="p">+</span> <span class="m">1</span>
+      <span class="k">put</span><span class="p">!</span> <span class="p">=</span><span class="k">l</span>:fill
+    <span class="k">endwhile</span>
+    norm <span class="m">0</span>
+  <span class="k">endif</span>
+  <span class="k">setlocal</span> <span class="nb">nomodifiable</span>
+</pre>
+
+<h5>操作を設定</h5>
+<p>バッファローカルに <code>map</code> を設定する。
+<code>map</code> がキーボード・マウス入力へのコールバック設定になっているのか。なるほど。</p>
+<pre class="code literal-block"><span></span><span class="c">  " set up the keymap</span>
+  <span class="nb">noremap</span> <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>CR<span class="p">&gt;</span> :<span class="k">call</span> LoadBuffer<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">q</span> :<span class="k">bwipeout</span><span class="p">&lt;</span>CR<span class="p">&gt;</span> 
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">j</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"down"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">k</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"up"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">d</span> :<span class="k">call</span> BufferListDeleteBuffer<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>MouseDown<span class="p">&gt;</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"up"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>MouseUp<span class="p">&gt;</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"down"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>LeftDrag<span class="p">&gt;</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>LeftRelease<span class="p">&gt;</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"mouse"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span><span class="m">2</span><span class="p">-</span>LeftMouse<span class="p">&gt;</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"mouse"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+    \:<span class="k">call</span> LoadBuffer<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Down<span class="p">&gt;</span> <span class="k">j</span>
+  map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Up<span class="p">&gt;</span> <span class="k">k</span>
+</pre>
+
+<p>左右への動きを封じてある</p>
+<pre class="code literal-block"><span></span>  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">h</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">l</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Left<span class="p">&gt;</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Right<span class="p">&gt;</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+</pre>
+
+<p>その他編集系の機能を封じる</p>
+<pre class="code literal-block"><span></span>  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">i</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">a</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> I <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> A <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">o</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> O <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+</pre>
+
+<p>移動</p>
+<pre class="code literal-block"><span></span>  map &lt;silent&gt; &lt;buffer&gt; &lt;Home&gt; :call BufferListMove(1)&lt;CR&gt;
+  map &lt;silent&gt; &lt;buffer&gt; &lt;End&gt; :call BufferListMove(line("$"))&lt;CR&gt;
+</pre>
+
+<h3>情報収集</h3>
+<p><code>:set nomodifiable</code> で調べてみた</p>
+<ul>
+<li>http://tyru.hatenablog.com/entry/20101107/modifiable_and_readonly</li>
+<li>https://vimconf.org/2018/slides/Effective_Modern_Vim_scripting_at_vimconf2018_for_PDF.pdf</li>
+<li>https://vi.stackexchange.com/questions/17140/how-to-create-a-buffer-like-a-fugitive-temporary-buffer</li>
+</ul>
+<p><code>:set buftype=nofile</code> が出てきた</p>
+<ul>
+<li><a href="http://leafcage.hateblo.jp/entry/2013/11/21/083830">'nobuflisted' なバッファの作り方</a></li>
+<li>https://vi.stackexchange.com/questions/14832/how-to-create-a-buffer-with-customized-behavior-how-to-create-a-buffer-that-a</li>
+<li>http://learnvimscriptthehardway.stevelosh.com/</li>
+</ul>
+<h3>NERDTree解読</h3>
+<h4>左側にどうやって <code>split</code> して開くのか</h4>
+<h4>ファイルを選択して開くとき開き先をどうやって決めるのか</h4>
+<h3>pythonに移植できんやろか</h3>
+<p>つまり、Pythonでvimから見える関数を定義できれば勝つるのでは。</p>
+<ul>
+<li>http://candidtim.github.io/vim/2017/08/11/write-vim-plugin-in-python.html</li>
+</ul>
+<p><code>vim.eval</code> とかあるな・・・。いけるのでは？</p>
+<p>慣れたら全部 <code>vim script</code> で書くようになりそうだけど、練習に移植してみよか。</p>
+<p>nvimで、</p>
+<p><code>:py3 import sys; print(sys.version)</code></p>
+<p>としたら</p>
+<p><code>3.6.8 (tags/v3.6.8:3c6b436a57, Dec 23 2018, 23:31:17) [MSC v.1916 32 bit (Intel)]</code></p>
+<p>と返ってきた。なるほど。</p>
+<ul>
+<li>[Pythonでvim pluginを書く https://qiita.com/zakuro9715/items/98449dd4c6b9e1d61ef5]</li>
+</ul>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../vim_completion/" rel="prev" title="vim の Completion について調べる">
+            vim の Completion について調べる 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../vim_buffer/" rel="next" title="vim の Buffer 操作のメモ">
+            👉 vim の Buffer 操作のメモ
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

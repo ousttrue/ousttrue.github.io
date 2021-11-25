@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>msgpack-rpc-asioの関数登録と実行 | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">msgpack-rpc-asioの関数登録と実行
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2013-05-19T00:00:00+09:00" title="2013-05-19">2013-05-19</time>
+</li>
+</ul>
+</h1>
+
+<div>
+<p>(記事復旧のついでに少し修正)</p>
+<p>msgpack-rpcのリクエストは、によると</p>
+<p><code>[type, msgid, method, params]</code></p>
+<p>という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。 
+これをサーバ側で如何に呼び出すかについて。</p>
+<p>単純な実装だと以下のようにメソッド名をキーにして分岐することになる。</p>
+<pre class="code literal-block"><span></span><span class="kt">int</span> <span class="nf">and</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+
+<span class="k">class</span> <span class="nc">dispatcher</span> <span class="p">{</span>
+
+    <span class="kt">void</span> <span class="n">dispatch</span><span class="p">(</span><span class="kt">int</span> <span class="n">msgid</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="err">“</span><span class="n">add</span><span class="err">”</span><span class="p">){</span> <span class="c1">// 引数展開</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">tuple</span> <span class="n">t</span><span class="p">;</span> <span class="n">params</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+
+            <span class="c1">// 関数実行</span>
+            <span class="kt">int</span> <span class="n">result</span><span class="o">=</span><span class="n">add</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+
+            <span class="c1">// 結果のパッキング</span>
+            <span class="c1">// response [type, msgid, error, result]</span>
+            <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="p">;</span>
+            <span class="n">msgpack</span><span class="o">::</span><span class="n">packer</span><span class="o">&lt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="o">&gt;</span> <span class="n">pk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">response</span><span class="p">);</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack_array</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">);</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack_nil</span><span class="p">();</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+
+            <span class="c1">// responseを送り返す</span>
+        <span class="p">}</span>
+        <span class="k">else</span><span class="p">{</span>
+            <span class="k">throw</span> <span class="err">“</span><span class="n">unknown</span> <span class="n">func</span><span class="err">”</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">};</span>
+</pre>
+
+<p>引数展開、関数呼び出し、結果のパッキングと一連の操作を定型処理として括りだすと下記のように書ける。</p>
+<pre class="code literal-block"><span></span><span class="c1">// ２引数展開用</span>
+<span class="k">class</span> <span class="nc">dispatcher</span> <span class="p">{</span>
+    <span class="c1">// 実行</span>
+    <span class="kt">void</span> <span class="n">dispatch</span><span class="p">(</span><span class="kt">int</span> <span class="n">msgid</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="err">“</span><span class="n">add</span><span class="err">”</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="o">=</span><span class="n">unpack_exec_pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">params</span><span class="p">);</span>
+
+            <span class="c1">// responseを送り返す</span>
+        <span class="p">}</span>
+        <span class="k">else</span><span class="p">{</span>
+            <span class="k">throw</span> <span class="err">“</span><span class="n">unknown</span> <span class="n">func</span><span class="err">”</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// ヘルパー</span>
+<span class="k">template</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">unpack_exec_pack</span><span class="p">(</span>
+    <span class="kt">int</span> <span class="n">msgid</span><span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">),</span> <span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 引数展開</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">tuple</span> <span class="n">t</span><span class="p">;</span> <span class="n">params</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+
+    <span class="c1">// 関数実行</span>
+    <span class="n">R</span> <span class="n">result</span><span class="o">=</span><span class="n">add</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+
+    <span class="c1">// 結果のパッキング</span>
+    <span class="c1">// response [type, msgid, error, result]</span>
+    <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="p">;</span>
+    <span class="n">msgpack</span><span class="o">::</span><span class="n">packer</span><span class="o">&lt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="o">&gt;</span> <span class="n">pk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">response</span><span class="p">);</span>
+    <span class="n">pk</span><span class="p">.</span><span class="n">pack_array</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">);</span>
+    <span class="n">pk</span><span class="p">.</span><span class="n">pack_nil</span><span class="p">();</span>
+    <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">response</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+
+<p>１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。</p>
+<p>さらに 関数の登録と実行を分けるべく次のように拡張した。</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">dispatcher</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span> <span class="n">m_map</span><span class="p">;</span>
+
+    <span class="c1">// 実行</span>
+    <span class="kt">void</span> <span class="nf">dispatch</span><span class="p">(</span><span class="kt">int</span> <span class="n">msgid</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="k">const</span> <span class="n">msgpack</span><span class="o">::</span><span class="n">object</span> <span class="o">&amp;</span><span class="n">params</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">function</span> <span class="n">f</span><span class="o">=</span><span class="n">m_map</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">method</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">f</span><span class="o">!=</span><span class="n">m_map</span><span class="p">.</span><span class="n">end</span><span class="p">()){</span>
+            <span class="c1">// 関数実行</span>
+            <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">resonse</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">msgid</span><span class="p">,</span> <span class="n">params</span><span class="p">);</span>
+
+            <span class="c1">// responseを送り返す</span>
+        <span class="p">}</span>
+        <span class="k">else</span><span class="p">{</span>
+            <span class="k">throw</span> <span class="err">“</span><span class="n">unknown</span> <span class="n">func</span><span class="err">”</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 登録</span>
+    <span class="k">template</span> <span class="kt">void</span> <span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">m_map</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">=</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="p">{</span>
+
+            <span class="c1">// 引数展開</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="o">&gt;</span> <span class="n">t</span><span class="p">;</span>
+            <span class="n">params</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+
+            <span class="c1">// 実行</span>
+            <span class="n">R</span> <span class="n">result</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+
+            <span class="c1">// 結果のパッキング</span>
+            <span class="c1">// response [type, msgid, error, result]</span>
+            <span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span> <span class="n">response</span><span class="p">;</span>
+            <span class="n">msgpack</span><span class="o">::</span><span class="n">packer</span><span class="o">&lt;</span><span class="n">msgpack</span><span class="o">::</span><span class="n">sbuffer</span><span class="o">&gt;</span> <span class="n">pk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">response</span><span class="p">);</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack_array</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">msgid</span><span class="p">);</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack_nil</span><span class="p">();</span>
+            <span class="n">pk</span><span class="p">.</span><span class="n">pack</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+
+            <span class="k">return</span> <span class="n">response</span><span class="p">;</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre>
+
+<p><code>msgpack-&gt;引数展開-&gt;c++関数呼び出し-&gt;msgpack</code> への一連の操作を 同一のシグネチャの<code>std::function</code> に 封じ込めることができる。</p>
+<p>次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。 まず、std::functionから実装。</p>
+<pre class="code literal-block"><span></span><span class="c1">// std::function用</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A2</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">add_handler</span><span class="p">(</span><span class="n">contt</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 中身同じ</span>
+<span class="p">}</span>
+</pre>
+
+<p>呼び出し時に <code>std::function</code> を経由するようにすればあらゆる関数呼び出しを登録できる。 例えば、ラムダ関数も以下のように登録できる。</p>
+<pre class="code literal-block"><span></span><span class="c1">// ラムダ登録</span>
+<span class="n">dispatcher</span> <span class="n">d</span><span class="p">;</span>
+<span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="p">[](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">));</span>
+</pre>
+
+<p>しかし、どうせなら</p>
+<pre class="code literal-block"><span></span><span class="n">dispatcher</span> <span class="n">d</span><span class="p">;</span>
+<span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">});</span>
+</pre>
+
+<p>と書きたい。</p>
+<p>となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。</p>
+<pre class="code literal-block"><span></span><span class="c1">// ラムダの登録</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span> <span class="n">F</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">F</span> <span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 型がわからぬ</span>
+<span class="p">}</span>
+</pre>
+
+<p>ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。</p>
+<p>```c++
+ template
+ void add_handler(const std::string &amp;method, F f, R(C::*)(A1, A2)const) {
+     // 中身同じ
+ }
+// ラムダの登録
+// std::functionも受けられる
+// std::bindは無理だった
+// operator()がひとつしかない関数オブジェクトを受け付けられる？</p>
+<p>template void add_handler(const std::string &amp;method, F f)
+{
+    // 上の関数で型推論させる
+    add_handler(method, f, &amp;F::operator());
+}
+```</p>
+<p>これでめでたくラムダも直接登録できるようになった。
+ただし、operator()のオーバーロードが解決できないらしくstd::bindが登録できない。 std::bindに関しては、ラムダで代用できるしstd::functionでラップできるのでおいておくことにした。</p>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../05/17/valiadic-templates/" rel="prev" title="可変長テンプレート引数">
+            可変長テンプレート引数 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../05/19/call-with-tuple/" rel="next" title="msgpack-rpc-asioの関数登録と実行">
+            👉 msgpack-rpc-asioの関数登録と実行
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

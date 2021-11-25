@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (lspについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/lsp.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 21 Nov 2021 15:34:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Lua Language Server 解読</title><link>https://ousttrue.github.io/posts/2021/summer/lua_language_server/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/sumneko/lua-language-server"&gt;lua-language-server&lt;/a&gt; が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (lspについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/lsp.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Thu, 25 Nov 2021 17:44:41 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Lua Language Server 解読</title><link>https://ousttrue.github.io/posts/2021/summer/lua_language_server/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://github.com/sumneko/lua-language-server"&gt;lua-language-server&lt;/a&gt; が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
 &lt;code&gt;ffi.cdef&lt;/code&gt; を読めるようにすればよいのでは。
 ということで、lua-language-server を探ってみる。&lt;/p&gt;
 &lt;h2&gt;構成&lt;/h2&gt;
@@ -206,4 +206,110 @@ no_call_parentheses = true
 &lt;/pre&gt;
 
 &lt;h2&gt;ソース読み&lt;/h2&gt;
-&lt;p&gt;&lt;a href="https://ousttrue.github.io/lua/"&gt;https://ousttrue.github.io/lua/&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>dap</category><category>lsp</category><category>lua</category><category>luajit</category><guid>https://ousttrue.github.io/posts/2021/lua_info/</guid><pubDate>Mon, 26 Jul 2021 15:00:00 GMT</pubDate></item></channel></rss>
+&lt;p&gt;&lt;a href="https://ousttrue.github.io/lua/"&gt;https://ousttrue.github.io/lua/&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>dap</category><category>lsp</category><category>lua</category><category>luajit</category><guid>https://ousttrue.github.io/posts/2021/lua_info/</guid><pubDate>Mon, 26 Jul 2021 15:00:00 GMT</pubDate></item><item><title>vim の Completion について調べる</title><link>https://ousttrue.github.io/posts/2019/vim_completion/</link><dc:creator>ousttrue</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;code&gt;omnicompletion&lt;/code&gt; とかいろいろあるけどどう違うねん。ということで調べる。
+&lt;code&gt;help ins-completion&lt;/code&gt;
+&lt;code&gt;help complete-functions&lt;/code&gt;&lt;/p&gt;
+&lt;h3&gt;いろいろな補完&lt;/h3&gt;
+&lt;h3&gt;補完関数を定義&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;C-X&amp;gt;&amp;lt;C-U&amp;gt;&lt;/code&gt; を &lt;code&gt;set completefunc&lt;/code&gt; で、
+&lt;code&gt;&amp;lt;C-X&amp;gt;&amp;lt;C-O&amp;gt;&lt;/code&gt; を &lt;code&gt;set omnifunc&lt;/code&gt; でユーザー定義できる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; s:my_omni_complete&lt;span class="p"&gt;(&lt;/span&gt;findstart&lt;span class="p"&gt;,&lt;/span&gt; base&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="k"&gt;a&lt;/span&gt;:findstart
+&lt;span class="c"&gt;        " 補完の開始列を返す&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="k"&gt;col&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'.'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;endif&lt;/span&gt;
+
+&lt;span class="c"&gt;    " 補完候補を返す&lt;/span&gt;
+    &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="k"&gt;l&lt;/span&gt;:matches &lt;span class="p"&gt;=&lt;/span&gt;  [&lt;span class="s2"&gt;"a"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"b"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"c"&lt;/span&gt;]
+    &lt;span class="k"&gt;return&lt;/span&gt; {&lt;span class="s1"&gt;'words'&lt;/span&gt;: matches&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'refresh'&lt;/span&gt;: &lt;span class="s1"&gt;'always'&lt;/span&gt;}
+
+&lt;span class="k"&gt;endfunction&lt;/span&gt;
+
+&lt;span class="c"&gt;"setlocal complefunc = &lt;/span&gt;
+&lt;span class="k"&gt;setlocal&lt;/span&gt; &lt;span class="nb"&gt;omnifunc&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; s:my_omni_complete
+&lt;span class="c"&gt;" menuone&lt;/span&gt;
+&lt;span class="k"&gt;setlocal&lt;/span&gt; &lt;span class="nb"&gt;completeopt&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; menu&lt;span class="p"&gt;,&lt;/span&gt;preview&lt;span class="p"&gt;,&lt;/span&gt;longest
+&lt;span class="c"&gt;" default&lt;/span&gt;
+&lt;span class="k"&gt;setlocal&lt;/span&gt; &lt;span class="nb"&gt;previewheight&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
+&lt;span class="c"&gt;"setlocal pumheight&lt;/span&gt;
+&lt;span class="k"&gt;setlocal&lt;/span&gt; pumwidth &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;15&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;のように定義する。&lt;/p&gt;
+&lt;h4&gt;最初の実行時&lt;/h4&gt;
+&lt;blockquote&gt;
+&lt;p&gt;On the first invocation the arguments are:
+   a:findstart  1
+   a:base empty&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4&gt;候補の取得&lt;/h4&gt;
+&lt;blockquote&gt;
+&lt;p&gt;On the second invocation the arguments are:
+   a:findstart  0
+   a:base the text with which matches should match; the text that was
+      located in the first call (can be empty)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4&gt;補完候補&lt;/h4&gt;
+&lt;p&gt;単なる文字列か以下のdictionary&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;{
+    word        the text that will be inserted, mandatory
+    abbr        abbreviation of "word"; when not empty it is used in
+            the menu instead of "word"
+    menu        extra text for the popup menu, displayed after "word"
+            or "abbr"
+    info        more information about the item, can be displayed in a
+            preview window
+    kind        single letter indicating the type of completion
+
+        v   variable
+        f   function or method
+        m   member of a struct or class
+        t   typedef
+        d   #define or macro
+
+    icase       when non-zero case is to be ignored when comparing
+            items to be equal; when omitted zero is used, thus
+            items that only differ in case are added
+    dup     when non-zero this match will be added even when an
+            item with the same word is already present.
+    empty       when non-zero this match will be added even when it is
+            an empty string
+    user_data   custom data which is associated with the item and
+            available in |v:completed_item|
+}
+&lt;/pre&gt;
+
+&lt;h4&gt;非同期で更新&lt;/h4&gt;
+&lt;h4&gt;自動的にsuggest&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;deoplete&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;呼び出し例&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;inoremap&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;expr&lt;span class="p"&gt;&amp;gt;&lt;/span&gt; . MayComplete&lt;span class="p"&gt;()&lt;/span&gt;
+func MayComplete&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;can &lt;span class="nb"&gt;complete&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;".\&amp;lt;C-X&amp;gt;\&amp;lt;C-O&amp;gt;"&lt;/span&gt;
+    &lt;span class="k"&gt;endif&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;'.'&lt;/span&gt;
+endfunc
+&lt;/pre&gt;
+
+&lt;h4&gt;実装例&lt;/h4&gt;
+&lt;h5&gt;vim-lsp&lt;/h5&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; &lt;span class="nb"&gt;lsp&lt;/span&gt;#omni#&lt;span class="nb"&gt;complete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;findstart&lt;span class="p"&gt;,&lt;/span&gt; base&lt;span class="p"&gt;)&lt;/span&gt; abort
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="k"&gt;a&lt;/span&gt;:findstart
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="k"&gt;col&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'.'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;
+&lt;span class="c"&gt;        " language serverに補完候補ををリクエスト&lt;/span&gt;
+        &lt;span class="k"&gt;call&lt;/span&gt; s:send_completion_request&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;l&lt;/span&gt;:info&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c"&gt;        " 空で抜ける&lt;/span&gt;
+        &lt;span class="k"&gt;redraw&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="k"&gt;v&lt;/span&gt;:none
+    &lt;span class="k"&gt;endif&lt;/span&gt;
+endfunc
+&lt;/pre&gt;
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c"&gt;" call s:send_completion_request(l:info) のコールバック&lt;/span&gt;
+&lt;span class="k"&gt;call&lt;/span&gt; &lt;span class="nb"&gt;complete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;col&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'.'&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="k"&gt;l&lt;/span&gt;:matches&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>lsp</category><category>vim</category><guid>https://ousttrue.github.io/posts/2019/vim_completion/</guid><pubDate>Sun, 21 Apr 2019 17:17:20 GMT</pubDate></item></channel></rss>

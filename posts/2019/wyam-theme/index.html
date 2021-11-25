@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>wyam のテーマをカスタマイズする | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">wyam のテーマをカスタマイズする
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-08-17T00:00:00+09:00" title="2019-08-17">2019-08-17</time>
+</li>
+</ul>
+</h1>
+
+<div>
+<p>cssとかの調整。</p>
+<h3>調べる</h3>
+<ul>
+<li>https://wyam.io/docs/</li>
+<li>https://wyam.io/recipes/blog/themes/</li>
+<li>https://wyam.io/docs/extensibility/creating-a-theme</li>
+<li>https://wyam.io/docs/extensibility/customizing-themes</li>
+</ul>
+<p>ローカルにファイルを配置することでテーマをオーバーライドできると書いてあるのだが、
+どのように配置するか正確なところがわからん。</p>
+<p>試行錯誤したところ、</p>
+<p><code>input</code> にテーマのファイルを直接コピーしたら反映された。</p>
+<p><code>theme</code> フォルダでもよさそうなのだけど、 <code>input</code> しか <code>--watch</code> の対象にならないので、
+<code>input</code> に入れてしまうのがよさそう。</p>
+<pre class="code literal-block"><span></span>input
+  + assets
+  + _Layout.cshtml
+</pre>
+
+<h3>レイアウトの構成</h3>
+<p>ASP.Net のtemplateエンジン、 <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-2.2">Razor</a> で構成されていて拡張子は、 <code>cshtml</code> 。</p>
+<p>ファイル名は、<a href="https://wyam.io/recipes/blog/overview">Blog Recipe</a>が規定している。</p>
+<p>サイトのルート(index), 各記事(post), 記事一覧(archive, tag), タグ一覧(tags)などがある。単純な例はこれ。</p>
+<ul>
+<li>https://github.com/Wyamio/Wyam/tree/develop/themes/Blog/BlogTemplate</li>
+</ul>
+<h3>テーマを作ってみる</h3>
+<ul>
+<li>https://github.com/Wyamio/Wyam.git</li>
+</ul>
+<p>をクローンして、<code>themes/Blog/BlogTemplate/*</code> を <code>input</code> にコピーする。
+config.yml も <code>#theme BlogTemplate</code> とする。</p>
+<p>共通のレイアウトが <code>_Layout.cshtml</code> 。 その中の、 <code>@RenderBody()</code> にルート(_Index.cshtml), 記事(_PostLayout.cshtml), 記事一覧(_Archive.cshtml, _Tag.cshtml), タグ一覧(_Tags.cshtml)がはめ込まれる様子。</p>
+<p><code>_PostIndex.cshtml</code> は廃止されたので使われない。</p>
+<blockquote>
+<ul>
+<li>
+<strong>[Breaking Change]</strong>[Refactoring] Moved Blog recipe theme file <code>/_PostIndex.cshtml</code> to <code>/_Archive.cshtml</code>, no other changes should be needed to this file in themes other than to move it - sorry for the rename (again), the first name was kind of dumb, this one is better</li>
+</ul>
+</blockquote>
+<p>日本語が文字化けするので、 <code>_Layout.cshtml</code> に <code>&lt;meta charset="UTF-8"&gt;</code> だけ足す。
+あとは適当にやってみる。</p>
+<h3>cshtml からアクセスできる変数</h3>
+<ul>
+<li>Model</li>
+<li>Context</li>
+</ul>
+<pre class="code literal-block"><span></span><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"@Context.GetLink(Context.String(BlogKeys.PostsPath))"</span><span class="nt">&gt;</span>Back To posts<span class="nt">&lt;/a&gt;</span>
+</pre>
+
+<h3>作業メモ</h3>
+<ul>
+<li>scss(wyamが対応している)</li>
+<li>highlight.js (phantom themeからコピー)</li>
+<li>旧記事を雑に復旧</li>
+<li>locale https://wyam.io/docs/advanced/setting-the-culture</li>
+</ul>
+<h4>ToDo</h4>
+<ul>
+<li>404頁</li>
+<li>一覧をpageで分割</li>
+<li>記事内のTOC</li>
+<li>https://github.com/Wyamio/Wyam/issues/29</li>
+<li>https://blog.kabrt.cz/posts/2018-11-wyam-blog</li>
+<li>https://konpa.github.io/devicon/</li>
+<li>http://fizzed.com/oss/font-mfizz</li>
+<li>https://www.digitaltapestry.net/posts/poshwyam</li>
+</ul>
+<h3>動作</h3>
+<p>複数のパイプラインが登録してあって(Recipe)、ひとつずつ実行する</p>
+<pre class="code literal-block"><span></span>public IReadOnlyList&lt;IDocument&gt; Execute(ExecutionContext context, IEnumerable&lt;IModule&gt; modules, ImmutableArray&lt;IDocument&gt; inputDocuments
+
+foreach(var pipeline in pipelines)
+{
+  ExecutionPipeline.Execute
+}
+</pre>
+</div>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../../qiita/c%2B%2Bdemenbaguan-shu-wo-thiswodi-1yin-shu-nitoruguan-shu-pointanibian-huan-suru/" rel="prev" title="C++でメンバー関数を、thisを第１引数にとる関数ポインタに変換する">
+            C++でメンバー関数を、thisを第１引数にとる関数ポインタに変換する 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../wyam-start/" rel="next" title="wyam ことはじめ">
+            👉 wyam ことはじめ
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>
