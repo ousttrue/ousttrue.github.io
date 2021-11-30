@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (openglについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/opengl.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Thu, 25 Nov 2021 17:44:41 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>法線マップやってみる</title><link>https://ousttrue.github.io/posts/2021/summer/normalmap/</link><dc:creator>ousttrue</dc:creator><description>&lt;figure&gt;&lt;img src="https://ousttrue.github.io/posts/2021/summer/mikk.jpg"&gt;&lt;/figure&gt; &lt;div&gt;&lt;p&gt;glTFViewerの実装がてら法線マップの実装をやってみる。
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (openglについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/opengl.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2021 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Tue, 30 Nov 2021 17:23:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>法線マップやってみる</title><link>https://ousttrue.github.io/posts/2021/summer/normalmap/</link><dc:creator>ousttrue</dc:creator><description>&lt;figure&gt;&lt;img src="https://ousttrue.github.io/posts/2021/summer/mikk.jpg"&gt;&lt;/figure&gt; &lt;div&gt;&lt;p&gt;glTFViewerの実装がてら法線マップの実装をやってみる。
 &lt;code&gt;OpenGL 4.0 Shading Language Cookbook&lt;/code&gt; を参考に進めた。&lt;/p&gt;
 &lt;h2&gt;法線mapとTangentを供給する&lt;/h2&gt;
 &lt;p&gt;&lt;a href="https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet"&gt;https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet&lt;/a&gt; をサンプルモデルとした。&lt;/p&gt;
@@ -19,11 +19,16 @@
 &lt;blockquote&gt;
 &lt;p&gt;Implementation note: When tangents are not specified, client implementations should calculate tangents using default MikkTSpace algorithms. For best results, the mesh triangles should also be processed using default MikkTSpace algorithms.&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;h2&gt;MikkTSpace&lt;/h2&gt;
 &lt;p&gt;&lt;a href="https://github.com/mmikk/MikkTSpace"&gt;https://github.com/mmikk/MikkTSpace&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;さくっと dll を作成して、 luajit から呼びだしてみた。
 &lt;code&gt;indices&lt;/code&gt; &lt;code&gt;POSITION&lt;/code&gt; &lt;code&gt;NORMAL&lt;/code&gt; &lt;code&gt;TEXCOORD0&lt;/code&gt; を入力して &lt;code&gt;TANGENT&lt;/code&gt; を出力する。
 わりと適当で動く &lt;code&gt;luajit ffi&lt;/code&gt; 恐るべし。
 さすがに C の方に呼びだし回数を減らすラッパーを作ったほうが速そうだが、動かすだけなら問題なし。&lt;/p&gt;
+&lt;p&gt;memo&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://bgolus.medium.com/generating-perfect-normal-maps-for-unity-f929e673fc57#c473"&gt;https://bgolus.medium.com/generating-perfect-normal-maps-for-unity-f929e673fc57#c473&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2&gt;Shader&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;OpenGL 4.0 Shading Language Cookbook&lt;/code&gt; の phong shading を省略して法線だけ確認。
 &lt;code&gt;2倍して1引く&lt;/code&gt; を補った。&lt;/p&gt;

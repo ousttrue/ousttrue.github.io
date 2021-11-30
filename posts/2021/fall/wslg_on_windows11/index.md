@@ -21,7 +21,7 @@ PCを新調したので `Windows11` にアップグレードして wslg を試�
 * (2021.04) <https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/>
 * (2020) [Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts](https://www.phoronix.com/scan.php?page=news_item&px=Microsoft-Writing-Wayland-Comp)
 
-ビジュアルを `Wayland` 、音声を `PulseAudio` を代行する WSLg 仮想マシンに転送することで、
+ビジュアルは `Wayland` 、音声は `PulseAudio` で WSLg 仮想マシンに転送することで、
 Linux の GUI アプリを使えるようにする仕組み。
 
 ## Windows11 で試す
@@ -32,6 +32,14 @@ Windows11 では、 `Windows Insider Program` にせずとも使える。
 WSLで `/mnt/wslg` が存在していれば動作する状態になっている。
 Distribution による特別な設定は不要？
 
+`Ubuntu-CommPrev` の方が `GPU driver` が新しいなど違いあり。
+
+* (2021)[WSL その222 - Linux GUIアプリを動かすWSLgのアーキテクチャーと仕組み](https://kledgeb.blogspot.com/2021/04/wsl-222-linux-guiwslg.html)
+
+* <https://github.com/microsoft/wslg/discussions/78>
+
+`glxinfo -B`
+
 # X
 
 特に何も設定しなくても `xterm` とか `gvim` などの X11 のアプリは動作する。
@@ -41,6 +49,7 @@ Distribution による特別な設定は不要？
 * [Windows 10 HomeでWSLgをさっそく試してみた](https://www.eisbahn.jp/yoichiro/2021/06/wslg.html)
 
 `setxkbmap -layout us` でなおった。
+なおらないアプリもある。
 
 # PluseAudio
 

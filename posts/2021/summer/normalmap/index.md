@@ -32,12 +32,18 @@ layout(binding = 1) uniform sampler2D Tex1;
 
 > Implementation note: When tangents are not specified, client implementations should calculate tangents using default MikkTSpace algorithms. For best results, the mesh triangles should also be processed using default MikkTSpace algorithms.
 
+# MikkTSpace
+
 <https://github.com/mmikk/MikkTSpace>
 
 さくっと dll を作成して、 luajit から呼びだしてみた。
 `indices` `POSITION` `NORMAL` `TEXCOORD0` を入力して `TANGENT` を出力する。
 わりと適当で動く `luajit ffi` 恐るべし。
 さすがに C の方に呼びだし回数を減らすラッパーを作ったほうが速そうだが、動かすだけなら問題なし。
+
+memo
+
+* <https://bgolus.medium.com/generating-perfect-normal-maps-for-unity-f929e673fc57#c473>
 
 # Shader
 

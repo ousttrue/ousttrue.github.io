@@ -60,15 +60,30 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
 
 * (2018)[Python の setup.py の内容を setup.cfg で管理する](https://astropengu.in/posts/23/)
 
+#### setup.py & setup.cfg
+
+setup.py
+```python
+from setuptools import setup
+setup()
+```
+
+* <https://packaging.python.org/guides/distributing-packages-using-setuptools/>
+* <https://github.com/dephell/dephell/blob/master/setup.py>
+
 #### setup.cfg: metadata
 
-* https://packaging.python.org/specifications/core-metadata/
+* <https://packaging.python.org/specifications/core-metadata/>
 
 #### setup.cfg: options
 
 ##### setup.cfg: options.entry_points
 
 * <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>
+
+#### setup.cfg: 
+
+* [Package Discovery and Namespace Package](https://setuptools.pypa.io/en/latest/userguide/package_discovery.html)
 
 ### poetry
 
