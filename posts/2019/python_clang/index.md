@@ -8,8 +8,8 @@ title: pythonモジュール clang で C++ ヘッダーを変換する
 
 以前、少し手を出したときの記事。
 
-* https://qiita.com/ousttrue/items/a4291fc996a063841bd7
-* https://qiita.com/ousttrue/items/26b399a691b5610d2678
+* [D言語でD3D11してみる](https://qiita.com/ousttrue/items/a4291fc996a063841bd7)
+* [D言語でComPtr](https://qiita.com/ousttrue/items/26b399a691b5610d2678)
 
 この時は手作業で `d3d11.h` をD言語向けに編集していたのだけど、
 プログラムで自動変換します。
@@ -51,11 +51,11 @@ Windows10(64bit)
 こいつがあると、C/C++のヘッダから各言語向けのバインディングを作成するなどの作業を半自動化できて便利。
 例えば、
 
-https://github.com/ousttrue/UnityCairo
+<https://github.com/ousttrue/UnityCairo>
 
 元々、
 
-http://andrestraks.github.io/BulletSharp/
+<http://andrestraks.github.io/BulletSharp/>
 
 が clang で bullet のヘッダーを変換しているぽかったので、そこから調べた。
 
@@ -63,4 +63,5 @@ http://andrestraks.github.io/BulletSharp/
 
 なんとなく動くものができた。
 
-https://github.com/ousttrue/pycpptool
+<https://github.com/ousttrue/pycpptool>
+
