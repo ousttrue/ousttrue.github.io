@@ -27,6 +27,8 @@ tags = ["python", "libclang", "cython"]
 * (2021)<https://github.com/ousttrue/luajitffi/tree/master/clang/cdef>
     * [libclang で luajit 向けの FFI を生成する](/posts/2019/luajitffi/)
     * imgui による cindex のパース結果のビューワーを作ってみたが動作が遅かった。
+        * <https://github.com/ousttrue/luajitffi/tree/master/clangffi>
+        * <https://github.com/ousttrue/limgui/blob/master/samples/clang_viewer.lua>
 
 ものによるのだけど、 `d3d11.h` をパースしたりすると
 要素が数万とかになる巨大なツリーを構築するので練習に良い。
@@ -65,6 +67,8 @@ GC言語だとデストラクターの呼びだしが制御できないかも。
 `cindex` で `cython` 部分の自動生成をやってみる。
 更に、 `.pyi` を同時に生成すればコード補完の効くネイティブモジュールが作れるのでは。
 あと、 `cindex` の使いかたについてのメモをまとめたい。
+
+* <https://github.com/ousttrue/cywrap>
 
 ## サブモジュールだけ cython にする
 
