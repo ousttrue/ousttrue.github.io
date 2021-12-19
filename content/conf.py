@@ -177,9 +177,9 @@ def make_front_matter_rule(marker_str: str):
     return frontMatter
 
 
-import mdit_py_plugins.front_matter.index
+import myst_parser.main
 
-mdit_py_plugins.front_matter.index.front_matter_plugin = front_matter_plugin
+myst_parser.main.front_matter_plugin = front_matter_plugin
 
 #
 #
