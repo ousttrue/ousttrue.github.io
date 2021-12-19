@@ -70,6 +70,10 @@ GC言語だとデストラクターの呼びだしが制御できないかも。
 
 * <https://github.com/ousttrue/cywrap>
 
+## imgui
+
+* <https://github.com/ousttrue/cydeer>
+
 ## サブモジュールだけ cython にする
 
 * <https://github.com/AshleySetter/HowToPackageCythonAndCppFuncs>
