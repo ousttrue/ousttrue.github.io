@@ -48,9 +48,8 @@ def front_matter_plugin(md):
     yaml_frontmatter = make_front_matter_rule('_')
     toml_frontmatter = make_front_matter_rule('+')
 
-    from markdown_it.rules_block import StateBlock
 
-    def frontMatter(state: StateBlock, startLine: int, endLine: int,
+    def frontMatter(state, startLine: int, endLine: int,
                     silent: bool):
         if state.src[0] == '-':
             return yaml_frontmatter(state, startLine, endLine, silent)
@@ -73,7 +72,7 @@ def make_front_matter_rule(marker_str: str):
     marker_char = charCodeAt(marker_str, 0)
     marker_len = len(marker_str)
 
-    def frontMatter(state: StateBlock, startLine: int, endLine: int,
+    def frontMatter(state, startLine: int, endLine: int,
                     silent: bool):
         auto_closed = False
         start = state.bMarks[startLine] + state.tShift[startLine]
