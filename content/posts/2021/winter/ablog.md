@@ -56,6 +56,10 @@ self.date = date = info["date"].replace(tzinfo=None)
 `render_front_matter` で切り出した文字列を `yaml` でパースしている。
 `except` 節で `toml` にリトライさせたら動いた。
 
+### モンキーパッチ
+
+とりあえず `conf.py` にて直接修正する。
+
 ## ABlog は何をしているのか
 
 特定の条件で、記事をブログ記事と見做して `toctree` 無しで辿れるようにする。

@@ -1,5 +1,204 @@
 #!/usr/bin/env python
+#
+# patch albog
+#
+import ablog.post
+import yaml
+import toml
 
+
+def register_posts(app):
+    """
+    Register posts found in the Sphinx build environment.
+    """
+
+    from ablog.post import Blog
+    blog = Blog(app)
+    for docname, posts in getattr(app.env, "ablog_posts", {}).items():
+        for postinfo in posts:
+            date = postinfo.get('date')
+            if date:
+                postinfo['date'] = date.replace(tzinfo=None)
+            blog.register(docname, postinfo)
+
+
+ablog.post.register_posts = register_posts
+
+#
+#
+#
+# Process front matter and pass to cb
+from math import floor
+
+
+def front_matter_plugin(md):
+    """Plugin ported from
+    `markdown-it-front-matter <https://github.com/ParkSB/markdown-it-front-matter>`__.
+
+    It parses initial metadata, stored between opening/closing dashes:
+
+    .. code-block:: md
+
+        ---
+        valid-front-matter: true
+        ---
+
+    """
+
+    yaml_frontmatter = make_front_matter_rule('_')
+    toml_frontmatter = make_front_matter_rule('+')
+
+    from markdown_it.rules_block import StateBlock
+
+    def frontMatter(state: StateBlock, startLine: int, endLine: int,
+                    silent: bool):
+        if state.src[0] == '-':
+            return yaml_frontmatter(state, startLine, endLine, silent)
+        elif state.src[0] == '+':
+            return toml_frontmatter(state, startLine, endLine, silent)
+        else:
+            return False
+
+    md.block.ruler.before(
+        "table",
+        "front_matter",
+        frontMatter,
+        {"alt": ["paragraph", "reference", "blockquote", "list"]},
+    )
+
+
+def make_front_matter_rule(marker_str: str):
+    from markdown_it.common.utils import charCodeAt
+    min_markers = 3
+    marker_char = charCodeAt(marker_str, 0)
+    marker_len = len(marker_str)
+
+    def frontMatter(state: StateBlock, startLine: int, endLine: int,
+                    silent: bool):
+        auto_closed = False
+        start = state.bMarks[startLine] + state.tShift[startLine]
+        maximum = state.eMarks[startLine]
+        src_len = len(state.src)
+
+        # Check out the first character of the first line quickly,
+        # this should filter out non-front matter
+        if startLine != 0 or marker_char != state.srcCharCode[0]:
+            return False
+
+        # Check out the rest of the marker string
+        # while pos <= 3
+        pos = start + 1
+        while pos <= maximum and pos < src_len:
+            if marker_str[(pos - start) % marker_len] != state.src[pos]:
+                break
+            pos += 1
+
+        marker_count = floor((pos - start) / marker_len)
+
+        if marker_count < min_markers:
+            return False
+
+        pos -= (pos - start) % marker_len
+
+        # Since start is found, we can report success here in validation mode
+        if silent:
+            return True
+
+        # Search for the end of the block
+        nextLine = startLine
+
+        while True:
+            nextLine += 1
+            if nextLine >= endLine:
+                # unclosed block should be autoclosed by end of document.
+                return False
+
+            if state.src[start:maximum] == "...":
+                break
+
+            start = state.bMarks[nextLine] + state.tShift[nextLine]
+            maximum = state.eMarks[nextLine]
+
+            if start < maximum and state.sCount[nextLine] < state.blkIndent:
+                # non-empty line with negative indent should stop the list:
+                # - ```
+                #  test
+                break
+
+            if marker_char != state.srcCharCode[start]:
+                continue
+
+            if state.sCount[nextLine] - state.blkIndent >= 4:
+                # closing fence should be indented less than 4 spaces
+                continue
+
+            pos = start + 1
+            while pos < maximum:
+                if marker_str[(pos - start) % marker_len] != state.src[pos]:
+                    break
+                pos += 1
+
+            # closing code fence must be at least as long as the opening one
+            if floor((pos - start) / marker_len) < marker_count:
+                continue
+
+            # make sure tail has spaces only
+            pos -= (pos - start) % marker_len
+            pos = state.skipSpaces(pos)
+
+            if pos < maximum:
+                continue
+
+            # found!
+            auto_closed = True
+            break
+
+        old_parent = state.parentType
+        old_line_max = state.lineMax
+        state.parentType = "container"
+
+        # this will prevent lazy continuations from ever going past our end marker
+        state.lineMax = nextLine
+
+        token = state.push("front_matter", "", 0)
+        token.hidden = True
+        token.markup = marker_str * min_markers
+        token.content = state.src[state.bMarks[startLine +
+                                               1]:state.eMarks[nextLine - 1]]
+        token.block = True
+
+        state.parentType = old_parent
+        state.lineMax = old_line_max
+        state.line = nextLine + (1 if auto_closed else 0)
+        token.map = [startLine, state.line]
+
+        return True
+
+    return frontMatter
+
+
+import mdit_py_plugins.front_matter.index
+
+mdit_py_plugins.front_matter.index.front_matter_plugin = front_matter_plugin
+
+#
+#
+#
+yaml_safe_load = yaml.safe_load
+
+
+def safe_load(src):
+    try:
+        return yaml_safe_load(src)
+    except:
+        return toml.loads(src)
+
+
+yaml.safe_load = safe_load
+
+#
+#
+#
 
 # dialy build configuration file, created by
 # `ablog start` on Sun Dec 19 21:35:12 2021.
@@ -40,7 +239,6 @@ blog_authors = {
     "ousttrue": ("ousttrue", None),
 }
 
-
 # A dictionary of language code names mapping to full display names and
 # links of these languages. Similar to :confval:`blog_authors`, dictionary
 # keys should be used in ``post`` directive to refer to the locations.
@@ -48,7 +246,6 @@ blog_authors = {
 # blog_languages = {
 #    'en': ('English', None),
 # }
-
 
 # A dictionary of location names mapping to full display names and
 # links of these locations. Similar to :confval:`blog_authors`, dictionary
@@ -99,13 +296,17 @@ blog_authors = {
 # In addition, there are authors.html, languages.html, and locations.html
 # sidebars that link to author and location archive pages.
 html_sidebars = {
-    '**': [ 'about.html',
-            'postcard.html', 'navigation.html',
-            'recentposts.html', 'tagcloud.html',
-            'categories.html',  'archives.html',
-            'searchbox.html',
-            ],
-    }
+    '**': [
+        'about.html',
+        'postcard.html',
+        'navigation.html',
+        'recentposts.html',
+        'tagcloud.html',
+        'categories.html',
+        'archives.html',
+        'searchbox.html',
+    ],
+}
 
 # -- Blog Feed Options --------------------------------------------------------
 
@@ -262,7 +463,6 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = "False"
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -359,5 +559,3 @@ html_static_path = ["_static"]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "dialydoc"
-
-

@@ -1,5 +1,4 @@
 # 三次元日誌(ablog)
 
-```{postlist} 5
+```{postlist} 20
 ```
-
