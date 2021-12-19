@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>基本設計 &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。</p>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>基本設計<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>MessagePack-RPCの仕様をおさらいすると以下の通り。</p>
+<p>request</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">msgid</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">]</span>
+ <span class="p">(</span><span class="mi">0</span><span class="p">)</span>   <span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="p">(</span><span class="nb">str</span><span class="p">)</span>   <span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>response</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">msgid</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">result</span><span class="p">]</span>
+ <span class="p">(</span><span class="mi">1</span><span class="p">)</span>   <span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="p">(</span><span class="nb">any</span><span class="p">)</span>  <span class="p">(</span><span class="nb">any</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>msgpackのバイト列を受け取って、msgpackのバイト列を返す関数として一般化する。</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">bytes</span><span class="p">;</span>
+<span class="c1">// msgpackのバイト列を引数にとり、msgpackのバイト列を返す</span>
+<span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">bytes</span><span class="p">(</span><span class="k">const</span> <span class="o">&amp;</span><span class="n">bytes</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">procedurecall</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>任意の関数呼び出しからprocedurecallを作り出せるようにして、MessagePack-RPCシステムの部品として使えるようにする。
+簡単な例
+例として</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">){</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>をprocedurecallに変換してみる。</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">procedurecall</span> <span class="nf">make_procedurecall</span><span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="c1">// request -&gt; response ではなくparams -&gt; result</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f</span><span class="p">](</span><span class="k">const</span> <span class="n">bytes</span><span class="o">&amp;</span> <span class="n">src</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">bytes</span>
+    <span class="p">{</span>
+        <span class="c1">// unpack args</span>
+        <span class="k">auto</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">msgpackpp</span><span class="o">::</span><span class="n">parser</span><span class="p">(</span><span class="n">src</span><span class="p">);</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">;</span>
+        <span class="n">parser</span> <span class="o">&gt;&gt;</span> <span class="n">args</span><span class="p">;</span>
+
+        <span class="c1">// call</span>
+        <span class="k">auto</span> <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">));</span>
+
+        <span class="c1">// pack result</span>
+        <span class="n">msgpackpp</span><span class="o">::</span><span class="n">packer</span> <span class="n">packer</span><span class="p">;</span>
+        <span class="n">packer</span> <span class="o">&lt;&lt;</span> <span class="n">r</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">packer</span><span class="p">.</span><span class="n">get_payload</span><span class="p">();</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">add(int,</span> <span class="pre">int)</span></code> を <code class="docutils literal notranslate"><span class="pre">procedurecall</span></code> に変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。</p>
+<p><code class="docutils literal notranslate"><span class="pre">procedurecall</span></code> の使い方は以下の通り。</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// register</span>
+<span class="k">auto</span> <span class="n">proc</span> <span class="o">=</span> <span class="n">msgpackpp</span><span class="o">::</span><span class="n">rpc</span><span class="o">::</span><span class="n">make_procedurecall</span><span class="p">(</span><span class="o">&amp;</span><span class="n">add</span><span class="p">);</span>
+
+<span class="c1">// call</span>
+<span class="k">auto</span> <span class="n">packer</span> <span class="o">=</span> <span class="n">msgpackpp</span><span class="o">::</span><span class="n">packer</span><span class="p">();</span>
+<span class="n">packer</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">proc</span><span class="p">(</span><span class="n">packer</span><span class="p">.</span><span class="n">get_payload</span><span class="p">());</span>
+
+<span class="c1">// result</span>
+<span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span> <span class="o">==</span> <span class="n">msgpackpp</span><span class="o">::</span><span class="n">parser</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="n">get_number</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>とりあえず動いたが、関数を増やすたびにこれだけのコードを記述するのはやってられませぬ。
+以下のような理想形を目指して作りこんでゆく。</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span> <span class="o">==</span> <span class="n">msgpack_procedurecall</span><span class="p">([](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">){</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">},</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">lambda</span></code> が動けば他も動くようにできるので、<code class="docutils literal notranslate"><span class="pre">lambda</span></code> を第一に実装する。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id2">
+<h1>実装<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">make_procedurecall</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="p">,</span> <span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">C</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">...</span> <span class="n">IS</span><span class="o">&gt;</span>
+<span class="n">procedurecall</span> <span class="n">_make_procedurecall</span><span class="p">(</span><span class="k">const</span> <span class="n">F</span> <span class="o">&amp;</span><span class="n">f</span>
+    <span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">AS</span><span class="p">...)</span><span class="k">const</span> <span class="c1">// template引数R, C, ASを受け付けるためのダミー</span>
+    <span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">index_sequence</span><span class="o">&lt;</span><span class="n">IS</span><span class="p">...</span><span class="o">&gt;</span> <span class="c1">// template引数ISを受け付けるためのダミー</span>
+<span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// request -&gt; response ではなくparams -&gt; result</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f</span><span class="p">](</span><span class="k">const</span> <span class="n">bytes</span><span class="o">&amp;</span> <span class="n">src</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">bytes</span>
+    <span class="p">{</span>
+        <span class="c1">// unpack args</span>
+        <span class="k">auto</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">msgpackpp</span><span class="o">::</span><span class="n">parser</span><span class="p">(</span><span class="n">src</span><span class="p">);</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">AS</span><span class="p">...</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">;</span>
+        <span class="n">parser</span> <span class="o">&gt;&gt;</span> <span class="n">args</span><span class="p">;</span>
+
+        <span class="c1">// call</span>
+        <span class="k">auto</span> <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">IS</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span> <span class="c1">// 可変長テンプレート引数を展開できる。ISと...が離れていることに注意</span>
+
+        <span class="c1">// pack result</span>
+        <span class="n">msgpackpp</span><span class="o">::</span><span class="n">packer</span> <span class="n">packer</span><span class="p">;</span>
+        <span class="n">packer</span> <span class="o">&lt;&lt;</span> <span class="n">r</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">packer</span><span class="p">.</span><span class="n">get_payload</span><span class="p">();</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="p">,</span> <span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">C</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span>
+<span class="n">procedurecall</span> <span class="n">_make_procedurecall</span><span class="p">(</span><span class="n">F</span> <span class="n">f</span>
+    <span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">AS</span><span class="p">...)</span><span class="k">const</span> <span class="c1">// template引数R, C, ASを受け付けるためのダミー</span>
+<span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">_make_procedurecall</span><span class="p">(</span><span class="n">f</span>
+        <span class="p">,</span> <span class="o">&amp;</span><span class="k">decltype</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">::</span><span class="k">operator</span><span class="p">()</span> <span class="c1">// lambdaの返り値と引数の型を次のテンプレートに渡す</span>
+        <span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">index_sequence_for</span><span class="o">&lt;</span><span class="n">AS</span><span class="p">...</span><span class="o">&gt;</span><span class="p">{}</span> <span class="c1">// std::get呼び出しのためにindex_sequenceを作る。</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">//</span>
+<span class="c1">// あらゆる型のlambdaを受け付けるようにした</span>
+<span class="c1">//</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="o">&gt;</span>
+<span class="n">procedurecall</span> <span class="n">make_procedurecall</span><span class="p">(</span><span class="n">F</span> <span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">_make_procedurecall</span><span class="p">(</span><span class="n">f</span>
+        <span class="p">,</span> <span class="o">&amp;</span><span class="k">decltype</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">::</span><span class="k">operator</span><span class="p">()</span> <span class="c1">// lambdaの返り値と引数の型を次のテンプレートに渡す</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">msgpack_call</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="p">,</span> <span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">C</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span>
+<span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">_msgpack_call</span><span class="p">(</span><span class="n">F</span> <span class="n">f</span>
+    <span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">AS</span><span class="p">...)</span><span class="k">const</span> <span class="c1">// template引数R, C, ASを受けるためのダミー</span>
+    <span class="p">,</span> <span class="n">AS</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">proc</span> <span class="o">=</span> <span class="n">msgpackpp</span><span class="o">::</span><span class="n">rpc</span><span class="o">::</span><span class="n">make_procedurecall</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+
+    <span class="c1">// call</span>
+    <span class="n">msgpackpp</span><span class="o">::</span><span class="n">packer</span> <span class="n">packer</span><span class="p">;</span>
+    <span class="n">packer</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="n">args</span><span class="p">...);</span> <span class="c1">// 可変長テンプレート引数を展開できる</span>
+    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">proc</span><span class="p">(</span><span class="n">packer</span><span class="p">.</span><span class="n">get_payload</span><span class="p">());</span>
+
+    <span class="c1">// unpack result</span>
+    <span class="n">R</span> <span class="n">value</span><span class="p">;</span>
+    <span class="n">msgpackpp</span><span class="o">::</span><span class="n">parser</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">value</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span>
+<span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">msgpack_call</span><span class="p">(</span><span class="n">F</span> <span class="n">f</span><span class="p">,</span> <span class="n">AS</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="c1">// 返り値の型はreturnから型推論</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">_msgpack_call</span><span class="p">(</span><span class="n">f</span>
+    <span class="p">,</span> <span class="o">&amp;</span><span class="k">decltype</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">::</span><span class="k">operator</span><span class="p">()</span> <span class="c1">// lambdaの返り値と引数の型をテンプレート引数に渡す</span>
+    <span class="p">,</span> <span class="n">args</span><span class="p">...</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id3">
+<h1>使う。<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span><span class="o">==</span><span class="n">msgpack_call</span><span class="p">([](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span> <span class="p">},</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+<span class="n">REQUIRE</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">==</span><span class="n">msgpack_call</span><span class="p">([](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">;</span> <span class="p">},</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">valiadic</span> <span class="pre">template</span></code> おそるべし。
+従来であれば、1引数、２引数・・・と引数の個数ごとに手作業でバージョンを増やさねばならなかったものが、わりとさくっと書けるな。</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../05/cmake_compileoptions.html">
+       cmakeチートシート
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="python_asyncio.html">
+      Python3のasyncioについてのメモ 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  03 June 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2017/06/cpp11_rpc.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

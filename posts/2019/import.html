@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>相対Importの制限 &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p><code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">attempted</span> <span class="pre">relative</span> <span class="pre">import</span> <span class="pre">with</span> <span class="pre">no</span> <span class="pre">known</span> <span class="pre">parent</span> <span class="pre">package</span></code></p>
+<section id="import">
+<h1>相対Importの制限<a class="headerlink" href="#import" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://qiita.com/ysk24ok/items/2711295d83218c699276">[Python] importの躓きどころ</a></p></li>
+</ul>
+<p>わいのやりたいことは実現不可能なのだな。
+packageの内部でちょっとしたテストをするコードを、</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">sample</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>という風に書いて実行しようとしていたのだが、
+同階層のファイルを、</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">my_module</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ImportError</span><span class="p">:</span> <span class="n">attempted</span> <span class="n">relative</span> <span class="kn">import</span> <span class="nn">with</span> <span class="n">no</span> <span class="n">known</span> <span class="n">parent</span> <span class="n">package</span>
+</pre></div>
+</div>
+<p>で阻まれてしまう。
+エントリポイントが、</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__package__</span> <span class="o">==</span> <span class="kc">None</span>
+<span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span>
+</pre></div>
+</div>
+<p>となるので、<code class="docutils literal notranslate"><span class="pre">ImportError</span></code> となるのである。
+こんちくしょう。</p>
+<section id="id1">
+<h2>無理やり誤魔化すなら・・・<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>もう一つ外のソースから <code class="docutils literal notranslate"><span class="pre">import</span></code> したかのように偽装する。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;import my_package; my_package.sample()&#39;</span>
+</pre></div>
+</div>
+<p>💩過ぎる。
+ライブラリにユーティリティが付属している場合にめちゃくちゃ作りづらい。
+前からPytnonのもっとも💩なところだと思っていた。
+ライブラリの開発時に部分的に実行する時に邪魔でしかない。</p>
+</section>
+</section>
+<section id="package">
+<h1>package<a class="headerlink" href="#package" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>複数のモジュールを束ねたもの。
+import したときに <code class="docutils literal notranslate"><span class="pre">__package__</span></code> が <code class="docutils literal notranslate"><span class="pre">None</span></code> 以外になった <code class="docutils literal notranslate"><span class="pre">module</span></code> は <code class="docutils literal notranslate"><span class="pre">package</span></code> に属している。</p>
+<section id="package-none">
+<h2>エントリポイントは <code class="docutils literal notranslate"><span class="pre">__package__</span> <span class="pre">=</span> <span class="pre">None</span></code><a class="headerlink" href="#package-none" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下のファイル構成で実験してみた。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod</span>
+<span class="n">mod</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod2</span>
+<span class="n">mod2</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod3</span>
+<span class="n">mod3</span>
+    <span class="o">+</span> <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span> <span class="c1"># from . import mod4</span>
+    <span class="o">+</span> <span class="n">mod4</span><span class="o">.</span><span class="n">py</span>
+
+<span class="c1"># それぞれ以下を記述</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;&quot;</span><span class="si">{__name__}</span><span class="s1">&quot; in &quot;</span><span class="si">{__package__}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+
+<span class="n">python</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="n">として実行</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">__package__</span></code> が、</p>
+<ul class="simple">
+<li><p>main.py <strong>packag</strong> = None</p></li>
+<li><p>mod.py <strong>packag</strong> = &quot;&quot;</p></li>
+<li><p>mod2.py <strong>packag</strong> = &quot;&quot;</p></li>
+<li><p>mod3/<strong>init</strong>.py <strong>packag</strong> = &quot;mod3&quot;</p></li>
+<li><p>mod3/mod4.py <strong>packag</strong> = &quot;mod3&quot;</p></li>
+</ul>
+<p>で</p>
+<ul class="simple">
+<li><p>mod3/<strong>init</strong>.py. <strong>packag</strong> = &quot;mod3&quot;</p></li>
+<li><p>mod3/mod4.py. <strong>packag</strong> = &quot;mod3&quot;</p></li>
+</ul>
+<p>のみが <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.</span> <span class="pre">import</span> <span class="pre">mod4</span></code> 等の相対インポートが可能だった。
+他は、</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ImportError</span><span class="p">:</span> <span class="n">attempted</span> <span class="n">relative</span> <span class="kn">import</span> <span class="nn">with</span> <span class="n">no</span> <span class="n">known</span> <span class="n">parent</span> <span class="n">package</span>
+</pre></div>
+</div>
+<p>が出る。
+つまり、<code class="docutils literal notranslate"><span class="pre">__packag__</span></code> が None(エントリポイント) もしくは &quot;&quot;(エントリポイントと同じ階層) であると相対インポートができない。</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">mod3/__init__.py</span></code> とすると、</p>
+<ul class="simple">
+<li><p>mod3/<strong>init</strong>.py. <strong>packag</strong> = None</p></li>
+<li><p>mod3/mod4.py. <strong>packag</strong> = &quot;&quot;</p></li>
+</ul>
+<p>と変化して、相対 import ができない。</p>
+<p>💩仕様。</p>
+</section>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="logging.html">
+       python の logger
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="wyam-start.html">
+      wyam ことはじめ 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  01 May 2019 
+</h2>
+
+<ul>
+  
+<li id="published">
+  <span
+    >Update:</span
+  >
+  01 May 2019
+</li>
+     
+<li id="tags">
+  <span
+    >Tag:</span
+  >
+   
+  <a href="../../blog/tag/python.html">["python"]</a>  
+</li>
+ 
+</ul>
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/posts/2019/import.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

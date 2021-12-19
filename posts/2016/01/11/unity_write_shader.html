@@ -1,0 +1,802 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>アルファブレンディング
+シャドウキャスター
+シャドウレシーバー</p>
+<p>なシェーダー。</p>
+<p>基本
+新規作成
+Create -&gt; Shader -&gt; UnLitShader
+CustomShader</p>
+<p>Shader &quot;CustomShader&quot;
+{
+Properties
+{
+_MainTex (&quot;Texture&quot;, 2D) = &quot;white&quot; {}
+}
+SubShader
+{
+Tags { &quot;RenderType&quot;=&quot;Opaque&quot; }
+LOD 100</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    Pass
+    {
+        CGPROGRAM
+        #pragma vertex vert
+        #pragma fragment frag
+        // make fog work
+        #pragma multi_compile_fog
+        
+        #include &quot;UnityCG.cginc&quot;
+
+        struct appdata
+        {
+            float4 vertex : POSITION;
+            float2 uv : TEXCOORD0;
+        };
+
+        struct v2f
+        {
+            float2 uv : TEXCOORD0;
+            UNITY_FOG_COORDS(1)
+            float4 vertex : SV_POSITION;
+        };
+
+        sampler2D _MainTex;
+        float4 _MainTex_ST;
+        
+        v2f vert (appdata v)
+        {
+            v2f o;
+            o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+            o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+            UNITY_TRANSFER_FOG(o,o.vertex);
+            return o;
+        }
+        
+        fixed4 frag (v2f i) : SV_Target
+        {
+            // sample the texture
+            fixed4 col = tex2D(_MainTex, i.uv);
+            // apply fog
+            UNITY_APPLY_FOG(i.fogCoord, col);
+            return col;
+        }
+        ENDCG
+    }
+}
+</pre></div>
+</div>
+<p>}</p>
+<p>この時点でテクスチャが表示できるけど一度無にしよう
+Shader &quot;CustomShader&quot;
+{
+SubShader
+{
+Tags { &quot;RenderType&quot;=&quot;Opaque&quot; }
+LOD 100
+Pass
+{
+CGPROGRAM
+#pragma vertex vert
+#pragma fragment frag
+float4 vert(float4 v:POSITION) : SV_POSITION{
+return mul(UNITY_MATRIX_MVP, v);
+}
+fixed4 frag() : COLOR{
+return fixed4(1.0,0.0,0.0,1.0);
+}
+ENDCG
+}
+}
+}</p>
+<p>頂点変形だけを適用して赤一色。
+Color
+べたにマテリアル色が出る。
+Shader &quot;CustomShader&quot;
+{
+Properties
+{
+_Color(&quot;Color&quot;, Color) = (1,1,1,1)
+}
+SubShader
+{
+Tags{ &quot;RenderType&quot; = &quot;Opaque&quot; }
+LOD 100</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+{
+    CGPROGRAM
+</pre></div>
+</div>
+<p>#pragma target 3.0
+#pragma vertex vert
+#pragma fragment frag</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    uniform float4 _Color;
+
+    float4 vert(float4 v:POSITION) : SV_POSITION{
+        return mul(UNITY_MATRIX_MVP, v);
+    }
+    fixed4 frag() : COLOR{
+        return _Color;
+    }
+    ENDCG
+}
+
+} // SurShader
+</pre></div>
+</div>
+<p>}</p>
+<p>_Colorプロパティを定義して、uniform変数_Colorを宣言し使う。
+Texture
+テクスチャ色を乗算
+Shader &quot;CustomShader&quot;
+{
+Properties
+{
+_Color(&quot;Color&quot;, Color) = (1,1,1,1)
+_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}
+SubShader
+{
+Tags{ &quot;RenderType&quot; = &quot;Opaque&quot; }
+LOD 100</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+{
+    CGPROGRAM
+</pre></div>
+</div>
+<p>#pragma target 3.0
+#pragma vertex vert
+#pragma fragment frag</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    struct appdata
+    {
+        float4 vertex : POSITION;
+        float2 uv : TEXCOORD0;
+    };
+    struct v2f
+    {
+        float2 uv : TEXCOORD0;
+        float4 vertex : SV_POSITION;
+    };
+
+    uniform float4 _Color;
+    uniform sampler2D _MainTex;
+
+    v2f vert(appdata v){
+        v2f o;
+        o.vertex= mul(UNITY_MATRIX_MVP, v.vertex);
+        o.uv = v.uv;
+        return o;
+    }
+    fixed4 frag(v2f i) : COLOR{
+        fixed4 tex = tex2D(_MainTex, i.uv);
+        return _Color * tex;
+    }
+    ENDCG
+}
+
+} // SurShader
+</pre></div>
+</div>
+<p>}</p>
+<p>シェーダーの入力に位置とUV、出力に変換済みの位置とUVが必要になったので構造体appdataとv2fを導入
+_MainTexプロパティを導入し、サンプラー_MainTexを宣言してtex2D関数で使う</p>
+<p>AlphaBlending
+追加分
+Shader &quot;CustomShader&quot;
+{
+SubShader
+{
+// 背景を含む不透明なものの後で描画する
+Tags{ &quot;Queue&quot; = &quot;Transparent&quot; }</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+}
+
+} // SurShader
+</pre></div>
+</div>
+<p>}</p>
+<p>ここまでで照明の無い基本的なシェーダーができる。
+UnityCG.cgincを使う
+最初に新規作成したShaderにAplhaBlendingを追加した感じ。
+uniform変数のuniformは省略できる。
+Shader &quot;CustomShader&quot;
+{
+Properties
+{
+_Color(&quot;Color&quot;, Color) = (1,1,1,1)
+_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}
+SubShader
+{
+Tags{ &quot;Queue&quot; = &quot;Transparent&quot; }
+LOD 100</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+{
+    Blend SrcAlpha OneMinusSrcAlpha
+
+    CGPROGRAM
+    #pragma target 3.0
+    #pragma vertex vert
+    #pragma fragment frag
+
+    // make fog work
+    #pragma multi_compile_fog
+
+    #include &quot;UnityCG.cginc&quot;
+
+    struct appdata
+    {
+        float4 vertex : POSITION;
+        float2 uv : TEXCOORD0;
+    };
+
+    struct v2f
+    {
+        float2 uv : TEXCOORD0;
+        UNITY_FOG_COORDS(1)
+        float4 vertex : SV_POSITION;
+    };
+
+    float4 _Color;
+    sampler2D _MainTex;
+    float4 _MainTex_ST;
+
+    v2f vert(appdata v)
+    {
+        v2f o;
+        o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+        o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+        UNITY_TRANSFER_FOG(o,o.vertex);
+        return o;
+    }
+
+    fixed4 frag(v2f i) : SV_Target
+    {
+        // sample the texture
+        fixed4 col = tex2D(_MainTex, i.uv);
+        // apply fog
+        UNITY_APPLY_FOG(i.fogCoord, col);
+        return col * _Color;
+    }
+    ENDCG
+}
+
+} // SurShader
+</pre></div>
+</div>
+<p>}</p>
+<p>Lighting導入
+Vertex and Fragment Shader Examplesの後半Calculating Lighting
+を参考にライティングをやってみる。
+forward rendringを使うことで</p>
+<p>DirectionalLight
+ambient
+lightmap
+reflections</p>
+<p>を扱える。
+Tags {&quot;LightMode&quot;=&quot;ForwardBase&quot;}</p>
+<p>を定義することでUnityの組み込み変数を通じて上記のシーンのライティング情報を得ることができるようになる。
+頂点ライティングによるDiffuse &amp; Ambient</p>
+<p>DirectionalLightによるDiffuse計算
+appdata_base導入(UnityCG.cgincで定義)
+v2fにdiffuse追加
+vertでdiffuse計算</p>
+<p>Shader &quot;CustomShader&quot;
+{
+Properties
+{
+_Color(&quot;Color&quot;, Color) = (1,1,1,1)
+_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}
+SubShader
+{
+Tags{ &quot;Queue&quot; = &quot;Transparent&quot; }
+LOD 100</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+{
+    Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }
+
+    Blend SrcAlpha OneMinusSrcAlpha
+
+    CGPROGRAM
+    #pragma target 3.0
+    #pragma vertex vert
+    #pragma fragment frag
+
+    // make fog work
+    #pragma multi_compile_fog
+
+    #include &quot;UnityCG.cginc&quot;
+    #include &quot;UnityLightingCommon.cginc&quot; // for _LightColor0
+
+    struct v2f
+    {
+        float2 uv : TEXCOORD0;
+        fixed4 diffuse : COLOR0; // diffuse lighting color
+        float4 vertex : SV_POSITION;
+        UNITY_FOG_COORDS(1)
+    };
+
+    uniform float4 _Color;
+    uniform sampler2D _MainTex;
+    float4 _MainTex_ST;
+
+    v2f vert(appdata_base v)
+    {
+        v2f o;
+        o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+        o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+
+        // get vertex normal in world space
+        half3 worldNormal = UnityObjectToWorldNormal(v.normal);
+        // dot product between normal and light direction for
+        // standard diffuse (Lambert) lighting
+        half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
+        // factor in the light color
+        o.diffuse = nl * _LightColor0;
+        
+        // the only difference from previous shader:
+        // in addition to the diffuse lighting from the main light,
+        // add illumination from ambient or light probes
+        // ShadeSH9 function from UnityCG.cginc evaluates it,
+        // using world space normal
+        o.diffuse.rgb += ShadeSH9(half4(worldNormal,1));            
+
+        UNITY_TRANSFER_FOG(o,o.vertex);
+        return o;
+    }
+
+    fixed4 frag(v2f i) : SV_Target
+    {
+        // sample the texture
+        fixed4 col = tex2D(_MainTex, i.uv) * _Color;
+        // apply fog
+        UNITY_APPLY_FOG(i.fogCoord, col);
+        col.rgb *= i.diffuse;
+        return col;
+    }
+    ENDCG
+}
+
+} // SurShader
+</pre></div>
+</div>
+<p>}</p>
+<p>Shadowキャスティング
+ShadowMapに深度を描画するPassを追加する。
+簡単なのは下記。
+// pull in shadow caster from VertexLit built-in shader
+UsePass &quot;Legacy Shaders/VertexLit/SHADOWCASTER&quot;</p>
+<p>手作りもできる。</p>
+<p>pragma multi_compile_shadowcasterがポイント</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// shadow caster rendering pass, implemented manually
+// using macros from UnityCG.cginc
+Pass
+{
+    Tags{ &quot;LightMode&quot; = &quot;ShadowCaster&quot; }
+
+    CGPROGRAM
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma multi_compile_shadowcaster
+    #include &quot;UnityCG.cginc&quot;
+
+    struct v2f {
+        V2F_SHADOW_CASTER;
+    };
+
+    v2f vert(appdata_base v)
+    {
+        v2f o;
+        TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+            return o;
+    }
+
+    float4 frag(v2f i) : SV_Target
+    {
+        SHADOW_CASTER_FRAGMENT(i)
+    }
+    ENDCG
+}
+</pre></div>
+</div>
+<p>ShadowReceiveing</p>
+<p>pragma multi_compile_fwdbaseがポイント</p>
+<p>Shader &quot;CustomShader&quot;
+{
+Properties
+{
+_Color(&quot;Color&quot;, Color) = (1,1,1,1)
+_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}
+SubShader
+{
+Tags{ &quot;Queue&quot; = &quot;Geometry&quot; }
+LOD 100</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+{
+    Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;PerformanceChecks&quot; = &quot;False&quot; }
+    ZWrite On
+    Blend SrcAlpha OneMinusSrcAlpha
+
+    CGPROGRAM
+    #pragma target 3.0
+    #pragma vertex vert
+    #pragma fragment frag
+
+    // make fog work
+    #pragma multi_compile_fog
+
+    #include &quot;UnityCG.cginc&quot;
+    #include &quot;UnityLightingCommon.cginc&quot; // for _LightColor0
+
+    // compile shader into multiple variants, with and without shadows
+    // (we don&#39;t care about any lightmaps yet, so skip these variants)
+    #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
+    // shadow helper functions and macros
+    #include &quot;AutoLight.cginc&quot;
+
+    struct v2f
+    {
+        float2 uv : TEXCOORD0;
+        float4 pos : SV_POSITION;
+        fixed4 diff : COLOR0; // diffuse lighting color
+        fixed3 ambient : COLOR1;
+        SHADOW_COORDS(1) // put shadows data into TEXCOORD1
+        UNITY_FOG_COORDS(1)
+    };
+
+    uniform float4 _Color;
+    uniform sampler2D _MainTex;
+    float4 _MainTex_ST;
+
+    v2f vert(appdata_base v)
+    {
+        v2f o;
+        o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+        o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+
+        // get vertex normal in world space
+        half3 worldNormal = UnityObjectToWorldNormal(v.normal);
+        // dot product between normal and light direction for
+        // standard diffuse (Lambert) lighting
+        half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
+        // factor in the light color
+        o.diff = nl * _LightColor0;
+
+        // the only difference from previous shader:
+        // in addition to the diffuse lighting from the main light,
+        // add illumination from ambient or light probes
+        // ShadeSH9 function from UnityCG.cginc evaluates it,
+        // using world space normal
+        o.ambient = ShadeSH9(half4(worldNormal, 1));
+
+        // compute shadows data
+        TRANSFER_SHADOW(o)
+
+        UNITY_TRANSFER_FOG(o,o.vertex);
+        return o;
+    }
+
+    fixed4 frag(v2f i) : SV_Target
+    {
+        // sample the texture
+        fixed4 col = tex2D(_MainTex, i.uv) * _Color;
+
+        fixed shadow = SHADOW_ATTENUATION(i);
+
+        // darken light&#39;s illumination with shadow, keep ambient intact
+        fixed3 lighting = i.diff * shadow + i.ambient;
+        col.rgb *= lighting;
+
+        // apply fog
+        UNITY_APPLY_FOG(i.fogCoord, col);
+
+        return col;
+    }
+    ENDCG
+}
+
+// shadow caster rendering pass, implemented manually
+// using macros from UnityCG.cginc
+Pass
+{
+    Tags{ &quot;LightMode&quot; = &quot;ShadowCaster&quot; }
+
+    CGPROGRAM
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma multi_compile_shadowcaster
+    #include &quot;UnityCG.cginc&quot;
+
+    struct v2f {
+        V2F_SHADOW_CASTER;
+    };
+
+    v2f vert(appdata_base v)
+    {
+        v2f o;
+        TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+            return o;
+    }
+
+    float4 frag(v2f i) : SV_Target
+    {
+        SHADOW_CASTER_FRAGMENT(i)
+    }
+    ENDCG
+}
+
+} // SurShader
+
+Fallback &quot;Transparent/VertexLit&quot;
+</pre></div>
+</div>
+<p>}</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/posts/2016/01/11/unity_write_shader.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

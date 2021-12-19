@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>Windows上でPyAlembicを使いたいのだができるのか。
+素直にLinuxでやるべきでは・・・
+Windows10(64bit) + Python-3.6(64bit)</p>
+<p>作業場。</p>
+<p>https://github.com/ousttrue/openexr</p>
+<p>Anaconda3(Windows10 64bit)でモジュール探す</p>
+<blockquote>
+<div><p>conda install -c conda-forge alembic</p>
+</div></blockquote>
+<p>しかし、これは違うAlembicだった。
+Pythonのalembicは、database migrations toolと名前が被っております。
+なるほど・・・。
+Python2.7なら</p>
+<p>http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyalembic</p>
+<p>あとから発見。わいは、Python3.6にしたいので。
+自前でビルドを試みる
+alembic-1.7.1/python/PyAlembicがそれですな。
+問題が２つある。</p>
+<p>Python2(Python3にしたい)
+Boost.Python(PyBind11にしてリンク問題とおさらばしたい)</p>
+<p>さすがにPyBind11差し替えはやるにしても後にするべきなので、 Python3化だけやる。
+Boost.Pythonのビルド
+Boost.Pythonで使うPythonを明示するには、user-config.jamに記述する。
+BOOST_DIR/user-conifg.jam
+using python
+: 3.6                   # Version
+: D:\Anaconda3\python.exe      # Python Path
+: D:\Anaconda3\include         # include path
+: D:\Anaconda3\libs            # lib path(s)
+: <define>BOOST_ALL_NO_LIB=1
+;</p>
+<p>ビルド
+boost&gt; b2.exe -j3 --stagedir=stage\x86_64 link=shared runtime-link=shared threading=multi toolset=msvc-14.0 address-model=64 --with-python</p>
+<p>link=sharedにしてdllを生成することが必要。
+これは、iex.pydとimath.pyd間でBoost.Pythonのstatic変数を共有するために必須である(pyexの型登録周りか)。
+IlmBaseを修正
+ilmbase-2.2.0/IexMath/IexMathFloatExc.h
+の以下の部分を修正する。多分、記述ミスなのだけど誰もWindowsビルドしないので気付かれていないのであろう。
+//#if defined(IEX_EXPORTS)↲
+#if defined(IEXMATH_EXPORTS)↲</p>
+<p>これでilmbaseをビルドしておく。vcpkgを使った。
+alembicを修正
+alembic-1.7.1/lib/Alembic/AbcCoreLayer/CMakeLists.txtを修正してヘッダを追加する(PyAlembicが使う)
+INSTALL(FILES Read.h Util.h
+Foundation.h # 追加
+DESTINATION include/Alembic/AbcCoreLayer)</p>
+<p>これも、vcpkgを使った。
+PyIlmBaseのビルド
+OpenEXRのサイトにあるpyilmbase-2.2.0tar.gzを使おうとしたのだけど、githubの方が新しいようなのでこちらを使う。
+Python3向けの修正
+Python2とPytnon3間での非互換によるコンパイルエラーを直していく。</p>
+<p>PySliceObject_XXX -&gt; PyObject_XXX
+PyInt_XXX -&gt; PyLong_XXX
+PyString_AsString -&gt; PyUnicode_AsUTF8
+_PyThreadState_Current -&gt; _PyThreadState_UncheckedGet()</p>
+<p>参考</p>
+<p>Python3 Advent Calendar - Pythonで2/3両方で動くコードを書く(C/API)
+Fix build for Python 3.5
+http://py3c.readthedocs.io/en/latest/guide.html</p>
+<p>CMake設定</p>
+<p>CMAKE_INSTALL_PREFIX
+BOOST_ROOT
+ILMBASE_PACKAGE_PREFIX
+FIND_PACKAGE(numpy)をコメントアウト
+DebugでもPython36.libにリンクするように、#include &lt;Python.h&gt;を除去(boost/python.hpp経由でインクルードさせればそうなる)</p>
+<p>ビルドが通るようになった。
+PyAlembicのビルド
+当初、AlembicのプロジェクトでPythonフラグを有効にして一緒にビルドしようとしていたが、PyIlmBase傘下にPyAlembicをコピーする方式に変えた。
+alembic-1.7.1/python/PyAlembicをilmbase-2.2.0/PyIlmBaseにコピーして、CMakeLists.txtを調整する。
+CMake設定</p>
+<p>Alembic_ROOT</p>
+<p>参考</p>
+<p>uimac実装メモ - PyImath</p>
+<p>PyAlembicのビルドが通ったので実行してみよう
+PyAlembic/Tests/testPolyMesh.pyを動かしてみようと思う。
+こういう感じに準備する。
+testPolyMesh.py
+iex.pyd
+PyIex.dll
+imath.pyd
+PyImath.dll
+alembic.lib
+alembic.pyd
+boost_python-vc140-mt-1_61.dll # debug buildもこれ</p>
+<blockquote>
+<div><p>C:/python36/python.exe testPolyMesh.py</p>
+</div></blockquote>
+<p>import alembicでクラッシュする。デバッガで追ってみると、モジュールの初期化でエラーが発生している。一個ずつ直す。
+初期化の修正
+Python3化による変更？
+AbcView
+今回の作業目標。</p>
+<p>http://alembic.github.io/abcview/</p>
+<p>これを動作させたい。
+AbcView has the following requirements:</p>
+<p>Python 2.6+ =&gt; Python 3.6 で動くように改造する(print文とか)
+PyAlembic。できた
+PyAbcOpenGL。できた
+PyOpenGL。pip
+argparse。pip
+PyQt4。http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyalembic
+numpy-mkl。http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyalembic</p>
+<p>PyQt4をインストール</p>
+<p>https://stackoverflow.com/questions/22640640/how-to-install-pyqt4-on-windows-using-pip
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyqt4</p>
+<p>こんな感じで公式のPython3.6(64bit)に対してインストール。
+D:\Python36\Scripts\pip.exe install .\PyQt4-4.11.4-cp36-cp36m-win_amd64.whl</p>
+<p>https://www.tutorialspoint.com/pyqt/pyqt_hello_world.htm</p>
+<p>import sys
+from PyQt4 import QtGui</p>
+<p>def window():
+app = QtGui.QApplication(sys.argv)
+w = QtGui.QWidget()
+b = QtGui.QLabel(w)
+b.setText(&quot;Hello World!&quot;)
+w.setGeometry(100,100,200,50)
+b.move(50,20)
+w.setWindowTitle(&quot;PyQt&quot;)
+w.show()
+sys.exit(app.exec_())</p>
+<p>if <strong>name</strong> == '<strong>main</strong>':
+window()</p>
+<p>動いた。
+alembicgl.pyd, alembic.pyd, imath.pyd, iex.pydと依存dll群をwheel化する
+同じdllを参照するpydを同じフォルダに配置したいので、
+共通の親モジュールとしてilmを定義してその中にすべてのpydとdllを収めることにした。
+そのうえでこれを間接的にエクスポートするモジュール’iex’, ‘imath’, ‘alembic’, ‘alembicgl’
+を作る計画。
+ilm
++ <strong>init</strong>.py
++ iex.pyd
++ imath.pyd
++ alembic.pyd
++ alembicgl.pyd
++ PyEx.dll
++ PyImath.dll
++ boost_python.dll
++ Alembic.dll # VCPKG BUILD
++ ilmbase.dll # VCPKG BUILD
++ iex.dll # VCPKG BUILD
++ imath.dll # VCPKG BUILD
++ half.dll # VCPKG BUILD
++ hdf5.dll # VCPKG BUILD
++ zip.dll # VCPKG BUILD
++ szip.dll # VCPKG BUILD
+iex
++ <strong>init</strong>.py # ilm.iexを公開
+imath
++ <strong>init</strong>.py # ilm.imathを公開
+alembic
++ <strong>init</strong>.py # ilm.alembicを公開
+alembicgl
++ <strong>init</strong>.py # ilm.alembicglを公開
+setup.py</p>
+<p>iex/init.py
+from ilm.iex import *</p>
+<p>こういうのをiex, imath, alembic, alembicglそれぞれに作った。
+setup.py
+#!/usr/bin/env python</p>
+<p>from setuptools import setup, Distribution</p>
+<p>setup(
+name='alembic',
+version='0.1',
+description='Alembic Library',
+packages=['ilm', 'iex', 'imath', 'alembic', 'alembicgl'],
+package_data={
+'ilm':['<em>.pyd', '</em>.dll'],
+},
+)</p>
+<p>py_package&gt; D:\Python36\python.exe setup.py bidst_wheel
+py_package&gt; D:\Python36\Scripts\pip.exe install .\dist\alembic-0.1-cp36-cp36m-win_amd64.whl</p>
+<p>AbcViewを実行してみる
+こういう感じに配置して、abcview_main.pyを実行してみる。
+abcview_main.py # bin/abcviewから改名(名前がフォルダと被らないように変更)
+abcview
+<strong>init</strong>.py</p>
+<p>python2仕様の部分をまとめて修正。</p>
+<p>https://docs.python.jp/3/library/2to3.html</p>
+<p>AbcView&gt; D:\Python36\python.exe D:\Python36\Tools\scripts\2to3.py -w .</p>
+<p>print文、except文などの定型的な文法問題はこれで一網打尽。ディレクトリを指定することでまとめて処理できる。
+file.toAscii() =&gt; file
+これもPython2との非互換か。
+QtCore.QString(str(value)) =&gt; str(value)
+QStringは、PythonのStringでよさげ。
+動いた</p>
+<p>https://github.com/ousttrue/openexr/releases/tag/v0.1</p>
+<p>タイムラインを操作したら蛸が動いた。</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2017/08/pyalembic.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

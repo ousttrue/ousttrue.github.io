@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>libclang &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>title = &quot;libclang で luajit 向けの FFI を生成する&quot;
+date = 2021-07-23
+tags = [&quot;lua&quot;, &quot;libclang&quot;]</p>
+<p>lua による imgui 計画の準備として、 <code class="docutils literal notranslate"><span class="pre">libclang</span></code> によるバインディング生成器を <code class="docutils literal notranslate"><span class="pre">luajit</span></code> に移植してみた。</p>
+<p><a class="reference external" href="https://github.com/ousttrue/luajitffi">https://github.com/ousttrue/luajitffi</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">libclang</span></code> に対してはだいだい動くようになって、自身で生成した <code class="docutils literal notranslate"><span class="pre">FFI</span></code> で動作するところまでできた。
+また、 <code class="docutils literal notranslate"><span class="pre">EmmyLua</span> <span class="pre">Annotation</span></code> もある程度付与できた。</p>
+<p><a class="reference external" href="https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua">https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua</a></p>
+<p>こいつで、 <code class="docutils literal notranslate"><span class="pre">imgui.h</span></code> から luajit FFI を生成する。</p>
+<section id="libclang">
+<h1>libclang<a class="headerlink" href="#libclang" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>c(c++)ヘッダーを <code class="docutils literal notranslate"><span class="pre">clang_visitChildren</span></code> により、カーソルのTree としてパースする。
+今回は、 <code class="docutils literal notranslate"><span class="pre">CXChildVisit_Recurse</span></code> で全部のカーソルをパースすることにした。</p>
+<ul class="simple">
+<li><p>同じカーソルが複数個所に現れうる</p></li>
+<li><p>循環しうる(Link List ？)</p></li>
+</ul>
+<p>がありうることを考慮しておく。
+<code class="docutils literal notranslate"><span class="pre">clang-c/Index.h</span></code> は 6000 カーソルくらいなので問題ないが、 <code class="docutils literal notranslate"><span class="pre">Windows.h</span></code> とかは 150000 カーソルとか爆発する。</p>
+</section>
+<section id="id1">
+<h1>わりと色んなところで型がネストしていてつらい<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p>struct の中は namespace なので何でもあり</p></li>
+<li><p>anonymous な union や struct のその場定義</p></li>
+<li><p>typedef struct などのその場定義</p></li>
+<li><p>関数ポインタのその場定義</p></li>
+</ul>
+<p>要するに、Cのコードの書き方によってどのようなカーソル構造になるかのパターンを知っている必要があって、
+パターン毎に分岐して情報を収集する必要がある。
+ある型のメンバーの情報を集めていると、ネストした別の型情報が現れる場合があるので切り分ける。</p>
+</section>
+<section id="id2">
+<h1>基本的なパターン<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>FFI では、対象となる関数を起点にその関数が使用するすべての型の定義を取り込む。
+カーソルはCのTranslationUnitの木構造をあらわしていて、型をあらわしていない。
+カーソルから頑張って型を得る。
+型を得られるカーソルは決まっていて、<code class="docutils literal notranslate"><span class="pre">CXCursorType</span></code> が宣言Declの系列となる。</p>
+<p>TODO</p>
+<section id="functiondecl">
+<h2>カーソル FunctionDecl<a class="headerlink" href="#functiondecl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="enumdecl">
+<h2>カーソル EnumDecl<a class="headerlink" href="#enumdecl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="typedefdecl">
+<h2>カーソル TypedefDecl<a class="headerlink" href="#typedefdecl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="structdecl">
+<h2>カーソル StructDecl<a class="headerlink" href="#structdecl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="type-pointer">
+<h2>Type Pointer<a class="headerlink" href="#type-pointer" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="type-array">
+<h2>Type Array<a class="headerlink" href="#type-array" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="type-elaborated">
+<h2>Type Elaborated<a class="headerlink" href="#type-elaborated" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="type-record">
+<h2>Type Record<a class="headerlink" href="#type-record" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="type-functionproto-pointer-functionproto">
+<h2>Type FunctionProto 関数ポインタ pointer =&gt; functionproto<a class="headerlink" href="#type-functionproto-pointer-functionproto" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="union">
+<h2>union<a class="headerlink" href="#union" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="typedef-struct">
+<h2>typedef struct<a class="headerlink" href="#typedef-struct" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="c-name-mangling">
+<h2>c++ name mangling<a class="headerlink" href="#c-name-mangling" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="id3">
+<h2>マクロとの戦い<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+</section>
+<section id="luajit-ffi">
+<h1>luajit ffi<a class="headerlink" href="#luajit-ffi" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ffi.cdef</span></code> に素直に定義すればいいので、他の言語の FFI に比べて簡単。</p>
+<p>はまり。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ffi.load</span></code> の返り値が GC されると関数ポインタが死ぬ</p></li>
+<li><p>pointer は <code class="docutils literal notranslate"><span class="pre">ffi.new('TYPE[1]')</span></code> のようにサイズ１の array で運用する</p></li>
+<li><p>tostring と ffi.string は違う</p></li>
+<li><p>nullptr は nil ?</p></li>
+</ul>
+<p>だいたいよきに計らってくれるので、 <code class="docutils literal notranslate"><span class="pre">rust</span></code> の FFI に比べて簡単なのであった。</p>
+<p>ひとつだけはまりがあって、 <code class="docutils literal notranslate"><span class="pre">struct</span></code> の値渡しができない場合がある。</p>
+<p><a class="reference external" href="http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs">http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs</a></p>
+<p>そういえば、 <code class="docutils literal notranslate"><span class="pre">rust</span></code> でも <code class="docutils literal notranslate"><span class="pre">struct</span></code> の値渡しではまった記憶が。</p>
+<p><a class="reference external" href="https://forum.dlang.org/thread/dkamxcamwttszxwwxttv&#64;forum.dlang.org">https://forum.dlang.org/thread/dkamxcamwttszxwwxttv&#64;forum.dlang.org</a></p>
+<p>rust の場合は、 <code class="docutils literal notranslate"><span class="pre">struct</span></code> の値返しが動かなかった。
+これ、C の方で pointer 経由で値を返すラッパーを定義する必要があって回避方法はなかった。</p>
+<p><code class="docutils literal notranslate"><span class="pre">ImVec2</span> <span class="pre">ImGui::GetContentRegionAvail()</span></code></p>
+<p>luajit ffi でもできるか注意が必要だな。</p>
+</section>
+<section id="lfs-ffi-windows-api">
+<h1>lfs への依存を FFI した Windows API で置き換える<a class="headerlink" href="#lfs-ffi-windows-api" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>現状、ファイル操作 <code class="docutils literal notranslate"><span class="pre">isExists</span></code>, <code class="docutils literal notranslate"><span class="pre">mkDir</span></code> のために lfs を使っているのだけど、
+FFI で Windows API にアクセスできるようにしたら lfs 無しにできそう。
+となれば luarocks も無しにできるので、 必要なのは luajit.exe だけになる。</p>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/posts/2021/luajitffi.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

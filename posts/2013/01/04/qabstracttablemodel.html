@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>ディレクトリ表示をする専用のウィジェットがあったような気がするが、練習のため実装。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span># !/usr/bin/env python
+# coding: utf-8
+
+
+import re import operator import os import sys import stat from
+PyQt4.QtCore import * from PyQt4.QtGui import *
+
+class File(object):
+header=[
+
+‘type’, ‘name’, ‘size’, ‘mtime’ ]
+def __init__(self, path):
+self.path=os.path.abspath(path) self.data=[None, None, None,
+None] s=os.stat(path) mode=s[stat.ST_MODE] if
+stat.S_ISDIR(mode): self.data[0]=‘dir’ elif
+stat.S_ISLNK(mode): self.data[0]=‘link’ elif
+stat.S_ISREG(mode): self.data[0]=‘file’ else:
+self.data[0]=‘unknown’ self.data[1]=os.path.basename(path)
+self.data[2]=s[stat.ST_SIZE]
+self.data[3]=s[stat.ST_MTIME]
+def __str__(self):
+return “&lt;%s %s&gt;” % (self.data[0], self.data[1])
+def __getitem__(self, key):
+return self.data[key]
+def is_dir(self):
+return self.data[0]==‘dir’
+
+class MyTableModel(QAbstractTableModel):
+def __init__(self, parent, path):
+
+super(MyTableModel, self).__init__(parent) def
+get_stat(name): f=File(os.path.join(path, name)) return f
+self.data=[get_stat(os.path.join(path, “..”))]+[get_stat(e)
+for e in os.listdir(path)]
+def rowCount(self, parent):
+return len(self.data)
+def columnCount(self, parent):
+return len(File.header)
+def data(self, index, role):
+if not index.isValid():
+
+return None
+elif role != Qt.DisplayRole:
+return None
+
+return self.data[index.row()][index.column()]
+def headerData(self, col, orientation, role):
+if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+
+return File.header[col]
+
+return None
+def sort(self, Ncol, order):
+”““Sort table by given column number.
+“”” self.emit(SIGNAL(“layoutAboutToBeChanged()”)) self.data =
+sorted(self.data,
+key=operator.itemgetter(Ncol), reverse=(order!=Qt.DescendingOrder))
+self.emit(SIGNAL(“layoutChanged()”))
+def getRow(self, index):
+return self.data[index]
+
+class MyWindow(QWidget):
+def __init__(self, *args): QWidget.__init__(self,*args)
+
+# create the view self.tv = QTableView() # hide
+grid self.tv.setShowGrid(False) # hide vertical header vh
+= self.tv.verticalHeader() vh.setVisible(False) # set
+horizontal header properties hh = self.tv.horizontalHeader()
+hh.setStretchLastSection(True) # set column width to fit
+contents self.tv.resizeColumnsToContents() # enable
+sorting self.tv.setSortingEnabled(True) # layout layout
+= QVBoxLayout() layout.addWidget(self.tv) self.setLayout(layout)
+# double
+click self.tv.doubleClicked.connect(self.onDoubleClick)
+
+def chdir(self, path):
+
+self.tm = MyTableModel(self, path) # set the table
+model self.tv.setModel(self.tm)
+def onDoubleClick(self, event):
+item=self.tm.getRow(event.row()) if not item.is_dir():
+return self.chdir(item.path)
+
+def main():
+app = QApplication(sys.argv) w = MyWindow() w.chdir(“.”) w.show()
+sys.exit(app.exec_())
+if __name__ == “__main__“:
+main()
+</pre></div>
+</div>
+<p>ToDo</p>
+<p>種類毎のアイコン表示
+日付の表示
+数字カラムの右寄せ
+行選択
+FilterProxyModel</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/posts/2013/01/04/qabstracttablemodel.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

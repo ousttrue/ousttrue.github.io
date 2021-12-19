@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>parted /dev/sda &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>Linux成分が不足してきたので久しぶりにデスクトップを構築してみる。</p>
+<p>ISO入手からUEFI bootのUSBメモリ作成</p>
+<p>SystemRescueCdがよい
+Rufasで起動するUSBメモリを作成する</p>
+<p>パーティション構成とターゲットシステムの種類をGPT UEFIコンピュータ用のパーティション構成を選択するべし</p>
+<p>起動
+USBメモリを差し込んでPCを起動し、delキーでUEFI画面に入る。
+UEFIの起動メニューからUSBメモリを選択してSystemRescueCdを起動する。</p>
+<blockquote>
+<div><p>efibootmgr # UEFIモードで起動したか確認
+passwd # sshログイン用のパスワードを決める
+startx
+ifconfig # ip確認</p>
+</div></blockquote>
+<p>Handbook(Preparing the disks)</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks</p>
+<section class="tex2jax_ignore mathjax_ignore" id="parted-dev-sda">
+<h1>parted /dev/sda<a class="headerlink" href="#parted-dev-sda" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>(parted) print
+Model: ATA ST3500418AS (scsi)
+Disk /dev/sda: 476940MiB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:</p>
+<p>Number  Start    End        Size       File system     Name     Flags
+1      1.00MiB  129MiB     128MiB                     efi      boot, esp
+2      129MiB   641MiB     512MiB     linux-swap(v1)  primary
+3      641MiB   102401MiB  101760MiB                  gentoo</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mkswap-dev-sda2">
+<h1>mkswap /dev/sda2<a class="headerlink" href="#mkswap-dev-sda2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="swapon-dev-sda2">
+<h1>swapon /dev/sda2<a class="headerlink" href="#swapon-dev-sda2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mkfs-ext4-dev-sda3">
+<h1>mkfs.ext4/dev/sda3<a class="headerlink" href="#mkfs-ext4-dev-sda3" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-dev-sda3-mnt-gentoo">
+<h1>mount /dev/sda3 /mnt/gentoo<a class="headerlink" href="#mount-dev-sda3-mnt-gentoo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mkfs-vfat-dev-sda1">
+<h1>mkfs.vfat /dev/sda1<a class="headerlink" href="#mkfs-vfat-dev-sda1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mkdir-mnt-gentoo-boot">
+<h1>mkdir /mnt/gentoo/boot<a class="headerlink" href="#mkdir-mnt-gentoo-boot" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-dev-sda1-mnt-gentoo-boot">
+<h1>mount /dev/sda1 /mnt/gentoo/boot<a class="headerlink" href="#mount-dev-sda1-mnt-gentoo-boot" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Installing the Gentoo installation files
+clock設定。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="ntpd-q-g">
+<h1>ntpd -q -g<a class="headerlink" href="#ntpd-q-g" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Stage3のdownloadと解凍</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="cd-mnt-gentoo">
+<h1>cd /mnt/gentoo<a class="headerlink" href="#cd-mnt-gentoo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-autobuilds-20170831-stage3-amd64-20170831-tar-bz2">
+<h1>wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/autobuilds/20170831/stage3-amd64-20170831.tar.bz2<a class="headerlink" href="#wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-autobuilds-20170831-stage3-amd64-20170831-tar-bz2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="tar-xvjpf-stage3-tar-bz2-xattrs-numeric-owner">
+<h1>tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner<a class="headerlink" href="#tar-xvjpf-stage3-tar-bz2-xattrs-numeric-owner" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>portage設定</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="nano-w-mnt-gentoo-etc-portage-make-conf">
+<h1>nano -w /mnt/gentoo/etc/portage/make.conf<a class="headerlink" href="#nano-w-mnt-gentoo-etc-portage-make-conf" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>CFLAGS=&quot;-march=native -O2 -pipe&quot;</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="use-the-same-settings-for-both-variables">
+<h1>Use the same settings for both variables<a class="headerlink" href="#use-the-same-settings-for-both-variables" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>CXXFLAGS=&quot;${CFLAGS}&quot;</p>
+<p>MAKEOPTS=&quot;-j5&quot; # 4コアなので</p>
+<p>Installing the Gentoo base system</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base</p>
+<p>mirror設定
+日本のサーバーを選択</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mirrorselect-i-o-mnt-gentoo-etc-portage-make-conf">
+<h1>mirrorselect -i -o &gt;&gt; /mnt/gentoo/etc/portage/make.conf<a class="headerlink" href="#mirrorselect-i-o-mnt-gentoo-etc-portage-make-conf" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>repository設定
+ここよくわからぬ</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mkdir-mnt-gentoo-etc-portage-repos-conf">
+<h1>mkdir /mnt/gentoo/etc/portage/repos.conf<a class="headerlink" href="#mkdir-mnt-gentoo-etc-portage-repos-conf" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="cp-mnt-gentoo-usr-share-portage-config-repos-conf-mnt-gentoo-etc-portage-repos-conf-gentoo-conf">
+<h1>cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf<a class="headerlink" href="#cp-mnt-gentoo-usr-share-portage-config-repos-conf-mnt-gentoo-etc-portage-repos-conf-gentoo-conf" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>chroot準備</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="cp-l-etc-resolv-conf-mnt-gentoo-etc">
+<h1>cp -L /etc/resolv.conf /mnt/gentoo/etc/<a class="headerlink" href="#cp-l-etc-resolv-conf-mnt-gentoo-etc" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-t-proc-proc-mnt-gentoo-proc">
+<h1>mount -t proc /proc /mnt/gentoo/proc<a class="headerlink" href="#mount-t-proc-proc-mnt-gentoo-proc" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-rbind-sys-mnt-gentoo-sys">
+<h1>mount --rbind /sys /mnt/gentoo/sys<a class="headerlink" href="#mount-rbind-sys-mnt-gentoo-sys" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-make-rslave-mnt-gentoo-sys">
+<h1>mount --make-rslave /mnt/gentoo/sys<a class="headerlink" href="#mount-make-rslave-mnt-gentoo-sys" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-rbind-dev-mnt-gentoo-dev">
+<h1>mount --rbind /dev /mnt/gentoo/dev<a class="headerlink" href="#mount-rbind-dev-mnt-gentoo-dev" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-make-rslave-mnt-gentoo-dev">
+<h1>mount --make-rslave /mnt/gentoo/dev<a class="headerlink" href="#mount-make-rslave-mnt-gentoo-dev" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>chroot</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="chroot-mnt-gentoo-bin-bash">
+<h1>chroot /mnt/gentoo /bin/bash<a class="headerlink" href="#chroot-mnt-gentoo-bin-bash" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="source-etc-profile">
+<h1>source /etc/profile<a class="headerlink" href="#source-etc-profile" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="export-ps1-chroot-ps1">
+<h1>export PS1=&quot;(chroot) $PS1&quot;<a class="headerlink" href="#export-ps1-chroot-ps1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>(chroot) livecd / #</p>
+<p>構築</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-webrsync">
+<h1>emerge-webrsync<a class="headerlink" href="#emerge-webrsync" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="eselect-news-read">
+<h1>eselect news read<a class="headerlink" href="#eselect-news-read" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-update-deep-newuse-world">
+<h1>emerge --ask --update --deep --newuse &#64;world<a class="headerlink" href="#emerge-ask-update-deep-newuse-world" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>profile選択は後で起動するようになってからやればいいのでここではやらない。
+timezone。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="echo-asia-tokyo-etc-timezone">
+<h1>echo &quot;Asia/Tokyo&quot; &gt; /etc/timezone<a class="headerlink" href="#echo-asia-tokyo-etc-timezone" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-config-sys-libs-timezone-data">
+<h1>emerge --config sys-libs/timezone-data<a class="headerlink" href="#emerge-config-sys-libs-timezone-data" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>nanoでなくてvimを使いたいので入れとく。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-vim">
+<h1>emerge -av vim<a class="headerlink" href="#emerge-av-vim" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>locale。日本語を有効にして、システムはen_us.UTF-8に。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="vim-etc-locale-gen">
+<h1>vim /etc/locale.gen<a class="headerlink" href="#vim-etc-locale-gen" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>en_US.UTF-8 UTF-8
+ja_JP.EUC-JP EUC-JP
+ja_JP.UTF-8 UTF-8</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="locale-gen">
+<h1>locale-gen<a class="headerlink" href="#locale-gen" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="eselect-locale-list">
+<h1>eselect locale list<a class="headerlink" href="#eselect-locale-list" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Available targets for the LANG variable:
+[1]   C
+[2]   en_US.utf8 *
+[3]   ja_JP
+[4]   ja_JP.eucjp
+[5]   ja_JP.ujis
+[6]   ja_JP.utf8
+[7]   japanese
+[8]   japanese.euc
+[9]   POSIX
+[ ]   (free form)</p>
+<p>Configuring the Linux kernel</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel</p>
+<p>source</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-sys-kernel-gentoo-sources">
+<h1>emerge --ask sys-kernel/gentoo-sources<a class="headerlink" href="#emerge-ask-sys-kernel-gentoo-sources" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>genkernel
+bootパーティションは分けなかった。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-sys-kernel-genkernel">
+<h1>emerge --ask sys-kernel/genkernel<a class="headerlink" href="#emerge-ask-sys-kernel-genkernel" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="genkernel-all">
+<h1>genkernel all # 長時間かかる<a class="headerlink" href="#genkernel-all" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-sys-kernel-linux-firmware">
+<h1>emerge --ask sys-kernel/linux-firmware<a class="headerlink" href="#emerge-ask-sys-kernel-linux-firmware" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Configuring the system</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/System</p>
+<p>/etc/fstab
+/dev/sda3               /               ext4            noatime         0 1</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="efiefi">
+<h1>EFI。EFI起動するときに使ったデバイスでないといかん<a class="headerlink" href="#efiefi" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>#/dev/sda1              /boot           vfat            noatime         0 1
+/dev/sdb2               /boot           vfat            noatime         0 1</p>
+<p>/dev/cdrom              /mnt/cdrom      auto            noauto,ro       0 0
+/dev/sda2               none            swap            sw              0 0</p>
+<p>network</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="vim-etc-conf-d-hostname">
+<h1>vim /etc/conf.d/hostname<a class="headerlink" href="#vim-etc-conf-d-hostname" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="vim-etc-conf-d-net">
+<h1>vim /etc/conf.d/net<a class="headerlink" href="#vim-etc-conf-d-net" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>config_eth0=&quot;192.168.0.2 netmask 255.255.255.0 brd 192.168.0.255&quot;
+routes_eth0=&quot;default via 192.168.0.1&quot;</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-noreplace-net-misc-netifrc">
+<h1>emerge --ask --noreplace net-misc/netifrc<a class="headerlink" href="#emerge-ask-noreplace-net-misc-netifrc" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="cd-etc-init-d">
+<h1>cd /etc/init.d<a class="headerlink" href="#cd-etc-init-d" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="ln-s-net-lo-net-eth0">
+<h1>ln -s net.lo net.eth0<a class="headerlink" href="#ln-s-net-lo-net-eth0" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-net-eth0-default">
+<h1>rc-update add net.eth0 default<a class="headerlink" href="#rc-update-add-net-eth0-default" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>root password</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="root-passwd">
+<h1>root passwd<a class="headerlink" href="#root-passwd" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Installing system tools</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Tools</p>
+<p>logger</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-app-admin-sysklogd">
+<h1>emerge --ask app-admin/sysklogd<a class="headerlink" href="#emerge-ask-app-admin-sysklogd" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-sysklogd-default">
+<h1>rc-update add sysklogd default<a class="headerlink" href="#rc-update-add-sysklogd-default" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>cron</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-sys-process-cronie">
+<h1>emerge --ask sys-process/cronie<a class="headerlink" href="#emerge-ask-sys-process-cronie" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-cronie-default">
+<h1>rc-update add cronie default<a class="headerlink" href="#rc-update-add-cronie-default" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>sshd</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-sshd-default">
+<h1>rc-update add sshd default<a class="headerlink" href="#rc-update-add-sshd-default" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Configuring the bootloader</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Bootloader</p>
+<p>efibootmgrではまる</p>
+<p>https://wiki.gentoo.org/wiki/EFI_stub_kernel
+https://wiki.gentoo.org/wiki/Efibootmgr</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-sys-boot-efibootmgr">
+<h1>emerge --ask sys-boot/efibootmgr<a class="headerlink" href="#emerge-ask-sys-boot-efibootmgr" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mkdir-p-boot-efi-boot">
+<h1>mkdir -p /boot/efi/boot<a class="headerlink" href="#mkdir-p-boot-efi-boot" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="cp-boot-kernel-genkernel-x86-64-4-12-5-gentoo-boot-efi-boot-bootx64-efi">
+<h1>cp /boot/kernel-genkernel-x86_64-4.12.5-gentoo /boot/efi/boot/bootx64.efi<a class="headerlink" href="#cp-boot-kernel-genkernel-x86-64-4-12-5-gentoo-boot-efi-boot-bootx64-efi" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="efibootmgr-c-d-dev-sda-p-1-l-gentoo-l-efi-boot-bootx64-efi-initrd-initramfs-genkernel-x86-64-4-12-5-gentoo">
+<h1>efibootmgr -c -d /dev/sda -p 1 -L &quot;Gentoo&quot; -l &quot;\efi\boot\bootx64.efi&quot; initrd='\initramfs-genkernel-x86_64-4.12.5-gentoo'<a class="headerlink" href="#efibootmgr-c-d-dev-sda-p-1-l-gentoo-l-efi-boot-bootx64-efi-initrd-initramfs-genkernel-x86-64-4-12-5-gentoo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>EFI variables are not supported on this system.</p>
+<p>ぐぬぬ。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-grep-efivars">
+<h1>mount | grep efivars<a class="headerlink" href="#mount-grep-efivars" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-t-efivarfs-efivarfs-sys-firmware-efi-efivars">
+<h1>mount -t efivarfs efivarfs /sys/firmware/efi/efivars<a class="headerlink" href="#mount-t-efivarfs-efivarfs-sys-firmware-efi-efivars" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>mount: mount point /sys/firmware/efi/efivars does not exist</p>
+<p>EFIモードになっていないぽい？
+UEFI軌道のusbメモリの作成ができていない？
+minimal.isoじゃなくてlivedvd.isoで起動して続きからやってみる。</p>
+<p>SystemRescueCd</p>
+<p>efiがリードオンリー</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="efibootmgr-c-d-dev-sdb-p-2-l-gentoo-l-efi-gentoo-kernel-genkernel-x86-64-4-12-5-gentoo-initrd-efi-gentoo-initramfs-genkernel-x86-64-4-12-5-gentoo">
+<h1>efibootmgr -c -d /dev/sdb -p 2 -L &quot;Gentoo&quot; -l &quot;\efi\gentoo\kernel-genkernel-x86_64-4.12.5-gentoo&quot; initrd='\efi\gentoo\initramfs-genkernel-x86_64-4.12.5-gentoo'<a class="headerlink" href="#efibootmgr-c-d-dev-sdb-p-2-l-gentoo-l-efi-gentoo-kernel-genkernel-x86-64-4-12-5-gentoo-initrd-efi-gentoo-initramfs-genkernel-x86-64-4-12-5-gentoo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Could not prepare Boot variable: Read-only file system</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mount-o-remount-sys-firmware-efi-efivars-o-rw-nosuid-nodev-noexec-noatime">
+<h1>mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime<a class="headerlink" href="#mount-o-remount-sys-firmware-efi-efivars-o-rw-nosuid-nodev-noexec-noatime" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>https://wiki.archlinuxjp.org/index.php/EFISTUB</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="efibootmgr-c-d-dev-sdb-p-2-l-gentoo-l-efi-gentoo-kernel-genkernel-x86-64-4-12-5-gentoo-u-root-dev-sda3-rw-initrd-efi-gentoo-initramfs-genkernel-x86-64-4-12-5-gentoo">
+<h1>efibootmgr -c -d /dev/sdb -p 2 -L &quot;Gentoo&quot; -l &quot;/EFI/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo&quot; -u &quot;root=/dev/sda3 rw initrd=/EFI/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo&quot;<a class="headerlink" href="#efibootmgr-c-d-dev-sdb-p-2-l-gentoo-l-efi-gentoo-kernel-genkernel-x86-64-4-12-5-gentoo-u-root-dev-sda3-rw-initrd-efi-gentoo-initramfs-genkernel-x86-64-4-12-5-gentoo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>BootCurrent: 000C
+Timeout: 0 seconds
+BootOrder: 0001,0000,000C,000D,0008,0009
+Boot0000* Windows Boot Manager
+Boot0008* CD/DVD Drive
+Boot0009* Hard Drive
+Boot000C* UEFI: Sony Storage Media PMAP
+Boot000D* ubuntu
+Boot0001* Gentoo</p>
+<p>しかし、起動するとカーネルパニック。うまくいかぬ。
+GRUB2のシェルから起動</p>
+<p>https://jp.linux.com/news/linuxcom-exclusive/418274-lco20140625</p>
+<p>SystemRescueCdの起動時のgrubメニューでcを押してgrubのシェルに入る。
+grub&gt; ls (hd2,gpt2)/
+efi
+grub&gt; set root=(hd2,gpt2)
+grub&gt; linux /efi/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo root=/dev/sda3
+grub&gt; initrd /efi/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo</p>
+<p>起動できた。カーネルパニックになるのはブートパラメーターの与え方が間違っているぽい。
+efibootmgr
+うまくいった手順。
+-uでカーネルパラメーターを指定する？</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="efibootmgr-c-d-dev-sdb-p-2-l-gentoo-l-efi-gentoo-kernel-genkernel-x86-64-4-12-5-gentoo1-u-root-dev-sda3-rw-initrd-efi-gentoo-initramfs-genkernel-x86-64-4-12-5-gentoo">
+<h1>efibootmgr -c -d /dev/sdb -p 2 -L &quot;Gentoo&quot; -l &quot;/EFI/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo1&quot; -u &quot;root=/dev/sda3 rw initrd=/EFI/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo&quot;<a class="headerlink" href="#efibootmgr-c-d-dev-sdb-p-2-l-gentoo-l-efi-gentoo-kernel-genkernel-x86-64-4-12-5-gentoo1-u-root-dev-sda3-rw-initrd-efi-gentoo-initramfs-genkernel-x86-64-4-12-5-gentoo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>なんとか起動。
+Finalizing</p>
+<p>https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Finalizing</p>
+<p>eth0の修正
+net.eth0で起動するようにenp3s0を修正する。
+/etc/udev/rules.d/50-ether.rules
+SUBSYSTEM==&quot;net&quot;, ATTR{address}==&quot;XX:XX:XX:XX:XX:XX&quot;, NAME=&quot;eth0&quot;</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="udevadm-test-sys-class-net-enp3s0">
+<h1>udevadm test /sys/class/net/enp3s0<a class="headerlink" href="#udevadm-test-sys-class-net-enp3s0" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>changing net interface name from 'enp3s0' to 'eth0'</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="etc-init-d-net-eth0-start">
+<h1>/etc/init.d/net.eth0 start<a class="headerlink" href="#etc-init-d-net-eth0-start" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="ping-www-google-com">
+<h1>ping www.google.com<a class="headerlink" href="#ping-www-google-com" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>...</p>
+<p>user追加</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="useradd-m-g-users-wheel-audio-s-bin-bash-larry">
+<h1>useradd -m -G users,wheel,audio -s /bin/bash larry<a class="headerlink" href="#useradd-m-g-users-wheel-audio-s-bin-bash-larry" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="passwd-larry">
+<h1>passwd larry<a class="headerlink" href="#passwd-larry" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>sshで外部から新しく作ったユーザーでアクセスできることを確認。
+shell設定
+/etc/inputrc
+set bell-style none</p>
+<p>&quot;\C-n&quot;:history-search-forward
+&quot;\C-p&quot;:history-search-backward</p>
+<p>完成
+リモートからsshログインできるところまでできた。
+efibootmgr周りがなんかドキュメントが間違っている気がするが誰も使っていないのであろうか。
+その他
+追加インストールメモ。
+eix
+USE=sqlite</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-eix">
+<h1>emerge -av eix<a class="headerlink" href="#emerge-av-eix" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>/etc/cron.daily</p>
+<p>eix-sync</p>
+<p>cpuflag</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-app-portage-cpuid2cpuflags">
+<h1>emerge -av app-portage/cpuid2cpuflags<a class="headerlink" href="#emerge-av-app-portage-cpuid2cpuflags" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>$ cpuinfo2cpuflags-x86
+CPU_FLAGS_X86=&quot;aes avx fma3 fma4 mmx mmxext pclmul popcnt sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3 xop&quot;</p>
+<p>ntp</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-ntp">
+<h1>emerge -av ntp<a class="headerlink" href="#emerge-av-ntp" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-ntpd-default">
+<h1>rc-update add ntpd default<a class="headerlink" href="#rc-update-add-ntpd-default" title="このヘッドラインへのパーマリンク">¶</a></h1>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="08/usd.html">
+       PixarのUniversal Scene Descriptionをビルドしてみる
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="gentoo_xorg.html">
+      GentooでX11を設定する 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  04 September 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/posts/2017/gentoo_install.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>monkey patch for _msvccompiler &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>PythonじゃなくてVisualStudio側の問題のようなのだけど、setup.pyでネイティブモジュールをビルドするときに顕在化したので。</p>
+<p>こういう感じのネイティブモジュールを作った。
+from distutils.core import setup, Extension</p>
+<p>imgui_module = Extension('_swig_imgui',
+sources=[
+#'imgui_wrap.cxx',
+'imgui.i',
+'imgui/imgui.cpp',
+'imgui/imgui_draw.cpp',
+'imgui/imgui_demo.cpp',
+],
+swig_opts=[
+#'-modern',
+'-c++',
+'-py3',
+]
+)</p>
+<p>setup (name = 'swig_imgui',
+version = '0.1',
+author      = &quot;ousttrue&quot;,
+description = &quot;&quot;&quot;imgui wrapper using swig&quot;&quot;&quot;,
+ext_modules = [imgui_module],
+py_modules = [&quot;swig_imgui&quot;],
+)</p>
+<blockquote>
+<div><p>python setup.py build</p>
+</div></blockquote>
+<p>とするとエラーになる。
+Windows10(64bit)上のvs2017 + vcbuildtoolsの組み合わせの環境である。
+cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -ID:\Anaconda3\include -ID:\Anaconda3\include /EHsc /Tpimgui_wrap.cpp /Fobuild\temp.win-amd64-3.6\Release\imgui_wrap.obj
+error: command 'cl.exe' failed: No such file or directory</p>
+<p>distutilsがcl.exeを探すのに失敗しているようなのである。
+lib/distutils下を調べてみた。
+どうやらlib/distutils/_msvccompiler.pyでvcvarsall.batから環境変数を得ることに失敗しているらしい。
+実際、C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.batの呼び出しが失敗していることを突き止めた。
+Error in script usage. The correct usage is:
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option]
+or
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option] store
+or
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option] [version number]
+or
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option] store [version number]
+where [option] is: x86 | amd64 | arm | x86_amd64 | x86_arm | amd64_x86 | amd64_arm
+where [version number] is either the full Windows 10 SDK version number or &quot;8.1&quot; to use the windows 8.1 SDK
+:
+The store parameter sets environment variables to support
+store (rather than desktop) development.
+:
+For example:
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_amd64
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_arm store
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_amd64 10.0.10240.0
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_arm store 10.0.10240.0
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x64 8.1
+&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x64 store 8.1</p>
+<p>コマンドラインから実行しても失敗していて、vcvarsall.batに以下のコードがあるのだが、
+:setup_buildsku
+if not exist &quot;%~dp0......\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot; goto usage
+set CurrentDir=%CD%
+call &quot;%~dp0......\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot; %1 %2
+cd /d %CurrentDir%
+goto :eof</p>
+<p>C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat
+から
+C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot;
+への相対パスだと一致しないよなーと。
+これが原因でcl.exeのパスが取れない。
+setup.pyにモンキーパッチを当ててcl.exeを発見できるようにしてみた。
+以下をsetup.pyの先頭に追加。</p>
+<section class="tex2jax_ignore mathjax_ignore" id="monkey-patch-for-msvccompiler">
+<h1>monkey patch for _msvccompiler<a class="headerlink" href="#monkey-patch-for-msvccompiler" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>import distutils._msvccompiler
+import os
+import subprocess
+def _get_vc_env(plat_spec):
+if os.getenv(&quot;DISTUTILS_USE_SDK&quot;):
+return {
+key.lower(): value
+for key, value in os.environ.items()
+}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>vcvarsall, vcruntime = distutils._msvccompiler._find_vcvarsall(plat_spec)
+if not vcvarsall:
+    raise DistutilsPlatformError(&quot;Unable to find vcvarsall.bat&quot;)
+
+try:
+    out = subprocess.check_output(
+        &#39;cmd /u /c &quot;{}&quot; {} &amp;&amp; set&#39;.format(vcvarsall, plat_spec),
+        stderr=subprocess.STDOUT,
+    ).decode(&#39;utf-16le&#39;, errors=&#39;replace&#39;)
+    #######################################################################
+    if out.startswith(&quot;Error in script usage&quot;):
+        out = subprocess.check_output(
+            &#39;cmd /u /c &quot;{}&quot; {} &amp;&amp; set&#39;.format(&quot;C:\\Program Files (x86)\\Microsoft Visual C++ Build Tools\\vcbuildtools.bat&quot;, plat_spec),
+            stderr=subprocess.STDOUT,
+        ).decode(&#39;utf-16le&#39;, errors=&#39;replace&#39;)
+    #######################################################################
+except subprocess.CalledProcessError as exc:
+    log.error(exc.output)
+    raise DistutilsPlatformError(&quot;Error executing {}&quot;
+            .format(exc.cmd))
+
+env = {
+    key.lower(): value
+    for key, _, value in
+    (line.partition(&#39;=&#39;) for line in out.splitlines())
+    if key and value
+}
+
+if vcruntime:
+    env[&#39;py_vcruntime_redist&#39;] = vcruntime
+return env
+</pre></div>
+</div>
+<p>distutils._msvccompiler._get_vc_env=_get_vc_env</p>
+<p>以前にもこんなことやったことあるような気がする・・・。</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../07/imgui_python.html">
+       PythonでImGuiする
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../boost_python3.html">
+      Boost.PythonのPython3でのstd::string、std::wstringのふるまい 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  06 August 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2017/08/distutils_msvccompiler.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

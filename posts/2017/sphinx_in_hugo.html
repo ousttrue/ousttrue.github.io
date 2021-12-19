@@ -1,0 +1,457 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>MarkdownできるらしいのでSphinxを入れてみる。</p>
+<p>テストページ</p>
+<p>Sphinx install
+pyenvでpython-3.6.2を導入した。
+<span class="math notranslate nohighlight">\( pyenv global 3.6.2
+\)</span> python -V
+Python 3.6.2
+$ pip install sphinx</p>
+<p>http://www.sphinx-doc.org/en/stable/markdown.html</p>
+<p>ドキュメントを作ってみる</p>
+<p>project_name
+author_name
+version</p>
+<p>は必須で作る時に決めなければならない。
+$ sphinx-quickstart</p>
+<p>いろいろ質問が出てくるが面倒なのでリターン連打。
+ウイザード方式ではなくコマンドラインで一息に入力する方式だとこんな感じか。
+$ sphinx-quickstart -q -p project_name -a author_name -v 1.0 --sep directory_name
+Creating file directory_name↲/source/conf.py.
+Creating file directory_name↲/source/index.rst.
+Creating file directory_name↲/Makefile.
+Creating file directory_name↲/make.bat.</p>
+<p>Finished: An initial directory structure has been created.</p>
+<p>You should now populate your master file directory_name↲/source/index.rst and create other documentation
+source files. Use the Makefile to build the docs, like so:
+make builder
+where &quot;builder&quot; is one of the supported builders, e.g. html, latex or linkcheck.</p>
+<p>ディレクトリ構成はこんな感じに。
+directory_name
++ souce
++ conf.py
++ index.rst
++ Makefile
++ build
++ html # make htmlの出力</p>
+<p>hugoのサブフォルダにビルド結果をコピーする
+hugoroot
++ sphinxroot
++ build
++html
++ public
+sphinx # ../sphinxroot/build/html/*をコピーする</p>
+<p>hugosite<span class="math notranslate nohighlight">\( sphinx-quickstart -q -p project_name -a author_name -v 1.0 --sep sphinxroot
+hugosite\)</span> hugo
+hugosite<span class="math notranslate nohighlight">\( pushd shphinxroot
+hugosite/sphinxroot\)</span> make html
+hugosite/sphinxroot<span class="math notranslate nohighlight">\( rsync -av build/html ../public/sphinx
+sending incremental file list
+created directory ../public/sphinx
+html/
+html/.buildinfo
+html/genindex.html
+html/index.html
+html/objects.inv
+html/search.html
+html/searchindex.js
+html/_sources/
+html/_sources/index.rst.txt
+html/_static/
+html/_static/ajax-loader.gif
+html/_static/alabaster.css
+html/_static/basic.css
+html/_static/comment-bright.png
+html/_static/comment-close.png
+html/_static/comment.png
+html/_static/custom.css
+html/_static/doctools.js
+html/_static/down-pressed.png
+html/_static/down.png
+html/_static/file.png
+html/_static/jquery-3.1.0.js
+html/_static/jquery.js
+html/_static/minus.png
+html/_static/plus.png
+html/_static/pygments.css
+html/_static/searchtools.js
+html/_static/underscore-1.3.1.js
+html/_static/underscore.js
+html/_static/up-pressed.png
+html/_static/up.png
+html/_static/websupport.js
+hugosite/sphinxroot\)</span> popd</p>
+<p>rsyncの呼び方変更。ソースの指定の最後を/にすることでディレクトリそのものではなく中身を送る意味になる。
+$ rsync -av build/html/ ../public/sphinx
+sending incremental file list
+created directory ../public/sphinx
+./
+.buildinfo
+genindex.html
+index.html
+objects.inv
+search.html
+searchindex.js
+_sources/
+_sources/index.rst.txt
+_static/
+_static/ajax-loader.gif
+_static/alabaster.css
+_static/basic.css
+_static/comment-bright.png
+_static/comment-close.png
+_static/comment.png
+_static/custom.css
+_static/doctools.js
+_static/down-pressed.png
+_static/down.png
+_static/file.png
+_static/jquery-3.1.0.js
+_static/jquery.js
+_static/minus.png
+_static/plus.png
+_static/pygments.css
+_static/searchtools.js
+_static/underscore-1.3.1.js
+_static/underscore.js
+_static/up-pressed.png
+_static/up.png
+_static/websupport.js</p>
+<p>hugosite/public$ python -m http.server</p>
+<p>http://localhost:8000/sphinx/
+で生成したサイトが表示できた。
+livereloadで自動更新サーバー</p>
+<p>Python Livereload を使って Sphinx でドキュメントを書く
+https://pypi.python.org/pypi/livereload</p>
+<p>#!/usr/bin/env python
+import os</p>
+<p>os.system('make html')</p>
+<p>from livereload import Server, shell</p>
+<p>server = Server()
+server.watch('source/<strong>/*.rst', shell('make html'))
+server.watch('source/</strong>/*.md', shell('make html'))
+server.serve(
+open_url=False,
+root='build/html',
+port=8080,
+host='0.0.0.0'
+)</p>
+<p>markdownを使う</p>
+<p>Markdownを使う
+http://www.sphinx-doc.org/en/stable/markdown.html</p>
+<p>ImportError: cannot import name DocParser</p>
+<p>SphinxでMarkdownを使うときに注意すること</p>
+<p>バージョン固定
+いろいろエラーが出る。
+TypeError: 'NoneType' object is not callable</p>
+<p>documented that 1.6 breaks recommonmark
+Sphinx 1.5.x was the last working version for recommonmark 0.4.0</p>
+<p><span class="math notranslate nohighlight">\( pip install recommonmark==0.4.0
+\)</span> pip install sphix==1.5</p>
+<p>1.5にすると・・・
+AttributeError: module 'locale' has no attribute 'normalize'</p>
+<p>localeがsphinx.localeで置き換えられとる。
+仕方ないので
+強制的に再インポートするコードを入れた。
+site-packages/sphinx/<strong>init</strong>.py
+def main(argv=sys.argv):
+# reimport locale
+if 'locale' in sys.modules:
+del sys.modules['locale']
+if sys.path[0].find('sphinx')!=-1:↲
+head=sys.path.pop(0)↲
+import locale↲</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if sys.argv[1:2] == [&#39;-M&#39;]:↲
+    sys.exit(make_main(argv))↲
+else:↲
+    sys.exit(build_main(argv))↲
+</pre></div>
+</div>
+<p>とりあえず動くようになった。ぐぬぬ・・・
+TOC
+AutoStructifyでできると書いてあるがバージョンを0.4.0に固定したからかうまく動かぬ。
+eval_rstで。
+'''eval_rst
+.. toctree::</p>
+<p>item
+'''</p>
+<p>エラー
+TOCツリーにこの指定を入れるとエラーになる
+.. toctree::
+:caption: Contents:↲</p>
+<p>themeを変える</p>
+<p>見やすいテーマを設定する</p>
+<p>日本語</p>
+<p>日本語セクションにアンカーが貼られるようにする</p>
+<p>github
+.nojekyllでいいらしいがうまくいかなかったので。</p>
+<p>https://github.com/michaeljones/sphinx-to-github</p>
+<p>python3だと修正が要る。python2では試していない。</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/posts/2017/sphinx_in_hugo.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

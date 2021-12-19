@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>DebugAdapter を作っていたら、直し方がわかった &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>title = &quot;LuaDA&quot;
+date = 2021-07-31
+tags = [&quot;lua&quot;, &quot;luajit&quot;, &quot;dap&quot;]</p>
+<p>vscode の lua デバッガーに</p>
+<p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a> を使っていたのだが、</p>
+<p><code class="docutils literal notranslate"><span class="pre">launch.json</span></code> の <code class="docutils literal notranslate"><span class="pre">args</span></code> に <code class="docutils literal notranslate"><span class="pre">\\</span></code> が入るとエラーで起動できない。
+Windows で作業しているので、稀によくファイルパスの指定に <code class="docutils literal notranslate"><span class="pre">\\</span></code> が入る。</p>
+<section class="tex2jax_ignore mathjax_ignore" id="debugadapter">
+<h1>DebugAdapter を作っていたら、直し方がわかった<a class="headerlink" href="#debugadapter" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><a class="reference external" href="https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4">https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4</a></p>
+<section id="pr">
+<h2>PR<a class="headerlink" href="#pr" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><a class="reference external" href="https://github.com/tomblind/local-lua-debugger-vscode/pull/37">https://github.com/tomblind/local-lua-debugger-vscode/pull/37</a></p>
+<p>Linux では動かんかったらしく、別の方法で修正してくれた。</p>
+<p>👍 <code class="docutils literal notranslate"><span class="pre">0.2.2</span></code> <a class="reference external" href="https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md">https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md</a></p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>自前で <code class="docutils literal notranslate"><span class="pre">DebugAdapter</span></code> 作ってみることにした。<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><a class="reference external" href="https://github.com/ousttrue/luada">https://github.com/ousttrue/luada</a></p>
+<p>途中まで実装したのだが、</p>
+<ul class="simple">
+<li><p>luajit.exe + luada.lua</p></li>
+</ul>
+<p>という構成よりは、</p>
+<ul class="simple">
+<li><p>luada.exe</p></li>
+</ul>
+<p>の方が取り回しがよくて、それなら lua 成分をもっと減らして JSON-RPC 制御も <code class="docutils literal notranslate"><span class="pre">c++</span></code> なり <code class="docutils literal notranslate"><span class="pre">rust</span></code> なりにして
+lua 埋め込み型の exe が作りやすそう。
+元々、 スタンドアロンの lua インタプリタと組み合わせて使う lua スクリプトという方向性で実装していたのだが、
+<code class="docutils literal notranslate"><span class="pre">luajit-2.1.0-beta3</span></code> 一辺倒になりつつあるので気分が変わってきたのであった。
+これに関しては、今の構成でできるところまでやってみよう。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="vscode-extension">
+<h1>VSCode の Extension を作る<a class="headerlink" href="#vscode-extension" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://code.visualstudio.com/api/get-started/your-first-extension">https://code.visualstudio.com/api/get-started/your-first-extension</a></p></li>
+</ul>
+<p>手順通りに初期化した。npm は最新版に更新したほうがよいぽい。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mockdebug">
+<h1>MockDebug<a class="headerlink" href="#mockdebug" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://code.visualstudio.com/api/extension-guides/debugger-extension">https://code.visualstudio.com/api/extension-guides/debugger-extension</a></p></li>
+</ul>
+<p>を読む。</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/microsoft/vscode-mock-debug">https://github.com/microsoft/vscode-mock-debug</a></p></li>
+</ul>
+<p>というサンプルがある。</p>
+<p>いくつかの機能をまとめて提供する必要がありそう。</p>
+<ul class="simple">
+<li><p>launch.json の設定</p></li>
+<li><p>DebugAdapter 本体</p></li>
+<li><p>DebugAdapter を起動する</p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id2">
+<h1>実装してみる<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="extension-activate">
+<h2>Extension の activate<a class="headerlink" href="#extension-activate" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>適当にイベントを登録して</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>    // package.json
+    &quot;activationEvents&quot;: [
+        &quot;onDebug&quot;,
+        &quot;onDebugInitialConfigurations&quot;,
+        &quot;onDebugDynamicConfigurations&quot;,
+        &quot;onDebugResolve:lua&quot;,
+        &quot;onLanguage:lua&quot;
+    ],
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">activate</span></code> されることを確認</p>
+<div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="c1">// src/extension.ts</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">activate</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;activate luada&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="launch">
+<h2>Launch<a class="headerlink" href="#launch" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>    &quot;contributes&quot;: {
+        &quot;breakpoints&quot;: [
+            {
+                &quot;language&quot;: &quot;lua&quot;
+            }
+        ],
+        &quot;debuggers&quot;: [
+            {
+                &quot;type&quot;: &quot;luada&quot;,
+                &quot;label&quot;: &quot;LuaDA&quot;,
+                &quot;languages&quot;: [
+                    &quot;lua&quot;
+                ],
+                // launch.json のテンプレート
+                &quot;initialConfigurations&quot;: [
+                    {
+                        &quot;type&quot;: &quot;luada&quot;,
+                        &quot;name&quot;: &quot;launch luada&quot;,
+                        &quot;request&quot;: &quot;launch&quot;,
+                        &quot;program&quot;: &quot;${workspaceFolder}/main.lua&quot;,
+                        &quot;args&quot;: []
+                    }
+                ],
+                // request: launch に対して可能な property の定義
+                &quot;configurationAttributes&quot;: {
+                    &quot;launch&quot;: {
+                        &quot;properties&quot;: {
+                            &quot;program&quot;: {
+                                &quot;type&quot;: &quot;string&quot;,
+                                &quot;markdownDescription&quot;: &quot;Lua program to debug - set this to the path of the script&quot;,
+                                &quot;default&quot;: &quot;${workspaceFolder}/main.lua&quot;
+                            },                            
+                            &quot;arg&quot;: {
+                                &quot;type&quot;: &quot;array&quot;,
+                                &quot;markdownDescription&quot;: &quot;Command line argument, arg[1] ... arg[n]&quot;,
+                                &quot;default&quot;: []
+                            }                            
+                        }
+                    }
+                }
+            }
+        ]
+    },
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>activate で DebugAdapterDescriptorFactory を登録</p></li>
+<li><p>launch で createDebugAdapterDescriptor を実行する</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">src/extensions.ts</span></code></p>
+<div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">vscode</span> <span class="nx">from</span> <span class="s1">&#39;vscode&#39;</span><span class="p">;</span>
+
+
+<span class="kd">function</span> <span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span><span class="o">:</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptorFactory</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">createDebugAdapterDescriptor</span><span class="p">(</span>
+            <span class="nx">session</span>: <span class="kt">vscode.DebugSession</span><span class="p">,</span>
+            <span class="nx">executable</span>: <span class="kt">vscode.DebugAdapterExecutable</span> <span class="o">|</span> <span class="kc">undefined</span>
+        <span class="p">)</span><span class="o">:</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">ProviderResult</span><span class="o">&lt;</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptor</span><span class="o">&gt;</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;launch luada&#39;</span><span class="p">);</span>
+            <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&quot;exe&quot;</span><span class="p">;</span>
+            <span class="kr">const</span> <span class="nx">runtimeArgs</span>: <span class="kt">string</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="c1">//</span>
+            <span class="c1">// デバッグアダプターを起動する</span>
+            <span class="c1">// 起動したアダプターと vscode は、標準入出力で JSON-RPC により DebugAdapterProtocol で通信する。</span>
+            <span class="c1">//</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterExecutable</span><span class="p">(</span><span class="nx">runtime</span><span class="p">,</span> <span class="nx">runtimeArgs</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">activate</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;activate luada&#39;</span><span class="p">);</span>
+    <span class="nx">context</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">registerDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="s1">&#39;luada&#39;</span><span class="p">,</span> <span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span><span class="p">)));</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">deactivate() {</span> <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="debug-adapter">
+<h2>Debug Adapter の実装<a class="headerlink" href="#debug-adapter" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><a class="reference external" href="https://microsoft.github.io/debug-adapter-protocol/specification">https://microsoft.github.io/debug-adapter-protocol/specification</a></p>
+<p>を見て粛々と実装する。</p>
+<section id="output-event">
+<h3><a class="reference external" href="https://microsoft.github.io/debug-adapter-protocol/specification#Events_Output">Output Event</a><a class="headerlink" href="#output-event" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>vscode の DebugConsole に出力されるので早期に作ると print debug の助けになる。</p>
+</section>
+<section id="logger">
+<h3>Logger<a class="headerlink" href="#logger" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>DebugAdapterProtocol のやりとりすべてを記録する機能をアダプター側で作るべし。無いとデバッグ困難に。</p></li>
+</ul>
+<p>例</p>
+<p><a class="reference external" href="https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts">https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts</a></p>
+</section>
+</section>
+<section id="vsix">
+<h2>VSIX に出力<a class="headerlink" href="#vsix" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><a class="reference external" href="https://code.visualstudio.com/api/working-with-extensions/publishing-extension">https://code.visualstudio.com/api/working-with-extensions/publishing-extension</a></p>
+<p>vsce を使う。</p>
+<p>package.json に追加。</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>    &quot;publisher&quot;: &quot;ousttrue&quot;,
+    &quot;repository&quot;: {
+        &quot;type&quot;: &quot;git&quot;,
+        &quot;url&quot;: &quot;https://github.com/ousttrue/luada.git&quot;
+    },
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ npx vsce package
+</pre></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id3">
+<h1>参考<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="https-github-com-actboy168-lua-debug">
+<h2><a class="reference external" href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a><a class="headerlink" href="#https-github-com-actboy168-lua-debug" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>vscode.DebugAdapterExecutable</p></li>
+</ul>
+</section>
+<section id="https-github-com-tomblind-local-lua-debugger-vscode">
+<h2><a class="reference external" href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a><a class="headerlink" href="#https-github-com-tomblind-local-lua-debugger-vscode" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>vscode.DebugAdapterServer</p></li>
+<li><p>TypeScript で vscode.DebugAdapterServer を new</p></li>
+<li><p>vscode と DebugAdapterServer が DAP で通信</p></li>
+<li><p>DebugAdapterServer が lua を spawn もしている</p></li>
+</ul>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/posts/2021/luada.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

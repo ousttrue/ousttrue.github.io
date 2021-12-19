@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/translations.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>source
+今回は、TrackballControlsを導入します。
+TrackballControlsはThree.jsのライブラリ内に含まれるのではなくexamples扱いなので、
+直接コードを入手。
+使い方は、TrackballControlsのソースを見ると
+以下のようにするらしい。
+controls = new THREE.TrackballControls( camera );</p>
+<p>controls.rotateSpeed = 1.0;
+controls.zoomSpeed = 1.2;
+controls.panSpeed = 0.8;</p>
+<p>controls.noZoom = false;
+controls.noPan = false;</p>
+<p>controls.staticMoving = true;
+controls.dynamicDampingFactor = 0.3;</p>
+<p>controls.keys = [ 65, 83, 68 ];</p>
+<p>controls.addEventListener( 'change', render );</p>
+<p>もうひとつ更新用に以下のコードも必要。
+function animate() {
+requestAnimationFrame( animate );
+controls.update();
+}</p>
+<p>やってみよう。
+ベースのレンダリングシーン
+シーンに適当にキューブを描画するコード。
+前回の記事をほぼ流用だけどいくつか変更点がある。</p>
+<p>namespaceでかこって名前衝突から防衛
+CreateCameraを独立
+キューブがアニメーションする部分をオミット</p>
+<p>threejs_02.ts
+/// <reference path='../../../../typings/tsd.d.ts' /></p>
+<p>namespace Renderer02 {</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class Renderer {
+    $container: JQuery;
+    renderer: THREE.Renderer;
+
+    scene: THREE.Scene;
+    camera: THREE.Camera;
+    mesh: THREE.Mesh;
+
+    CreateRenderer($container: JQuery) {
+        this.$container = $container;
+
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize($container.width(), $container.height());
+        $container.append(this.renderer.domElement);
+    }
+
+    CreateCamera() {
+        this.camera = new THREE.PerspectiveCamera(75
+            , this.$container.width() / this.$container.height()
+            , 0.1, 1000);
+        this.camera.position.z = 5;
+    }
+
+    CreateScene() {
+        this.scene = new THREE.Scene();
+
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        this.mesh = new THREE.Mesh(geometry, material);
+        this.scene.add(this.mesh);
+    }
+
+    Render() {
+        // render
+        this.renderer.render(this.scene, this.camera);
+    }
+}
+
+var renderer = new Renderer();
+export function initialize($container: JQuery) {
+
+    renderer.CreateRenderer($container);
+    renderer.CreateCamera();
+    renderer.CreateScene();
+
+    renderer.Render();
+}
+</pre></div>
+</div>
+<p>}</p>
+<p><span class="math notranslate nohighlight">\((() =&gt; {
+    var \)</span>container = <span class="math notranslate nohighlight">\(('div#renderer');
+    Renderer02.initialize(\)</span>container);
+});</p>
+<p>TypeScript定義を追加する
+まず、TrackballControlsの型定義を追加する。
+declare module THREE {
+export class TrackballControls
+{
+constructor(camera: THREE.Camera);
+rotateSpeed: number;
+zoomSpeed: number;
+panSpeed: number;
+noZoom: boolean;
+noPan: boolean;
+staticMoving: boolean;
+dynamicDampingFactor: number;
+keys: number[];
+addEventListener(event: string, callback: Function):void;
+update():void;
+}
+}</p>
+<p>TrackballControlsを初期化
+// Rendererのメソッドを修正
+CreateCamera() {
+this.camera = new THREE.PerspectiveCamera(75
+, this.<span class="math notranslate nohighlight">\(container.width() / this.\)</span>container.height()
+, 0.1, 1000);
+this.camera.position.z = 5;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // 以下を追加
+    this.controls = new THREE.TrackballControls(this.camera);
+
+    this.controls.rotateSpeed = 1.0;
+    this.controls.zoomSpeed = 1.2;
+    this.controls.panSpeed = 0.8;
+
+    this.controls.noZoom = false;
+    this.controls.noPan = false;
+
+    this.controls.staticMoving = true;
+    this.controls.dynamicDampingFactor = 0.3;
+
+    this.controls.keys = [65, 83, 68];
+
+    // trackballに変化があった時だけ描画を呼ぶ
+    this.controls.addEventListener(&#39;change&#39;, this.Render.bind(this));
+}
+</pre></div>
+</div>
+<p>// Rendererのメソッドを追加
+Animate() {
+requestAnimationFrame(this.Animate.bind(this));
+this.controls.update();
+}</p>
+<p>// Animate呼び出しを追加
+export function initialize($container: JQuery) {</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    renderer.CreateRenderer($container);
+    renderer.CreateCamera();
+    renderer.CreateScene();
+
+    renderer.Render();
+    renderer.Animate(); // 追加
+}
+</pre></div>
+</div>
+<p>動いたがWindow全体のマウスイベントが取られていてこれじゃない。
+canvasの親になったdivをマウスイベントの対象にしたい。
+div#rendererを操作対象にする
+TrackballControls.jsを見てたら
+THREE.TrackballControls = function ( object, domElement ) {
+}</p>
+<p>という記述を発見。第２引数にhtmlエレメントを渡せるらしい。
+定義を修正。
+// 定義
+constructor(camera: THREE.Camera, element?: Element);</p>
+<p>// 呼び出し
+this.controls = new THREE.TrackballControls(this.camera, this.$container[0]);</p>
+<p>想定した動きになった。
+マウスカーソルを変えてみる
+cssの話だけれど。</p>
+<div id="renderer" style="width:300px;height:200px;cursor:pointer;"></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$container
+    .mousedown(function(event) {
+        switch (event.button) {
+            case 0:
+                $(this).css({ cursor: &#39;pointer&#39; });
+                break;
+
+            case 1:
+                $(this).css({ cursor: &#39;n-resize&#39; });
+                break;
+                
+            case 2:
+                $(this).css({ cursor: &#39;move&#39; });
+                break;
+        }
+    })
+    .mouseup(function(event){
+        $(this).css({cursor: &#39;pointer&#39;});
+    })
+;
+</pre></div>
+</div>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/posts/2015/12/06/threejs_02.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

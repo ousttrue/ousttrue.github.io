@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>DirectShow後継の動画・音声フレームワーク。</p>
+<p>sampleのありか</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation</p>
+<p>Win7Samplesに気付かず・・・
+はじめの一歩
+ここから始めるのがよい。</p>
+<p>Audio/Video Playback</p>
+<p>How to Play Media Files with Media Foundation</p>
+<p>Media Session Playback Example。ソースあり</p>
+<p>MediaSessionPlaybackExampleで動画を開くとこんな感じのTopologyになる。
+動画(MediaSource)---&gt;video-&gt; EVR(MediaSink)
+|
++-&gt;audio-&gt; SAR(MediaSink)</p>
+<p>MediaSourceとMediaSinkを作ってつなぐのがMediaFoundationの基本概念。
+CMakeでビルドできるように取りまとめた。</p>
+<p>https://github.com/ousttrue/MediaFoundationSample/tree/master/MediaSessionPlaybackExample</p>
+<p>構成
+DirectShowとは違う感じのところがある。</p>
+<p>IMFMediaSourceがストレージとDemuxerを内包している
+なので途中で枝分かれするというよりも、IMFMediaStream -&gt; IMFTransform -&gt; IMFStreamSinkというラインが複数ある感じになる。</p>
+<p>+---------------+
+|IMFMediaSource |
++---------------+
+|+-------------+|
+||IMFByteStream||
+|+-------------+|                                          VideoRenderer
+|  |  |Read     |                                          +------------+
+|  |  v         |     (compressed) decoder (uncompressed)  |IMFMediaSink|
+|  | +--------------+ IMFSample +------------+ IMFSample +-------------+|
+|  | |IMFMediaStream|----------&gt;|IMFTransform|----------&gt;|IMFStreamSink|+
+|  v +--------------+           +------------+           +-------------+
+| +--------------+              +------------+           +-------------+
+| |IMFMediaStream|-------------&gt;|IMFTransform|----------&gt;|IMFStreamSink|+
+| +--------------+  IMFSample   +------------+ IMFSample +-------------+|
++---------------+   (compressed)           (uncompressed)  |IMFMediaSink|
++------------+
+AudioRendrer</p>
+<p>TopoEdit</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/topoedit
+http://blogs.microsoft.co.il/pavely/2011/03/11/introduction-to-topoedit/</p>
+<p>いろんなAPI
+MediaSource(入力)とMediaSink(出力)を駆動する高レベルのAPIが複数ある。
+[Obsolete]古のPlayer</p>
+<p>IMFPMediaPlayer</p>
+<p>Important  Deprecated. This API may be removed from future releases of Windows. Applications should use the Media Session for playback.</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/mediafoundation/SimplePlay
+https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/MFPlayer2</p>
+<p>[Desktop]再生向けのSession
+Player向けのAPI。UWPには無い。</p>
+<p>Media Session
+http://blog.firefly-vj.net/2009/06/01/mediafoundation-play-with-mediasession.html
+Media Foundationの再生サンプルの状態管理をMSMで行う</p>
+<p>Topology</p>
+<p>Topologies</p>
+<p>変換向けのReader
+Clockが必要ない用途に向いている。
+各フレームを最速で処理したい場合や、MediaSourceがWebCamである場合など。</p>
+<p>Source Reader
+Using the Source Reader to Process Media Data
+The Source Reader does not support reverse playback, even if the media source does.
+MediaFoundationでID3D11Texture2Dに動画のフレームを読み込む 覚書β
+MediaFoundation — 動画の読み込み</p>
+<p>[Desktop][UWP]WinRTのEngine
+Windows.Mediaのバックエンド？。UWPとDesktopの両方で使える。</p>
+<p>Supported Microsoft Media Foundation APIs for Windows Phone 8
+Walkthrough: Using Microsoft Media Foundation for Windows Phone 8</p>
+<p>using a MediaElement control is a much quicker and easier way
+You also must use MF if you want to use video as a texture on 3-D geometry</p>
+<p>DXVAが簡単にできる。むしろUWPではDXVAしかない様子。情報少ないけど。</p>
+<p>Media engine native C++ video playback sample</p>
+<p>MediaSource</p>
+<p>Media Sources</p>
+<p>Writing a Custom Media Source
+Case Study: MPEG-1 Media Source</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/mpeg1source
+https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/wavsource</p>
+<p>Source Resolver</p>
+<p>Using the Source Resolver</p>
+<p>URL</p>
+<p>IMFSourceResolver::CreateObjectFromURL</p>
+<p>ByteStream</p>
+<p>IMFSourceResolver::CreateObjectFromByteStream</p>
+<p>ByteStreamを自作する
+MP3 File Source</p>
+<p>https://msdn.microsoft.com/en-us/library/windows/desktop/ff685299(v=vs.85).aspx</p>
+<p>MPEG-4 File Source</p>
+<p>https://msdn.microsoft.com/en-us/library/windows/desktop/dd757766(v=vs.85).aspx</p>
+<p>MediaSink</p>
+<p>Media Sinks</p>
+<p>EVR</p>
+<p>Enhanced Video Renderer
+MediaSink
+HWNDを渡してWindowに描画させることが出来る。
+Presenterを自作して描画をカスタマイズできる。
+D3D9 ?
+EVR カスタムプレゼンタを実装する</p>
+<p>SAR</p>
+<p>Streaming Audio Renderer</p>
+<p>AudioSink自作</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/Win7Samples/multimedia/mediafoundation/wavsink</p>
+<p>VideoSink自作</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
+<p>Playbackに対応した自前描画を作るには。</p>
+<p>MediaSinkを自作する
+MediaSinkでDXVAを使う</p>
+<p>SampleGrabberSink</p>
+<p>MFCreateSampleGrabberSinkActivate</p>
+<p>MediaTransform</p>
+<p>Media Foundation Transforms</p>
+<p>About MFTs</p>
+<p>Comparison of MFTs and DMOs</p>
+<p>H.264</p>
+<p>H.264 Video Decoder</p>
+<p>DXVA
+DirectX Video Acceleration。</p>
+<p>About DXVA 2.0
+Adding a Decoder to a Topology</p>
+<p>MR_VIDEO_ACCELERATION_SERVICE
+D3d9</p>
+<p>Supporting DXVA 2.0 in Media Foundation
+DXVA Video Processing
+IDirect3DDeviceManager9</p>
+<p>D3D11</p>
+<p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer
+Supporting Direct3D 11 Video Decoding in Media Foundation
+IMFDXGIDeviceManager</p>
+<p>Sample &amp; Buffer
+Sampleの中にBufferが入っている。</p>
+<p>Media Samples</p>
+<p>Video Samples</p>
+<p>Media Buffers
+https://github.com/loskutov/VideoCapture/blob/master/src/DesktopDuplicationSampleProvider.cpp</p>
+<p>MediaType</p>
+<p>Media Types</p>
+<p>Presentation Clock</p>
+<p>Presentation Clock</p>
+<p>Media Event</p>
+<p>Media Event Generators</p>
+<p>linkするライブラリ
+関数はドキュメントでわかるが定数はどれに入っているかわからない。
+わりと総当たりで試すはめになる。</p>
+<p>mf.lib
+mfplat.lib
+mfuuid.lib
+strmiids.lib
+wmcodecdspuuid.lib</p>
+<p>参考</p>
+<p>Media Foundation Programming Guide</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2017/08/media_foundation.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

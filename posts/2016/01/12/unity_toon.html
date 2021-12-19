@@ -1,0 +1,867 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>Toonシェーダーをやってみる。</p>
+<p>メニューからインポートすると、
+Assets &gt; Import Package &gt; Effects</p>
+<p>Assetsが現れる。
+Standard Assets/Effects/ToonShading</p>
+<p>Toon/Lit
+Standard Assets/Effects/ToonShadingのshaderを自分のフォルダにコピーして改造する。
+#UsePassを展開して改造準備
+Shader &quot;MyToon/Lit Outline&quot; {
+Properties {
+_Color (&quot;Main Color&quot;, Color) = (0.5,0.5,0.5,1)
+_OutlineColor (&quot;Outline Color&quot;, Color) = (0,0,0,1)
+_Outline (&quot;Outline width&quot;, Range (.002, 0.03)) = .005
+_MainTex (&quot;Base (RGB)&quot;, 2D) = &quot;white&quot; {}
+_Ramp (&quot;Toon Ramp (RGB)&quot;, 2D) = &quot;gray&quot; {}
+}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader {
+    Tags { &quot;RenderType&quot;=&quot;Opaque&quot; }
+    UsePass &quot;Toon/Lit/FORWARD&quot;
+    UsePass &quot;Toon/Basic Outline/OUTLINE&quot;
+} 
+
+Fallback &quot;Toon/Lit&quot;
+</pre></div>
+</div>
+<p>}</p>
+<p>Toon/Litのinspectorの
+Surface shader: Show generated code</p>
+<p>から該当するFORWARD Passをコピペし、
+Toon/Basic OutlineのOUTLINE Passをコピペする。
+適当に整理する。
+Shader &quot;MyToon/Custom&quot;
+{
+Properties
+{
+_Color(&quot;Main Color&quot;, Color) = (0.5,0.5,0.5,1)
+_MainTex(&quot;Base (RGB)&quot;, 2D) = &quot;white&quot; {}
+_Ramp(&quot;Toon Ramp (RGB)&quot;, 2D) = &quot;gray&quot; {}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    _OutlineColor(&quot;Outline Color&quot;, Color) = (0,0,0,1)
+    _Outline(&quot;Outline width&quot;, Range(.002, 0.03)) = .005
+}
+SubShader
+{
+    Tags { &quot;RenderType&quot;=&quot;Opaque&quot; }
+    LOD 100
+
+    // ---- forward rendering base pass:
+    Pass{
+        Name &quot;FORWARD&quot;
+        Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }
+
+        CGPROGRAM
+</pre></div>
+</div>
+<p>#pragma vertex vert_surf
+#pragma fragment frag_surf
+#pragma lighting ToonRamp exclude_path:prepass
+#pragma multi_compile_fog
+#pragma multi_compile_fwdbase
+#include &quot;Custom.cginc&quot;
+ENDCG
+}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // outline
+    Pass{
+        Name &quot;OUTLINE&quot;
+        Tags{ &quot;LightMode&quot; = &quot;Always&quot; }
+        Cull Front
+        ZWrite On
+        ColorMask RGB
+        Blend SrcAlpha OneMinusSrcAlpha
+
+        CGPROGRAM
+</pre></div>
+</div>
+<p>#pragma vertex vert
+#pragma fragment frag
+#pragma multi_compile_fog
+#pragma multi_compile_fwdbase
+#include &quot;Custom.cginc&quot;
+ENDCG
+}
+}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// for shadow etc...
+Fallback &quot;Diffuse&quot;
+</pre></div>
+</div>
+<p>}</p>
+<p>*.shaderファイルのインデントが扱いずらいのでcgincと分割して手で整形。
+気持ちよくindentできるエディタを見繕う必要があるな・・・
+Custom.cginc
+#include &quot;HLSLSupport.cginc&quot;
+#include &quot;UnityShaderVariables.cginc&quot;
+// Surface shader code generated based on:
+// writes to per-pixel normal: no
+// writes to emission: no
+// needs world space reflection vector: no
+// needs world space normal vector: no
+// needs screen space position: no
+// needs world space position: no
+// needs view direction: no
+// needs world space view direction: no
+// needs world space position for lighting: no
+// needs world space view direction for lighting: no
+// needs world space view direction for lightmaps: no
+// needs vertex color: no
+// needs VFACE: no
+// passes tangent-to-world matrix to pixel shader: no
+// reads from normal: no
+// 1 texcoords actually used
+//   float2 _MainTex
+#define UNITY_PASS_FORWARDBASE
+#include &quot;UnityCG.cginc&quot;
+#include &quot;Lighting.cginc&quot;
+#include &quot;AutoLight.cginc&quot;</p>
+<p>#define INTERNAL_DATA
+#define WorldReflectionVector(data,normal) data.worldRefl
+#define WorldNormalVector(data,normal) normal</p>
+<p>// Original surface shader snippet:
+#line 10 &quot;&quot;
+#ifdef DUMMY_PREPROCESSOR_TO_WORK_AROUND_HLSL_COMPILER_LINE_HANDLING
+#endif</p>
+<p>//#pragma surface surf ToonRamp</p>
+<p>sampler2D _Ramp;</p>
+<p>// custom lighting function that uses a texture ramp based
+// on angle between light direction and normal
+//#pragma lighting ToonRamp exclude_path:prepass
+inline half4 LightingToonRamp(SurfaceOutput s, half3 lightDir, half atten)
+{
+#ifndef USING_DIRECTIONAL_LIGHT
+lightDir = normalize(lightDir);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half d = dot(s.Normal, lightDir)*0.5 + 0.5;
+half3 ramp = tex2D(_Ramp, float2(d, d)).rgb;
+
+half4 c;
+c.rgb = s.Albedo * _LightColor0.rgb * ramp * (atten * 2);
+c.a = 0;
+return c;
+</pre></div>
+</div>
+<p>}</p>
+<p>sampler2D _MainTex;
+float4 _Color;</p>
+<p>struct Input {
+float2 uv_MainTex : TEXCOORD0;
+};</p>
+<p>void surf(Input IN, inout SurfaceOutput o) {
+half4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+o.Albedo = c.rgb;
+o.Alpha = c.a;
+}</p>
+<p>// vertex-to-fragment interpolation data
+// no lightmaps:
+#ifdef LIGHTMAP_OFF
+struct v2f_surf {
+float4 pos : SV_POSITION;
+float2 pack0 : TEXCOORD0; // _MainTex
+half3 worldNormal : TEXCOORD1;
+fixed3 vlight : TEXCOORD2; // ambient/SH/vertexlights
+SHADOW_COORDS(3)
+UNITY_FOG_COORDS(4)
+#if SHADER_TARGET &gt;= 30
+float4 lmap : TEXCOORD5;
+#endif
+};
+#endif
+// with lightmaps:
+#ifndef LIGHTMAP_OFF
+struct v2f_surf {
+float4 pos : SV_POSITION;
+float2 pack0 : TEXCOORD0; // _MainTex
+half3 worldNormal : TEXCOORD1;
+float4 lmap : TEXCOORD2;
+SHADOW_COORDS(3)
+UNITY_FOG_COORDS(4)
+#ifdef DIRLIGHTMAP_COMBINED
+fixed3 tSpace0 : TEXCOORD5;
+fixed3 tSpace1 : TEXCOORD6;
+fixed3 tSpace2 : TEXCOORD7;
+#endif
+};
+#endif
+float4 _MainTex_ST;</p>
+<p>// vertex shader
+v2f_surf vert_surf(appdata_full v) {
+v2f_surf o;
+UNITY_INITIALIZE_OUTPUT(v2f_surf, o);
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+o.pack0.xy = TRANSFORM_TEX(v.texcoord, _MainTex);
+float3 worldPos = mul(_Object2World, v.vertex).xyz;
+fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);
+#if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)
+fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+fixed tangentSign = v.tangent.w * unity_WorldTransformParams.w;
+fixed3 worldBinormal = cross(worldNormal, worldTangent) * tangentSign;
+#endif
+#if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)
+o.tSpace0 = fixed3(worldTangent.x, worldBinormal.x, worldNormal.x);
+o.tSpace1 = fixed3(worldTangent.y, worldBinormal.y, worldNormal.y);
+o.tSpace2 = fixed3(worldTangent.z, worldBinormal.z, worldNormal.z);
+#endif
+o.worldNormal = worldNormal;
+#ifndef DYNAMICLIGHTMAP_OFF
+o.lmap.zw = v.texcoord2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+#endif
+#ifndef LIGHTMAP_OFF
+o.lmap.xy = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// SH/ambient and vertex lights
+</pre></div>
+</div>
+<p>#ifdef LIGHTMAP_OFF
+#if UNITY_SHOULD_SAMPLE_SH
+float3 shlight = ShadeSH9(float4(worldNormal, 1.0));
+o.vlight = shlight;
+#else
+o.vlight = 0.0;
+#endif
+#ifdef VERTEXLIGHT_ON
+o.vlight += Shade4PointLights(
+unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+unity_4LightAtten0, worldPos, worldNormal);
+#endif // VERTEXLIGHT_ON
+#endif // LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TRANSFER_SHADOW(o); // pass shadow coordinates to pixel shader
+UNITY_TRANSFER_FOG(o, o.pos); // pass fog coordinates to pixel shader
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>// fragment shader
+fixed4 frag_surf(v2f_surf IN) : SV_Target{
+// prepare and unpack data
+Input surfIN;
+UNITY_INITIALIZE_OUTPUT(Input,surfIN);
+surfIN.uv_MainTex.x = 1.0;
+surfIN.uv_MainTex = IN.pack0.xy;
+float3 lightDir = _WorldSpaceLightPos0.xyz;
+#ifdef UNITY_COMPILER_HLSL
+SurfaceOutput o = (SurfaceOutput)0;
+#else
+SurfaceOutput o;
+#endif
+o.Albedo = 0.0;
+o.Emission = 0.0;
+o.Specular = 0.0;
+o.Alpha = 0.0;
+o.Gloss = 0.0;
+fixed3 normalWorldVertex = fixed3(0,0,1);
+o.Normal = IN.worldNormal;
+normalWorldVertex = IN.worldNormal;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// call surface function
+surf(surfIN, o);
+
+// compute lighting &amp; shadowing factor
+UNITY_LIGHT_ATTENUATION(atten, IN, worldPos)
+    fixed4 c = 0;
+</pre></div>
+</div>
+<p>#ifdef LIGHTMAP_OFF
+c.rgb += o.Albedo * IN.vlight;
+#endif // LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// lightmaps
+</pre></div>
+</div>
+<p>#ifndef LIGHTMAP_OFF
+#ifdef DIRLIGHTMAP_OFF
+// single lightmap
+fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
+fixed3 lm = DecodeLightmap(lmtex);
+#elif DIRLIGHTMAP_COMBINED
+// directional lightmaps
+fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
+half3 lm = DecodeLightmap(lmtex);
+#elif DIRLIGHTMAP_SEPARATE
+// directional with specular - no support
+half4 lmtex = 0;
+half3 lm = 0;
+#endif // DIRLIGHTMAP_OFF</p>
+<p>#endif // LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// realtime lighting: call lighting function
+</pre></div>
+</div>
+<p>#ifdef LIGHTMAP_OFF
+c += LightingToonRamp(o, lightDir, atten);
+#else
+c.a = o.Alpha;
+#endif</p>
+<p>#ifndef LIGHTMAP_OFF
+// combine lightmaps with realtime shadows
+#ifdef SHADOWS_SCREEN
+#if defined(UNITY_NO_RGBM)
+c.rgb += o.Albedo * min(lm, atten * 2);
+#else
+c.rgb += o.Albedo * max(min(lm,(atten * 2)<em>lmtex.rgb), lm</em>atten);
+#endif
+#else // SHADOWS_SCREEN
+c.rgb += o.Albedo * lm;
+#endif // SHADOWS_SCREEN
+#endif // LIGHTMAP_OFF</p>
+<p>#ifndef DYNAMICLIGHTMAP_OFF
+fixed4 dynlmtex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, IN.lmap.zw);
+c.rgb += o.Albedo * DecodeRealtimeLightmap(dynlmtex);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UNITY_APPLY_FOG(IN.fogCoord, c); // apply fog
+UNITY_OPAQUE_ALPHA(c.a);
+return c;
+</pre></div>
+</div>
+<p>}</p>
+<p>//////////////////////////////////////////////////////////////////////////////
+// outline
+//////////////////////////////////////////////////////////////////////////////
+#include &quot;UnityCG.cginc&quot;</p>
+<p>struct appdata {
+float4 vertex : POSITION;
+float3 normal : NORMAL;
+};</p>
+<p>struct v2f {
+float4 pos : SV_POSITION;
+UNITY_FOG_COORDS(0)
+fixed4 color : COLOR;
+};</p>
+<p>uniform float _Outline;
+uniform float4 _OutlineColor;</p>
+<p>v2f vert(appdata v) {
+v2f o;
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float3 norm = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, v.normal));
+float2 offset = TransformViewToProjection(norm.xy);
+
+o.pos.xy += offset * o.pos.z * _Outline;
+o.color = _OutlineColor;
+UNITY_TRANSFER_FOG(o, o.pos);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>fixed4 frag(v2f i) : SV_Target
+{
+UNITY_APPLY_FOG(i.fogCoord, i.color);
+return i.color;
+}</p>
+<p>改造準備完了。
+改造した</p>
+<p>alpha blending
+影と陰の合成とRampの適用法を改造</p>
+<p>なかなか難しい。
+顔は別光源にして影が落ちないようにする必要があるね。
+顔にDiffuseは必要ない。
+#include &quot;HLSLSupport.cginc&quot;
+#include &quot;UnityShaderVariables.cginc&quot;
+// Surface shader code generated based on:
+// writes to per-pixel normal: no
+// writes to emission: no
+// needs world space reflection vector: no
+// needs world space normal vector: no
+// needs screen space position: no
+// needs world space position: no
+// needs view direction: no
+// needs world space view direction: no
+// needs world space position for lighting: no
+// needs world space view direction for lighting: no
+// needs world space view direction for lightmaps: no
+// needs vertex color: no
+// needs VFACE: no
+// passes tangent-to-world matrix to pixel shader: no
+// reads from normal: no
+// 1 texcoords actually used
+//   float2 _MainTex
+#define UNITY_PASS_FORWARDBASE
+#include &quot;UnityCG.cginc&quot;
+#include &quot;Lighting.cginc&quot;
+#include &quot;AutoLight.cginc&quot;</p>
+<p>#define INTERNAL_DATA
+#define WorldReflectionVector(data,normal) data.worldRefl
+#define WorldNormalVector(data,normal) normal</p>
+<p>// Original surface shader snippet:
+#line 10 &quot;&quot;
+#ifdef DUMMY_PREPROCESSOR_TO_WORK_AROUND_HLSL_COMPILER_LINE_HANDLING
+#endif</p>
+<p>//#pragma surface surf ToonRamp</p>
+<p>sampler2D _Ramp;</p>
+<p>// custom lighting function that uses a texture ramp based
+// on angle between light direction and normal
+//#pragma lighting ToonRamp exclude_path:prepass
+inline half3 LightingToonRamp(half3 rgb, half diffuse, half atten)
+{
+float d = min(diffuse, atten);
+float3 ramp = tex2D(_Ramp, float2(d, d));
+return rgb * ramp;
+}</p>
+<p>sampler2D _MainTex;
+float4 _Color;</p>
+<p>struct Input {
+float2 uv_MainTex : TEXCOORD0;
+};</p>
+<p>void surf(Input IN, inout SurfaceOutput o) {
+half4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+o.Albedo = c.rgb;
+o.Alpha = c.a;
+}</p>
+<p>// vertex-to-fragment interpolation data
+// no lightmaps:
+#ifdef LIGHTMAP_OFF
+struct v2f_surf {
+float4 pos : SV_POSITION;
+float2 pack0 : TEXCOORD0; // _MainTex
+half3 worldNormal : TEXCOORD1;
+fixed3 vlight : TEXCOORD2; // ambient/SH/vertexlights
+SHADOW_COORDS(3)
+UNITY_FOG_COORDS(4)
+#if SHADER_TARGET &gt;= 30
+float4 lmap : TEXCOORD5;
+#endif
+};
+#endif
+// with lightmaps:
+#ifndef LIGHTMAP_OFF
+struct v2f_surf {
+float4 pos : SV_POSITION;
+float2 pack0 : TEXCOORD0; // _MainTex
+half3 worldNormal : TEXCOORD1;
+float4 lmap : TEXCOORD2;
+SHADOW_COORDS(3)
+UNITY_FOG_COORDS(4)
+#ifdef DIRLIGHTMAP_COMBINED
+fixed3 tSpace0 : TEXCOORD5;
+fixed3 tSpace1 : TEXCOORD6;
+fixed3 tSpace2 : TEXCOORD7;
+#endif
+};
+#endif
+float4 _MainTex_ST;</p>
+<p>// vertex shader
+v2f_surf vert_surf(appdata_full v) {
+v2f_surf o;
+UNITY_INITIALIZE_OUTPUT(v2f_surf, o);
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+o.pack0.xy = TRANSFORM_TEX(v.texcoord, _MainTex);
+float3 worldPos = mul(_Object2World, v.vertex).xyz;
+fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);
+#if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)
+fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+fixed tangentSign = v.tangent.w * unity_WorldTransformParams.w;
+fixed3 worldBinormal = cross(worldNormal, worldTangent) * tangentSign;
+#endif
+#if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)
+o.tSpace0 = fixed3(worldTangent.x, worldBinormal.x, worldNormal.x);
+o.tSpace1 = fixed3(worldTangent.y, worldBinormal.y, worldNormal.y);
+o.tSpace2 = fixed3(worldTangent.z, worldBinormal.z, worldNormal.z);
+#endif
+o.worldNormal = worldNormal;
+#ifndef DYNAMICLIGHTMAP_OFF
+o.lmap.zw = v.texcoord2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+#endif
+#ifndef LIGHTMAP_OFF
+o.lmap.xy = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// SH/ambient and vertex lights
+</pre></div>
+</div>
+<p>#ifdef LIGHTMAP_OFF
+#if UNITY_SHOULD_SAMPLE_SH
+float3 shlight = ShadeSH9(float4(worldNormal, 1.0));
+o.vlight = shlight;
+#else
+o.vlight = 0.0;
+#endif
+#ifdef VERTEXLIGHT_ON
+o.vlight += Shade4PointLights(
+unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+unity_4LightAtten0, worldPos, worldNormal);
+#endif // VERTEXLIGHT_ON
+#endif // LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TRANSFER_SHADOW(o); // pass shadow coordinates to pixel shader
+UNITY_TRANSFER_FOG(o, o.pos); // pass fog coordinates to pixel shader
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>// fragment shader
+fixed4 frag_surf(v2f_surf IN) : SV_Target{
+// prepare and unpack data
+Input surfIN;
+UNITY_INITIALIZE_OUTPUT(Input,surfIN);
+surfIN.uv_MainTex.x = 1.0;
+surfIN.uv_MainTex = IN.pack0.xy;
+float3 lightDir = _WorldSpaceLightPos0.xyz;
+#ifdef UNITY_COMPILER_HLSL
+SurfaceOutput o = (SurfaceOutput)0;
+#else
+SurfaceOutput o;
+#endif
+o.Albedo = 0.0;
+o.Emission = 0.0;
+o.Specular = 0.0;
+o.Alpha = 0.0;
+o.Gloss = 0.0;
+fixed3 normalWorldVertex = fixed3(0,0,1);
+o.Normal = IN.worldNormal;
+normalWorldVertex = IN.worldNormal;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// call surface function
+surf(surfIN, o);
+
+// compute lighting &amp; shadowing factor
+UNITY_LIGHT_ATTENUATION(atten, IN, worldPos)
+    fixed4 c = 0;
+</pre></div>
+</div>
+<p>#ifdef LIGHTMAP_OFF
+c.rgb += o.Albedo * IN.vlight;
+#endif // LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// lightmaps
+</pre></div>
+</div>
+<p>#ifndef LIGHTMAP_OFF
+#ifdef DIRLIGHTMAP_OFF
+// single lightmap
+fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
+fixed3 lm = DecodeLightmap(lmtex);
+#elif DIRLIGHTMAP_COMBINED
+// directional lightmaps
+fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
+half3 lm = DecodeLightmap(lmtex);
+#elif DIRLIGHTMAP_SEPARATE
+// directional with specular - no support
+half4 lmtex = 0;
+half3 lm = 0;
+#endif // DIRLIGHTMAP_OFF</p>
+<p>#endif // LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// realtime lighting: call lighting function
+c.a = o.Alpha;
+</pre></div>
+</div>
+<p>#ifdef LIGHTMAP_OFF
+#ifndef USING_DIRECTIONAL_LIGHT
+lightDir = normalize(lightDir);
+#endif
+half diffuse = max(0, dot(o.Normal, lightDir));
+c.rgb += LightingToonRamp(o.Albedo, diffuse, atten);
+#else</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// combine lightmaps with realtime shadows
+</pre></div>
+</div>
+<p>#ifdef SHADOWS_SCREEN
+#if defined(UNITY_NO_RGBM)
+c.rgb += o.Albedo * min(lm, atten * 2);
+#else
+c.rgb += o.Albedo * max(min(lm,(atten * 2)<em>lmtex.rgb), lm</em>atten);
+#endif
+#else // SHADOWS_SCREEN
+c.rgb += o.Albedo * lm;
+#endif // SHADOWS_SCREEN
+#endif // LIGHTMAP_OFF</p>
+<p>#ifndef DYNAMICLIGHTMAP_OFF
+fixed4 dynlmtex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, IN.lmap.zw);
+c.rgb += o.Albedo * DecodeRealtimeLightmap(dynlmtex);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UNITY_APPLY_FOG(IN.fogCoord, c); // apply fog
+
+return c;
+</pre></div>
+</div>
+<p>}</p>
+<p>//////////////////////////////////////////////////////////////////////////////
+// outline
+//////////////////////////////////////////////////////////////////////////////
+#include &quot;UnityCG.cginc&quot;</p>
+<p>struct appdata {
+float4 vertex : POSITION;
+float3 normal : NORMAL;
+};</p>
+<p>struct v2f {
+float4 pos : SV_POSITION;
+UNITY_FOG_COORDS(0)
+fixed4 color : COLOR;
+};</p>
+<p>uniform float _Outline;
+uniform float4 _OutlineColor;</p>
+<p>v2f vert(appdata v) {
+v2f o;
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float3 norm = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, v.normal));
+float2 offset = TransformViewToProjection(norm.xy);
+
+o.pos.xy += offset * min(1, o.pos.z) * _Outline; // 太さ調整
+o.color = _OutlineColor;
+UNITY_TRANSFER_FOG(o, o.pos);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>fixed4 frag(v2f i) : SV_Target
+{
+UNITY_APPLY_FOG(i.fogCoord, i.color);
+return i.color;
+}</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/posts/2016/01/12/unity_toon.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

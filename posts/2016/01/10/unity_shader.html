@@ -1,0 +1,1272 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>define UNITY_STANDARD_SIMPLE 1 &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>下記のUnityの半透明シェーダーがいったいどういうメカニズムなのかを調べる。
+Shaderの元ネタはこちら</p>
+<p>Unity で Transparent/Diffuse で描画順が崩れてしまう際の対処法</p>
+<p>Shader &quot;Transparent/Diffuse ZWrite&quot; {
+Properties{
+_Color(&quot;Main Color&quot;, Color) = (1,1,1,1)
+_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader{
+    Tags{ &quot;Queue&quot; = &quot;Transparent&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;RenderType&quot; = &quot;Transparent&quot; }
+    LOD 200
+
+    // extra pass that renders to depth buffer only
+    Pass{
+        ZWrite On
+        ColorMask 0
+    }
+
+    // paste in forward rendering passes from Transparent/Diffuse
+    UsePass &quot;Transparent/Diffuse/FORWARD&quot;
+}
+
+Fallback &quot;Transparent/VertexLit&quot;
+</pre></div>
+</div>
+<p>}</p>
+<p>２パス描画になる。
+パス1: 深度バッファのみの描画
+Pass{
+ZWrite On
+ColorMask 0
+}</p>
+<p>これは、ShaderLab ：旧ライティングというものらしく
+Fixed function
+という機能らしい。
+レガシーとか旧呼ばわりされているけどサンプルコードにしれっと出てくるので知っている必要がある。
+次のようなコードが生成されていた。
+ShaderのInspector: Fixed function. Show generated codeの該当部分
+Pass {
+Tags { &quot;QUEUE&quot;=&quot;Transparent&quot; &quot;IGNOREPROJECTOR&quot;=&quot;true&quot; &quot;RenderType&quot;=&quot;Transparent&quot; }
+ColorMask 0
+CGPROGRAM
+#pragma vertex vert
+#pragma fragment frag
+#include &quot;UnityShaderVariables.cginc&quot;
+#pragma multi_compile_fog
+#include &quot;UnityCG.cginc&quot;
+#define USING_FOG (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))</p>
+<p>// uniforms</p>
+<p>// vertex shader input data
+struct appdata {
+float3 pos : POSITION;
+half4 color : COLOR;
+};</p>
+<p>// vertex-to-fragment interpolators
+struct v2f {
+fixed4 color : COLOR0;
+#if USING_FOG
+fixed fog : TEXCOORD0;
+#endif
+float4 pos : SV_POSITION;
+};</p>
+<p>// vertex shader
+v2f vert (appdata IN) {
+v2f o;
+half4 color = IN.color;
+float3 eyePos = mul (UNITY_MATRIX_MV, float4(IN.pos,1)).xyz;
+half3 viewDir = 0.0;
+o.color = saturate(color);
+// compute texture coordinates
+// fog
+#if USING_FOG
+float fogCoord = length(eyePos.xyz); // radial fog distance
+UNITY_CALC_FOG_FACTOR(fogCoord);
+o.fog = saturate(unityFogFactor);
+#endif
+// transform position
+o.pos = mul(UNITY_MATRIX_MVP, float4(IN.pos,1));
+return o;
+}</p>
+<p>// fragment shader
+fixed4 frag (v2f IN) : SV_Target {
+fixed4 col;
+col = IN.color;
+// fog
+#if USING_FOG
+col.rgb = lerp (unity_FogColor.rgb, col.rgb, IN.fog);
+#endif
+return col;
+}
+ENDCG
+}</p>
+<p>単に頂点カラーをそのまま描画しているようだが、ColorMaskが0なので色は変わらずということらしい。
+パス2: カラーバッファ
+Transparent/Diffuse
+UsePass &quot;Transparent/Diffuse/FORWARD&quot;</p>
+<p>は何なのか。
+https://unity3d.com/jp/get-unity/download/archive
+からビルトインシェーダーをDownloadして観察してみる。
+探してみると”Transparent/Diffuse”という名のシェーダーは無くて、
+“Legacy Shaders/Transparent/Diffuse”が見つかる。
+DefaultResourceExtra/Alpha-Diffuse.shader
+Shader &quot;Legacy Shaders/Transparent/Diffuse&quot; {
+Properties {
+_Color (&quot;Main Color&quot;, Color) = (1,1,1,1)
+_MainTex (&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}</p>
+<p>SubShader {
+Tags {&quot;Queue&quot;=&quot;Transparent&quot; &quot;IgnoreProjector&quot;=&quot;True&quot; &quot;RenderType&quot;=&quot;Transparent&quot;}
+LOD 200</p>
+<p>CGPROGRAM
+#pragma surface surf Lambert alpha:fade</p>
+<p>sampler2D _MainTex;
+fixed4 _Color;</p>
+<p>struct Input {
+float2 uv_MainTex;
+};</p>
+<p>void surf (Input IN, inout SurfaceOutput o) {
+fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+o.Albedo = c.rgb;
+o.Alpha = c.a;
+}
+ENDCG
+}</p>
+<p>Fallback &quot;Legacy Shaders/Transparent/VertexLit&quot;
+}</p>
+<p>surfaceシェーダーらしい。
+surfaceシェーダーが如何なるPassに展開されるのかがまったくわからないが(LightMode等が関係ある？)
+FORWARDパスはどこで定義されているのか。
+Transparent/Diffuse/FORWARD
+DefaultResourcesExtra/Standard.shader
+SubShader
+{
+Tags { &quot;RenderType&quot;=&quot;Opaque&quot; &quot;PerformanceChecks&quot;=&quot;False&quot; }
+LOD 300</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // ------------------------------------------------------------------
+    //  Base forward pass (directional light, emission, lightmaps, ...)
+    Pass
+    {
+        Name &quot;FORWARD&quot; 
+        Tags { &quot;LightMode&quot; = &quot;ForwardBase&quot; }
+
+        Blend [_SrcBlend] [_DstBlend]
+        ZWrite [_ZWrite]
+
+        CGPROGRAM
+        #pragma target 3.0
+        // TEMPORARY: GLES2.0 temporarily disabled to prevent errors spam on devices without textureCubeLodEXT
+        #pragma exclude_renderers gles
+        
+        // -------------------------------------
+                
+        #pragma shader_feature _NORMALMAP
+        #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+        #pragma shader_feature _EMISSION
+        #pragma shader_feature _METALLICGLOSSMAP 
+        #pragma shader_feature ___ _DETAIL_MULX2
+        #pragma shader_feature _PARALLAXMAP
+        
+        #pragma multi_compile_fwdbase
+        #pragma multi_compile_fog
+
+        #pragma vertex vertBase
+        #pragma fragment fragBase
+        #include &quot;UnityStandardCoreForward.cginc&quot;
+
+        ENDCG
+    }
+}
+</pre></div>
+</div>
+<p>vertBaseとfragBaseという関数に辿り着く。
+vertBaseとfragBase
+CGIncludes/UnityStandardCoreForward.cginc
+#ifndef UNITY_STANDARD_CORE_FORWARD_INCLUDED
+#define UNITY_STANDARD_CORE_FORWARD_INCLUDED</p>
+<p>#if defined(UNITY_NO_FULL_STANDARD_SHADER)</p>
+<section class="tex2jax_ignore mathjax_ignore" id="define-unity-standard-simple-1">
+<h1>define UNITY_STANDARD_SIMPLE 1<a class="headerlink" href="#define-unity-standard-simple-1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>#endif</p>
+<p>#include &quot;UnityStandardConfig.cginc&quot;</p>
+<p>#if UNITY_STANDARD_SIMPLE
+#include &quot;UnityStandardCoreForwardSimple.cginc&quot;
+VertexOutputBaseSimple vertBase (VertexInput v) { return vertForwardBaseSimple(v); }
+VertexOutputForwardAddSimple vertAdd (VertexInput v) { return vertForwardAddSimple(v); }
+half4 fragBase (VertexOutputBaseSimple i) : SV_Target { return fragForwardBaseSimpleInternal(i); }
+half4 fragAdd (VertexOutputForwardAddSimple i) : SV_Target { return fragForwardAddSimpleInternal(i); }
+#else
+#include &quot;UnityStandardCore.cginc&quot;
+VertexOutputForwardBase vertBase (VertexInput v) { return vertForwardBase(v); }
+VertexOutputForwardAdd vertAdd (VertexInput v) { return vertForwardAdd(v); }
+half4 fragBase (VertexOutputForwardBase i) : SV_Target { return fragForwardBaseInternal(i); }
+half4 fragAdd (VertexOutputForwardAdd i) : SV_Target { return fragForwardAddInternal(i); }
+#endif</p>
+<p>#endif // UNITY_STANDARD_CORE_FORWARD_INCLUDED</p>
+<p>シンプルとノットシンプルの振り分けをしている。
+vertBase
+VertexOutputForwardBase vertBase (VertexInput v) { return vertForwardBase(v); }</p>
+<p>CGInlucdes/UnityStandardCore.cginc
+VertexOutputForwardBase vertForwardBase (VertexInput v)
+{
+VertexOutputForwardBase o;
+UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float4 posWorld = mul(_Object2World, v.vertex);
+#if UNITY_SPECCUBE_BOX_PROJECTION
+    o.posWorld = posWorld.xyz;
+#endif
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+o.tex = TexCoords(v);
+o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
+float3 normalWorld = UnityObjectToWorldNormal(v.normal);
+#ifdef _TANGENT_TO_WORLD
+    float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
+
+    float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
+    o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
+    o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
+    o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
+#else
+    o.tangentToWorldAndParallax[0].xyz = 0;
+    o.tangentToWorldAndParallax[1].xyz = 0;
+    o.tangentToWorldAndParallax[2].xyz = normalWorld;
+#endif
+//We need this for shadow receving
+TRANSFER_SHADOW(o);
+
+o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
+
+#ifdef _PARALLAXMAP
+    TANGENT_SPACE_ROTATION;
+    half3 viewDirForParallax = mul (rotation, ObjSpaceViewDir(v.vertex));
+    o.tangentToWorldAndParallax[0].w = viewDirForParallax.x;
+    o.tangentToWorldAndParallax[1].w = viewDirForParallax.y;
+    o.tangentToWorldAndParallax[2].w = viewDirForParallax.z;
+#endif
+
+#if UNITY_OPTIMIZE_TEXCUBELOD
+    o.reflUVW         = reflect(o.eyeVec, normalWorld);
+#endif
+
+UNITY_TRANSFER_FOG(o,o.pos);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>普通に頂点シェーダー。たぶん
+fragBase
+half4 fragBase (VertexOutputForwardBase i) : SV_Target { return fragForwardBaseInternal(i); }</p>
+<p>CGInlucdes/UnityStandardCore.cginc
+#define FRAGMENT_SETUP(x) FragmentCommonData x = <br />
+FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
+<p>struct FragmentCommonData
+{
+half3 diffColor, specColor;
+// Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
+// Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
+half oneMinusReflectivity, oneMinusRoughness;
+half3 normalWorld, eyeVec, posWorld;
+half alpha;</p>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
+half3 reflUVW;
+#endif</p>
+<p>#if UNITY_STANDARD_SIMPLE
+half3 tangentSpaceNormal;
+#endif
+};</p>
+<p>half4 OutputForward (half4 output, half alphaFromSurface)
+{
+#if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
+output.a = alphaFromSurface;
+#else
+UNITY_OPAQUE_ALPHA(output.a);
+#endif
+return output;
+}</p>
+<p>half4 fragForwardBaseInternal (VertexOutputForwardBase i)
+{
+FRAGMENT_SETUP(s)
+#if UNITY_OPTIMIZE_TEXCUBELOD
+s.reflUVW        = i.reflUVW;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UnityLight mainLight = MainLight (s.normalWorld);
+half atten = SHADOW_ATTENUATION(i);
+
+
+half occlusion = Occlusion(i.tex.xy);
+UnityGI gi = FragmentGI (s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+
+half4 c = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
+c.rgb += UNITY_BRDF_GI (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
+c.rgb += Emission(i.tex.xy);
+
+UNITY_APPLY_FOG(i.fogCoord, c.rgb);
+return OutputForward (c, s.alpha);
+</pre></div>
+</div>
+<p>}</p>
+<p>普通にピクセルシェーダーで便利関数がいっぱい定義済みという感じか。
+しかし、#ifの類がたくさんありどのルートが使われるか不明瞭。
+includeを展開してみる
+UsePassの代わりに自前のファイルにシェーダーのコードをコピーしてそっちを使ってみる。
+DefaultResourcesExtra/Standard.shaderから切り張り
+Pass{
+Name &quot;FORWARD&quot;
+Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>        ZWrite Off
+        ColorMask RGB
+        Blend SrcAlpha OneMinusSrcAlpha
+
+        CGPROGRAM
+        #pragma target 2.0
+        
+        #pragma shader_feature _NORMALMAP
+        #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+        #pragma shader_feature _EMISSION 
+        #pragma shader_feature _METALLICGLOSSMAP 
+        #pragma shader_feature ___ _DETAIL_MULX2
+        // SM2.0: NOT SUPPORTED shader_feature _PARALLAXMAP
+
+        #pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
+
+        #pragma multi_compile_fwdbase
+        #pragma multi_compile_fog
+
+        #pragma vertex vertBase
+        #pragma fragment fragBase
+
+        #include &quot;TransparentDiffuseWithZwrite_FORWARD.cginc&quot;
+        ENDCG
+    }
+</pre></div>
+</div>
+<p>UnityStandardCore.cgincから使うところだけ収集。
+TransparentDiffuseWithZwrite_FORWARD.cginc
+#include &quot;UnityStandardConfig.cginc&quot;
+#include &quot;UnityCG.cginc&quot;
+#include &quot;UnityStandardInput.cginc&quot;
+#include &quot;AutoLight.cginc&quot;</p>
+<p>struct VertexOutputForwardBase
+{
+float4 pos                            : SV_POSITION;
+float4 tex                            : TEXCOORD0;
+half3 eyeVec                         : TEXCOORD1;
+half4 tangentToWorldAndParallax[3]    : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax]
+half4 ambientOrLightmapUV            : TEXCOORD5;    // SH or Lightmap UV
+SHADOW_COORDS(6)
+UNITY_FOG_COORDS(7)</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // next ones would not fit into SM2.0 limits, but they are always for SM3.0+
+</pre></div>
+</div>
+<p>#if UNITY_SPECCUBE_BOX_PROJECTION
+float3 posWorld                    : TEXCOORD8;
+#endif</p>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD
+#if UNITY_SPECCUBE_BOX_PROJECTION
+half3 reflUVW                : TEXCOORD9;
+#else
+half3 reflUVW                : TEXCOORD8;
+#endif
+#endif
+};</p>
+<p>half3 NormalizePerVertexNormal(half3 n)
+{
+#if (SHADER_TARGET &lt; 30) || UNITY_STANDARD_SIMPLE
+return normalize(n);
+#else
+return n; // will normalize per-pixel instead
+#endif
+}</p>
+<p>half3 NormalizePerPixelNormal(half3 n)
+{
+#if (SHADER_TARGET &lt; 30) || UNITY_STANDARD_SIMPLE
+return n;
+#else
+return normalize(n);
+#endif
+}</p>
+<p>UnityLight MainLight(half3 normalWorld)
+{
+UnityLight l;
+#ifdef LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>l.color = _LightColor0.rgb;
+l.dir = _WorldSpaceLightPos0.xyz;
+l.ndotl = LambertTerm(normalWorld, l.dir);
+</pre></div>
+</div>
+<p>#else
+// no light specified by the engine
+// analytical light might be extracted from Lightmap data later on in the shader depending on the Lightmap type
+l.color = half3(0.f, 0.f, 0.f);
+l.ndotl = 0.f;
+l.dir = half3(0.f, 0.f, 0.f);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return l;
+</pre></div>
+</div>
+<p>}</p>
+<p>inline half4 VertexGIForward(VertexInput v, float3 posWorld, half3 normalWorld)
+{
+half4 ambientOrLightmapUV = 0;
+// Static lightmaps
+#ifndef LIGHTMAP_OFF
+ambientOrLightmapUV.xy = v.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+ambientOrLightmapUV.zw = 0;
+// Sample light probe for Dynamic objects only (no static or dynamic lightmaps)
+#elif UNITY_SHOULD_SAMPLE_SH
+#ifdef VERTEXLIGHT_ON
+// Approximated illumination from non-important point lights
+ambientOrLightmapUV.rgb = Shade4PointLights(
+unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+unity_4LightAtten0, posWorld, normalWorld);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
+</pre></div>
+</div>
+<p>#endif</p>
+<p>#ifdef DYNAMICLIGHTMAP_ON
+ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return ambientOrLightmapUV;
+</pre></div>
+</div>
+<p>}</p>
+<p>VertexOutputForwardBase vertForwardBase(VertexInput v)
+{
+VertexOutputForwardBase o;
+UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float4 posWorld = mul(_Object2World, v.vertex);
+</pre></div>
+</div>
+<p>#if UNITY_SPECCUBE_BOX_PROJECTION
+o.posWorld = posWorld.xyz;
+#endif
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+o.tex = TexCoords(v);
+o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
+float3 normalWorld = UnityObjectToWorldNormal(v.normal);
+#ifdef _TANGENT_TO_WORLD
+float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
+o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
+o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
+o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
+</pre></div>
+</div>
+<p>#else
+o.tangentToWorldAndParallax[0].xyz = 0;
+o.tangentToWorldAndParallax[1].xyz = 0;
+o.tangentToWorldAndParallax[2].xyz = normalWorld;
+#endif
+//We need this for shadow receving
+TRANSFER_SHADOW(o);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
+</pre></div>
+</div>
+<p>#ifdef _PARALLAXMAP
+TANGENT_SPACE_ROTATION;
+half3 viewDirForParallax = mul(rotation, ObjSpaceViewDir(v.vertex));
+o.tangentToWorldAndParallax[0].w = viewDirForParallax.x;
+o.tangentToWorldAndParallax[1].w = viewDirForParallax.y;
+o.tangentToWorldAndParallax[2].w = viewDirForParallax.z;
+#endif</p>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD
+o.reflUVW = reflect(o.eyeVec, normalWorld);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UNITY_TRANSFER_FOG(o,o.pos);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>VertexOutputForwardBase vertBase(VertexInput v) { return vertForwardBase(v); }
+//VertexOutputForwardAdd vertAdd(VertexInput v) { return vertForwardAdd(v); }</p>
+<p>#ifdef _PARALLAXMAP
+#define IN_VIEWDIR4PARALLAX(i) NormalizePerPixelNormal(half3(i.tangentToWorldAndParallax[0].w,i.tangentToWorldAndParallax[1].w,i.tangentToWorldAndParallax[2].w))
+#define IN_VIEWDIR4PARALLAX_FWDADD(i) NormalizePerPixelNormal(i.viewDirForParallax.xyz)
+#else
+#define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
+#define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
+#endif</p>
+<p>#if UNITY_SPECCUBE_BOX_PROJECTION
+#define IN_WORLDPOS(i) i.posWorld
+#else
+#define IN_WORLDPOS(i) half3(0,0,0)
+#endif</p>
+<p>struct FragmentCommonData
+{
+half3 diffColor, specColor;
+// Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
+// Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
+half oneMinusReflectivity, oneMinusRoughness;
+half3 normalWorld, eyeVec, posWorld;
+half alpha;</p>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
+half3 reflUVW;
+#endif</p>
+<p>#if UNITY_STANDARD_SIMPLE
+half3 tangentSpaceNormal;
+#endif
+};</p>
+<p>inline FragmentCommonData MetallicSetup(float4 i_tex)
+{
+half2 metallicGloss = MetallicGloss(i_tex.xy);
+half metallic = metallicGloss.x;
+half oneMinusRoughness = metallicGloss.y;        // this is 1 minus the square root of real roughness m.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half oneMinusReflectivity;
+half3 specColor;
+half3 diffColor = DiffuseAndSpecularFromMetallic(Albedo(i_tex), metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
+
+FragmentCommonData o = (FragmentCommonData)0;
+o.diffColor = diffColor;
+o.specColor = specColor;
+o.oneMinusReflectivity = oneMinusReflectivity;
+o.oneMinusRoughness = oneMinusRoughness;
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>#ifndef UNITY_SETUP_BRDF_INPUT
+#define UNITY_SETUP_BRDF_INPUT SpecularSetup
+#endif</p>
+<p>inline FragmentCommonData SpecularSetup(float4 i_tex)
+{
+half4 specGloss = SpecularGloss(i_tex.xy);
+half3 specColor = specGloss.rgb;
+half oneMinusRoughness = specGloss.a;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half oneMinusReflectivity;
+half3 diffColor = EnergyConservationBetweenDiffuseAndSpecular(Albedo(i_tex), specColor, /*out*/ oneMinusReflectivity);
+
+FragmentCommonData o = (FragmentCommonData)0;
+o.diffColor = diffColor;
+o.specColor = specColor;
+o.oneMinusReflectivity = oneMinusReflectivity;
+o.oneMinusRoughness = oneMinusRoughness;
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>half3 PerPixelWorldNormal(float4 i_tex, half4 tangentToWorld[3])
+{
+#ifdef _NORMALMAP
+half3 tangent = tangentToWorld[0].xyz;
+half3 binormal = tangentToWorld[1].xyz;
+half3 normal = tangentToWorld[2].xyz;</p>
+<p>#if UNITY_TANGENT_ORTHONORMALIZE
+normal = NormalizePerPixelNormal(normal);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// ortho-normalize Tangent
+tangent = normalize(tangent - normal * dot(tangent, normal));
+
+// recalculate Binormal
+half3 newB = cross(normal, tangent);
+binormal = newB * sign(dot(newB, binormal));
+</pre></div>
+</div>
+<p>#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half3 normalTangent = NormalInTangentSpace(i_tex);
+half3 normalWorld = NormalizePerPixelNormal(tangent * normalTangent.x + binormal * normalTangent.y + normal * normalTangent.z); // @TODO: see if we can squeeze this normalize on SM2.0 as well
+</pre></div>
+</div>
+<p>#else
+half3 normalWorld = normalize(tangentToWorld[2].xyz);
+#endif
+return normalWorld;
+}</p>
+<p>#define FRAGMENT_SETUP(x) FragmentCommonData x = <br />
+FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
+<p>inline FragmentCommonData FragmentSetup(float4 i_tex, half3 i_eyeVec, half3 i_viewDirForParallax, half4 tangentToWorld[3], half3 i_posWorld)
+{
+i_tex = Parallax(i_tex, i_viewDirForParallax);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half alpha = Alpha(i_tex.xy);
+</pre></div>
+</div>
+<p>#if defined(_ALPHATEST_ON)
+clip(alpha - _Cutoff);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>FragmentCommonData o = UNITY_SETUP_BRDF_INPUT(i_tex);
+o.normalWorld = PerPixelWorldNormal(i_tex, tangentToWorld);
+o.eyeVec = NormalizePerPixelNormal(i_eyeVec);
+o.posWorld = i_posWorld;
+
+// NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
+o.diffColor = PreMultiplyAlpha(o.diffColor, alpha, o.oneMinusReflectivity, /*out*/ o.alpha);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light, bool reflections)
+{
+UnityGIInput d;
+d.light = light;
+d.worldPos = s.posWorld;
+d.worldViewDir = -s.eyeVec;
+d.atten = atten;
+#if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)
+d.ambient = 0;
+d.lightmapUV = i_ambientOrLightmapUV;
+#else
+d.ambient = i_ambientOrLightmapUV.rgb;
+d.lightmapUV = 0;
+#endif
+d.boxMax[0] = unity_SpecCube0_BoxMax;
+d.boxMin[0] = unity_SpecCube0_BoxMin;
+d.probePosition[0] = unity_SpecCube0_ProbePosition;
+d.probeHDR[0] = unity_SpecCube0_HDR;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>d.boxMax[1] = unity_SpecCube1_BoxMax;
+d.boxMin[1] = unity_SpecCube1_BoxMin;
+d.probePosition[1] = unity_SpecCube1_ProbePosition;
+d.probeHDR[1] = unity_SpecCube1_HDR;
+
+if (reflections)
+{
+    Unity_GlossyEnvironmentData g;
+    g.roughness = 1 - s.oneMinusRoughness;
+</pre></div>
+</div>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
+g.reflUVW = s.reflUVW;
+#else
+g.reflUVW = reflect(s.eyeVec, s.normalWorld);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    return UnityGlobalIllumination(d, occlusion, s.normalWorld, g);
+}
+else
+{
+    return UnityGlobalIllumination(d, occlusion, s.normalWorld);
+}
+</pre></div>
+</div>
+<p>}</p>
+<p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light)
+{
+return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
+}</p>
+<p>half4 OutputForward(half4 output, half alphaFromSurface)
+{
+#if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
+output.a = alphaFromSurface;
+#else
+UNITY_OPAQUE_ALPHA(output.a);
+#endif
+return output;
+}</p>
+<p>half4 fragForwardBaseInternal(VertexOutputForwardBase i)
+{
+FRAGMENT_SETUP(s)
+#if UNITY_OPTIMIZE_TEXCUBELOD
+s.reflUVW = i.reflUVW;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UnityLight mainLight = MainLight(s.normalWorld);
+half atten = SHADOW_ATTENUATION(i);
+
+
+half occlusion = Occlusion(i.tex.xy);
+UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+
+half4 c = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
+c.rgb += UNITY_BRDF_GI(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
+c.rgb += Emission(i.tex.xy);
+
+UNITY_APPLY_FOG(i.fogCoord, c.rgb);
+return OutputForward(c, s.alpha);
+</pre></div>
+</div>
+<p>}</p>
+<p>half4 fragBase(VertexOutputForwardBase i) : SV_Target{ return fragForwardBaseInternal(i); }
+//half4 fragAdd(VertexOutputForwardAdd i) : SV_Target{ return fragForwardAddInternal(i); }</p>
+<p>ある程度#includeを除いてシンプル化した。しかし、アルファブレンディングがなかなか有効にならずに悩んだ。
+原因は、
+#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON</p>
+<p>で、このShaderキーワードの_ALPHABLEND_ONをEnableにしてやる必要があった。
+material.EnableKeyword(&quot;_ALPHABLEND_ON&quot;);</p>
+<p>ビルトインシェーダーでは何故自動で”_ALPHABLEND_ON”になるのか
+DefaultResourcesExtra/Standard.shaderの末尾
+CustomEditor &quot;StandardShaderGUI&quot;</p>
+<p>でカスタムエディタが指定してありこれを経由してマテリアルに介入してたのであった・・・。わかりにくいw
+shader_featureとmulti_compileを剥がす
+少しコード整理。
+shader_featureとmulti_compileを剥がした。
+ピクセルシェーダーは、GIとか書いてあってわりと複雑なのでその辺には手を触れず。
+#include &quot;UnityStandardConfig.cginc&quot;
+#include &quot;UnityCG.cginc&quot;
+#include &quot;UnityStandardInput.cginc&quot;
+#include &quot;AutoLight.cginc&quot;</p>
+<p>//////////////////////////////////////////////////////////////////////////////
+// vertBase
+//////////////////////////////////////////////////////////////////////////////
+struct VertexOutputForwardBase
+{
+float4 pos                            : SV_POSITION;
+float4 tex                            : TEXCOORD0;
+half3 eyeVec                         : TEXCOORD1;
+half4 tangentToWorldAndParallax[3]    : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax]
+half4 ambientOrLightmapUV            : TEXCOORD5;    // SH or Lightmap UV
+SHADOW_COORDS(6)
+UNITY_FOG_COORDS(7)
+};</p>
+<p>inline half4 VertexGIForward(VertexInput v, float3 posWorld, half3 normalWorld)
+{
+half4 ambientOrLightmapUV = 0;
+// Static lightmaps
+#ifndef LIGHTMAP_OFF
+ambientOrLightmapUV.xy = v.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+ambientOrLightmapUV.zw = 0;
+// Sample light probe for Dynamic objects only (no static or dynamic lightmaps)
+#elif UNITY_SHOULD_SAMPLE_SH
+#ifdef VERTEXLIGHT_ON
+// Approximated illumination from non-important point lights
+ambientOrLightmapUV.rgb = Shade4PointLights(
+unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+unity_4LightAtten0, posWorld, normalWorld);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
+</pre></div>
+</div>
+<p>#endif</p>
+<p>#ifdef DYNAMICLIGHTMAP_ON
+ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return ambientOrLightmapUV;
+</pre></div>
+</div>
+<p>}</p>
+<p>half3 NormalizePerVertexNormal(half3 n)
+{
+return normalize(n);
+}</p>
+<p>VertexOutputForwardBase vertForwardBase(VertexInput v)
+{
+VertexOutputForwardBase o;
+UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float4 posWorld = mul(_Object2World, v.vertex);
+</pre></div>
+</div>
+<p>#if UNITY_SPECCUBE_BOX_PROJECTION
+o.posWorld = posWorld.xyz;
+#endif
+o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+o.tex = TexCoords(v);
+o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
+float3 normalWorld = UnityObjectToWorldNormal(v.normal);
+#ifdef _TANGENT_TO_WORLD
+float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
+o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
+o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
+o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
+</pre></div>
+</div>
+<p>#else
+o.tangentToWorldAndParallax[0].xyz = 0;
+o.tangentToWorldAndParallax[1].xyz = 0;
+o.tangentToWorldAndParallax[2].xyz = normalWorld;
+#endif
+//We need this for shadow receving
+TRANSFER_SHADOW(o);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
+</pre></div>
+</div>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD
+o.reflUVW = reflect(o.eyeVec, normalWorld);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UNITY_TRANSFER_FOG(o,o.pos);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>VertexOutputForwardBase vertBase(VertexInput v) { return vertForwardBase(v); }</p>
+<p>//////////////////////////////////////////////////////////////////////////////
+// fragBase
+//////////////////////////////////////////////////////////////////////////////
+#define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
+#define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
+#define IN_WORLDPOS(i) half3(0,0,0)</p>
+<p>struct FragmentCommonData
+{
+half3 diffColor, specColor;
+// Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
+// Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
+half oneMinusReflectivity, oneMinusRoughness;
+half3 normalWorld, eyeVec, posWorld;
+half alpha;</p>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
+half3 reflUVW;
+#endif</p>
+<p>#if UNITY_STANDARD_SIMPLE
+half3 tangentSpaceNormal;
+#endif
+};</p>
+<p>#ifndef UNITY_SETUP_BRDF_INPUT
+#define UNITY_SETUP_BRDF_INPUT SpecularSetup
+#endif</p>
+<p>inline FragmentCommonData SpecularSetup(float4 i_tex)
+{
+half4 specGloss = SpecularGloss(i_tex.xy);
+half3 specColor = specGloss.rgb;
+half oneMinusRoughness = specGloss.a;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half oneMinusReflectivity;
+half3 diffColor = EnergyConservationBetweenDiffuseAndSpecular(Albedo(i_tex), specColor, /*out*/ oneMinusReflectivity);
+
+FragmentCommonData o = (FragmentCommonData)0;
+o.diffColor = diffColor;
+o.specColor = specColor;
+o.oneMinusReflectivity = oneMinusReflectivity;
+o.oneMinusRoughness = oneMinusRoughness;
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>half3 PerPixelWorldNormal(float4 i_tex, half4 tangentToWorld[3])
+{
+half3 normalWorld = normalize(tangentToWorld[2].xyz);
+return normalWorld;
+}</p>
+<p>#define FRAGMENT_SETUP(x) FragmentCommonData x = <br />
+FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
+<p>inline FragmentCommonData FragmentSetup(float4 i_tex, half3 i_eyeVec, half3 i_viewDirForParallax, half4 tangentToWorld[3], half3 i_posWorld)
+{
+i_tex = Parallax(i_tex, i_viewDirForParallax);</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half alpha = Alpha(i_tex.xy);
+
+FragmentCommonData o = UNITY_SETUP_BRDF_INPUT(i_tex);
+o.normalWorld = PerPixelWorldNormal(i_tex, tangentToWorld);
+o.eyeVec = i_eyeVec;
+o.posWorld = i_posWorld;
+
+// NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
+o.diffColor = PreMultiplyAlpha(o.diffColor, alpha, o.oneMinusReflectivity, /*out*/ o.alpha);
+return o;
+</pre></div>
+</div>
+<p>}</p>
+<p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light, bool reflections)
+{
+UnityGIInput d;
+d.light = light;
+d.worldPos = s.posWorld;
+d.worldViewDir = -s.eyeVec;
+d.atten = atten;
+#if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)
+d.ambient = 0;
+d.lightmapUV = i_ambientOrLightmapUV;
+#else
+d.ambient = i_ambientOrLightmapUV.rgb;
+d.lightmapUV = 0;
+#endif
+d.boxMax[0] = unity_SpecCube0_BoxMax;
+d.boxMin[0] = unity_SpecCube0_BoxMin;
+d.probePosition[0] = unity_SpecCube0_ProbePosition;
+d.probeHDR[0] = unity_SpecCube0_HDR;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>d.boxMax[1] = unity_SpecCube1_BoxMax;
+d.boxMin[1] = unity_SpecCube1_BoxMin;
+d.probePosition[1] = unity_SpecCube1_ProbePosition;
+d.probeHDR[1] = unity_SpecCube1_HDR;
+
+if (reflections)
+{
+    Unity_GlossyEnvironmentData g;
+    g.roughness = 1 - s.oneMinusRoughness;
+</pre></div>
+</div>
+<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
+g.reflUVW = s.reflUVW;
+#else
+g.reflUVW = reflect(s.eyeVec, s.normalWorld);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    return UnityGlobalIllumination(d, occlusion, s.normalWorld, g);
+}
+else
+{
+    return UnityGlobalIllumination(d, occlusion, s.normalWorld);
+}
+</pre></div>
+</div>
+<p>}</p>
+<p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light)
+{
+return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
+}</p>
+<p>UnityLight MainLight(half3 normalWorld)
+{
+UnityLight l;
+#ifdef LIGHTMAP_OFF</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>l.color = _LightColor0.rgb;
+l.dir = _WorldSpaceLightPos0.xyz;
+l.ndotl = LambertTerm(normalWorld, l.dir);
+</pre></div>
+</div>
+<p>#else
+// no light specified by the engine
+// analytical light might be extracted from Lightmap data later on in the shader depending on the Lightmap type
+l.color = half3(0.f, 0.f, 0.f);
+l.ndotl = 0.f;
+l.dir = half3(0.f, 0.f, 0.f);
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return l;
+</pre></div>
+</div>
+<p>}</p>
+<p>half4 fragForwardBaseInternal(VertexOutputForwardBase i)
+{
+FRAGMENT_SETUP(s)
+#if UNITY_OPTIMIZE_TEXCUBELOD
+s.reflUVW = i.reflUVW;
+#endif</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UnityLight mainLight = MainLight(s.normalWorld);
+half atten = SHADOW_ATTENUATION(i);
+
+half occlusion = Occlusion(i.tex.xy);
+UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+
+half4 c = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
+c.rgb += UNITY_BRDF_GI(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
+c.rgb += Emission(i.tex.xy);
+
+UNITY_APPLY_FOG(i.fogCoord, c.rgb);
+c.a = s.alpha;
+return c;
+</pre></div>
+</div>
+<p>}</p>
+<p>half4 fragBase(VertexOutputForwardBase i) : SV_Target{ return fragForwardBaseInternal(i); }</p>
+<p>1パスでいいんじゃないの？
+UsePassを展開したことによってZWrite Onできるようになったw。Oh…
+Shader &quot;Transparent/Diffuse ZWrite&quot; {
+Properties{
+_Color(&quot;Main Color&quot;, Color) = (1,1,1,1)
+_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+}</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader{
+
+    Tags{ &quot;Queue&quot; = &quot;Transparent&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;RenderType&quot; = &quot;Transparent&quot; }
+    LOD 200
+
+    // paste in forward rendering passes from Transparent/Diffuse
+    //UsePass &quot;Legacy Shaders/Transparent/Diffuse/FORWARD&quot;
+
+    Pass{
+        Name &quot;FORWARD&quot;
+        Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }
+
+        ZWrite On
+        ColorMask RGB
+        Blend SrcAlpha OneMinusSrcAlpha
+
+        CGPROGRAM
+        #pragma target 2.0
+
+        #pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
+
+        // これは要るっぽい
+        #pragma multi_compile_fwdbase
+        #pragma multi_compile_fog
+
+        #pragma vertex vertBase
+        #pragma fragment fragBase
+
+        #include &quot;TransparentDiffuseWithZwrite_FORWARD.cginc&quot;
+        ENDCG
+    }
+
+} // SubShader
+
+//Fallback &quot;Transparent/VertexLit&quot;
+</pre></div>
+</div>
+<p>}</p>
+<p>よし、スクラッチでシェーダーを書こうw
+multi_compile_fwdbase
+FrameDebuggerで見たところシェーダーのdefineがまとめて変わっていた。LIGHTMAP_OFF等に依存していると影響がある。
+まとめてmulti_compileを定義しているだけっぽい。
+まとめ</p>
+<p>surfaceシェーダーでは無い(shaderのinspectorにも書いてあった)
+UsePassでsurfaceシェーダーのPASSを指定することもできる
+それ故大変分かりにくい(可読性とコード量とのトレードオフが大きい)
+surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集合に展開されている(どう展開されるのか知りたいんだけど)</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../../2015/12/24/heroku_sokcetio.html">
+       Node.jsでSocket.IOなアプリをHerokuにデプロイ
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../../2017/04/boost_python.html">
+      Boost.Pythonのリンク周り 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  10 January 2016 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/posts/2016/01/10/unity_shader.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

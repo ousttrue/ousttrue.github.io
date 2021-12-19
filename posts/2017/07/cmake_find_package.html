@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>実行時のメッセージ -- glu32opengl32 &#8212; 三次元日誌  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>cmakeのFIND_PACKAGEわかりずらいよ。もやもやするものがある。</p>
+<p>GLUTの例
+検証用に小さい例を作ってみた。</p>
+<p>https://stackoverflow.com/questions/9460242/how-to-compile-glut-opengl-project-with-cmake-and-kdevelop-in-linux</p>
+<p>これを参考にしたのだけどちょっと手直しした。</p>
+<p>ADD_EXECUTABLEの前にINCLUDE_DIRECTORIESする必要がある
+OPENGL_INCLUDE_DIRSじゃなくてOPENGL_INCLUDE_DIR
+GLUT_INCLUDE_DIRSじゃなくてGLUT_INCLUDE_DIR</p>
+<p>Linuxとかだとdistributionがcmakeファイルを管理してたりするかもしれん。
+main.cpp
+#include &lt;GL/glut.h&gt;</p>
+<p>void display(void)
+{
+}</p>
+<p>int main(int argc, char *argv[])
+{
+glutInit(&amp;argc, argv);
+glutCreateWindow(argv[0]);
+glutDisplayFunc(display);
+glutMainLoop();
+return 0;
+}</p>
+<p>CMakeLists.txt
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(hello)</p>
+<p>FIND_PACKAGE(OpenGL REQUIRED)
+MESSAGE(STATUS <span class="math notranslate nohighlight">\({OPENGL_LIBRARIES})
+MESSAGE(STATUS \)</span>{OPENGL_INCLUDE_DIR})</p>
+<p>FIND_PACKAGE(GLUT REQUIRED)
+MESSAGE(STATUS <span class="math notranslate nohighlight">\({GLUT_LIBRARY})
+MESSAGE(STATUS \)</span>{GLUT_INCLUDE_DIR})</p>
+<p>INCLUDE_DIRECTORIES(
+<span class="math notranslate nohighlight">\({OPENGL_INCLUDE_DIR}
+    \)</span>{GLUT_INCLUDE_DIR}
+)
+ADD_DEFINITIONS(
+-DFREEGLUT_LIB_PRAGMAS=0 # avoid pragma
+)
+ADD_EXECUTABLE(hello
+main.cpp
+)
+TARGET_LINK_LIBRARIES(hello
+<span class="math notranslate nohighlight">\({OPENGL_LIBRARIES}
+    \)</span>{GLUT_LIBRARY}
+)</p>
+<section id="glu32opengl32">
+<h1>実行時のメッセージ
+-- glu32opengl32<a class="headerlink" href="#glu32opengl32" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>-- D:/vcpkg/installed/x64-windows/lib/freeglut.lib
+-- D:/vcpkg/installed/x64-windows/include
+-- Configuring done
+-- Generating done</p>
+<p>なぜかvcpkgのfreeglutを発見してくれた。
+vcpkgがcmakeの探索パスを追加しているぽい。レジストリとかか？
+まず、第1に
+FIND_PACKAGEの結果として如何なる変数が増えるのかが分からん。</p>
+<p>https://cmake.org/Wiki/CMake:How_To_Find_Libraries#How_package_finding_works</p>
+<p>慣例では、下記のようになっている。</p>
+<p>_FOUND
+_INCLUDE_DIRS or _INCLUDES
+_LIBRARIES or _LIBRARIES or _LIBS
+_DEFINITIONS</p>
+<p>強制じゃなくて規約なので各種表記ブレの余地が危険を醸し出している。
+大文字小文字(find_package(glut)に対して${GLUT_FOUND})、複数単数(DIR, DIRS)、短縮(LIBRARIES, LIBS)とか一貫性が。はまりそうだー。
+とりあえあず、標準のパッケージに関してはコマンドから問い合わせることができる。</p>
+<blockquote>
+<div><p>cmake --help-module OpenGL
+FindOpenGL</p>
+</div></blockquote>
+<hr class="docutils" />
+<p>FindModule for OpenGL and GLU.</p>
+<p>IMPORTED Targets
+^^^^^^^^^^^^^^^^</p>
+<p>This module defines the <code class="docutils literal notranslate"><span class="pre">IMPORTED</span></code> targets:</p>
+<p><code class="docutils literal notranslate"><span class="pre">OpenGL::GL</span></code>
+Defined if the system has OpenGL.
+<code class="docutils literal notranslate"><span class="pre">OpenGL::GLU</span></code>
+Defined if the system has GLU.</p>
+<p>Result Variables
+^^^^^^^^^^^^^^^^</p>
+<p>This module sets the following variables:</p>
+<p><code class="docutils literal notranslate"><span class="pre">OPENGL_FOUND</span></code>
+True, if the system has OpenGL.
+<code class="docutils literal notranslate"><span class="pre">OPENGL_XMESA_FOUND</span></code>
+True, if the system has XMESA.
+<code class="docutils literal notranslate"><span class="pre">OPENGL_GLU_FOUND</span></code>
+True, if the system has GLU.
+<code class="docutils literal notranslate"><span class="pre">OPENGL_INCLUDE_DIR</span></code>
+Path to the OpenGL include directory.
+<code class="docutils literal notranslate"><span class="pre">OPENGL_LIBRARIES</span></code>
+Paths to the OpenGL and GLU libraries.</p>
+<p>If you want to use just GL you can use these values:</p>
+<p><code class="docutils literal notranslate"><span class="pre">OPENGL_gl_LIBRARY</span></code>
+Path to the OpenGL library.
+<code class="docutils literal notranslate"><span class="pre">OPENGL_glu_LIBRARY</span></code>
+Path to the GLU library.</p>
+<p>OSX Specific
+^^^^^^^^^^^^</p>
+<p>On OSX default to using the framework version of OpenGL. People will
+have to change the cache values of OPENGL_glu_LIBRARY and
+OPENGL_gl_LIBRARY to use OpenGL with X11 on OSX.</p>
+<blockquote>
+<div><p>cmake --help-module GLUT
+FindGLUT</p>
+</div></blockquote>
+<hr class="docutils" />
+<p>try to find glut library and include files.</p>
+<p>IMPORTED Targets
+^^^^^^^^^^^^^^^^</p>
+<p>This module defines the <code class="docutils literal notranslate"><span class="pre">IMPORTED</span></code> targets:</p>
+<p><code class="docutils literal notranslate"><span class="pre">GLUT::GLUT</span></code>
+Defined if the system has GLUT.</p>
+<p>Result Variables
+^^^^^^^^^^^^^^^^</p>
+<p>This module sets the following variables:</p>
+<p>::</p>
+<p>GLUT_INCLUDE_DIR, where to find GL/glut.h, etc.
+GLUT_LIBRARIES, the libraries to link against
+GLUT_FOUND, If false, do not try to use GLUT.</p>
+<p>Also defined, but not for general use are:</p>
+<p>::</p>
+<p>GLUT_glut_LIBRARY = the full path to the glut library.
+GLUT_Xmu_LIBRARY  = the full path to the Xmu library.
+GLUT_Xi_LIBRARY   = the full path to the Xi Library.</p>
+<p>という感じでcmakeに最初から入っているタイプのモジュールはわかる。
+ちなみにFIND_PACKAGEの引数は大文字小文字を区別しないが、結果はただの変数なので区別することに注意。
+<span class="math notranslate nohighlight">\({OPENGL_GL_LIBRARY}とかだめですから。
+不安があるときはMESSAGEでプリントデバッグするのが手堅い。
+MESSAGE(STATUS \)</span>{OPENGL_gl_LIBRARY})</p>
+<p>VisualStudioなのでリンクをDebug, Releaseで振り分けたいんだけど
+lib/freeglut.libとdebug/lib/freeglutd.libとか。
+上の例は問答無用でRelease版にリンクされる(glutの場合は、別にfreeglutのデバッグはしないのでそれはそれでよかったりもするが・・・)。プラグマでリンクすればいいやんとなるのだが、link_directoriesにはDebug, Releaseの振り分けはない。Release決め打ちの方がましである。
+TARGET_LINK_LIBRARIESには振り分け機能が実装されている。
+TARGET_LINK_LIBRARIES(hello
+debug path_to_freeglutd.lib
+optimized path_to_freeglut.lib
+)</p>
+<p>という風に記述できる。で、これを如何にしてFIND_PACKAGEと連携させるのか。
+例としてfreeglut.libとfreeglutd.lib。
+FIND_PACKAGE(OpenGL REQUIRED)
+MESSAGE(STATUS <span class="math notranslate nohighlight">\({OPENGL_LIBRARIES})
+FIND_PACKAGE(GLUT)
+MESSAGE(STATUS \)</span>{GLUT_LIBRARY})
+STRING(REPLACE lib/freeglut.lib debug/lib/freeglutd.lib GLUT_LIBRARY_DEBUG <span class="math notranslate nohighlight">\({GLUT_LIBRARY})
+SET(OPENGL_LIBS 
+    general \)</span>{OPENGL_LIBRARIES}
+optimized <span class="math notranslate nohighlight">\({GLUT_LIBRARY} 
+    debug \)</span>{GLUT_LIBRARY_DEBUG}
+)
+TARGET_LINK_LIBRARIES(hello
+${OPENGL_LIBS}
+)</p>
+<p>インストールしたパッケージがFindされないんだけど
+alembicなどvcpkgでインストールしたパッケージをVCPKG_DIR/installed/x64-windowsから探索して欲しいのだが方法がよくわからない。</p>
+<p>CMakeを使ってみた (7) find_packageとpkg_check_modulesによるライブラリ探索</p>
+<p>あとで</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../06/python_asyncio.html">
+       Python3のasyncioについてのメモ
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="imgui_python.html">
+      PythonでImGuiする 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  20 July 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>ナビゲーション</h3>
+
+
+<h3>
+  <a href="../../../blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2020/w3m-mod.html"
+      >25 July - w3m改造</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2020/hugo-github-pages.html"
+      >20 July - Github Pages の種類</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/python_gis.html"
+      >27 August - pythonでGIS</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/vim_colorscheme.html"
+      >25 August - Vimのカラースキーム</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2019/restart_pyopengl.html"
+      >24 August - pyopengl</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag.html">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python.html">["python"]</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2020.html">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019.html">2019 (9)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (14)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2017/07/cmake_find_package.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
