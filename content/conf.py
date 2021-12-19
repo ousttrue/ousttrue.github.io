@@ -48,12 +48,15 @@ def front_matter_plugin(md):
     yaml_frontmatter = make_front_matter_rule('_')
     toml_frontmatter = make_front_matter_rule('+')
 
+    from markdown_it.common.utils import charCodeAt
+    yaml_marker_char = charCodeAt('-', 0)
+    toml_marker_char = charCodeAt('+', 0)
 
     def frontMatter(state, startLine: int, endLine: int,
                     silent: bool):
-        if state.src[0] == '-':
+        if state.srcCharCode[0] == yaml_marker_char:
             return yaml_frontmatter(state, startLine, endLine, silent)
-        elif state.src[0] == '+':
+        elif state.srcCharCode[0] == toml_marker_char:
             return toml_frontmatter(state, startLine, endLine, silent)
         else:
             return False
