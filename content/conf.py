@@ -195,8 +195,10 @@ yaml_safe_load = yaml.safe_load
 
 def safe_load(src):
     try:
-        return yaml_safe_load(src)
-    except:
+        data = yaml_safe_load(src)
+        assert isinstance(data, dict), "not dict"
+        return data
+    except Exception:
         return toml.loads(src)
 
 
