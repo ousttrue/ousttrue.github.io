@@ -1,7 +1,7 @@
 +++
 title = "SSGをABlogに変更"
 date = 2021-12-20
-tags = ["python", "ssg"]
+tags = ["python", "ssg", "sphinx"]
 +++
 
 # ABlog にシステムを変更
@@ -83,3 +83,4 @@ blog_post_pattern = "posts/**/*.md"
 
 `frontmatter` 等から最低限、日付の情報がとれないとトップページから辿る方法が無い状態になる。
 
+あと `sphinx` なのでトップレベルの表題が本文側に必要かも。
