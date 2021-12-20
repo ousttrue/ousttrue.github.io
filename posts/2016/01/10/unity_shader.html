@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;UnityのUsePassを追う&#34; date: 2016-01-10 taxonomies: {tags: [&#34;unity&#34;]} &#8212; 三次元日誌  ドキュメント</title>
+    <title>define UNITY_STANDARD_SIMPLE 1 &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
   
@@ -63,18 +62,13 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-unityusepass-date-2016-01-10-taxonomies-tags-unity">
-<h1>title: &quot;UnityのUsePassを追う&quot;
-date: 2016-01-10
-taxonomies: {tags: [&quot;unity&quot;]}<a class="headerlink" href="#title-unityusepass-date-2016-01-10-taxonomies-tags-unity" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>下記のUnityの半透明シェーダーがいったいどういうメカニズムなのかを調べる。
+             <p>下記のUnityの半透明シェーダーがいったいどういうメカニズムなのかを調べる。
 Shaderの元ネタはこちら</p>
 <p>Unity で Transparent/Diffuse で描画順が崩れてしまう際の対処法</p>
-<p>Shader &quot;Transparent/Diffuse ZWrite&quot; {
+<p>Shader “Transparent/Diffuse ZWrite” {
 Properties{
-_Color(&quot;Main Color&quot;, Color) = (1,1,1,1)
-_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+_Color(“Main Color”, Color) = (1,1,1,1)
+_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
 }</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader{
     Tags{ &quot;Queue&quot; = &quot;Transparent&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;RenderType&quot; = &quot;Transparent&quot; }
@@ -107,14 +101,14 @@ Fixed function
 次のようなコードが生成されていた。
 ShaderのInspector: Fixed function. Show generated codeの該当部分
 Pass {
-Tags { &quot;QUEUE&quot;=&quot;Transparent&quot; &quot;IGNOREPROJECTOR&quot;=&quot;true&quot; &quot;RenderType&quot;=&quot;Transparent&quot; }
+Tags { “QUEUE”=”Transparent” “IGNOREPROJECTOR”=”true” “RenderType”=”Transparent” }
 ColorMask 0
 CGPROGRAM
 #pragma vertex vert
 #pragma fragment frag
-#include &quot;UnityShaderVariables.cginc&quot;
+#include “UnityShaderVariables.cginc”
 #pragma multi_compile_fog
-#include &quot;UnityCG.cginc&quot;
+#include “UnityCG.cginc”
 #define USING_FOG (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))</p>
 <p>// uniforms</p>
 <p>// vertex shader input data
@@ -163,20 +157,20 @@ ENDCG
 <p>単に頂点カラーをそのまま描画しているようだが、ColorMaskが0なので色は変わらずということらしい。
 パス2: カラーバッファ
 Transparent/Diffuse
-UsePass &quot;Transparent/Diffuse/FORWARD&quot;</p>
+UsePass “Transparent/Diffuse/FORWARD”</p>
 <p>は何なのか。
 https://unity3d.com/jp/get-unity/download/archive
 からビルトインシェーダーをDownloadして観察してみる。
 探してみると”Transparent/Diffuse”という名のシェーダーは無くて、
 “Legacy Shaders/Transparent/Diffuse”が見つかる。
 DefaultResourceExtra/Alpha-Diffuse.shader
-Shader &quot;Legacy Shaders/Transparent/Diffuse&quot; {
+Shader “Legacy Shaders/Transparent/Diffuse” {
 Properties {
-_Color (&quot;Main Color&quot;, Color) = (1,1,1,1)
-_MainTex (&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+_Color (“Main Color”, Color) = (1,1,1,1)
+_MainTex (“Base (RGB) Trans (A)”, 2D) = “white” {}
 }</p>
 <p>SubShader {
-Tags {&quot;Queue&quot;=&quot;Transparent&quot; &quot;IgnoreProjector&quot;=&quot;True&quot; &quot;RenderType&quot;=&quot;Transparent&quot;}
+Tags {“Queue”=”Transparent” “IgnoreProjector”=”True” “RenderType”=”Transparent”}
 LOD 200</p>
 <p>CGPROGRAM
 #pragma surface surf Lambert alpha:fade</p>
@@ -192,7 +186,7 @@ o.Alpha = c.a;
 }
 ENDCG
 }</p>
-<p>Fallback &quot;Legacy Shaders/Transparent/VertexLit&quot;
+<p>Fallback “Legacy Shaders/Transparent/VertexLit”
 }</p>
 <p>surfaceシェーダーらしい。
 surfaceシェーダーが如何なるPassに展開されるのかがまったくわからないが(LightMode等が関係ある？)
@@ -201,7 +195,7 @@ Transparent/Diffuse/FORWARD
 DefaultResourcesExtra/Standard.shader
 SubShader
 {
-Tags { &quot;RenderType&quot;=&quot;Opaque&quot; &quot;PerformanceChecks&quot;=&quot;False&quot; }
+Tags { “RenderType”=”Opaque” “PerformanceChecks”=”False” }
 LOD 300</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // ------------------------------------------------------------------
     //  Base forward pass (directional light, emission, lightmaps, ...)
@@ -245,19 +239,18 @@ CGIncludes/UnityStandardCoreForward.cginc
 #ifndef UNITY_STANDARD_CORE_FORWARD_INCLUDED
 #define UNITY_STANDARD_CORE_FORWARD_INCLUDED</p>
 <p>#if defined(UNITY_NO_FULL_STANDARD_SHADER)</p>
-</section>
 <section class="tex2jax_ignore mathjax_ignore" id="define-unity-standard-simple-1">
-<h1>define UNITY_STANDARD_SIMPLE 1<a class="headerlink" href="#define-unity-standard-simple-1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>define UNITY_STANDARD_SIMPLE 1<a class="headerlink" href="#define-unity-standard-simple-1" title="Permalink to this headline">¶</a></h1>
 <p>#endif</p>
-<p>#include &quot;UnityStandardConfig.cginc&quot;</p>
+<p>#include “UnityStandardConfig.cginc”</p>
 <p>#if UNITY_STANDARD_SIMPLE
-#include &quot;UnityStandardCoreForwardSimple.cginc&quot;
+#include “UnityStandardCoreForwardSimple.cginc”
 VertexOutputBaseSimple vertBase (VertexInput v) { return vertForwardBaseSimple(v); }
 VertexOutputForwardAddSimple vertAdd (VertexInput v) { return vertForwardAddSimple(v); }
 half4 fragBase (VertexOutputBaseSimple i) : SV_Target { return fragForwardBaseSimpleInternal(i); }
 half4 fragAdd (VertexOutputForwardAddSimple i) : SV_Target { return fragForwardAddSimpleInternal(i); }
 #else
-#include &quot;UnityStandardCore.cginc&quot;
+#include “UnityStandardCore.cginc”
 VertexOutputForwardBase vertBase (VertexInput v) { return vertForwardBase(v); }
 VertexOutputForwardAdd vertAdd (VertexInput v) { return vertForwardAdd(v); }
 half4 fragBase (VertexOutputForwardBase i) : SV_Target { return fragForwardBaseInternal(i); }
@@ -372,8 +365,8 @@ includeを展開してみる
 UsePassの代わりに自前のファイルにシェーダーのコードをコピーしてそっちを使ってみる。
 DefaultResourcesExtra/Standard.shaderから切り張り
 Pass{
-Name &quot;FORWARD&quot;
-Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }</p>
+Name “FORWARD”
+Tags{ “LightMode” = “ForwardBase” }</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>        ZWrite Off
         ColorMask RGB
         Blend SrcAlpha OneMinusSrcAlpha
@@ -403,10 +396,10 @@ Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }</p>
 </div>
 <p>UnityStandardCore.cgincから使うところだけ収集。
 TransparentDiffuseWithZwrite_FORWARD.cginc
-#include &quot;UnityStandardConfig.cginc&quot;
-#include &quot;UnityCG.cginc&quot;
-#include &quot;UnityStandardInput.cginc&quot;
-#include &quot;AutoLight.cginc&quot;</p>
+#include “UnityStandardConfig.cginc”
+#include “UnityCG.cginc”
+#include “UnityStandardInput.cginc”
+#include “AutoLight.cginc”</p>
 <p>struct VertexOutputForwardBase
 {
 float4 pos                            : SV_POSITION;
@@ -739,19 +732,19 @@ return OutputForward(c, s.alpha);
 原因は、
 #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON</p>
 <p>で、このShaderキーワードの_ALPHABLEND_ONをEnableにしてやる必要があった。
-material.EnableKeyword(&quot;_ALPHABLEND_ON&quot;);</p>
+material.EnableKeyword(“_ALPHABLEND_ON”);</p>
 <p>ビルトインシェーダーでは何故自動で”_ALPHABLEND_ON”になるのか
 DefaultResourcesExtra/Standard.shaderの末尾
-CustomEditor &quot;StandardShaderGUI&quot;</p>
+CustomEditor “StandardShaderGUI”</p>
 <p>でカスタムエディタが指定してありこれを経由してマテリアルに介入してたのであった・・・。わかりにくいw
 shader_featureとmulti_compileを剥がす
 少しコード整理。
 shader_featureとmulti_compileを剥がした。
 ピクセルシェーダーは、GIとか書いてあってわりと複雑なのでその辺には手を触れず。
-#include &quot;UnityStandardConfig.cginc&quot;
-#include &quot;UnityCG.cginc&quot;
-#include &quot;UnityStandardInput.cginc&quot;
-#include &quot;AutoLight.cginc&quot;</p>
+#include “UnityStandardConfig.cginc”
+#include “UnityCG.cginc”
+#include “UnityStandardInput.cginc”
+#include “AutoLight.cginc”</p>
 <p>//////////////////////////////////////////////////////////////////////////////
 // vertBase
 //////////////////////////////////////////////////////////////////////////////
@@ -993,10 +986,10 @@ return c;
 <p>half4 fragBase(VertexOutputForwardBase i) : SV_Target{ return fragForwardBaseInternal(i); }</p>
 <p>1パスでいいんじゃないの？
 UsePassを展開したことによってZWrite Onできるようになったw。Oh…
-Shader &quot;Transparent/Diffuse ZWrite&quot; {
+Shader “Transparent/Diffuse ZWrite” {
 Properties{
-_Color(&quot;Main Color&quot;, Color) = (1,1,1,1)
-_MainTex(&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; {}
+_Color(“Main Color”, Color) = (1,1,1,1)
+_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
 }</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader{
 
@@ -1048,7 +1041,26 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
 </section>
 
 <div class="section">
-   
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../../2015/12/24/heroku_sokcetio.html">
+       Node.jsでSocket.IOなアプリをHerokuにデプロイ
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../../2017/04/boost_python.html">
+      Boost.Pythonのリンク周り 
+    </a>
+    
+  </span>
+</div>
+  
 </div>
 
           </div>
@@ -1066,7 +1078,16 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
 
 
 
-<h3>ナビゲーション</h3>
+  
+<h2>
+   
+  10 January 2016 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -1153,6 +1174,14 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -1164,8 +1193,12 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -1208,7 +1241,7 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -1218,6 +1251,14 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -1236,7 +1277,7 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -1269,6 +1310,10 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -1280,7 +1325,7 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -1300,7 +1345,7 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -1312,7 +1357,7 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -1328,11 +1373,11 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
     <a href="../../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -1360,21 +1405,41 @@ surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集�
   </li>
     
   <li>
-    <a href="../../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

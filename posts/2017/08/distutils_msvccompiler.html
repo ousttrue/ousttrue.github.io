@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;distutilsでcl.exeが見つからない&#34; date: 2017-08-06 taxonomies: {tags: [&#34;python&#34;]} &#8212; 三次元日誌  ドキュメント</title>
+    <title>monkey patch for _msvccompiler &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -63,34 +62,29 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-distutilscl-exe-date-2017-08-06-taxonomies-tags-python">
-<h1>title: &quot;distutilsでcl.exeが見つからない&quot;
-date: 2017-08-06
-taxonomies: {tags: [&quot;python&quot;]}<a class="headerlink" href="#title-distutilscl-exe-date-2017-08-06-taxonomies-tags-python" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>PythonじゃなくてVisualStudio側の問題のようなのだけど、setup.pyでネイティブモジュールをビルドするときに顕在化したので。</p>
+             <p>PythonじゃなくてVisualStudio側の問題のようなのだけど、setup.pyでネイティブモジュールをビルドするときに顕在化したので。</p>
 <p>こういう感じのネイティブモジュールを作った。
 from distutils.core import setup, Extension</p>
-<p>imgui_module = Extension('_swig_imgui',
+<p>imgui_module = Extension(‘_swig_imgui’,
 sources=[
-#'imgui_wrap.cxx',
-'imgui.i',
-'imgui/imgui.cpp',
-'imgui/imgui_draw.cpp',
-'imgui/imgui_demo.cpp',
+#’imgui_wrap.cxx’,
+‘imgui.i’,
+‘imgui/imgui.cpp’,
+‘imgui/imgui_draw.cpp’,
+‘imgui/imgui_demo.cpp’,
 ],
 swig_opts=[
-#'-modern',
-'-c++',
-'-py3',
+#’-modern’,
+‘-c++’,
+‘-py3’,
 ]
 )</p>
-<p>setup (name = 'swig_imgui',
-version = '0.1',
-author      = &quot;ousttrue&quot;,
-description = &quot;&quot;&quot;imgui wrapper using swig&quot;&quot;&quot;,
+<p>setup (name = ‘swig_imgui’,
+version = ‘0.1’,
+author      = “ousttrue”,
+description = “””imgui wrapper using swig”””,
 ext_modules = [imgui_module],
-py_modules = [&quot;swig_imgui&quot;],
+py_modules = [“swig_imgui”],
 )</p>
 <blockquote>
 <div><p>python setup.py build</p>
@@ -98,54 +92,53 @@ py_modules = [&quot;swig_imgui&quot;],
 <p>とするとエラーになる。
 Windows10(64bit)上のvs2017 + vcbuildtoolsの組み合わせの環境である。
 cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -ID:\Anaconda3\include -ID:\Anaconda3\include /EHsc /Tpimgui_wrap.cpp /Fobuild\temp.win-amd64-3.6\Release\imgui_wrap.obj
-error: command 'cl.exe' failed: No such file or directory</p>
+error: command ‘cl.exe’ failed: No such file or directory</p>
 <p>distutilsがcl.exeを探すのに失敗しているようなのである。
 lib/distutils下を調べてみた。
 どうやらlib/distutils/_msvccompiler.pyでvcvarsall.batから環境変数を得ることに失敗しているらしい。
 実際、C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.batの呼び出しが失敗していることを突き止めた。
 Error in script usage. The correct usage is:
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option]
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” [option]
 or
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option] store
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” [option] store
 or
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option] [version number]
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” [option] [version number]
 or
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; [option] store [version number]
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” [option] store [version number]
 where [option] is: x86 | amd64 | arm | x86_amd64 | x86_arm | amd64_x86 | amd64_arm
-where [version number] is either the full Windows 10 SDK version number or &quot;8.1&quot; to use the windows 8.1 SDK
+where [version number] is either the full Windows 10 SDK version number or “8.1” to use the windows 8.1 SDK
 :
 The store parameter sets environment variables to support
 store (rather than desktop) development.
 :
 For example:
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_amd64
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_arm store
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_amd64 10.0.10240.0
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x86_arm store 10.0.10240.0
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x64 8.1
-&quot;C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat&quot; x64 store 8.1</p>
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” x86_amd64
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” x86_arm store
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” x86_amd64 10.0.10240.0
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” x86_arm store 10.0.10240.0
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” x64 8.1
+“C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat” x64 store 8.1</p>
 <p>コマンドラインから実行しても失敗していて、vcvarsall.batに以下のコードがあるのだが、
 :setup_buildsku
-if not exist &quot;%~dp0......\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot; goto usage
+if not exist “%~dp0……\Microsoft Visual C++ Build Tools\vcbuildtools.bat” goto usage
 set CurrentDir=%CD%
-call &quot;%~dp0......\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot; %1 %2
+call “%~dp0……\Microsoft Visual C++ Build Tools\vcbuildtools.bat” %1 %2
 cd /d %CurrentDir%
 goto :eof</p>
 <p>C:\Program Files (x86)\Microsoft Visual Studio\Shared\14.0\VC\vcvarsall.bat
 から
-C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools.bat&quot;
+C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools.bat”
 への相対パスだと一致しないよなーと。
 これが原因でcl.exeのパスが取れない。
 setup.pyにモンキーパッチを当ててcl.exeを発見できるようにしてみた。
 以下をsetup.pyの先頭に追加。</p>
-</section>
 <section class="tex2jax_ignore mathjax_ignore" id="monkey-patch-for-msvccompiler">
-<h1>monkey patch for _msvccompiler<a class="headerlink" href="#monkey-patch-for-msvccompiler" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>monkey patch for _msvccompiler<a class="headerlink" href="#monkey-patch-for-msvccompiler" title="Permalink to this headline">¶</a></h1>
 <p>import distutils._msvccompiler
 import os
 import subprocess
 def _get_vc_env(plat_spec):
-if os.getenv(&quot;DISTUTILS_USE_SDK&quot;):
+if os.getenv(“DISTUTILS_USE_SDK”):
 return {
 key.lower(): value
 for key, value in os.environ.items()
@@ -188,7 +181,26 @@ return env
 </section>
 
 <div class="section">
-   
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../07/imgui_python.html">
+       PythonでImGuiする
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../boost_python3.html">
+      Boost.PythonのPython3でのstd::string、std::wstringのふるまい 
+    </a>
+    
+  </span>
+</div>
+  
 </div>
 
           </div>
@@ -206,7 +218,16 @@ return env
 
 
 
-<h3>ナビゲーション</h3>
+  
+<h2>
+   
+  06 August 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -293,6 +314,14 @@ return env
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -304,8 +333,12 @@ return env
     <a href="../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -348,7 +381,7 @@ return env
     <a href="../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -358,6 +391,14 @@ return env
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -376,7 +417,7 @@ return env
     <a href="../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -409,6 +450,10 @@ return env
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -420,7 +465,7 @@ return env
     <a href="../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -440,7 +485,7 @@ return env
     <a href="../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -452,7 +497,7 @@ return env
     <a href="../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -468,11 +513,11 @@ return env
     <a href="../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -500,21 +545,41 @@ return env
   </li>
     
   <li>
-    <a href="../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

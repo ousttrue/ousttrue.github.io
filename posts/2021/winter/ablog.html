@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>ABlog にシステムを変更 &#8212; 三次元日誌  ドキュメント</title>
+    <title>ABlog にシステムを変更 &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -64,12 +63,12 @@
 
           <div class="body" role="main">
              <section class="tex2jax_ignore mathjax_ignore" id="ablog">
-<h1>ABlog にシステムを変更<a class="headerlink" href="#ablog" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>ABlog にシステムを変更<a class="headerlink" href="#ablog" title="Permalink to this headline">¶</a></h1>
 <p>nikola は使いこなせなくて短命に終わってしまった。
 <code class="docutils literal notranslate"><span class="pre">doit</span></code> は面白いと思うのだが。</p>
 <p>ということで、 <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> プラグインの <a class="reference external" href="https://ablog.readthedocs.io/en/latest/">ABlog</a> です。</p>
 <section id="id1">
-<h2>はまり1<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>はまり1<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">sphinx</span> <span class="pre">content</span> <span class="pre">build</span></code> にデバッガをアタッチして試行錯誤するのだけど、
 キャッシュされて処理されなかった。</p>
 <p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">sphinx</span> <span class="pre">content</span> <span class="pre">build</span> <span class="pre">-E</span> <span class="pre">-v</span></code> とする。</p>
@@ -79,7 +78,7 @@
 </ul>
 </section>
 <section id="id2">
-<h2>はまり2<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>はまり2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">can</span><span class="s1">&#39;t compare offset-naive and offset-aware datetimes</span>
 </pre></div>
 </div>
@@ -92,28 +91,28 @@
 <p>と対処した。</p>
 </section>
 <section id="id3">
-<h2>はまり3<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>はまり3<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">myst-parser</span></code> が <code class="docutils literal notranslate"><span class="pre">---</span></code> による <code class="docutils literal notranslate"><span class="pre">yaml</span></code> 形式の <code class="docutils literal notranslate"><span class="pre">frontmatter</span></code> にしか対応していない様子。
 <a class="reference external" href="https://gohugo.io/content-management/front-matter/">hugo の frontmatter</a> にある <code class="docutils literal notranslate"><span class="pre">toml</span></code> 様式に対応するべく改造したい。</p>
 <section id="id4">
-<h3>切り出し<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>切り出し<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>どこで処理しているのか探索が難航した。</p>
 <p><code class="docutils literal notranslate"><span class="pre">site-packages/mdit_py_plugins/front_matter/index.py</span></code>
 で処理している。</p>
 </section>
 <section id="parse">
-<h3>Parse<a class="headerlink" href="#parse" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>Parse<a class="headerlink" href="#parse" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">site-packages/myst_parser/docutils_renderer.py</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">render_front_matter</span></code> で切り出した文字列を <code class="docutils literal notranslate"><span class="pre">yaml</span></code> でパースしている。
 <code class="docutils literal notranslate"><span class="pre">except</span></code> 節で <code class="docutils literal notranslate"><span class="pre">toml</span></code> にリトライさせたら動いた。</p>
 </section>
 <section id="id5">
-<h3>モンキーパッチ<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>モンキーパッチ<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>とりあえず <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> にて直接修正する。</p>
 </section>
 </section>
 <section id="id6">
-<h2>ABlog は何をしているのか<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>ABlog は何をしているのか<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>特定の条件で、記事をブログ記事と見做して <code class="docutils literal notranslate"><span class="pre">toctree</span></code> 無しで辿れるようにする。
 記事は、日付やタグでグループ化してくれる。</p>
 <p><a class="reference external" href="https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter">https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter</a></p>
@@ -183,7 +182,7 @@
 </li>
  
 </ul>
-<h3>ナビゲーション</h3>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -270,6 +269,14 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -281,8 +288,12 @@
     <a href="../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -325,7 +336,7 @@
     <a href="../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -335,6 +346,14 @@
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -353,7 +372,7 @@
     <a href="../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -386,6 +405,10 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -397,7 +420,7 @@
     <a href="../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -417,7 +440,7 @@
     <a href="../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -429,7 +452,7 @@
     <a href="../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -445,11 +468,11 @@
     <a href="../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -477,21 +500,41 @@
   </li>
     
   <li>
-    <a href="../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

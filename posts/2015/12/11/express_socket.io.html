@@ -1,23 +1,22 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;Socket.IOな実験環境&#34; date: 2015-12-11 taxonomies: {tags: []} &#8212; 三次元日誌  ドキュメント</title>
+    <title>&lt;no title&gt; &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/translations.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <link rel="index" title="索引" href="../../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
   
@@ -65,12 +64,7 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-socket-io-date-2015-12-11-taxonomies-tags">
-<h1>title: &quot;Socket.IOな実験環境&quot;
-date: 2015-12-11
-taxonomies: {tags: []}<a class="headerlink" href="#title-socket-io-date-2015-12-11-taxonomies-tags" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>Socket.IOを実験する環境のメモ。</p>
+             <p>Socket.IOを実験する環境のメモ。</p>
 <p>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
 coffee-scriptは無しでES6要素をなるべく入れる
 Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</p>
@@ -81,13 +75,13 @@ Project生成</p>
 cd sio_sample
 sio_sample&gt; npm init -y
 sio_sample&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D
-sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</p>
+sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static –save</p>
 </div></blockquote>
 <p>vscodeでes6を使えるように
 jsconifg.json
 {
-&quot;compilerOptions&quot;: {
-&quot;target&quot;: &quot;ES6&quot;
+“compilerOptions”: {
+“target”: “ES6”
 }
 }</p>
 <p>後で拡張できるように以下のようなディレクトリ構成にする。
@@ -107,30 +101,30 @@ build &lt;- srcから(加工して)コピーされる</p>
 </li>
 </ul>
 <p>src/server/app.js
-&quot;use strict&quot;;</p>
-<p>const http = require('http');
-const express = require('express');
+“use strict”;</p>
+<p>const http = require(‘http’);
+const express = require(‘express’);
 const port = process.env.port || 3000;
 const app = express();
 const server = http.createServer(app);
-const servestatic = require('serve-static');
-const serve_dir = __dirname + '/public';
-console.log('serve %s', serve_dir);
+const servestatic = require(‘serve-static’);
+const serve_dir = __dirname + ‘/public’;
+console.log(‘serve %s’, serve_dir);
 app
 .use(servestatic(serve_dir))
 ;</p>
 <p>// socket.io
-const socketio = require('socket.io');
+const socketio = require(‘socket.io’);
 const io = socketio(server);
-io.on('connection', (socket) =&gt; {
-console.log('a client connected %s', socket);
-socket.on('disconnect', () =&gt; {
-console.log('a client disconnected');
+io.on(‘connection’, (socket) =&gt; {
+console.log(‘a client connected %s’, socket);
+socket.on(‘disconnect’, () =&gt; {
+console.log(‘a client disconnected’);
 });
 });</p>
 <p>// start
 server.listen(port);
-console.log('start port: %d...', port);</p>
+console.log(‘start port: %d…’, port);</p>
 <p>src/client/index.html</p>
 <!DOCTYPE html>
 <html lang="en">
@@ -144,10 +138,10 @@ console.log('start port: %d...', port);</p>
 </body>
 </html>
 <p>src/client/index.js
-&quot;use strict&quot;;</p>
+“use strict”;</p>
 <p>function setup(target) {
-const div = document.createElement('div');
-div.appendChild(document.createTextNode('onLoad'));
+const div = document.createElement(‘div’);
+div.appendChild(document.createTextNode(‘onLoad’));
 target.appendChild(div);
 }</p>
 <p>window.onload = () =&gt; {</p>
@@ -157,78 +151,78 @@ target.appendChild(div);
 <p>};</p>
 <p>srcからbuildに展開するgulp
 gulpfile.js
-const gulp = require('gulp');
-const $ = require('gulp-load-plugins')();</p>
+const gulp = require(‘gulp’);
+const $ = require(‘gulp-load-plugins’)();</p>
 <p>const config = {
-server_src: './src/server/<strong>/*',
-server_dst: './build',
-client_src: './src/client/</strong>/*',
-client_dst: './build/public'
+server_src: ‘./src/server/<strong>/*’,
+server_dst: ‘./build’,
+client_src: ‘./src/client/</strong>/*’,
+client_dst: ‘./build/public’
 };</p>
-<p>gulp.task('server', () =&gt; {
+<p>gulp.task(‘server’, () =&gt; {
 gulp.src(config.server_src)
 .pipe(gulp.dest(config.server_dst));
 });</p>
-<p>gulp.task('client', () =&gt; {
+<p>gulp.task(‘client’, () =&gt; {
 gulp.src(config.client_src)
 .pipe(gulp.dest(config.client_dst));
 });</p>
-<p>gulp.task('default', ['server', 'client']);</p>
+<p>gulp.task(‘default’, [‘server’, ‘client’]);</p>
 <p>build
 sio_sample&gt; gulp</p>
 <p>ブラウザで動いた。
 browserSync導入
 gulpfile.js。browserSync
 const config = { // 追加分
-app_entry: './build/app.js',
+app_entry: ‘./build/app.js’,
 app_port: 5000,<br />
 };</p>
-<p>const browserSync = require('browser-sync').create();
-gulp.task('serve', ()=&gt;{
+<p>const browserSync = require(‘browser-sync’).create();
+gulp.task(‘serve’, ()=&gt;{
 $.nodemon({
 script: config.app_entry,
-exp: 'js',
+exp: ‘js’,
 ignore: [],
 env: {
 port: config.app_port
 }
 })
-.on('readable', ()=&gt;{
-this.stdout.on('data', (chunk)=&gt;{
+.on(‘readable’, ()=&gt;{
+this.stdout.on(‘data’, (chunk)=&gt;{
 if (/^start /.test(chunk)){
-console.log('reloading...');
+console.log(‘reloading…’);
 browserSync.reload();
 }
 process.stdout.write(chunk)
 });
 });
 });</p>
-<p>gulp.task('browser-sync', ['serve'], ()=&gt;{
+<p>gulp.task(‘browser-sync’, [‘serve’], ()=&gt;{
 browserSync.init({
-proxy: 'localhost:' + config.app_port,
+proxy: ‘localhost:’ + config.app_port,
 port: 3000,
 ws: true
 })
 });</p>
 <p>gulpfile.js。watchタスク追加
-gulp.task('server', () =&gt; {
+gulp.task(‘server’, () =&gt; {
 gulp.src(config.server_src)
 .pipe(gulp.dest(config.server_dst))
 .pipe(browserSync.stream())
 ;
 });</p>
-<p>gulp.task('client', () =&gt; {
+<p>gulp.task(‘client’, () =&gt; {
 gulp.src(config.client_src)
 .pipe(gulp.dest(config.client_dst))
 .pipe(browserSync.stream())
 ;
 });</p>
-<p>gulp.task('build', ['server', 'client']);</p>
-<p>gulp.task('watch', ['build', 'browser-sync'], ()=&gt;{
-gulp.watch(config.server_src, ['server']);
-gulp.watch(config.client_src, ['client']);
+<p>gulp.task(‘build’, [‘server’, ‘client’]);</p>
+<p>gulp.task(‘watch’, [‘build’, ‘browser-sync’], ()=&gt;{
+gulp.watch(config.server_src, [‘server’]);
+gulp.watch(config.client_src, [‘client’]);
 });</p>
-<p>gulp.task('default', ['watch']);</p>
+<p>gulp.task(‘default’, [‘watch’]);</p>
 <p>git
 いったんgitに登録しよう。
 .gitignore
@@ -247,32 +241,32 @@ gulp.watch(config.client_src, ['client']);
     <div id="target"></div>
 </body>
 </html>
-<p>&quot;use strict&quot;;</p>
+<p>“use strict”;</p>
 <p>function setup(target) {
-const div = document.createElement('div');
-div.appendChild(document.createTextNode('hello'));
+const div = document.createElement(‘div’);
+div.appendChild(document.createTextNode(‘hello’));
 target.appendChild(div);</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>this.socket = io.connect();
 </pre></div>
 </div>
 <p>}</p>
 <p>window.onload = () =&gt; {
-setup(document.getElementById('target'));
+setup(document.getElementById(‘target’));
 };</p>
 <p>typescript導入
-sio_sample&gt; tsc --init</p>
+sio_sample&gt; tsc –init</p>
 <p>tsconfig.json
 {
-&quot;compilerOptions&quot;: {
-&quot;module&quot;: &quot;commonjs&quot;,
-&quot;target&quot;: &quot;es5&quot;,
-&quot;noImplicitAny&quot;: true,
-&quot;outDir&quot;: &quot;.&quot;,
-&quot;rootDir&quot;: &quot;.&quot;,
-&quot;sourceMap&quot;: false
+“compilerOptions”: {
+“module”: “commonjs”,
+“target”: “es5”,
+“noImplicitAny”: true,
+“outDir”: “.”,
+“rootDir”: “.”,
+“sourceMap”: false
 },
-&quot;exclude&quot;: [
-&quot;node_modules&quot;
+“exclude”: [
+“node_modules”
 ]
 }</p>
 <p>sio_sample&gt; npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D
@@ -280,66 +274,66 @@ sio_sample&gt; cd src
 sio_sample/src&gt; tsd init
 sio_sample/src&gt; tsd query node express socket.io -rosa install</p>
 <p>gulpfile.js。typescriptのコンパイルを追加
-const path = require('path');
-const tsconfig = require('./tsconfig.json');
+const path = require(‘path’);
+const tsconfig = require(‘./tsconfig.json’);
 const isTypescript = (file) =&gt; {
 const ext = path.extname(file.path).toLowerCase();
-return ext === '.ts';
+return ext === ‘.ts’;
 }</p>
-<p>gulp.task('server', () =&gt; {
+<p>gulp.task(‘server’, () =&gt; {
 gulp.src(config.server_src)
 .pipe(<span class="math notranslate nohighlight">\(.plumber())
         .pipe(\)</span>.if(isTypescript, <span class="math notranslate nohighlight">\(.typescript(tsconfig.compilerOptions)))
-        .pipe(\)</span>.debug('server'))
+        .pipe(\)</span>.debug(‘server’))
 .pipe(gulp.dest(config.server_dst))
 .pipe(browserSync.stream())
 ;
 });</p>
-<p>gulp.task('client', () =&gt; {
+<p>gulp.task(‘client’, () =&gt; {
 gulp.src(config.client_src)
 .pipe(<span class="math notranslate nohighlight">\(.plumber())
         .pipe(\)</span>.if(isTypescript, <span class="math notranslate nohighlight">\(.typescript(tsconfig.compilerOptions)))
-        .pipe(\)</span>.debug('client'))
+        .pipe(\)</span>.debug(‘client’))
 .pipe(gulp.dest(config.client_dst))
 .pipe(browserSync.stream())
 ;
 });</p>
 <p>src/server/app.jsをapp.tsにリネーム
 /// <reference path="../typings/tsd.d.ts" />
-&quot;use strict&quot;;</p>
-<p>import http = require('http');
-import express = require('express');
+“use strict”;</p>
+<p>import http = require(‘http’);
+import express = require(‘express’);
 const port = process.env.port || 3000;
 const app = express();
 const server = http.createServer(app);
-const servestatic = require('serve-static');
-const serve_dir = __dirname + '/public';
-console.log('serve %s', serve_dir);
+const servestatic = require(‘serve-static’);
+const serve_dir = __dirname + ‘/public’;
+console.log(‘serve %s’, serve_dir);
 app
 .use(servestatic(serve_dir))
 ;</p>
 <p>// socket.io
-import socketio = require('socket.io');
+import socketio = require(‘socket.io’);
 const io = socketio(server);
-io.on('connection', (socket) =&gt; {
+io.on(‘connection’, (socket) =&gt; {
 var clientAddress=socket.client.conn.remoteAddress;
-console.log('connected: %s', clientAddress);
-socket.on('disconnect', () =&gt; {
-console.log('disconnected: %s', clientAddress);
+console.log(‘connected: %s’, clientAddress);
+socket.on(‘disconnect’, () =&gt; {
+console.log(‘disconnected: %s’, clientAddress);
 });
 });</p>
 <p>// start
 server.listen(port);
-console.log('start port: %d...', port);</p>
+console.log(‘start port: %d…’, port);</p>
 <p>src/client/index.jsをindex.tsにリネーム
 /// <reference path="../typings/tsd.d.ts" />
-&quot;use strict&quot;;</p>
+“use strict”;</p>
 <p>declare module io {
 export function connect(): SocketIO.Socket;
 }</p>
 <p>function setup(target: Element) {
-const div = document.createElement('div');
-div.appendChild(document.createTextNode('hello socket.io'));
+const div = document.createElement(‘div’);
+div.appendChild(document.createTextNode(‘hello socket.io’));
 target.appendChild(div);</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>this.socket = io.connect();
 </pre></div>
@@ -353,13 +347,13 @@ target.appendChild(div);</p>
 <p>メッセージをやり取り
 src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行
 // socket.io
-import socketio = require('socket.io');
+import socketio = require(‘socket.io’);
 const io = socketio(server);
-io.on('connection', (socket) =&gt; {
+io.on(‘connection’, (socket) =&gt; {
 var clientAddress = socket.client.conn.remoteAddress;
-console.log('connected: %s', clientAddress);
-socket.on('disconnect', () =&gt; {
-console.log('disconnected: %s', clientAddress);
+console.log(‘connected: %s’, clientAddress);
+socket.on(‘disconnect’, () =&gt; {
+console.log(‘disconnected: %s’, clientAddress);
 });</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>socket.on(&#39;client-message&#39;, (data: any) =&gt; {
     socket.emit(&#39;server-message&#39;, &#39;server clicked message&#39;);
@@ -369,7 +363,7 @@ console.log('disconnected: %s', clientAddress);
 <p>});</p>
 <p>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画
 /// <reference path="../typings/tsd.d.ts" />
-&quot;use strict&quot;;</p>
+“use strict”;</p>
 <p>declare module io {
 export function connect(): SocketIO.Socket;
 }</p>
@@ -406,7 +400,6 @@ var client=new Client();</p>
 </pre></div>
 </div>
 <p>};</p>
-</section>
 
 <div class="section">
    
@@ -427,7 +420,7 @@ var client=new Client();</p>
 
 
 
-<h3>ナビゲーション</h3>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -514,6 +507,14 @@ var client=new Client();</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -525,8 +526,12 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -569,7 +574,7 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -579,6 +584,14 @@ var client=new Client();</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -597,7 +610,7 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -630,6 +643,10 @@ var client=new Client();</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -641,7 +658,7 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -661,7 +678,7 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -673,7 +690,7 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -689,11 +706,11 @@ var client=new Client();</p>
     <a href="../../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -721,21 +738,41 @@ var client=new Client();</p>
   </li>
     
   <li>
-    <a href="../../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

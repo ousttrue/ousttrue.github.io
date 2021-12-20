@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;PythonでImGuiする&#34; date: 2017-07-31 taxonomies: {tags: [&#39;python&#39;, &#39;imgui&#39;]} &#8212; 三次元日誌  ドキュメント</title>
+    <title>ImGui - standalone example application for SDL2 + OpenGL &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -63,12 +62,7 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-pythonimgui-date-2017-07-31-taxonomies-tags-python-imgui">
-<h1>title: &quot;PythonでImGuiする&quot;
-date: 2017-07-31
-taxonomies: {tags: ['python', 'imgui']}<a class="headerlink" href="#title-pythonimgui-date-2017-07-31-taxonomies-tags-python-imgui" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>PythonでImGuiするのがよさげな気がしたのでやってみた。</p>
+             <p>PythonでImGuiするのがよさげな気がしたのでやってみた。</p>
 <p>ImGuiはcではなくc++のライブラリなのでPythonのctypesは使えぬ。
 本家のBindingsの項に２つのpython bindingが紹介されている。</p>
 <p>https://github.com/chromy/cyimgui
@@ -78,7 +72,7 @@ https://github.com/swistakm/pyimgui</p>
 <p>https://github.com/ousttrue/SwigImGui</p>
 <p>Swig</p>
 <p>/* Includes the header in the wrapper code */
-#include &quot;imgui/imgui.h&quot;</p>
+#include “imgui/imgui.h”</p>
 <p>/* Parse the header file to generate wrappers */</p>
 <blockquote>
 <div><p>swig -python -c++ imgui.i</p>
@@ -88,34 +82,34 @@ imgui_wrap.cxxから_swig_imgui.pydをビルドする。
 ビルドしてみる
 pythonのNativeModuleをビルドするのでsetup.pyを書いてみる。
 from distutils.core import setup, Extension</p>
-<p>imgui_module = Extension('_swig_imgui',
+<p>imgui_module = Extension(‘_swig_imgui’,
 sources=[
-'imgui_wrap.cxx',
-'imgui/imgui.cpp',
-'imgui/imgui_draw.cpp',
-'imgui/imgui_demo.cpp',
+‘imgui_wrap.cxx’,
+‘imgui/imgui.cpp’,
+‘imgui/imgui_draw.cpp’,
+‘imgui/imgui_demo.cpp’,
 ],
 )</p>
-<p>setup (name = 'swig_imgeui',
-version = '0.1',
-author      = &quot;ousttrue&quot;,
-description = &quot;&quot;&quot;imgui wrapper using swig&quot;&quot;&quot;,
+<p>setup (name = ‘swig_imgeui’,
+version = ‘0.1’,
+author      = “ousttrue”,
+description = “””imgui wrapper using swig”””,
 ext_modules = [imgui_module],
-py_modules = [&quot;imgui&quot;],
+py_modules = [“imgui”],
 )</p>
 <p>ビルド。</p>
 <blockquote>
 <div><p>C:\python36\python.exe setup.py build</p>
 </div></blockquote>
 <p>ビルドしてみるとエラー。
-swigimgui\imgui_wrap.cxx(26285): error C2668: 'ImGui::TreePush': オーバーロード関数の呼び出しを解決することができません。(新機能 ; ヘルプを参照)
-swigimgui\imgui\imgui.h(338): note: 'void ImGui::TreePush(const void *)' の可能性があります
-swigimgui\imgui\imgui.h(337): note: または 'void ImGui::TreePush(const char *)'
-swigimgui\imgui_wrap.cxx(26285): note: 引数リスト '()' を一致させようとしているとき</p>
+swigimgui\imgui_wrap.cxx(26285): error C2668: ‘ImGui::TreePush’: オーバーロード関数の呼び出しを解決することができません。(新機能 ; ヘルプを参照)
+swigimgui\imgui\imgui.h(338): note: ‘void ImGui::TreePush(const void *)’ の可能性があります
+swigimgui\imgui\imgui.h(337): note: または ‘void ImGui::TreePush(const char *)’
+swigimgui\imgui_wrap.cxx(26285): note: 引数リスト ‘()’ を一致させようとしているとき</p>
 <p>ImGui::TreePush();がTreePush(const char* str_id = NULL)とTreePush(const void* ptr_id = NULL)でどちらなのか解決できない。
 修正。</p>
 <p>/* Includes the header in the wrapper code */
-#include &quot;imgui/imgui.h&quot;</p>
+#include “imgui/imgui.h”</p>
 <p>/* Parse the header file to generate wrappers */</p>
 <p>引数無しのTreePushを作らないようにした。
 これでコンパイルは通った。
@@ -129,19 +123,18 @@ imgui.iの上の方に以下の記述を追加する。</p>
 <p>https://github.com/ocornut/imgui/tree/master/examples/sdl_opengl3_example</p>
 <p>をまるっとpythonに移植してみる。
 ここからが長くなるで。</p>
-</section>
 <section class="tex2jax_ignore mathjax_ignore" id="imgui-standalone-example-application-for-sdl2-opengl">
-<h1>ImGui - standalone example application for SDL2 + OpenGL<a class="headerlink" href="#imgui-standalone-example-application-for-sdl2-opengl" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>ImGui - standalone example application for SDL2 + OpenGL<a class="headerlink" href="#imgui-standalone-example-application-for-sdl2-opengl" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="if-you-are-new-to-imgui-see-examples-readme-txt-and-documentation-at-the-top-of-imgui-cpp">
-<h1>If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.<a class="headerlink" href="#if-you-are-new-to-imgui-see-examples-readme-txt-and-documentation-at-the-top-of-imgui-cpp" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.<a class="headerlink" href="#if-you-are-new-to-imgui-see-examples-readme-txt-and-documentation-at-the-top-of-imgui-cpp" title="Permalink to this headline">¶</a></h1>
 <p>import os
 import sys</p>
-<p>if not 'PYSDL2_DLL_PATH' in os.environ:
-os.environ['PYSDL2_DLL_PATH']=os.environ['VCPKG_DIR'] + '/installed/x64-windows/bin'
+<p>if not ‘PYSDL2_DLL_PATH’ in os.environ:
+os.environ[‘PYSDL2_DLL_PATH’]=os.environ[‘VCPKG_DIR’] + ‘/installed/x64-windows/bin’
 from sdl2 import *</p>
 <p>python_dir=os.path.dirname(sys.executable)
-os.environ['PATH']+=(';'+python_dir)
+os.environ[‘PATH’]+=(‘;’+python_dir)
 import swig_imgui as imgui</p>
 <p>import ImplSdlGL3</p>
 <p>def main():</p>
@@ -233,7 +226,7 @@ SDL_Quit();
 return 0;
 </pre></div>
 </div>
-<p>if <strong>name</strong>=='<strong>main</strong>':
+<p>if <strong>name</strong>==’<strong>main</strong>’:
 main()</p>
 <p>ImplSdlGL3.py
 def Init(window):
@@ -293,7 +286,7 @@ io.ImeWindowHandle = wmInfo.info.win.window;
 int型配列へのindexを使った代入
 冒頭のio.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;がエラーになる。
 io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
-TypeError: 'SwigPyObject' object does not support item assignment</p>
+TypeError: ‘SwigPyObject’ object does not support item assignment</p>
 <p>io.KeyMapのCでの型。
 int           KeyMap[ImGuiKey_COUNT];</p>
 <p>単なる配列へのアクセス。KeyMapをlist的なオブジェクトとしてpython側に公開するよりも、ioにセッターを実装することにした。
@@ -313,8 +306,8 @@ swig的にはこれがいちばんの難問である。
 def RenderDrawLists():
 pass</p>
 <p>io.RenderDrawListsFn = RenderDrawLists;</p>
-<p>TypeError: in method 'ImGuiIO_RenderDrawListsFn_set', argument 2 of type 'void (*)(ImDrawData *)'
-Press any key to continue . . .</p>
+<p>TypeError: in method ‘ImGuiIO_RenderDrawListsFn_set’, argument 2 of type ‘void (*)(ImDrawData *)’
+Press any key to continue …</p>
 <p>そりゃ、pythonの関数をこれに代入するのは無理だ。
 解決方法は、以下のようにする。
 imgui.iに追記。場所に注意が必要。</p>
@@ -323,7 +316,7 @@ imgui.iに追記。場所に注意が必要。</p>
 auto func=(PyObject*)ImGui::GetIO().UserData; // Get Python function
 auto obj = SWIG_NewPointerObj(SWIG_as_voidptr(data)
 , SWIGTYPE_p_ImDrawData, 0 |  0 );
-auto arglist = Py_BuildValue(&quot;(O)&quot;,obj); // Build argument list
+auto arglist = Py_BuildValue(“(O)”,obj); // Build argument list
 PyEval_CallObject(func, arglist); // Call Python
 Py_DECREF(arglist); // Trash arglist
 Py_DECREF(obj);
@@ -343,7 +336,7 @@ io.SetClipboardTextFn = ImGui_ImplSdlGL3_SetClipboardText;
 io.GetClipboardTextFn = ImGui_ImplSdlGL3_GetClipboardText;</p>
 <p>void*の代入
 io.ImeWindowHandle = wmInfo.info.win.window;</p>
-<p>TypeError: in method 'ImGuiIO_ImeWindowHandle_set', argument 2 of type 'void *'</p>
+<p>TypeError: in method ‘ImGuiIO_ImeWindowHandle_set’, argument 2 of type ‘void *’</p>
 <p>セッターを作った。</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>void SetImeWindowHandle(long long v)
 {
@@ -430,7 +423,7 @@ Frag_UV = UV;
 Frag_Color = Color;
 gl_Position = ProjMtx * vec4(Position.xy,0,1);
 };
-'''</p>
+‘’’</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>fragment_shader =b&#39;&#39;&#39;#version 330
 </pre></div>
 </div>
@@ -442,7 +435,7 @@ void main()
 {
 Out_Color = Frag_Color * texture( Texture, Frag_UV.st);
 };
-'''</p>
+‘’’</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>g_ShaderHandle = glCreateProgram();
 g_VertHandle = glCreateShader(GL_VERTEX_SHADER);
 g_FragHandle = glCreateShader(GL_FRAGMENT_SHADER);
@@ -501,7 +494,7 @@ const int OFFSETOF_ImDrawVert_col = OFFSETOF_ImDrawVert_col;</p>
 def CreateFontsTexture():
 # Build texture atlas
 io = imgui.GetIO();
-# Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user's existing shader.
+# Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user’s existing shader.
 pixels, width, height=io.Fonts.GetTexDataAsRGBA32();</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Upload texture to graphics system
 last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);
@@ -523,7 +516,7 @@ glBindTexture(GL_TEXTURE_2D, last_texture);
 対象はこれ。
 IMGUI_API void GetTexDataAsRGBA32(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel = NULL);</p>
 <p>typemapでやってみる。
-imgui.iの%include &quot;imgui/imgui.h&quot;より前に記述。</p>
+imgui.iの%include “imgui/imgui.h”より前に記述。</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$1 = &amp;tempP;
 $2 = &amp;tempW;
 $3 = &amp;tempH;
@@ -579,12 +572,12 @@ intからvoid*への変換。</p>
 <p>ここまで実装するとTextureのnullptrでプログラムがクラッシュしなくなる。
 imguiのwidgetに対するinoutな引数
 float*
-IMGUI_API bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format = &quot;%.3f&quot;, float power = 1.0f);</p>
+IMGUI_API bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format = “%.3f”, float power = 1.0f);</p>
 <p>argoutにすると返り値が(bool, float)になっていまいちな気がする。
 swigでfloat*型のヘルパークラスを作る。</p>
 <p>f=imgui.new_floatp()
 imgui.floatp_assign(f, 0.0)
-imgui.SliderFloat(&quot;float&quot;, f, 0.0, 1.0);</p>
+imgui.SliderFloat(“float”, f, 0.0, 1.0);</p>
 <p>bool*
 floatと同様に。
 IMGUI_API void ShowTestWindow(bool* p_open = NULL);</p>
@@ -632,7 +625,7 @@ $1 = temp;
 </div>
 <p>}</p>
 <p>clear_color = [114/255.0, 144/255.0, 154/255.0, 0];
-imgui.ColorEdit3(&quot;clear color&quot;, clear_color);</p>
+imgui.ColorEdit3(“clear color”, clear_color);</p>
 <p>RenderDrawListsの移植
 def RenderDrawLists(draw_data):
 global g_ShaderHandle</p>
@@ -883,7 +876,26 @@ VisualStudioのセットアップ
 </section>
 
 <div class="section">
-   
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="cmake_find_package.html">
+       cmakeのfind_package
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../08/distutils_msvccompiler.html">
+      distutilsでcl.exeが見つからない 
+    </a>
+    
+  </span>
+</div>
+  
 </div>
 
           </div>
@@ -901,7 +913,16 @@ VisualStudioのセットアップ
 
 
 
-<h3>ナビゲーション</h3>
+  
+<h2>
+   
+  31 July 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -988,6 +1009,14 @@ VisualStudioのセットアップ
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -999,8 +1028,12 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -1043,7 +1076,7 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -1053,6 +1086,14 @@ VisualStudioのセットアップ
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -1071,7 +1112,7 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -1104,6 +1145,10 @@ VisualStudioのセットアップ
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -1115,7 +1160,7 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -1135,7 +1180,7 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -1147,7 +1192,7 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -1163,11 +1208,11 @@ VisualStudioのセットアップ
     <a href="../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -1195,21 +1240,41 @@ VisualStudioのセットアップ
   </li>
     
   <li>
-    <a href="../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

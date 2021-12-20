@@ -1,23 +1,22 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;Windows Creators UPDATEが来たしWSL環境を整備&#34; date: 2017-04-14 taxonomies: {tags: [&#39;linux&#39;, &#39;wsl&#39;]} &#8212; 三次元日誌  ドキュメント</title>
+    <title>&lt;no title&gt; &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/translations.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -65,12 +64,7 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-windows-creators-updatewsl-date-2017-04-14-taxonomies-tags-linux-wsl">
-<h1>title: &quot;Windows Creators UPDATEが来たしWSL環境を整備&quot;
-date: 2017-04-14
-taxonomies: {tags: ['linux', 'wsl']}<a class="headerlink" href="#title-windows-creators-updatewsl-date-2017-04-14-taxonomies-tags-linux-wsl" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>Windows SubSystem for Linux
+             <p>Windows SubSystem for Linux
 わりとよくなっていそうな感じなので使ってみる。</p>
 <p>wsltty導入
 minttyにwslビルド(wslbridge同梱)という素敵インストーラが提供されていた。
@@ -80,17 +74,17 @@ minttyにwslビルド(wslbridge同梱)という素敵インストーラが提供
 コメントイン
 umask 022</p>
 <p>inputrc
-&quot;\C-n&quot;:history-search-forward
-&quot;\C-p&quot;:history-search-backward
+“\C-n”:history-search-forward
+“\C-p”:history-search-backward
 set bell-style none</p>
 <p>.tmux.conf
 set -g prefix C-l
 bind C-l send-prefix
 unbind C-b
 set -sg escape-time 1
-bind r source-file ~/.tmux.conf ; display &quot;Reloaded!&quot;</p>
+bind r source-file ~/.tmux.conf ; display “Reloaded!”</p>
 <p>set-option -g default-terminal screen-256color
-set -g terminal-overrides 'xterm:colors=256'</p>
+set -g terminal-overrides ‘xterm:colors=256’</p>
 <p>setw -g mode-keys vi</p>
 <p>vim</p>
 <p>dein.vimによるプラグイン管理のマイベストプラクティス</p>
@@ -100,63 +94,63 @@ set -g terminal-overrides 'xterm:colors=256'</p>
 $ mkdir -p ~/.config/nvim</p>
 <p>~/.config/nvim/dein.toml
 [[plugins]]
-repo = 'Shougo/dein.vim'</p>
+repo = ‘Shougo/dein.vim’</p>
 <p>[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
-repo = 'osyo-manga/vim-precious'
-depends = ['context_filetype.vim']</p>
+repo = ‘osyo-manga/vim-precious’
+depends = [‘context_filetype.vim’]</p>
 <p>[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
-repo = 'Shougo/context_filetype.vim'</p>
+repo = ‘Shougo/context_filetype.vim’</p>
 <p>[[plugins]] # toml syntax
-repo = 'cespare/vim-toml'
-on_ft = 'toml'</p>
+repo = ‘cespare/vim-toml’
+on_ft = ‘toml’</p>
 <p>[[plugins]] # カラースキーマ
-repo = 'w0ng/vim-hybrid'
-hook_add = '''
+repo = ‘w0ng/vim-hybrid’
+hook_add = ‘’’
 set background=dark
-&quot; colorscheme 設定は source 後に行う必要があるので VimEnter で行う。
-&quot; 但し Colorscheme イベントの発生が抑制されないよう nented を付ける。
+” colorscheme 設定は source 後に行う必要があるので VimEnter で行う。
+” 但し Colorscheme イベントの発生が抑制されないよう nented を付ける。
 au MyAutoCmd VimEnter * nested colorscheme hybrid
-'''</p>
+‘’’</p>
 <p>[[plugins]]
-repo = 'itchyny/lightline.vim'</p>
+repo = ‘itchyny/lightline.vim’</p>
 <p>[[plugins]]
-repo = 'scrooloose/nerdtree'</p>
+repo = ‘scrooloose/nerdtree’</p>
 <p>.vimrc
 if !&amp;compatible
 set nocompatible
 endif</p>
-<p>&quot; reset augroup
+<p>” reset augroup
 augroup MyAutoCmd
 autocmd!
 augroup END</p>
-<p>&quot; dein settings {{{
-&quot; dein自体の自動インストール
+<p>” dein settings {{{
+” dein自体の自動インストール
 let s:cache_home = empty(<span class="math notranslate nohighlight">\(XDG_CACHE_HOME) ? expand('~/.cache') : \)</span>XDG_CACHE_HOME
-let s:dein_dir = s:cache_home . '/dein'
-let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
+let s:dein_dir = s:cache_home . ‘/dein’
+let s:dein_repo_dir = s:dein_dir . ‘/repos/github.com/Shougo/dein.vim’
 if !isdirectory(s:dein_repo_dir)
-call system('git clone https://github.com/Shougo/dein.vim ' . shellescape(s:dein_repo_dir))
+call system(‘git clone https://github.com/Shougo/dein.vim ‘ . shellescape(s:dein_repo_dir))
 endif
-let &amp;runtimepath = s:dein_repo_dir .&quot;,&quot;. &amp;runtimepath
-&quot; プラグイン読み込み＆キャッシュ作成
-&quot;let s:toml_file = fnamemodify(expand('<sfile>'), ':h').'/dein.toml'
-let s:toml_file = '~/.config/nvim'.'/dein.toml'
+let &amp;runtimepath = s:dein_repo_dir .”,”. &amp;runtimepath
+” プラグイン読み込み＆キャッシュ作成
+“let s:toml_file = fnamemodify(expand(’<sfile>’), ‘:h’).’/dein.toml’
+let s:toml_file = ‘~/.config/nvim’.’/dein.toml’
 if dein#load_state(s:dein_dir)
 call dein#begin(s:dein_dir)
 call dein#load_toml(s:toml_file)
 call dein#end()
 call dein#save_state()
 endif
-&quot; 不足プラグインの自動インストール
-if has('vim_starting') &amp;&amp; dein#check_install()
+” 不足プラグインの自動インストール
+if has(‘vim_starting’) &amp;&amp; dein#check_install()
 call dein#install()
 endif
-&quot; }}}</p>
-<p>&quot;ビープ音すべてを無効にする
+” }}}</p>
+<p>“ビープ音すべてを無効にする
 syntax on
 filetype on
 set visualbell t_vb=
-set noerrorbells &quot;エラーメッセージの表示時にビープを鳴らさない
+set noerrorbells “エラーメッセージの表示時にビープを鳴らさない
 set laststatus=2
 set noswapfile nobackup noundofile
 set hidden</p>
@@ -164,7 +158,6 @@ set hidden</p>
 binaryをdownloadして/usr/local/goに展開
 nvm</p>
 <p>https://github.com/creationix/nvm</p>
-</section>
 
 <div class="section">
    
@@ -185,7 +178,7 @@ nvm</p>
 
 
 
-<h3>ナビゲーション</h3>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -272,6 +265,14 @@ nvm</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -283,8 +284,12 @@ nvm</p>
     <a href="../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -327,7 +332,7 @@ nvm</p>
     <a href="../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -337,6 +342,14 @@ nvm</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -355,7 +368,7 @@ nvm</p>
     <a href="../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -388,6 +401,10 @@ nvm</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -399,7 +416,7 @@ nvm</p>
     <a href="../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -419,7 +436,7 @@ nvm</p>
     <a href="../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -431,7 +448,7 @@ nvm</p>
     <a href="../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -447,11 +464,11 @@ nvm</p>
     <a href="../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -479,21 +496,41 @@ nvm</p>
   </li>
     
   <li>
-    <a href="../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

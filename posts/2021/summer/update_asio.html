@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>compiler を最新にする &#8212; 三次元日誌  ドキュメント</title>
+    <title>compiler を最新にする &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -71,7 +70,7 @@
 </ul>
 <p>に動画と動画のサンプルコードが有る。</p>
 <section class="tex2jax_ignore mathjax_ignore" id="compiler">
-<h1>compiler を最新にする<a class="headerlink" href="#compiler" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>compiler を最新にする<a class="headerlink" href="#compiler" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">ASIO_HAS_CO_AWAIT</span></code> が必要でこれが有効になるには新しいコンパイラが必要。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// asio/detail/config.hpp`</span>
 
@@ -104,7 +103,7 @@
 </pre></div>
 </div>
 <section id="vc2019-20210818">
-<h2>VC2019(20210818最新版いける)<a class="headerlink" href="#vc2019-20210818" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>VC2019(20210818最新版いける)<a class="headerlink" href="#vc2019-20210818" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/">https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/</a></p>
 <blockquote>
 <div><p>C++20 coroutines in Visual Studio 2019 version 16.8.</p>
@@ -131,7 +130,7 @@ target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
 </div>
 </section>
 <section id="llvm-12">
-<h2>LLVM-12(うまくいかず。追加のコマンドライン引数か)<a class="headerlink" href="#llvm-12" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>LLVM-12(うまくいかず。追加のコマンドライン引数か)<a class="headerlink" href="#llvm-12" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://clang.llvm.org/cxx_status.html">https://clang.llvm.org/cxx_status.html</a></p>
 <p>LLVM-12 だと、</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="s1">&#39;C:\Program Files\LLVM</span><span class="se">\b</span><span class="s1">in\clang.exe&#39;</span> <span class="o">-</span><span class="n">v</span>
@@ -145,7 +144,7 @@ target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>コード<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>コード<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asio/awaitable.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;asio/co_spawn.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;asio/detached.hpp&gt;</span><span class="cp"></span>
@@ -161,7 +160,7 @@ target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
 </pre></div>
 </div>
 <section id="co-spawn-awaitable">
-<h2>co_spawn で awaitable を起動する<a class="headerlink" href="#co-spawn-awaitable" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>co_spawn で awaitable を起動する<a class="headerlink" href="#co-spawn-awaitable" title="Permalink to this headline">¶</a></h2>
 <p>coroutine は 戻り値の型が <code class="docutils literal notranslate"><span class="pre">asio::awaitable&lt;T&gt;</span></code> である必要がある。この関数の中で <code class="docutils literal notranslate"><span class="pre">co_await</span></code>, <code class="docutils literal notranslate"><span class="pre">co_yield</span></code>, <code class="docutils literal notranslate"><span class="pre">co_return</span></code> が使える。
 coroutine は lambda でもよいので、下記のようにできる。</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="k">auto</span> <span class="n">co</span> <span class="o">=</span> <span class="p">[]()</span> <span class="o">-&gt;</span> <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="p">{</span>
@@ -185,7 +184,7 @@ Completion Handler というコールバックなので、 promise に set_value
 </div>
 </section>
 <section id="client-side">
-<h2>client side<a class="headerlink" href="#client-side" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>client side<a class="headerlink" href="#client-side" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>timer</p></li>
 <li><p>connect</p></li>
@@ -219,7 +218,7 @@ Completion Handler というコールバックなので、 promise に set_value
 </div>
 </section>
 <section id="server-side">
-<h2>server side<a class="headerlink" href="#server-side" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>server side<a class="headerlink" href="#server-side" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">server</span> <span class="p">{</span>
 
   <span class="n">asio</span><span class="o">::</span><span class="n">io_context</span> <span class="o">&amp;</span><span class="n">_context</span><span class="p">;</span>
@@ -289,9 +288,9 @@ Completion Handler というコールバックなので、 promise に set_value
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="asio-api">
-<h1>asio api<a class="headerlink" href="#asio-api" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>asio api<a class="headerlink" href="#asio-api" title="Permalink to this headline">¶</a></h1>
 <section id="io-context">
-<h2>io_context<a class="headerlink" href="#io-context" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>io_context<a class="headerlink" href="#io-context" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">c++23</span></code> の <code class="docutils literal notranslate"><span class="pre">Networking</span> <span class="pre">TS</span></code> に向けた変更？</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://amedama1x1.hatenablog.com/entry/2016/04/05/205340">Networking TS の Boost.Asio からの変更点 - その 1: Associated allocator</a></p></li>
@@ -322,14 +321,14 @@ Completion Handler というコールバックなので、 promise に set_value
 </div>
 </section>
 <section id="endpoint">
-<h2>endpoint<a class="headerlink" href="#endpoint" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>endpoint<a class="headerlink" href="#endpoint" title="Permalink to this headline">¶</a></h2>
 <p>ipaddress + port</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">asip</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span> <span class="n">ep</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">),</span> <span class="mi">1234</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="tcp-connect">
-<h2>tcp connect<a class="headerlink" href="#tcp-connect" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>tcp connect<a class="headerlink" href="#tcp-connect" title="Permalink to this headline">¶</a></h2>
 <p>socket</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">io_context</span> <span class="n">context</span><span class="p">;</span>
 <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span> <span class="n">socket</span><span class="p">(</span><span class="n">coontext</span><span class="p">);</span>
@@ -385,24 +384,24 @@ Completion Handler というコールバックなので、 promise に set_value
 </div>
 </section>
 <section id="tcp-listen">
-<h2>tcp listen<a class="headerlink" href="#tcp-listen" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>tcp listen<a class="headerlink" href="#tcp-listen" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="raed-async">
-<h2>raed_async<a class="headerlink" href="#raed-async" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>raed_async<a class="headerlink" href="#raed-async" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="write-async">
-<h2>write_async<a class="headerlink" href="#write-async" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>write_async<a class="headerlink" href="#write-async" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="coroutine">
-<h1>coroutine 詳細<a class="headerlink" href="#coroutine" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>coroutine 詳細<a class="headerlink" href="#coroutine" title="Permalink to this headline">¶</a></h1>
 <p>asio の coroutine を学んでいたらできないことが出てきた。</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">rpc_call</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="awaiter">
-<h1>自前の Awaiter が必要？<a class="headerlink" href="#awaiter" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>自前の Awaiter が必要？<a class="headerlink" href="#awaiter" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span>
 <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="n">rpc_call</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">AS</span><span class="p">...</span> <span class="n">as</span><span class="p">)</span>
 <span class="p">{</span>
@@ -428,7 +427,7 @@ Completion Handler というコールバックなので、 promise に set_value
 <p><code class="docutils literal notranslate"><span class="pre">co_await</span> <span class="pre">std::future</span></code> できるぽいが, <code class="docutils literal notranslate"><span class="pre">asio</span></code> と混ぜてうまくいくのだろうか。</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="c-20-coroutine">
-<h1>c++20 coroutine<a class="headerlink" href="#c-20-coroutine" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>c++20 coroutine<a class="headerlink" href="#c-20-coroutine" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference external" href="https://cpprefjp.github.io/lang/cpp20/coroutines.html">https://cpprefjp.github.io/lang/cpp20/coroutines.html</a></p></li>
 <li><p><a class="reference external" href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html</a></p></li>
@@ -439,7 +438,7 @@ Completion Handler というコールバックなので、 promise に set_value
 返り値の型から promise_type を得られるようにする必要がある。</p>
 <p>初期化は <code class="docutils literal notranslate"><span class="pre">promise_type::get_return_object</span></code> から始まるぽい。</p>
 <section id="generator">
-<h2>generator の例<a class="headerlink" href="#generator" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>generator の例<a class="headerlink" href="#generator" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">generator</span> <span class="p">{</span>
   <span class="k">struct</span> <span class="n">promise_type</span><span class="p">;</span>
   <span class="k">using</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">;</span>  
@@ -462,9 +461,9 @@ Completion Handler というコールバックなので、 promise に set_value
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="asio">
-<h1>Asio の実装<a class="headerlink" href="#asio" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>Asio の実装<a class="headerlink" href="#asio" title="Permalink to this headline">¶</a></h1>
 <section id="asio-awaitable">
-<h2>asio::awaitable<a class="headerlink" href="#asio-awaitable" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>asio::awaitable<a class="headerlink" href="#asio-awaitable" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">asio::awaitable&lt;T&gt;</span></code> が CoroutineTrait の実装。</p>
 <p><code class="docutils literal notranslate"><span class="pre">include/asio/awaitable.hpp</span></code></p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Executor</span> <span class="o">=</span> <span class="n">any_io_executor</span><span class="o">&gt;</span>
@@ -546,7 +545,7 @@ Completion Handler というコールバックなので、 promise に set_value
 </div>
 </section>
 <section id="promise-type">
-<h2>promise_type<a class="headerlink" href="#promise-type" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>promise_type<a class="headerlink" href="#promise-type" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">include/asio/impl/awaitable.hpp</span></code></p>
 <p>// promise_type</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp"># if defined(ASIO_HAS_STD_COROUTINE)</span>
@@ -578,7 +577,7 @@ Completion Handler というコールバックなので、 promise に set_value
 </div>
 </section>
 <section id="asio-detail-awaitable-frame">
-<h2>asio::detail::awaitable_frame<a class="headerlink" href="#asio-detail-awaitable-frame" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>asio::detail::awaitable_frame<a class="headerlink" href="#asio-detail-awaitable-frame" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Executor</span><span class="o">&gt;</span>
 <span class="k">class</span> <span class="nc">awaitable_frame</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span> <span class="n">Executor</span><span class="o">&gt;</span>
   <span class="o">:</span> <span class="k">public</span> <span class="n">awaitable_frame_base</span><span class="o">&lt;</span><span class="n">Executor</span><span class="o">&gt;</span>
@@ -661,7 +660,7 @@ Completion Handler というコールバックなので、 promise に set_value
 </li>
  
 </ul>
-<h3>ナビゲーション</h3>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -748,6 +747,14 @@ Completion Handler というコールバックなので、 promise に set_value
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -759,8 +766,12 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -803,7 +814,7 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -813,6 +824,14 @@ Completion Handler というコールバックなので、 promise に set_value
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -831,7 +850,7 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -864,6 +883,10 @@ Completion Handler というコールバックなので、 promise に set_value
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -875,7 +898,7 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -895,7 +918,7 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -907,7 +930,7 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -923,11 +946,11 @@ Completion Handler というコールバックなので、 promise に set_value
     <a href="../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -955,21 +978,41 @@ Completion Handler というコールバックなので、 promise に set_value
   </li>
     
   <li>
-    <a href="../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

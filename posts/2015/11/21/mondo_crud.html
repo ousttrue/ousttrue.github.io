@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;MongoDBでCRUD&#34; date: 2015-11-21 taxonomies: {tags: []} &#8212; 三次元日誌  ドキュメント</title>
+    <title>gulpfile.coffeeにタスクを追加 &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
   
@@ -63,12 +62,7 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-mongodbcrud-date-2015-11-21-taxonomies-tags">
-<h1>title: &quot;MongoDBでCRUD&quot;
-date: 2015-11-21
-taxonomies: {tags: []}<a class="headerlink" href="#title-mongodbcrud-date-2015-11-21-taxonomies-tags" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>“シングルページWebアプリケーション”に説明されている
+             <p>“シングルページWebアプリケーション”に説明されている
 mongodbをバックエンドに、node.js + expressをフロントエンドにする構成のおさらい。
 MongoDB &lt;-&gt; node.js Express &lt;-&gt; Browser</p>
 <p>グローバルなnpmパッケージ</p>
@@ -83,16 +77,16 @@ app.js</p>
 <div><p>mkdir mongocrud
 cd mongocrud
 mongocrud&gt; npm init -y
-mongocrud&gt; npm install express --save</p>
+mongocrud&gt; npm install express –save</p>
 </div></blockquote>
 <p>// app.js
-var http=require('http');
-var express=require('express');</p>
+var http=require(‘http’);
+var express=require(‘express’);</p>
 <p>var port=process.env.port || 3000;
 var app=express();
 var server=http.createServer(app);</p>
-<p>app.get('/', function(request, response){
-response.send('Hello Express');
+<p>app.get(‘/’, function(request, response){
+response.send(‘Hello Express’);
 });</p>
 <p>server.listen(port);</p>
 <p>起動</p>
@@ -102,16 +96,16 @@ response.send('Hello Express');
 <p>http://localhost:3000
 で動作を確認する。
 loggerや静的ファイル提供などのミドルウェアを追加
-mongocrud&gt; npm install body-parser method-override connect-logger errorhandler serve-static --save</p>
+mongocrud&gt; npm install body-parser method-override connect-logger errorhandler serve-static –save</p>
 <p>// app.js
 // app.getの前
-var bodyparser=require('body-parser');
-var methodoverride = require('method-override');
-var logger = require('connect-logger');
-var errorhandler = require('errorhandler');
-var servestatic = require('serve-static');
-var serve_dir=__dirname + &quot;/client&quot;;
-console.log(&quot;serve %s&quot;, serve_dir);
+var bodyparser=require(‘body-parser’);
+var methodoverride = require(‘method-override’);
+var logger = require(‘connect-logger’);
+var errorhandler = require(‘errorhandler’);
+var servestatic = require(‘serve-static’);
+var serve_dir=__dirname + “/client”;
+console.log(“serve %s”, serve_dir);
 app
 .use(bodyparser())
 .use(methodoverride())
@@ -122,60 +116,59 @@ showStack: true
 }));
 .use(servestatic(serve_dir))</p>
 <p>gulpで静的なファイルを’./build/client’下にコピーするタスクを定義する</p>
-</section>
 <section class="tex2jax_ignore mathjax_ignore" id="gulpfile-coffee">
-<h1>gulpfile.coffeeにタスクを追加<a class="headerlink" href="#gulpfile-coffee" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>gulpfile.coffeeにタスクを追加<a class="headerlink" href="#gulpfile-coffee" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1><a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="client">
-<h1>client<a class="headerlink" href="#client" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id2">
-<h1><a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'client', -&gt;
+<h1><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘client’, -&gt;
 gulp.src config.src_client
 .pipe gulp.dest config.dst_client
 .pipe browserSync.stream()</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="tasks">
-<h1>tasks<a class="headerlink" href="#tasks" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'watch', -&gt;
-gulp.watch config.src_ts, ['ts']
-gulp.watch config.src_client, ['client']</p>
+<h1>tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘watch’, -&gt;
+gulp.watch config.src_ts, [‘ts’]
+gulp.watch config.src_client, [‘client’]</p>
 <p>gulpでサーバー起動とブラウザの自動オープンタスクを定義する
 いろいろ入用になるのでgulpを準備する。
 まずは、nodemonとbrowser-syncを導入して
 app.js起動と起動したアプリをブラウザで自動で開くタスクを定義する。
 mongocrud&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D</p>
 <p>// gulpfile.js
-var gulp = require('gulp');
-var $ = require(&quot;gulp-load-plugins&quot;)();
-var browserSync = require(&quot;browser-sync&quot;).create();
+var gulp = require(‘gulp’);
+var $ = require(“gulp-load-plugins”)();
+var browserSync = require(“browser-sync”).create();
 var port = 5000;</p>
-<p>gulp.task('serve', function () {
+<p>gulp.task(‘serve’, function () {
 $.nodemon({
-script: 'app.js',
-exp: 'js',
+script: ‘app.js’,
+exp: ‘js’,
 ignore: [],
 env: {
 port: port
 }
 })
-.on('restart', function () { browserSync.reload(); });
+.on(‘restart’, function () { browserSync.reload(); });
 });</p>
-<p>gulp.task('browser-sync', ['serve'], function () {
+<p>gulp.task(‘browser-sync’, [‘serve’], function () {
 browserSync.init({
-proxy: &quot;localhost:&quot; + port
+proxy: “localhost:” + port
 });
 });</p>
-<p>gulp.task('default', ['browser-sync']);</p>
+<p>gulp.task(‘default’, [‘browser-sync’]);</p>
 <p>BrowserSyncのReloadが動くには出力がhtmlである必要がある(bodyタグの中に細工をするため)。
 // app.jsの修正
-app.get('/', function(request, response){
-response.setHeader('content-type', 'text/html');
-response.send('<html><head></head><body>Hello html</body></html>');
+app.get(‘/’, function(request, response){
+response.setHeader(‘content-type’, ‘text/html’);
+response.send(’<html><head></head><body>Hello html</body></html>’);
 });</p>
 <p>mongocrud&gt; gulp</p>
 <p>でnodemonが起動してブラウザが自動で開始される。
@@ -183,7 +176,7 @@ app.jsの内容を変えるとブラウザがリロードされる。
 が、リロードが速すぎて内容が更新されないことが判明。
 リロードを遅延させる策を講じる。
 // app.jsの最後尾に追加
-console.log('start %d', port);</p>
+console.log(‘start %d’, port);</p>
 <p>app.jsからのコンソール出力を監視する。
 // gulpfile.jsの修正</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$.nodemon({
@@ -215,143 +208,143 @@ mongocrud&gt; gulp</p>
 <p>としたら特にオプション等を指定することなくgulpはgulpfile.coffeeを見つけてくれて動いた。</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id3">
-<h1>gulpfile.coffee<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp = require('gulp');
-$ = require(&quot;gulp-load-plugins&quot;)();
-browserSync = require(&quot;browser-sync&quot;).create();
+<h1>gulpfile.coffee<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p>gulp = require(‘gulp’);
+$ = require(“gulp-load-plugins”)();
+browserSync = require(“browser-sync”).create();
 port = 5000;</p>
-<p>gulp.task 'serve', -&gt;
+<p>gulp.task ‘serve’, -&gt;
 $.nodemon({
-script: 'app.js',
-exp: 'js',
+script: ‘app.js’,
+exp: ‘js’,
 ignore: [],
 env: {
 port: port
 }
 })
-.on 'readable', -&gt;
-this.stdout.on 'data', (chunk) -&gt;
+.on ‘readable’, -&gt;
+this.stdout.on ‘data’, (chunk) -&gt;
 if (/^start /.test(chunk))
-console.log('reloading...')
+console.log(‘reloading…’)
 browserSync.reload()
 process.stdout.write(chunk);</p>
-<p>gulp.task 'browser-sync', ['serve'], -&gt;
+<p>gulp.task ‘browser-sync’, [‘serve’], -&gt;
 browserSync.init({
-proxy: &quot;localhost:&quot; + port
+proxy: “localhost:” + port
 })</p>
-<p>gulp.task('default', ['browser-sync']);</p>
+<p>gulp.task(‘default’, [‘browser-sync’]);</p>
 <p>TypeScriptにする
 app.jsをsrc/app.tsに移動する。
 // src/app.ts
 declare function require(name: string):any;
 declare var process;</p>
-<p>var http=require('http');
-var express=require('express');</p>
+<p>var http=require(‘http’);
+var express=require(‘express’);</p>
 <p>var port=process.env.port || 3000;
 var app=express();
 var server=http.createServer(app);</p>
-<p>app.get('/', function(request, response){
-response.setHeader('content-type', 'text/html');
-response.send('<html><head></head><body>Hello</body></html>');
+<p>app.get(‘/’, function(request, response){
+response.setHeader(‘content-type’, ‘text/html’);
+response.send(’<html><head></head><body>Hello</body></html>’);
 });</p>
 <p>server.listen(port);
-console.log('start %d', port);</p>
+console.log(‘start %d’, port);</p>
 <p>コンパイルが通るようにアンビエント宣言を追加した。
 gulpにコンパイルタスクを定義する。
 serveタスクの前にtsタスクを実行し、
 tsファイルの更新をwatchしてtsタスクを起動するように調整した。</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id4">
-<h1>gulpfile.coffee<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp = require('gulp');
-$ = require(&quot;gulp-load-plugins&quot;)();
-browserSync = require(&quot;browser-sync&quot;).create();</p>
+<h1>gulpfile.coffee<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>gulp = require(‘gulp’);
+$ = require(“gulp-load-plugins”)();
+browserSync = require(“browser-sync”).create();</p>
 <p>config = {
-src_ts: './src/<strong>/*.ts',<br />
-dst_js_dir: './build/js',
-dst_watch: './build/</strong>/*.js',
-app_entry: './build/js/app.js',
+src_ts: ‘./src/<strong>/*.ts’,<br />
+dst_js_dir: ‘./build/js’,
+dst_watch: ‘./build/</strong>/*.js’,
+app_entry: ‘./build/js/app.js’,
 app_port: 5000
 }</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id5">
-<h1><a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="compile-typescript">
-<h1>compile typescript<a class="headerlink" href="#compile-typescript" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>compile typescript<a class="headerlink" href="#compile-typescript" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id6">
-<h1><a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'ts', -&gt;
+<h1><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘ts’, -&gt;
 gulp.src config.src_ts
 .pipe $.typescript({
-target: 'ES6'
+target: ‘ES6’
 removeComments: true
 }).js
 .pipe gulp.dest config.dst_js_dir</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id7">
-<h1><a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="start-js-app">
-<h1>start js app<a class="headerlink" href="#start-js-app" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>start js app<a class="headerlink" href="#start-js-app" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id8">
-<h1><a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'serve', ['ts'], -&gt;
+<h1><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘serve’, [‘ts’], -&gt;
 $.nodemon({
 script: config.app_entry,
-exp: 'js',
+exp: ‘js’,
 ignore: [],
 env: {
 port: config.app_port
 },
 stdout: false
 })
-#.on 'restart', -&gt;
+#.on ‘restart’, -&gt;
 #    browserSync.reload();
-.on 'readable', -&gt;
-this.stdout.on 'data', (chunk) -&gt;
+.on ‘readable’, -&gt;
+this.stdout.on ‘data’, (chunk) -&gt;
 if (/^start /.test(chunk))
-console.log('reloading...')
+console.log(‘reloading…’)
 browserSync.reload()
 process.stdout.write(chunk);</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id9">
-<h1><a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="start-browser-sync">
-<h1>start browser-sync<a class="headerlink" href="#start-browser-sync" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>start browser-sync<a class="headerlink" href="#start-browser-sync" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id10">
-<h1><a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'browser-sync', ['serve'], -&gt;
+<h1><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘browser-sync’, [‘serve’], -&gt;
 browserSync.init({
-proxy: &quot;http://localhost:&quot; + config.app_port
+proxy: “http://localhost:” + config.app_port
 })</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id11">
-<h1>tasks<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'watch', -&gt;
-gulp.watch config.src_ts, ['ts']</p>
-<p>gulp.task('default', ['watch', 'browser-sync']);</p>
+<h1>tasks<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘watch’, -&gt;
+gulp.watch config.src_ts, [‘ts’]</p>
+<p>gulp.task(‘default’, [‘watch’, ‘browser-sync’]);</p>
 <p>typescriptを型安全にする
 コンパイラオプションを定義するtsconfig.jsonを生成する(要tsc-1.6以上)。
-mongocrud&gt; tsc --init</p>
+mongocrud&gt; tsc –init</p>
 <p>手で作ってもよし
 tsconfig.json
 {
-&quot;compilerOptions&quot;: {
-&quot;module&quot;: &quot;commonjs&quot;,
-&quot;target&quot;: &quot;es5&quot;,
-&quot;noImplicitAny&quot;: true,
-&quot;outDir&quot;: &quot;build&quot;,
-&quot;rootDir&quot;: &quot;.&quot;,
-&quot;sourceMap&quot;: false
+“compilerOptions”: {
+“module”: “commonjs”,
+“target”: “es5”,
+“noImplicitAny”: true,
+“outDir”: “build”,
+“rootDir”: “.”,
+“sourceMap”: false
 },
-&quot;filesGlob&quot;: [
-&quot;./typings/<strong>/*.d.ts&quot;,
-&quot;./src/</strong>/*.ts&quot;
+“filesGlob”: [
+“./typings/<strong>/*.d.ts”,
+“./src/</strong>/*.ts”
 ]
 }</p>
 <p>VSCodeの場合、tsconfig.jsonを変えたらVSCodeを再起動するべし。
@@ -359,9 +352,9 @@ filesGlobは必要で、無いとインテリセンスが遅くなる(Loading…
 tsタスクがtsconfig.jsonを使うようにする。</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id12">
-<h1>gulpfile.coffee<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>gulp.task 'ts', -&gt;
-tsconfig = require('tsconfig.json')<br />
+<h1>gulpfile.coffee<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h1>
+<p>gulp.task ‘ts’, -&gt;
+tsconfig = require(‘tsconfig.json’)<br />
 gulp.src config.src_ts
 .pipe $.typescript(tsconfig.compilerOptions).js
 .pipe gulp.dest config.dst_js_dir</p>
@@ -370,17 +363,17 @@ mongocrud&gt; tsd init
 mongocrud&gt; tsd query node express -rosa install</p>
 <p>src/app.ts
 /// <reference path="../typings/tsd.d.ts" />
-import http = require('http');
-import express=require('express');</p>
+import http = require(‘http’);
+import express=require(‘express’);</p>
 <p>var port=process.env.port || 3000;
 var app=express();
 var server=http.createServer(app);</p>
-<p>app.get('/', (request, response) =&gt; {
-response.setHeader('content-type', 'text/html');
-response.send('<html><head></head><body>Hello ts</body></html>');
+<p>app.get(‘/’, (request, response) =&gt; {
+response.setHeader(‘content-type’, ‘text/html’);
+response.send(’<html><head></head><body>Hello ts</body></html>’);
 });</p>
 <p>server.listen(port);
-console.log('start %d', port);</p>
+console.log(‘start %d’, port);</p>
 <p>MongoDBのCRUDを定義する
 mongodbをインストールする。
 Windowsの場合、MongoDBがデフォルトの”Program Files”にインストールされるとパスにスペースが入って
@@ -391,25 +384,25 @@ gulpでmongodbを起動する
 mongocrud&gt; npm i sprintf-js -D</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id13">
-<h1>gulpfile.coffee<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>MONGO_EXE = 'C:/MongoDB/bin/mongod.exe';</p>
+<h1>gulpfile.coffee<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h1>
+<p>MONGO_EXE = ‘C:/MongoDB/bin/mongod.exe’;</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id14">
-<h1><a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="running-mongo">
-<h1>Running mongo<a class="headerlink" href="#running-mongo" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>Running mongo<a class="headerlink" href="#running-mongo" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id15">
-<h1><a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h1>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="http-stackoverflow-com-a-28048696-46810">
-<h1>http://stackoverflow.com/a/28048696/46810<a class="headerlink" href="#http-stackoverflow-com-a-28048696-46810" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>sprintf = require('sprintf-js').sprintf;
-fs = require('fs');
-exec = require('child_process').exec;
-gulp.task 'mongodb:start', (cb)-&gt;
-command=sprintf('%s --dbpath %s'
+<h1>http://stackoverflow.com/a/28048696/46810<a class="headerlink" href="#http-stackoverflow-com-a-28048696-46810" title="Permalink to this headline">¶</a></h1>
+<p>sprintf = require(‘sprintf-js’).sprintf;
+fs = require(‘fs’);
+exec = require(‘child_process’).exec;
+gulp.task ‘mongodb:start’, (cb)-&gt;
+command=sprintf(‘%s –dbpath %s’
 , MONGO_EXE, config.mongo_data);
 if(!fs.existsSync(config.mongo_data))
 fs.mkdirSync(config.mongo_data);
@@ -418,52 +411,52 @@ console.log(stdout);
 console.log(stderr);
 cb();</p>
 <p>app.tsからmongodbにアクセスする
-mongocrud&gt; npm install mongodb --save
+mongocrud&gt; npm install mongodb –save
 mongocrud&gt; tsd query mongodb -rosa install</p>
 <p>src/app.ts
 /// <reference path="../typings/tsd.d.ts" /></p>
 <p>// mongodb
-import mongodb = require('mongodb');
+import mongodb = require(‘mongodb’);
 let mongoServer = new mongodb.Server(
-'localhost', 27017
+‘localhost’, 27017
 );
 let dbHandle = new mongodb.Db(
-'crud', mongoServer, {w: 1}
+‘crud’, mongoServer, {w: 1}
 );
 dbHandle.open(()=&gt;{
-console.log(&quot;connected to mongoDB&quot;);
+console.log(“connected to mongoDB”);
 });</p>
 <p>// http
-import http = require('http');
-import express = require('express');
+import http = require(‘http’);
+import express = require(‘express’);
 let port = process.env.port || 3000;
 let app = express();
 let server = http.createServer(app);
-app.get('/', (request, response) =&gt; {
-response.setHeader('content-type', 'text/html');
-response.send('<html><head></head><body>Hello ts</body></html>');
+app.get(‘/’, (request, response) =&gt; {
+response.setHeader(‘content-type’, ‘text/html’);
+response.send(’<html><head></head><body>Hello ts</body></html>’);
 });</p>
 <p>server.listen(port);
-console.log('start %d', port);</p>
+console.log(‘start %d’, port);</p>
 <p>CRUDを定義する
 Creating a REST API using Node.js, Express, and MongoDB
 を参考に実装。
 src/app.tsのデータにアクセスする部分をsrc/mongodb.tsに分離した。
 src/app.ts
 /// <reference path="../typings/tsd.d.ts" />
-import mongocrud = require('./mongocrud');</p>
+import mongocrud = require(‘./mongocrud’);</p>
 <p>//
 // Express
 //
-import http = require('http');
-import express = require('express');</p>
+import http = require(‘http’);
+import express = require(‘express’);</p>
 <p>let port = process.env.port || 3000;
 let app = express();
 let server = http.createServer(app);</p>
-<p>let bodyparser=require('body-parser');
-let methodoverride = require('method-override');
-let logger = require('connect-logger');
-let errorhandler = require('errorhandler');
+<p>let bodyparser=require(‘body-parser’);
+let methodoverride = require(‘method-override’);
+let logger = require(‘connect-logger’);
+let errorhandler = require(‘errorhandler’);
 app
 .use(bodyparser())
 .use(methodoverride())
@@ -472,49 +465,49 @@ app
 dumpExceptioons: true,
 showStack: true
 }));</p>
-<p>app.get('/', (request, response) =&gt; {
-response.setHeader('content-type', 'text/html');
-response.send('<html><head></head><body>Hello ts</body></html>');
+<p>app.get(‘/’, (request, response) =&gt; {
+response.setHeader(‘content-type’, ‘text/html’);
+response.send(’<html><head></head><body>Hello ts</body></html>’);
 });
 server.listen(port);</p>
 <p>// restful
-app.all('/api/:obj_type/*', (req, res, next)=&gt;{
-res.contentType('json');
+app.all(‘/api/:obj_type/*’, (req, res, next)=&gt;{
+res.contentType(‘json’);
 next();
 });
-app.get('/api/:obj_type', mongocrud.findAll);
-app.get('/api/:obj_type/:id', mongocrud.findById);
-app.post('/api/:obj_type', mongocrud.add);
-app.put('/api/:obj_type/:id', mongocrud.update);
-app.delete('/api/:obj_type/:id', mongocrud.del);</p>
+app.get(‘/api/:obj_type’, mongocrud.findAll);
+app.get(‘/api/:obj_type/:id’, mongocrud.findById);
+app.post(‘/api/:obj_type’, mongocrud.add);
+app.put(‘/api/:obj_type/:id’, mongocrud.update);
+app.delete(‘/api/:obj_type/:id’, mongocrud.del);</p>
 <p>// launchded
-console.log('start %d', port);</p>
+console.log(‘start %d’, port);</p>
 <p>src/mongocrud.ts
 /// <reference path="../typings/tsd.d.ts" />
 //
 // MongoDB
 //
-import mongodb = require('mongodb');
+import mongodb = require(‘mongodb’);
 let mongoServer = new mongodb.Server(
-'localhost', 27017
+‘localhost’, 27017
 );
 let db = new mongodb.Db(
-'crud', mongoServer, { w: 1 }
+‘crud’, mongoServer, { w: 1 }
 );
 db.open(() =&gt; {
-console.log(&quot;connected to mongoDB&quot;);
+console.log(“connected to mongoDB”);
 populateDB();<br />
 });</p>
 <p>//
 // CRUD
 //
-import express = require('express');
+import express = require(‘express’);
 export var findById = (req: express.Request, res: express.Response) =&gt; {
 let obj_type = req.params.obj_type;
 let id = req.params.id;
-console.log('Retrieving %s: %s', obj_type, id);
+console.log(‘Retrieving %s: %s’, obj_type, id);
 db.collection(obj_type, (err, collection) =&gt; {
-collection.findOne({ '_id': new mongodb.ObjectID(id) }, (err, item) =&gt; {
+collection.findOne({ ‘_id’: new mongodb.ObjectID(id) }, (err, item) =&gt; {
 res.send(item);
 });
 });
@@ -530,13 +523,13 @@ res.send(items);
 <p>export var add = (req: express.Request, res: express.Response) =&gt; {
 let obj_type = req.params.obj_type;
 let body = req.body;
-console.log('Adding %s: %s', obj_type, JSON.stringify(body));
+console.log(‘Adding %s: %s’, obj_type, JSON.stringify(body));
 db.collection(obj_type, (err, collection) =&gt; {
 collection.insert(body, { safe: true }, (err, result) =&gt; {
 if (err) {
-res.send({ 'error': 'An error has occurred' });
+res.send({ ‘error’: ‘An error has occurred’ });
 } else {
-console.log('Success: ' + JSON.stringify(result[0]));
+console.log(‘Success: ‘ + JSON.stringify(result[0]));
 res.send(result[0]);
 }
 });
@@ -546,16 +539,16 @@ res.send(result[0]);
 let obj_type = req.params.obj_type;
 let id = req.params.id;
 let body = req.body;
-console.log('Updating %s: %s', obj_type, id);
+console.log(‘Updating %s: %s’, obj_type, id);
 console.log(JSON.stringify(body));
-db.collection('wines', (err, collection) =&gt; {
-collection.update({ '_id': new mongodb.ObjectID(id) },
+db.collection(‘wines’, (err, collection) =&gt; {
+collection.update({ ‘_id’: new mongodb.ObjectID(id) },
 body, { safe: true }, (err, result) =&gt; {
 if (err) {
-console.log('Error updating wine: ' + err);
-res.send({ 'error': 'An error has occurred' });
+console.log(‘Error updating wine: ‘ + err);
+res.send({ ‘error’: ‘An error has occurred’ });
 } else {
-console.log('%s document(s) updated', result);
+console.log(‘%s document(s) updated’, result);
 res.send(body);
 }
 });
@@ -564,23 +557,23 @@ res.send(body);
 <p>export function del(req: express.Request, res: express.Response){
 let obj_type = req.params.obj_type;
 var id = req.params.id;
-console.log('Deleting %s: %s', obj_type, id);
+console.log(‘Deleting %s: %s’, obj_type, id);
 db.collection(obj_type, (err, collection) =&gt; {
-collection.remove({ '_id': new mongodb.ObjectID(id) },
+collection.remove({ ‘_id’: new mongodb.ObjectID(id) },
 { safe: true }, (err, result) =&gt; {
 if (err) {
-res.send({ 'error': 'An error has occurred - ' + err });
+res.send({ ‘error’: ‘An error has occurred - ‘ + err });
 } else {
-console.log('%s document(s) deleted', result);
+console.log(‘%s document(s) deleted’, result);
 res.send(req.body);
 }
 });
 });
 }</p>
-<p>// Populate database with sample data -- Only used once: the first time the application is started.
-// You'd typically not find this code in a real-life app, since the database would already exist.
+<p>// Populate database with sample data – Only used once: the first time the application is started.
+// You’d typically not find this code in a real-life app, since the database would already exist.
 function populateDB() {
-console.log('populateDB...');</p>
+console.log(‘populateDB…’);</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>var wines = [
     {
         name: &quot;CHATEAU DE SAINT COSME&quot;,
@@ -710,11 +703,11 @@ bottom: 0;
 height: 128px;
 background-color: #aaf;
 }</p>
-<p>alert('hello');</p>
+<p>alert(‘hello’);</p>
 <p>jqueryを追加
 mongocrud&gt; cd client
 mongocrud/client&gt; bower init
-mongocrud/client&gt; bower install jquery --save</p>
+mongocrud/client&gt; bower install jquery –save</p>
 <p>まとまりが無くなってきた。
 別のページに整理しなおそう。
 あとから、coffee-scriptやtypescritpを導入すると手順としては冗長になりすぎるな。
@@ -722,7 +715,26 @@ mongocrud/client&gt; bower install jquery --save</p>
 </section>
 
 <div class="section">
-   
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../../2013/12/08/use_cmake.html">
+       cmakeを使ってみる(Windowsかつコマンドラインで)
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../12/24/heroku_sokcetio.html">
+      Node.jsでSocket.IOなアプリをHerokuにデプロイ 
+    </a>
+    
+  </span>
+</div>
+  
 </div>
 
           </div>
@@ -740,7 +752,16 @@ mongocrud/client&gt; bower install jquery --save</p>
 
 
 
-<h3>ナビゲーション</h3>
+  
+<h2>
+   
+  21 November 2015 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -827,6 +848,14 @@ mongocrud/client&gt; bower install jquery --save</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -838,8 +867,12 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -882,7 +915,7 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -892,6 +925,14 @@ mongocrud/client&gt; bower install jquery --save</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -910,7 +951,7 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -943,6 +984,10 @@ mongocrud/client&gt; bower install jquery --save</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -954,7 +999,7 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -974,7 +1019,7 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -986,7 +1031,7 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -1002,11 +1047,11 @@ mongocrud/client&gt; bower install jquery --save</p>
     <a href="../../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -1034,21 +1079,41 @@ mongocrud/client&gt; bower install jquery --save</p>
   </li>
     
   <li>
-    <a href="../../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>

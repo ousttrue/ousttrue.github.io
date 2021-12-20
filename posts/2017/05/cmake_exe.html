@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>title: &#34;msbuildとcmakeの在りか&#34; date: 2017-05-28 taxonomies: {tags: [&#39;cmake&#39;]} &#8212; 三次元日誌  ドキュメント</title>
+    <title>&lt;no title&gt; &#8212; 三次元日誌  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/translations.js"></script>
-    <link rel="index" title="索引" href="../../../genindex.html" />
-    <link rel="search" title="検索" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -63,36 +62,31 @@
           
 
           <div class="body" role="main">
-             <hr class="docutils" />
-<section id="title-msbuildcmake-date-2017-05-28-taxonomies-tags-cmake">
-<h1>title: &quot;msbuildとcmakeの在りか&quot;
-date: 2017-05-28
-taxonomies: {tags: ['cmake']}<a class="headerlink" href="#title-msbuildcmake-date-2017-05-28-taxonomies-tags-cmake" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>bat作るときにたまに使う
+             <p>bat作るときにたまに使う
 cmake.exeとmsbuild.exeの在りかについて</p>
 <p>VisualStudio2017内のcmake.exe
 VisualStudio2017に同梱されるようになったcmakeのパスについて。
 以下のパスに存在する。
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe
 version確認
-PS&gt; &amp;&quot;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot; --version
+PS&gt; &amp;”C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe” –version
 cmake version 3.6.20160606-g0391f-MSVC</p>
 <p>CMake suite maintained and supported by Kitware (kitware.com/cmake).</p>
 <p>レジストリからパスを得る
 システムドライブの容量節約のためVSのインストールパスを変更している場合に必要だった。
 regコマンドでコマンドラインで値を得る。</p>
 <blockquote>
-<div><p>reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;</p>
+<div><p>reg query “HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7” /v “15.0”</p>
 </div></blockquote>
 <p>HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7
 15.0    REG_SZ    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\</p>
 <p>cmake呼び出しbat
 cmake_vs2017.bat
 &#64;echo off
-FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;') DO IF &quot;%%A&quot;==&quot;15.0&quot; SET VSPATH=%%C
+FOR /F “TOKENS=1,2,*” %%A IN (‘reg query “HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7” /v “15.0”’) DO IF “%%A”==”15.0” SET VSPATH=%%C
 &#64;echo on</p>
-<p>set CMAKE=&quot;%VSPATH%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe&quot;
-set BUILD_DIR=&quot;build_vs2017&quot;</p>
+<p>set CMAKE=”%VSPATH%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe”
+set BUILD_DIR=”build_vs2017”</p>
 <p>if not exist %BUILD_DIR% mkdir %BUILD_DIR%
 pushd %BUILD_DIR%</p>
 <p>popd</p>
@@ -102,25 +96,24 @@ pushd %BUILD_DIR%</p>
 C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/MSBuild/15.0/Bin/msbuild.exe
 なので</p>
 <blockquote>
-<div><p>reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;</p>
+<div><p>reg query “HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7” /v “15.0”</p>
 </div></blockquote>
 <p>HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7
 15.0    REG_SZ    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\</p>
 <p>と組み合わせると得られる。
 &#64;echo off
-FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7&quot; /v &quot;15.0&quot;') DO IF &quot;%%A&quot;==&quot;15.0&quot; SET VSPATH=%%C
+FOR /F “TOKENS=1,2,*” %%A IN (‘reg query “HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7” /v “15.0”’) DO IF “%%A”==”15.0” SET VSPATH=%%C
 &#64;echo on</p>
-<p>set MSBUILD=&quot;%VSPATH%\MSBuild\15.0\Bin\msbuild.exe&quot;</p>
+<p>set MSBUILD=”%VSPATH%\MSBuild\15.0\Bin\msbuild.exe”</p>
 <p>VisualStudio2015内のmsbuild</p>
 <p>https://github.com/Microsoft/HoloToolkit-Unity/blob/master/Assets/HoloToolkit/Build/Editor/BuildDeployTools.cs#L72</p>
 <p>レジストリ
 HKLM\Software\Microsoft\MSBuild\ToolsVersions\14.0
 から得ることができる。
 &#64;echo off
-FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSBuild\ToolsVersions&quot; /v &quot;14.0&quot;') DO IF &quot;%%A&quot;==&quot;14.0&quot; SET MSBUILDPATH=%%C
+FOR /F “TOKENS=1,2,*” %%A IN (‘reg query “HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSBuild\ToolsVersions” /v “14.0”’) DO IF “%%A”==”14.0” SET MSBUILDPATH=%%C
 &#64;echo on</p>
-<p>set MSBUILD=&quot;%MSBUILDPATH%\msbuild.exe&quot;</p>
-</section>
+<p>set MSBUILD=”%MSBUILDPATH%\msbuild.exe”</p>
 
 <div class="section">
    
@@ -141,7 +134,7 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
 
 
 
-<h3>ナビゲーション</h3>
+<h3>Navigation</h3>
 
 
 <h3>
@@ -228,6 +221,14 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com.html">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp.html">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">"cpp"]</a>
   </li>
     
@@ -239,8 +240,12 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/cython.html">"cython"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/dap.html">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang.html">"dlang"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -283,7 +288,7 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/lua.html">"lua"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/luajit.html">"luajit"</a>
   </li>
     
@@ -293,6 +298,14 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim.html">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl.html">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python.html">"python"</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -311,7 +324,7 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/sphinx.html">"sphinx"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/ssg.html">"ssg"]</a>
   </li>
     
@@ -344,6 +357,10 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang.html">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cpp.html">["cpp"</a>
   </li>
     
@@ -355,7 +372,7 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/imgui.html">["imgui"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/lua.html">["lua"</a>
   </li>
     
@@ -375,7 +392,7 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/msys2.html">["msys2"]</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/nvim.html">["nvim"</a>
   </li>
     
@@ -387,7 +404,7 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/python.html">["python"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-5">
     <a href="../../../blog/tag/python.html">["python"]</a>
   </li>
     
@@ -403,11 +420,11 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
     <a href="../../../blog/tag/ssg.html">["ssg"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-3">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../blog/tag/vim.html">["vim"</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-3">
     <a href="../../../blog/tag/vim.html">["vim"]</a>
   </li>
     
@@ -435,21 +452,41 @@ FOR /F &quot;TOKENS=1,2,*&quot; %%A IN ('reg query &quot;HKEY_LOCAL_MACHINE\SOFT
   </li>
     
   <li>
-    <a href="../../../blog/2019.html">2019 (15)</a>
+    <a href="../../../blog/2020.html">2020 (2)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017.html">2017 (1)</a>
+    <a href="../../../blog/2019.html">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017.html">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016.html">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015.html">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013.html">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012.html">2012 (1)</a>
   </li>
    
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
+      <input type="submit" value="Go" />
     </form>
     </div>
 </div>
