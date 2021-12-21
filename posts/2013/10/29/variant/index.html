@@ -1,0 +1,735 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>coding: utf-8 &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>wafでdebugとreleaseの設定を記述する(variant)
+wafでdebug版とrelease版の出力を分けるにはvariantなる機能を使う。
++hello
++hello.cpp
++waf
++wscript</p>
+<p>と前回と同様のプロジェクト。 wscriptを以下のように記述する。</p>
+<section class="tex2jax_ignore mathjax_ignore" id="coding-utf-8">
+<h1>coding: utf-8<a class="headerlink" href="#coding-utf-8" title="Permalink to this headline">¶</a></h1>
+<p>APPNAME=’hello’
+VERSION=’1.0.0’</p>
+<p>def configure(conf):
+# config ‘debug’を作る
+conf.setenv(‘debug’)
+# debugの設定
+conf.env[‘MSVC_TARGETS’] = [‘x86’]
+conf.load(‘msvc’)
+conf.env.CXXFLAGS = [‘/nologo’, ‘/EHsc’]
+# PDBやNDEBUG等の設定をきっちり書く必要がある</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># config &#39;release&#39;を作る。debugの設定は引き継がない
+conf.setenv(&#39;release&#39;)
+# releaseの設定
+conf.env[&#39;MSVC_TARGETS&#39;] = [&#39;x86&#39;]
+conf.load(&#39;msvc&#39;)
+conf.env.CXXFLAGS = [&#39;/nologo&#39;, &#39;/EHsc&#39;]
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="buildcontext">
+<h1>BuildContextの設定<a class="headerlink" href="#buildcontext" title="Permalink to this headline">¶</a></h1>
+<p>def build(bld):
+bld.program(
+source=’hello.cpp’,
+target=APPNAME
+)</p>
+<p>from waflib.Build import BuildContext</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>BuildContextを使うコマンド<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>class BuildDebug(BuildContext):
+# config ‘debug’ を使うvariant
+# 出力ディレクトリがbuild/debugに変わる
+variant = “debug”
+# 呼び出しコマンドはbuild_debug
+cmd = “build_debug”</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id2">
+<h1>BuildContextを使うコマンド<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p>class BuildRelease(BuildContext):
+# config ‘release’ を使うvariant
+# 出力ディレクトリがbuild/releaseに変わる
+variant = “release”
+# 呼び出しコマンドはbuild_release
+cmd = “build_release”</p>
+<p>variantという概念を使う。
+http://docs.waf.googlecode.com/git/book_17/single.html の 6.2.2.
+Changing the output directory Configuration sets for variants
+に記述がある。
+使う</p>
+<blockquote>
+<div><p>python waf –help
+waf [commands] [options]</p>
+</div></blockquote>
+<p>Main commands (example: ./waf build -j4)
+build        : executes the build
+build_debug  :
+build_release:
+:
+:
+省略</p>
+<p>という感じでbuild_debug, build_releaseが増える。</p>
+<blockquote>
+<div><p>python waf build_debug
+Waf: Entering directory <code class="docutils literal notranslate"><span class="pre">C:\work\_waf\debug_release\build\debug'</span> <span class="pre">[1/2]</span> <span class="pre">cxx:</span> <span class="pre">hello.cpp</span> <span class="pre">-&gt;</span> <span class="pre">build\debug\hello.cpp.1.o</span> <span class="pre">hello.cpp</span> <span class="pre">[2/2]</span> <span class="pre">cxxprogram:</span> <span class="pre">build\debug\hello.cpp.1.o</span> <span class="pre">-&gt;</span> <span class="pre">build\debug\hello.exe</span> <span class="pre">build\debug\hello.exe.manifest</span> <span class="pre">Waf:</span> <span class="pre">Leaving</span> <span class="pre">directory</span> </code>C:\work_waf\debug_release\build\debug’
+‘build_debug’ finished successfully (0.487s)</p>
+</div></blockquote>
+<p>素のビルドはエラーになった。たぶん対象になる名無しのconfigが存在しないため。</p>
+<blockquote>
+<div><p>python waf build
+Waf: Entering directory <code class="docutils literal notranslate"><span class="pre">C:\work\_waf\debug_release\build'</span> <span class="pre">[1/2]</span> <span class="pre">cxx:</span> <span class="pre">hello.cpp</span> <span class="pre">-&gt;</span> <span class="pre">build\hello.cpp.1.o</span> <span class="pre">Waf:</span> <span class="pre">Leaving</span> <span class="pre">directory</span> </code>C:\work_waf\debug_release\build’
+Build failed
+:
+:
+省略</p>
+</div></blockquote>
+<p>ということで素のビルドの時にメッセージを表示して止めるようにする。
+buildメソッドの先頭にwaf book通りの記述を入れる。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id3">
+<h1>BuildContextの設定<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p>def build(bld):
+if not bld.variant:
+bld.fatal(‘call “waf build_debug” or “waf build_release”, and try “waf –help”’)
+bld.program(
+source=’hello.cpp’,
+target=APPNAME
+)</p>
+<blockquote>
+<div><p>python waf build
+Waf: Entering directory `C:\work_waf\debug_release\build’
+call “waf build_debug” or “waf build_release”, and try “waf –help”
+python waf clean
+call “waf build_debug” or “waf build_release”, and try “waf –help”</p>
+</div></blockquote>
+<p>build以外にもbuildメソッド(BuildContext)を使うコマンドがあって、
+http://docs.waf.googlecode.com/git/book_17/single.html の 12.1.2.
+Context classes のクラス図によると ListContext, CleanContext,
+StepContext, InstallContext, UninstallContext
+がBuildContextを継承しているのでこれに対応するコマンド
+それぞれにdebug版、release版を定義してやる必要がある。
+waf bookに書いてあるようにコマンドclassの記述を変える。
+from waflib.Build import BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext</p>
+<p>CONTEXTS=[BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext]
+VARIANTS=[‘debug’, ‘release’]</p>
+<p>for context in CONTEXTS:
+for variant_name in VARIANTS:
+name = context.<strong>name</strong>.replace(‘Context’,’’).lower()
+class tmp(context):
+cmd = name + ‘_’ + variant_name
+variant = variant_name</p>
+<p>helpを見ると大量に定義したコマンドが増える。</p>
+<blockquote>
+<div><p>python waf –help
+waf [commands] [options]</p>
+</div></blockquote>
+<p>Main commands (example: ./waf build -j4)
+build            : executes the build
+build_debug      :
+build_release    :
+clean            : cleans the project
+clean_debug      :
+clean_release    :
+configure        : configures the project
+dist             : makes a tarball for redistributing the sources
+distcheck        : checks if the project compiles (tarball from ‘dist’)
+distclean        : removes the build directory
+install          : installs the targets on the system
+install_debug    :
+install_release  :
+list             : lists the targets to execute
+list_debug       :
+list_release     :
+step             : executes tasks in a step-by-step fashion, for debugging
+step_debug       :
+step_release     :
+uninstall        : removes the targets installed
+uninstall_debug  :
+uninstall_release:
+update           : updates the plugins from the <em>waflib/extras</em> directory
+:
+:
+省略</p>
+<blockquote>
+<div><p>python waf clean_debug build_debug
+‘clean_debug’ finished successfully (0.087s)
+Waf: Entering directory <code class="docutils literal notranslate"><span class="pre">C:\work\_waf\debug_release\build\debug'</span> <span class="pre">[1/2]</span> <span class="pre">cxx:</span> <span class="pre">hello.cpp</span> <span class="pre">-&gt;</span> <span class="pre">build\debug\hello.cpp.1.o</span> <span class="pre">hello.cpp</span> <span class="pre">[2/2]</span> <span class="pre">cxxprogram:</span> <span class="pre">build\debug\hello.cpp.1.o</span> <span class="pre">-&gt;</span> <span class="pre">build\debug\hello.exe</span> <span class="pre">build\debug\hello.exe.manifest</span> <span class="pre">Waf:</span> <span class="pre">Leaving</span> <span class="pre">directory</span> </code>C:\work_waf\debug_release\build\debug’
+‘build_debug’ finished successfully (0.451s)</p>
+</div></blockquote>
+<p>これでdebug, releaseの使い分けはできるようになった。
+variantを追加する
+64bitビルドや、gccのvariantを追加してみた。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id4">
+<h1>coding: utf-8<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>APPNAME=’hello’
+VERSION=’1.0.0’</p>
+<p>VARIANTS=[
+‘vc_debug’, ‘vc_release’, ‘vc64_debug’, ‘vc64_release’,
+‘gcc_debug’, ‘gcc_release’,
+]</p>
+<p>def configure(conf):
+# config ‘debug’を作る
+conf.setenv(‘debug’)
+# debugの設定
+conf.env[‘MSVC_VERSIONS’] = [‘msvc 10.0’]
+conf.env[‘MSVC_TARGETS’] = [‘x86’]
+conf.load(‘msvc’)
+conf.env.CXXFLAGS = [‘/nologo’, ‘/EHsc’]
+# PDBやNDEBUG等の設定をきっちり書く必要がある</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># config &#39;release&#39;を作る。debugの設定は引き継がない
+conf.setenv(&#39;release&#39;)
+# releaseの設定
+conf.env[&#39;MSVC_VERSIONS&#39;] = [&#39;msvc 10.0&#39;]
+conf.env[&#39;MSVC_TARGETS&#39;] = [&#39;x86&#39;]
+conf.load(&#39;msvc&#39;)
+conf.env.CXXFLAGS = [&#39;/nologo&#39;, &#39;/EHsc&#39;]
+
+# config &#39;debug&#39;を作る
+conf.setenv(&#39;vc64_debug&#39;)
+# debugの設定
+conf.env[&#39;MSVC_VERSIONS&#39;] = [&#39;msvc 10.0&#39;]
+conf.env[&#39;MSVC_TARGETS&#39;] = [&#39;x64&#39;]
+conf.load(&#39;msvc&#39;)
+conf.env.CXXFLAGS = [&#39;/nologo&#39;, &#39;/EHsc&#39;]
+# PDBやNDEBUG等の設定をきっちり書く必要がある
+
+# config &#39;release&#39;を作る。debugの設定は引き継がない
+conf.setenv(&#39;vc64_release&#39;)
+# releaseの設定
+conf.env[&#39;MSVC_VERSIONS&#39;] = [&#39;msvc 10.0&#39;]
+conf.env[&#39;MSVC_TARGETS&#39;] = [&#39;x64&#39;]
+conf.load(&#39;msvc&#39;)
+conf.env.CXXFLAGS = [&#39;/nologo&#39;, &#39;/EHsc&#39;]
+
+# config &#39;debug&#39;を作る
+conf.setenv(&#39;gcc_debug&#39;)
+# debugの設定
+conf.load(&#39;gxx&#39;)
+conf.env.CXXFLAGS = [&#39;-g&#39;]
+conf.env.LINKFLAGS = [&#39;-g&#39;]
+
+# config &#39;release&#39;を作る。debugの設定は引き継がない
+conf.setenv(&#39;gcc_release&#39;)
+# releaseの設定
+conf.load(&#39;gxx&#39;)
+conf.env.CXXFLAGS = [&#39;-O2&#39;]
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id5">
+<h1>BuildContextの設定<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<p>def build(bld):
+if not bld.variant:
+bld.fatal(‘call “waf build_debug” or “waf build_release”, and try “waf –help”’)
+bld.program(
+source=’hello.cpp’,
+target=APPNAME
+)</p>
+<p>from waflib.Build import BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext</p>
+<p>CONTEXTS=[BuildContext, ListContext, CleanContext, StepContext, InstallContext, UninstallContext]</p>
+<p>for context in CONTEXTS:
+for variant_name in VARIANTS:
+name = context.<strong>name</strong>.replace(‘Context’,’’).lower()
+class tmp(context):
+cmd = name + ‘_’ + variant_name
+variant = variant_name</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../../06/17/irrlicht_msgpackrpc/">
+       IrrlichtにMsgPackRPCを仕込む
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../../12/08/cmake/">
+      cmakeを使ってみる(Windowsかつコマンドラインで) 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  29 October 2013 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../../_sources/posts/2013/10/29/variant.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

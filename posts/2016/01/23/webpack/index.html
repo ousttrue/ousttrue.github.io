@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>gulpだけでいっぱいいっぱいだったので敬遠していたwebpackをやってみる。
+#ことはじめ</p>
+<p>http://webpack.github.io/docs/</p>
+<p>http://webpack.github.io/docs/tutorials/getting-started/</p>
+<p>webpackをインストールして</p>
+<blockquote>
+<div><p>npm install webpack -g</p>
+</div></blockquote>
+<p>サンプルファイルを用意して
+entry.js
+document.write(“It works.”);</p>
+<p>webpack実行。</p>
+<blockquote>
+<div><p>webpack ./entry.js bundle.js
+Hash: ca188ee5789bb780fcec
+Version: webpack 1.12.12
+Time: 52ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  1.42 kB       0  [emitted]  main
+[0] ./entry.js 28 bytes {0} [built]</p>
+</div></blockquote>
+<p>entry.jsを入力し、bundle.jsが出力される。
+bundle.js
+/<strong><strong><strong>/ (function(modules) { // webpackBootstrap
+/</strong></strong></strong>/    // The module cache
+/******/    var installedModules = {};</p>
+<p>/<strong><strong><strong>/    // The require function
+/</strong></strong></strong>/    function <strong>webpack_require</strong>(moduleId) {</p>
+<p>/<strong><strong><strong>/        // Check if module is in cache
+/</strong></strong></strong>/        if(installedModules[moduleId])
+/******/            return installedModules[moduleId].exports;</p>
+<p>/<strong><strong><strong>/        // Create a new module (and put it into the cache)
+/</strong></strong></strong>/        var module = installedModules[moduleId] = {
+/<strong><strong><strong>/            exports: {},
+/</strong></strong></strong>/            id: moduleId,
+/<strong><strong><strong>/            loaded: false
+/</strong></strong></strong>/        };</p>
+<p>/<strong><strong><strong>/        // Execute the module function
+/</strong></strong></strong>/        modules[moduleId].call(module.exports, module, module.exports, <strong>webpack_require</strong>);</p>
+<p>/<strong><strong><strong>/        // Flag the module as loaded
+/</strong></strong></strong>/        module.loaded = true;</p>
+<p>/<strong><strong><strong>/        // Return the exports of the module
+/</strong></strong></strong>/        return module.exports;
+/******/    }</p>
+<p>/<strong><strong><strong>/    // expose the modules object (<strong>webpack_modules</strong>)
+/</strong></strong></strong>/    <strong>webpack_require</strong>.m = modules;</p>
+<p>/<strong><strong><strong>/    // expose the module cache
+/</strong></strong></strong>/    <strong>webpack_require</strong>.c = installedModules;</p>
+<p>/<strong><strong><strong>/    // <strong>webpack_public_path</strong>
+/</strong></strong></strong>/    <strong>webpack_require</strong>.p = “”;</p>
+<p>/<strong><strong><strong>/    // Load entry module and return exports
+/</strong></strong></strong>/    return <strong>webpack_require</strong>(0);
+/<strong><strong><strong>/ })
+/</strong></strong></strong>*********************************************************<strong><em><strong><strong><strong>/
+/</strong></strong></strong>/ ([
+/</em> 0 <em>/
+/</em></strong>/ function(module, exports) {</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>document.write(&quot;It works.&quot;);
+</pre></div>
+</div>
+<p>/<em><strong>/ }
+/</strong></em>***/ ]);</p>
+<p>ユーティリティと合体したコードが出力された。
+使う方は、bundle.jsをscriptタグで読み込むと。</p>
+<script type="text/javascript" src="bundle.js" charset="utf-8"></script>
+<p>複数ファイルのマージとrequire
+複数ファイルの参照にrequire関数が導入される。
+module.exports = “It works from content.js.”;</p>
+<p>document.write(require(“./content.js”));</p>
+<p>webpackする。</p>
+<blockquote>
+<div><p>webpack ./entry.js bundle.js
+Hash: 71eea1fe067e73397ebe
+Version: webpack 1.12.12
+Time: 64ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  1.55 kB       0  [emitted]  main
+[0] ./entry.js 40 bytes {0} [built]
+[1] ./content.js 45 bytes {0} [built]</p>
+</div></blockquote>
+<p>bundle.jsが出力される。
+bundle.jsの概要
+(function(modules) { // webpackBootstrap</p>
+<p>// 省略</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Load entry module and return exports
+return __webpack_require__(0);
+</pre></div>
+</div>
+<p>})
+/***********************************************************************<em>/
+( /</em> 無名関数を即実行 <em>/
+[
+/</em> 0 */
+function(module, exports, <strong>webpack_require</strong>) {</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>document.write(__webpack_require__(1));
+</pre></div>
+</div>
+<p>},
+/* 1 */
+function(module, exports) {</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// content.jsはここに
+module.exports = &quot;It works from content.js.&quot;;
+</pre></div>
+</div>
+<p>}
+]);</p>
+<p>なるほど。自身がmodule[0]になって、requireされたファイルがmodule[1]になるのか。
+css対応
+WebPackは素ではjavascriptしか対応していない。cssに対応するためにloaderを導入する。</p>
+<blockquote>
+<div><p>npm install css-loader style-loader</p>
+</div></blockquote>
+<p>cssを追加して、
+style.css
+body {
+background: yellow;
+}</p>
+<p>requireする。
+loader経由でrequireするには、特殊な記法を用いるらしい。
+entry.js
+require(“!style!css!./style.css”);
+document.write(require(“./content.js”));</p>
+<p>webpack実行</p>
+<blockquote>
+<div><p>webpack ./entry.js bundle.js
+Hash: c8494a414a3a1d5c8c29
+Version: webpack 1.12.12
+Time: 716ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  11.8 kB       0  [emitted]  main
+[0] ./entry.js 76 bytes {0} [built]
+[5] ./content.js 45 bytes {0} [built]
++ 4 hidden modules</p>
+</div></blockquote>
+<p>6つモジュールができたと書いてあります。
+確かに、最初の無名関数への引数が6要素の配列になっている。
+modules[2]にさっきのcssがjavascript化されて入っている。
+/<strong><em>/ },
+/</em> 2 <em>/
+/</em></strong>/ function(module, exports, <strong>webpack_require</strong>) {</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>exports = module.exports = __webpack_require__(3)();
+// imports
+
+
+// module
+exports.push([module.id, &quot;body {\r\n    background: yellow;\r\n}&quot;, &quot;&quot;]);
+
+// exports
+</pre></div>
+</div>
+<p>/***/ },</p>
+<p>webpackは何もかもをjavascript化してrequireするシステムなのか！？
+configfile
+コマンドライン引数を設定に移動。
+webpack.config.js
+module.exports = {
+entry: “./entry.js”,
+output: {
+path: __dirname,
+filename: “bundle.js”
+},
+module: {
+loaders: [
+{ test: /.css$/, loader: “style!css” }
+]
+}
+};</p>
+<p>引数無しで実行できる。</p>
+<blockquote>
+<div><p>webpack
+Hash: 1141db5208a3ce352fb6
+Version: webpack 1.12.12
+Time: 669ms
+Asset     Size  Chunks             Chunk Names
+bundle.js  11.8 kB       0  [emitted]  main
+[0] ./entry.js 67 bytes {0} [built]
+[5] ./content.js 45 bytes {0} [built]
++ 4 hidden modules</p>
+</div></blockquote>
+<p>Watchモードとか開発サーバーもあるで
+watchモード。</p>
+<blockquote>
+<div><p>webpack –progress –colors –watch</p>
+</div></blockquote>
+<p>dev-serverをインストール。</p>
+<blockquote>
+<div><p>npm install webpack-dev-server -g</p>
+</div></blockquote>
+<blockquote>
+<div><p>webpack-dev-server –progress –colors</p>
+</div></blockquote>
+<p>http://localhost:8080 で静的なコンパイル結果を表示
+http://localhost:8080/webpack-dev-server/bundle で自動リロード付き</p>
+<p>gulpでがんばってwatchからbrowser-syncを構築していたのをさくっとできるね。
+これはよさげ。
+機能的にはブラウザ側(いわゆるフロントエンド)に特化しているぽいな。
+サーバーサイドとの連携方法を探る必要がある。
+browsery-syncとnodemonの連携みたいにproxyを駆使するのか。
+参考</p>
+<p>webpack で Node サーバー用のコードを bundle する
+https://webpack.github.io/docs/webpack-dev-server.html#proxy
+http://stackoverflow.com/questions/26203725/how-to-allow-for-webpack-dev-server-to-allow-entry-points-from-react-router</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../../_sources/posts/2016/01/23/webpack.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

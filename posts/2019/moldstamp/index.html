@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>記事 &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>ディスククラッシュで <code class="docutils literal notranslate"><span class="pre">hugo</span></code> の管理リポジトリがロストしたので、
+新しく自分で作ってみることにした。</p>
+<p><a class="reference external" href="https://github.com/ousttrue/moldstamp">moldstamp</a> と名付ける。</p>
+<p>途中まで作ってみた感じだとサイトの構成面に関しては、既存のツールを使うより自作した方がはるかに簡単。ファイルが変換される法則とか、それをカスタマイズする方法をgoogle先生に聞くのではなく自分で作るだけなので。当然、機能は少ないし見た目はしょぼいのだけど、必要最低限を満たすのは難しくなかったり。</p>
+<p>以下、開発メモ</p>
+<section id="id1">
+<h1>記事<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<section id="id2">
+<h2>🤔 フォルダ構成<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>検討中</p>
+<p>src</p>
+<ul class="simple">
+<li><p>root</p>
+<ul>
+<li><p>articles</p>
+<ul>
+<li><p>xxx.md: htmlに変換してコピー</p></li>
+<li><p>xxx.jpg,png: など。そのままコピー</p></li>
+</ul>
+</li>
+<li><p>templates</p>
+<ul>
+<li><p>index.html: jinja2 temlate</p></li>
+<li><p>article.html: jinja2 temlate</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>dst</p>
+<ul class="simple">
+<li><p>github.io</p>
+<ul>
+<li><p>/index.html</p></li>
+<li><p>/post/xxx.html</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="frontmatter">
+<h2>🌝 Frontmatter<a class="headerlink" href="#frontmatter" title="Permalink to this headline">¶</a></h2>
+<p>hugo風にtomlで。</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span>+++
+date = &quot;2012-04-06&quot;
+tags = [&#39;nvim&#39;, &#39;python&#39;]
++++
+</pre></div>
+</div>
+</section>
+<section id="draft">
+<h2>🔨 draftの扱い<a class="headerlink" href="#draft" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="tag">
+<h2>🔨 各tag毎の記事一覧<a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id3">
+<h2>🔨 各記事の同じタグの記事へのリンク<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="next-prev">
+<h2>🔨 next, prev<a class="headerlink" href="#next-prev" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="markdown">
+<h1>markdown<a class="headerlink" href="#markdown" title="Permalink to this headline">¶</a></h1>
+<section id="id4">
+<h2>🔨 ライブラリ入れ替え？<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">makdown2</span></code> から <code class="docutils literal notranslate"><span class="pre">markdown</span></code> へ。</p>
+</section>
+<section id="link-pattern">
+<h2>🔨 link-pattern<a class="headerlink" href="#link-pattern" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/trentm/python-markdown2/wiki/link-patterns</p></li>
+</ul>
+<p>わりと誤判定する。</p>
+<ul class="simple">
+<li><p>https://docs.python.org/ja/3/library/html.parser.html</p></li>
+</ul>
+<p>で作り直す</p>
+</section>
+<section id="toc">
+<h2>🌝 toc<a class="headerlink" href="#toc" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="syntax-highlight">
+<h2>🌝 syntax highlight<a class="headerlink" href="#syntax-highlight" title="Permalink to this headline">¶</a></h2>
+<p>pygmentsを使う</p>
+<ul class="simple">
+<li><p>🌝 markdownのコード部分をシンタックスハイライトする</p></li>
+<li><p>🌝 cssを生成する</p></li>
+</ul>
+</section>
+</section>
+<section id="jinja2">
+<h1>jinja2<a class="headerlink" href="#jinja2" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>🌝 index</p></li>
+<li><p>🌝 article</p></li>
+</ul>
+<section id="inheritance">
+<h2>🔨 inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline">¶</a></h2>
+<p>ヘッダとフッタを分離するなど</p>
+<ul class="simple">
+<li><p>http://jinja.pocoo.org/docs/2.10/templates/#template-inheritance</p></li>
+</ul>
+</section>
+</section>
+<section id="css">
+<h1>css<a class="headerlink" href="#css" title="Permalink to this headline">¶</a></h1>
+<section id="h1-h2-h3">
+<h2>🔨 h1, h2, h3…<a class="headerlink" href="#h1-h2-h3" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id5">
+<h2>🔨 引用<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="ul-li">
+<h2>🔨 ul, li<a class="headerlink" href="#ul-li" title="Permalink to this headline">¶</a></h2>
+<p>インデントが深すぎる</p>
+</section>
+</section>
+<section id="local-server">
+<h1>local server<a class="headerlink" href="#local-server" title="Permalink to this headline">¶</a></h1>
+<section id="livereload">
+<h2>🌝 livereload<a class="headerlink" href="#livereload" title="Permalink to this headline">¶</a></h2>
+<p>ローカル実験用のlivereload server</p>
+</section>
+<section id="livereload-jpg">
+<h2>🔨 livereload 無変換のファイル(jpgなど)<a class="headerlink" href="#livereload-jpg" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="livereload-pygments-css">
+<h2>🔨 livereload pygmentsの生成ファイル(css)<a class="headerlink" href="#livereload-pygments-css" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../2017/blender_addon_vscode/">
+       BlenderのAddOnを、VSCodeでデバッグする
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../vim_on_windows/">
+      vim on Windows 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  18 April 2019 
+</h2>
+
+<ul>
+  
+<li id="published">
+  <span
+    >Update:</span
+  >
+  18 April 2019
+</li>
+     
+<li id="tags">
+  <span
+    >Tag:</span
+  >
+   
+  <a href="../../../blog/tag/python/">["python"]</a>  
+</li>
+ 
+</ul>
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2019/moldstamp.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

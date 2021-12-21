@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>謎のクラッシュ(FFIでネイティブプラグインがアクセス違反で死ぬ)を追跡するため、
+VCのデバッガをアタッチするべく自前ビルドする。
+node-v5.3.0.tar.xz</p>
+<p>7zipで解凍。
+python2系にpathを通してvcbuild.batをたたく。</p>
+<blockquote>
+<div><p>vcbuild.bat</p>
+</div></blockquote>
+<p>v8もlibuvも全部入りらしくあっさりとほぼビルドできた。
+SignTool Error: No certificates were found that met all the given criteria.
+Failed to sign exe</p>
+<p>document
+https://github.com/nodejs/node-v0.x-archive/wiki/Installation#building-on-windows
+debugビルドの作り方はこう。</p>
+<blockquote>
+<div><p>vcbuild.bat nosign debug</p>
+</div></blockquote>
+<p>nodeをデバッグ実行</p>
+<p>node-v5.3.0にnode.slnができているのでこれをVisualStudio2015で開く。
+nodeをスタートアッププロジェクトに指定
+nodeの設定のdebugタブで、カレントディレクトリとコマンドライン引数を指定
+f5</p>
+<p>例外が再現した
+void CallbackInfo::DispatchToV8(callback_info *info, void *retval, void **parameters, bool dispatched) {
+Nan::HandleScope scope;</p>
+<p>static const char* errorMessage = “ffi fatal: callback has been garbage collected!”;</p>
+<p>if (info-&gt;function == NULL) {
+// throw an error instead of segfaulting.
+// see: https://github.com/rbranson/node-ffi/issues/72
+if (dispatched) {
+Local<Value> errorFunctionArgv[1];
+errorFunctionArgv[0] = Nan::New<String>(errorMessage).ToLocalChecked();
+info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
+}
+else {
+Nan::ThrowError(errorMessage);
+}
+} else {
+// invoke the registered callback function
+Local<Value> functionArgv[2];
+functionArgv[0] = WrapPointer((char *)retval, info-&gt;resultSize);
+functionArgv[1] = WrapPointer((char *)parameters, sizeof(char *) * info-&gt;argc);
+Local<Value> e = info-&gt;function-&gt;Call(2, functionArgv); // &lt;– ここ。functionがnullptrになってるよ!
+if (!e-&gt;IsUndefined()) {
+if (dispatched) {
+Local<Value> errorFunctionArgv[1];
+errorFunctionArgv[0] = e;
+info-&gt;errorFunction-&gt;Call(1, errorFunctionArgv);
+} else {
+Nan::ThrowError(e);
+}
+}
+}
+}</p>
+<p>ううむ。if文でnullチェックしてるのにelse側に落ちてるな。矢張りスレッドとかGCが絡んでいそうな気がするぞ。
+ちょうどnode-ffiでjavascriptのコールバックを呼び出しているところなのではないか。
+コールスタック</p>
+<blockquote>
+<div><p>ffi_bindings.node!CallbackInfo::DispatchToV8(_callback_info * info, void * retval, void * * parameters, bool dispatched) 行 73   C++
+ffi_bindings.node!CallbackInfo::WatcherCallback(uv_async_s * w, int revents) 行 94   C++
+node.exe!uv_process_async_wakeup_req(uv_loop_s * loop, uv_async_s * handle, uv_req_s * req) 行 97    C</p>
+</div></blockquote>
+<p>よく見るとまさにffi_bindings.node(node-ffiのネイティブプラグイン)内で問題が発生している。
+呼び出しスレッドはメインスレッドか・・・。
+何回も試してみると例外がむしろdllのスレッド側で起こることの方が多い。
+他にWaitSingleObjectがstdcallの関数をスレッド実行しているものが４本。
+ひょっとして、コールバックの頻度が高すぎなんじゃないのか・・・。
+callback_infoはffiの構造体。こいつのデストラクタが呼ばれているのが確認できれば手がかりになるな。
+で、callback_info-&gt;functionを解放する下記の部分がメインスレッドから呼ばれて、その後に
+スレッドからのコールバック呼び出しがクラッシュしているらしいことを発見。
+node_modules/ffi/src/callback_info.cc
+/*</p>
+<ul class="simple">
+<li><p>Called when the <code class="docutils literal notranslate"><span class="pre">ffi_closure</span> <span class="pre">*</span></code> pointer (actually the “code” pointer) get’s</p></li>
+<li><p>GC’d on the JavaScript side. In this case we have to unwrap the</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">callback_info</span> <span class="pre">*</span></code> struct, dispose of the JS function Persistent reference,</p></li>
+<li><p>then finally free the struct.
+*/</p></li>
+</ul>
+<p>void closure_pointer_cb(char *data, void *hint) {
+callback_info *info = reinterpret_cast&lt;callback_info *&gt;(hint);
+// dispose of the Persistent function reference
+delete info-&gt;function;
+info-&gt;function = NULL;
+// now we can free the closure data
+ffi_closure_free(info);
+}</p>
+<p>コールスタック</p>
+<blockquote>
+<div><p>ffi_bindings.node!closure_pointer_cb(char * data, void * hint) 行 42 C++
+node.exe!node::Buffer::CallbackInfo::WeakCallback(v8::Isolate * isolate, v8::Local<a class="reference external" href="v8::Object">v8::Object</a> object) 行 159    C++</p>
+</div></blockquote>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> 省略
+
+node.exe!v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace space, const char * gc_reason, const v8::GCCallbackFlags callbackFlags) 行 556 C++
+
+ 省略
+
+node.exe!node::Buffer::New(v8::Isolate * isolate, char * data, unsigned int length, void (char *, void *) * callback, void * hint) 行 347    C++
+binding.node!`anonymous namespace&#39;::WrapPointer(char * ptr, unsigned int length) 行 147  C++
+binding.node!`anonymous namespace&#39;::ReadPointer(const Nan::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 261    C++
+binding.node!Nan::imp::FunctionCallbackWrapper(const v8::FunctionCallbackInfo&lt;v8::Value&gt; &amp; info) 行 174  C++
+</pre></div>
+</div>
+<p>なんか、GCが発動して回収されちゃっているぽい？
+2015/09/20</p>
+<ul class="simple">
+<li><p>Nodejs GC is crashing when a C function is returning NULL
+むしろこっちか
+2015/11/05</p></li>
+<li><p>Node.js v5.0.0でnode-ffiやNodObjCが動かない
+しかし、うちのnode.jsは</p></li>
+</ul>
+<blockquote>
+<div><p>node –version
+v5.3.0</p>
+</div></blockquote>
+<p>うむ。
+むしろこっちか
+2015/09/15</p>
+<ul class="simple">
+<li><p>ffi.Function underlying Callback is garbage collected
+死ななくなった。これっぽいな。
+64bit版で試してみる
+これはこれで死ぬ。
+まとめ</p></li>
+</ul>
+<p>node-ffiのFunctionでGCに回収されてしまう書き方のところがある(FFI.Function内)
+32bit版のnode-ffiではSTDCALLを指定できる(ABI=2)
+64bit版のnode-ffiではIA64にされるのでSTDCALLは動かぬ</p>
+<p>gypでのIA64とX64の扱いの違いがわかったら修正できるかな。
+X86_WIN32の時にFFI_STDCALLを定義する修正をプルリクしてみよう。</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../../_sources/posts/2015/12/21/node_self_build.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

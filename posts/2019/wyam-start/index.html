@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>インストール &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>ソースの方のリポジトリがハードディスククラッシュで失われて
+更新できなくなっていたので、サイトを作りなおし。
+<a class="reference external" href="https://wyam.io/">wyam</a>を使ってみる。</p>
+<section id="id1">
+<h1>インストール<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dotnet tool install -g Wyam.Tool
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h1>初期化する<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mkdir site
+$ cd site
+$ wyam new --recipe blog
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>config.wyam(siteの設定)</p></li>
+<li><p>input(記事置き場)</p>
+<ul>
+<li><p>about.md</p></li>
+<li><p>posts</p>
+<ul>
+<li><p>first-post.md</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<section id="id3">
+<h2>設定ファイル<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>config.wyam がそれで、C# を Roslyn で処理するらしい。
+おもしろい。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">config</span><span class="o">.</span><span class="n">wyam</span>
+<span class="c1">#recipe Blog</span>
+<span class="c1">#theme Phantom</span>
+
+<span class="o">//</span> <span class="n">Customize</span> <span class="n">your</span> <span class="n">settings</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">new</span> <span class="n">ones</span> <span class="n">here</span>
+<span class="n">Settings</span><span class="p">[</span><span class="n">Keys</span><span class="o">.</span><span class="n">Host</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ousttrue.github.io&quot;</span><span class="p">;</span>
+<span class="n">Settings</span><span class="p">[</span><span class="n">BlogKeys</span><span class="o">.</span><span class="n">Title</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;三次元日誌&quot;</span><span class="p">;</span>
+<span class="n">Settings</span><span class="p">[</span><span class="n">BlogKeys</span><span class="o">.</span><span class="n">Description</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;programming とか&quot;</span><span class="p">;</span>
+
+<span class="o">//</span> <span class="n">Add</span> <span class="nb">any</span> <span class="n">pipeline</span> <span class="n">customizations</span> <span class="n">here</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">#recipe</span> <span class="pre">Blog</span></code> がパイプライン設定で、 input フォルダの構成と処理を設定している。
+設定ファイルに展開したものを記述することもできるみたい。</p>
+</section>
+<section id="gitignore">
+<h2>gitignore<a class="headerlink" href="#gitignore" title="Permalink to this headline">¶</a></h2>
+<p>https://wyam.io/docs/advanced/what_to_exclude_from_source_control</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#.gitignore</span>
+<span class="o">.</span><span class="n">vs</span><span class="o">/</span>
+<span class="n">output</span><span class="o">/</span>
+<span class="n">config</span><span class="o">.</span><span class="n">wyam</span><span class="o">.</span><span class="n">hash</span>
+<span class="n">config</span><span class="o">.</span><span class="n">wyam</span><span class="o">.</span><span class="n">dll</span>
+<span class="n">config</span><span class="o">.</span><span class="n">wyam</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id4">
+<h1>生成する<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wyam
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>output</p>
+<ul>
+<li><p>index.html</p></li>
+</ul>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">wyam</span> <span class="pre">--watch</span> <span class="pre">--preview</span></code> で更新を監視して livereload できる。</p>
+<section id="id5">
+<h2>動作<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>input/posts/ 配下の markdown が /posts/ 下にhtml化される</p></li>
+<li><p>input/posts/**/hoge.md が /posts/hoge.html のように階層は無くなる</p></li>
+</ul>
+</section>
+</section>
+<section id="id6">
+<h1>テーマを変えてみる<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>https://wyam.io/recipes/blog/themes/</p></li>
+</ul>
+<p>コマンドラインに、 <code class="docutils literal notranslate"><span class="pre">--theme</span> <span class="pre">THEME_NAME</span></code> とするか config.wyam に</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">config</span><span class="o">.</span><span class="n">wyam</span>
+<span class="c1">#theme THEME_NAME</span>
+</pre></div>
+</div>
+<p>とすれば OK。</p>
+</section>
+<section id="appveyor-github-pages">
+<h1>appveyor で GitHub-Pages に展開<a class="headerlink" href="#appveyor-github-pages" title="Permalink to this headline">¶</a></h1>
+<p>https://wyam.io/docs/deployment/appveyor</p>
+<p>CIよくわかってないので難航したが動くようになった。</p>
+<p>GitHub-pages のユーザー頁を使ったので、
+ソースのリポジトリと、html置き場のリポジトリを分けた。</p>
+<p>ソースのリポジトリに AppVeyor を仕掛けて、
+push したときにビルドして、html置き場に push する。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">branches</span><span class="p">:</span>
+  <span class="nt">only</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
+    
+<span class="nt">environment</span><span class="p">:</span>
+  <span class="nt">access_token</span><span class="p">:</span>
+    <span class="c1"># EDIT the encrypted version of your GitHub access token</span>
+    <span class="c1"># https://www.appveyor.com/docs/deployment/github/</span>
+    <span class="nt">secure</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">E+wmFkBHvRVLnVcg9mIBXP7iTXKIqJyi/DewA+0SEtkpWmtiNFKKhYzD4bs0nw2L</span>
+
+<span class="nt">install</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mkdir ..\Wyam</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mkdir ..\output</span>
+  <span class="c1"># Fetch the latest version of Wyam </span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;curl</span><span class="nv"> </span><span class="s">-s</span><span class="nv"> </span><span class="s">https://raw.githubusercontent.com/Wyamio/Wyam/master/RELEASE</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">..\\Wyam\\wyamversion.txt&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set /P WYAMVERSION=&lt; ..\Wyam\wyamversion.txt</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo %WYAMVERSION%</span>
+  <span class="c1"># Get and unzip the latest version of Wyam</span>
+  <span class="p p-Indicator">-</span> <span class="nt">ps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Start-FileDownload &quot;https://github.com/Wyamio/Wyam/releases/download/$env:WYAMVERSION/Wyam-$env:WYAMVERSION.zip&quot; -FileName &quot;..\Wyam\Wyam.zip&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">7z x ..\Wyam\Wyam.zip -o..\Wyam -r</span>
+
+<span class="nt">build_script</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dotnet ..\Wyam\Wyam.dll --output ..\output</span>
+
+<span class="nt">on_success</span><span class="p">:</span>
+  <span class="c1"># Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push</span>
+  <span class="c1"># See http://www.appveyor.com/docs/how-to/git-push for more info</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.helper store</span>
+  <span class="c1"># EDIT your Git email and name</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global user.email ousttrue@gmail.com</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global user.name ousttrue</span>
+  <span class="p p-Indicator">-</span> <span class="nt">ps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Add-Content &quot;$env:USERPROFILE\.git-credentials&quot; &quot;https://$($env:access_token):x-oauth-basic@github.com`n&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git checkout gh-pages</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git rm -rf .</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">xcopy ..\output . /E</span>
+  <span class="c1"># EDIT your domain name or remove if not using a custom domain</span>
+  <span class="c1"># - echo wyam.io &gt; CNAME</span>
+  <span class="c1"># EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won&#39;t accept SSH pushes</span>
+
+  <span class="c1"># 送り先(push できるように environment access token をセットしている)</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git remote set-url origin https://github.com/ousttrue/ousttrue.github.io.git</span>
+  <span class="c1"># 空の gh-pages ブランチに変更を追加</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git add -A</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git commit -a -m &quot;Commit from AppVeyor&quot;</span>
+  <span class="c1"># gh-pages ブランチから origin の master に送る(use の GitHubPages を使っているので master ブランチ運用)</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git push -f origin gh-pages:master</span>
+</pre></div>
+</div>
+</section>
+<section id="vscode">
+<h1>vscode で編集する<a class="headerlink" href="#vscode" title="Permalink to this headline">¶</a></h1>
+<p>watch タスクを作成してバックグランドで <code class="docutils literal notranslate"><span class="pre">input</span></code> の変更を監視。</p>
+<div class="highlight-tasks.json notranslate"><div class="highlight"><pre><span></span>{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    &quot;version&quot;: &quot;2.0.0&quot;,
+    &quot;tasks&quot;: [
+        {
+            &quot;label&quot;: &quot;watch&quot;,
+            &quot;type&quot;: &quot;shell&quot;,
+            &quot;command&quot;: &quot;wyam&quot;,
+            &quot;args&quot;: [
+                &quot;--watch&quot;, &quot;--preview&quot;,
+            ],
+            &quot;problemMatcher&quot;: [
+            ],
+            &quot;isBackground&quot;: true
+        },
+    ]
+}
+</pre></div>
+</div>
+<p>launch.json を作成して F5 でブラウザを開く。</p>
+<div class="highlight-launch.json notranslate"><div class="highlight"><pre><span></span>{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    &quot;version&quot;: &quot;0.2.0&quot;,
+    &quot;configurations&quot;: [
+        {
+            &quot;type&quot;: &quot;chrome&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;name&quot;: &quot;Launch Chrome against localhost&quot;,
+            &quot;url&quot;: &quot;http://localhost:5080&quot;,
+            &quot;webRoot&quot;: &quot;${workspaceFolder}&quot;
+        }
+    ]
+}
+</pre></div>
+</div>
+<p>自動でリロードがかかるので快適。</p>
+</section>
+<section id="id7">
+<h1>参考<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>https://www.staticgen.com/wyam</p>
+<ul>
+<li><p>https://wyam.io/docs/resources/built-with-wyam</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://qiita.com/MeilCli/items/425a5436aced08ba7062">静的サイトジェネレーターでC#を使いたかったからWyamを試したら最高だった</a></p></li>
+</ul>
+<p>日本語で wyam に言及しているサイトはこれしかなかった。
+マイナーでござる。</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../vim_sign_gutter/">
+       Vimのgutter表示
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../wyam-theme/">
+      wyam のテーマをカスタマイズする 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  17 August 2019 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2019/wyam-start.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

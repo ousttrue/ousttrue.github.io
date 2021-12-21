@@ -1,0 +1,714 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Pixar USD の Windows ビルド方法（2017/9 版） &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>20170902。実はビルドスクリプトがあって、簡単になっていた。</p>
+<p>動画でCEDEC2017のセッションを聞いてよさげな気がしたので再度やってみた(ちょっと前に途中までやって放置していた)。
+usdviewが使えるようにするとよいらしい。</p>
+<section id="pixar-usd-windows-2017-9">
+<h1>Pixar USD の Windows ビルド方法（2017/9 版）<a class="headerlink" href="#pixar-usd-windows-2017-9" title="Permalink to this headline">¶</a></h1>
+<p>自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
+環境は、Windows10(64bit) + VisualStudio2017 + VisualStudio2015のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)
+visualstudio補足
+VisualStudioは、最近のバージョンに限ってもいろいろある。</p>
+<p>VisualStudio2017(MSVC14.1)のみ
+VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)
+VisualStudio2015(MSVC14.0)のみ
+Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</p>
+<p>ものによってvcvars.batの場所が違って、bjamとかdistutilsがコンパイラの発見に失敗したりする場合があるようだ。
+cl.exeが見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
+一応、
+VisualStudio2017 - x64 native tools command promptからはじめる。
+CMakeはVisualStudioの検出にあまり失敗しないので、おもにBoostのビルド対策。
+効果があったかは不明。
+D:\work&gt; cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.10.25019 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.</p>
+<p>使い方: cl [ オプション… ] ファイル名… [ /link リンク オプション… ]</p>
+<p>VS2017しか入っていないとき
+build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラはVS2008(MSVC9.0)らしい。</p>
+<p><a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=44266">https://www.microsoft.com/en-us/download/details.aspx?id=44266</a></p>
+<p>python補足
+Python27以外のPythonが入っているとはまる率が上がる。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>D:\work&gt; python -V
+Python 3.6.0 :: Anaconda 4.3.0 (64-bit)
+
+違うPythonだー。
+D:\work&gt; set PATH=D:\Python27;D:\Python27\Scripts;%PATH%
+D:\work&gt; python -V
+Python 2.7.14rc1
+D:\work&gt; pip install pyside
+Collecting pyside
+  Downloading PySide-1.2.4-cp27-none-win_amd64.whl (45.0MB)
+    100% |################################| 45.0MB 36kB/s
+Installing collected packages: pyside
+Successfully installed pyside-1.2.4
+</pre></div>
+</div>
+<p>python使いたるもの２系、３系両方入っていたりするものである。
+cloneしてビルドスクリプトを実行</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PixarAnimationStudios</span><span class="o">/</span><span class="n">USD</span>
+
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">mkdir</span> <span class="n">USD_build</span>
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">USD_build</span>
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span>
+
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span>
+<span class="n">usage</span><span class="p">:</span> <span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="o">|</span> <span class="o">-</span><span class="n">q</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">build</span> <span class="n">BUILD</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">generator</span> <span class="n">GENERATOR</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">shared</span> <span class="o">|</span> <span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">monolithic</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">src</span> <span class="n">SRC</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">inst</span> <span class="n">INST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span> <span class="n">FORCE_BUILD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="nb">all</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docs</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">docs</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">imaging</span> <span class="o">|</span> <span class="o">--</span><span class="n">usd</span><span class="o">-</span><span class="n">imaging</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">imaging</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">ptex</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">ptex</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">embree</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">embree</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">embree</span><span class="o">-</span><span class="n">location</span> <span class="n">EMBREE_LOCATION</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">alembic</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">alembic</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">hdf5</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">hdf5</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">maya</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">maya</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maya</span><span class="o">-</span><span class="n">location</span> <span class="n">MAYA_LOCATION</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">katana</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">katana</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">katana</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">location</span> <span class="n">KATANA_API_LOCATION</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">houdini</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">houdini</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">houdini</span><span class="o">-</span><span class="n">location</span> <span class="n">HOUDINI_LOCATION</span><span class="p">]</span>
+                    <span class="n">install_dir</span>
+<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">too</span> <span class="n">few</span> <span class="n">arguments</span>
+
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="o">.</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">CMake</span> <span class="ow">not</span> <span class="n">found</span> <span class="o">--</span> <span class="n">please</span> <span class="n">install</span> <span class="n">it</span> <span class="ow">and</span> <span class="n">adjust</span> <span class="n">your</span> <span class="n">PATH</span>
+</pre></div>
+</div>
+<p>こんな風に足りないツールのメッセージが出るのでせっせとインストールしてパスを設定する。</p>
+<blockquote>
+<div><p>set PATH=D:\Program Files\CMake\bin;%PATH%
+set PATH=D:\Program Files\NASM;%PATH%</p>
+</div></blockquote>
+<p>build…</p>
+</section>
+<section id="alembic">
+<h1>Alembicとか無しの最小ビルド。<a class="headerlink" href="#alembic" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="o">.</span>
+
+<span class="n">Building</span> <span class="k">with</span> <span class="n">settings</span><span class="p">:</span>
+  <span class="n">USD</span> <span class="n">source</span> <span class="n">directory</span>          <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD</span>
+  <span class="n">USD</span> <span class="n">install</span> <span class="n">directory</span>         <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>
+  <span class="mi">3</span><span class="n">rd</span><span class="o">-</span><span class="n">party</span> <span class="n">source</span> <span class="n">directory</span>    <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>\<span class="n">src</span>
+  <span class="mi">3</span><span class="n">rd</span><span class="o">-</span><span class="n">party</span> <span class="n">install</span> <span class="n">directory</span>   <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>
+  <span class="n">Build</span> <span class="n">directory</span>               <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>\<span class="n">build</span>
+
+  <span class="n">Building</span>                      <span class="n">Shared</span> <span class="n">libraries</span>
+    <span class="n">Imaging</span>                     <span class="n">On</span>
+      <span class="n">Ptex</span> <span class="n">support</span><span class="p">:</span>             <span class="n">Off</span>
+    <span class="n">UsdImaging</span>                  <span class="n">On</span>
+    <span class="n">Documentation</span>               <span class="n">Off</span>
+    <span class="n">Tests</span>                       <span class="n">Off</span>
+    <span class="n">Alembic</span> <span class="n">Plugin</span>              <span class="n">Off</span>
+      <span class="n">HDF5</span> <span class="n">support</span><span class="p">:</span>             <span class="n">Off</span>
+    <span class="n">Maya</span> <span class="n">Plugin</span>                 <span class="n">Off</span>
+    <span class="n">Katana</span> <span class="n">Plugin</span>               <span class="n">Off</span>
+    <span class="n">Houdini</span> <span class="n">Plugin</span>              <span class="n">Off</span>
+
+    <span class="n">Dependencies</span>                <span class="n">zlib</span><span class="p">,</span> <span class="n">boost</span><span class="p">,</span> <span class="n">TBB</span><span class="p">,</span> <span class="n">JPEG</span><span class="p">,</span> <span class="n">TIFF</span><span class="p">,</span> <span class="n">PNG</span><span class="p">,</span> <span class="n">OpenEXR</span><span class="p">,</span> <span class="n">GLEW</span><span class="p">,</span> <span class="n">OpenImageIO</span><span class="p">,</span> <span class="n">OpenSubdiv</span><span class="p">,</span> <span class="n">PyOpenGL</span>
+
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">zlib</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">boost</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">TBB</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">JPEG</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">TIFF</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">PNG</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>こんな感じに順番にビルドが進んでいく。
+pngのビルドでこけた
+pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。</p>
+<p>何故か、zlibへのリンクがうまくいっていない？
+CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
+pythonをフルパスで指定したらなんか治った。違うPythonが意図せず使われていたか。
+dos窓は、whichコマンドが無いしよくわからん。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>work\USD_build&gt; D:\python27\python ..\USD\build_scripts\build_usd.py . --force png
+
+STATUS: Installing PNG...
+STATUS: Installing OpenEXR...
+STATUS: Installing GLEW...
+STATUS: Installing OpenImageIO...
+STATUS: Installing OpenSubdiv...
+STATUS: Installing PyOpenGL...
+STATUS: Installing PyOpenGL...
+STATUS: Installing USD...
+
+Success! To use USD, please ensure that you have:
+  The following in your PYTHONPATH environment variable:
+    D:\dev\_alembic\USD_build\lib\python
+
+  The following in your PATH environment variable:
+    D:\dev\_alembic\USD_build\bin
+    D:\dev\_alembic\USD_build\lib
+</pre></div>
+</div>
+<p>ビルドできた。</p>
+</section>
+<section id="boost-python">
+<h1>Boost.Pythonメモ<a class="headerlink" href="#boost-python" title="Permalink to this headline">¶</a></h1>
+<p>boost_python-vc140-mt-1_61.dllがpython36.dllとか違うのにリンクしてしまう場合。
+最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。
+USD_BUILD/user-conifg.jam
+using python
+: 2.7                   # Version
+: C:\Python27\python.exe      # Python Path
+: C:\Python27\include         # include path
+: C:\Python27\libs            # lib path(s)
+;</p>
+<p>を作って環境変数BOOST_BUILD_PATHをuser-config.jamのあるディレクトリに指定する。</p>
+<p>http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</p>
+<p>WindowsのBoost.Pythonは作るときも使うときもリンクではまる。
+usdviewを使ってみる
+USD_BUILD/bin/usdviewがある。
+USD_BUILD\bin&gt; D:\python27\python usdview</p>
+<p>sys.path
+Traceback (most recent call last):
+File “usdview”, line 25, in <module>
+import pxr.Usdviewq as Usdviewq
+ImportError: No module named pxr.Usdviewq</p>
+<p>environ[‘PATH’]
+Traceback (most recent call last):
+File “usdview”, line 37, in <module>
+Usdviewq.Launcher().Run()
+File “D:\dev_alembic\USD_build\lib\python\pxr\Usdviewq_<em>init</em>_.py”, line 54, in Run
+valid = self.ValidateOptions(arg_parse_result)
+File “D:\dev_alembic\USD_build\lib\python\pxr\Usdviewq_<em>init</em>_.py”, line 167, in ValidateOptions
+from pxr import Sdf
+File “D:\dev_alembic\USD_build\lib\python\pxr\Sdf_<em>init</em>_.py”, line 24, in <module>
+import _sdf
+ImportError: DLL load failed: 指定されたモジュールが見つかりません。</p>
+<p>usdviewを改造してしまおう。
+環境変数PATHとPYTHONPATHを追加。
+usdview.cmd改造でもよいがpythonの方が書きやすいので。
+usdviewの冒頭のimport前に下記を追加。
+import os
+import sys</p>
+<p>basepath=os.path.dirname(os.path.dirname(os.path.abspath(<strong>file</strong>)))
+bin_dir=os.path.join(basepath, ‘bin’)
+lib_dir=os.path.join(basepath, ‘lib’)
+libpython_dir=os.path.join(lib_dir, ‘python’)</p>
+<p>sys.path.append(libpython_dir)
+os.environ[‘PATH’]=”%s;%s;” % (bin_dir, lib_dir) + os.environ[‘PATH’]</p>
+<p>import pxr.Usdviewq as Usdviewq</p>
+<p>実行。
+USD_BUILD\bin&gt; D:\python27\python usdview
+usage: usdview [-h] [–renderer {opt,simple}] [–select PRIMPATH]
+[–camera CAMERA] [–mask PRIMPATH[,PRIMPATH…]]
+[–clearsettings] [–norender] [–unloaded] [–timing]
+[–memstats {none,stage,stageAndImaging}]
+[–numThreads NUMTHREADS] [–ff FIRSTFRAME] [–lf LASTFRAME]
+[–complexity COMPLEXITY] [–quitAfterStartup]
+usdFile
+usdview: error: too few arguments</p>
+<p>引数が必要と。
+cube.usd
+#usda 1.0</p>
+<p>def Cube “Cube”
+{
+}</p>
+<p>実行。
+Warning: in Link at line 180 of D:\dev_alembic\USD\pxr\imaging\lib\hd\glslProgram.cpp – Failed to link shader:
+Geometry shader(s) failed to link.
+Geometry link error: HW_UNSUPPORTED.
+ERROR: Internal compile error, error code: E_SC_LITERAL_NOT_DEFINED
+Shader not supported by HW</p>
+<p>Windowは出た。しかしglslのエラーで3DViewの描画ができぬ。
+Rx480がだめなのだろうか。
+GTX買わねば・・・
+Alembic追加する
+ToDo</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../boost_python3/">
+       Boost.PythonのPython3でのstd::string、std::wstringのふるまい
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../gentoo_install/">
+      久しぶりにGentooインストール 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  14 August 2017 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../_sources/posts/2017/08/usd.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

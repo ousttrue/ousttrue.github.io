@@ -1,0 +1,616 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>C++/CXを置き換えるよさげなライブラリC++WinRTを発見した。</p>
+<p>C++/CXの機能を純粋なC++(C++17とか新しめの)で実装したものらしく、WinRTのC++バインディングのような位置。
+C++/CXで</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span> <span class="o">^</span><span class="n">window</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>のようなものを</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
+<span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">Core</span> <span class="n">window</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>のように置き換える。<code class="docutils literal notranslate"><span class="pre">-&gt;</span> </code>じゃなくて <code class="docutils literal notranslate"><span class="pre">.</span></code> を使うスマートポインタで実装されている。</p>
+<ul class="simple">
+<li><p>Migrating C++/CX source code to C++/WinRT</p></li>
+</ul>
+<p>C++/CXでasync, awaitな非同期を実装する道具だったPPLもうまく置き換えているようだ。</p>
+<ul class="simple">
+<li><p>Using C++ co-routines with C++/WinRT asynchronous methods</p></li>
+</ul>
+<p>やってみる
+clone
+https://github.com/Microsoft/cppwinrtをcloneしてincludeできるようにしておく。
+C++WinRTはヘッダオンリーライブラリである。
+ビルド確認</p>
+<p>https://github.com/Microsoft/cppwinrt/tree/master/10.0.15063.0/Samples/CL</p>
+<p>をベース。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// main.cpp</span>
+<span class="cp">#pragma comment(lib, &quot;windowsapp&quot;) </span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;winrt/base.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="kr">__stdcall</span> <span class="nf">wWinMain</span><span class="p">(</span><span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">PWSTR</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">winrt</span><span class="o">::</span><span class="n">init_apartment</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>あえてCMakeで。
+CMakeLists.txt</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">CMAKE_MINIMUM_REQUIRED</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.5</span><span class="p">)</span>
+<span class="nb">PROJECT</span><span class="p">(</span><span class="s">RendererToolkit</span><span class="p">)</span> <span class="c"># .sln</span>
+
+<span class="nb">ADD_DEFINITIONS</span><span class="p">(</span>
+    <span class="s">-DWIN32=1</span>
+    <span class="s">-DUNICODE=1</span>
+    <span class="s">-D_UNICODE=1</span>
+    <span class="p">)</span>
+
+<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_C_FLAGS</span> <span class="s2">&quot;/ZW /EHsc /await /std:c++latest&quot;</span><span class="p">)</span>
+<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_CXX_FLAGS</span> <span class="o">${</span><span class="nv">CMAKE_C_FLAGS</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">INCLUDE_DIRECTORIES</span><span class="p">(</span>
+    <span class="c"># 適当にcloneしたパスを参照</span>
+    <span class="o">${</span><span class="nv">CMAKE_CURRENT_LIST_DIR</span><span class="o">}</span><span class="s">/cppwinrt/10.0.15063.0</span>
+    <span class="p">)</span>
+
+<span class="c">##############################################################################</span>
+<span class="c"># project</span>
+<span class="c">##############################################################################</span>
+<span class="nb">SET</span><span class="p">(</span><span class="s">PROJECTNAME</span> <span class="s">_SampleCoreWindow</span><span class="p">)</span>
+
+<span class="nb">FILE</span><span class="p">(</span><span class="s">GLOB</span> <span class="s">SRCS</span> <span class="s">*.cpp</span> <span class="s">*.h</span><span class="p">)</span>
+
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECTNAME</span><span class="o">}</span> <span class="s">WIN32</span> <span class="o">${</span><span class="nv">SRCS</span><span class="o">}</span><span class="p">)</span>
+
+<span class="nb">TARGET_INCLUDE_DIRECTORIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECTNAME</span><span class="o">}</span> <span class="s">PUBLIC</span>
+    <span class="o">${</span><span class="nv">SUBRENDERER_INCLUDE</span><span class="o">}</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>UWPをターゲットにしたプロジェクトを生成する。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">mkdir</span> <span class="n">build</span>
+<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">build</span>
+<span class="n">build</span><span class="o">&gt;</span> <span class="n">cmake</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">DCMAKE_SYSTEM_NAME</span><span class="o">=</span><span class="n">WindowsStore</span> <span class="o">-</span><span class="n">DCMAKE_SYSTEM_VERSION</span><span class="o">=</span><span class="mf">10.0</span> <span class="o">-</span><span class="n">DCMAKE_C_FLAGS</span><span class="o">=/</span><span class="n">ZW</span> <span class="o">/</span><span class="n">EHsc</span> <span class="o">-</span><span class="n">G</span> <span class="s2">&quot;Visual Studio 15 2017 Win64&quot;</span> <span class="o">..</span>
+</pre></div>
+</div>
+<p>ビルドすると警告が出る。
+warning C4447: スレッド モデルのない ‘main’ シグネチャが見つかりました。’int main(Platform::Array<a class="reference external" href="Platform::String%5E">Platform::String%5E</a>^ args)’ の使用を検討してください。</p>
+<p>以下のように属性をつければ外せた。
+[Platform::MTAThread]
+int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)</p>
+<p>Debug - X64 - ローカルコンピューター でアプリが起動して、即終了することが確認できればよし。
+UWPの作法で空のAppを作ってみる</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma comment(lib, &quot;windowsapp&quot;) </span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;winrt/Windows.ApplicationModel.Core.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
+
+<span class="c1">//</span>
+<span class="c1">// IFrameworkViewSourceとIFrameworkViewを一体化させるのは必要(ばらすとエラーになった)</span>
+<span class="c1">//</span>
+<span class="k">struct</span> <span class="nl">App</span> <span class="p">:</span> <span class="n">winrt</span><span class="o">::</span><span class="n">implements</span><span class="o">&lt;</span><span class="n">App</span>
+    <span class="p">,</span> <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkViewSource</span>
+    <span class="p">,</span> <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span> <span class="n">CreateView</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">Initialize</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplicationView</span> <span class="k">const</span><span class="o">&amp;</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">Load</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">hstring</span> <span class="k">const</span><span class="o">&amp;</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">Uninitialize</span><span class="p">()</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">Run</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">window</span> <span class="o">=</span> <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="o">::</span><span class="n">GetForCurrentThread</span><span class="p">();</span>
+        <span class="n">window</span><span class="p">.</span><span class="n">Activate</span><span class="p">();</span>
+
+        <span class="c1">//</span>
+
+        <span class="k">auto</span> <span class="n">dispatcher</span> <span class="o">=</span> <span class="n">window</span><span class="p">.</span><span class="n">Dispatcher</span><span class="p">();</span>
+        <span class="n">dispatcher</span><span class="p">.</span><span class="n">ProcessEvents</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreProcessEventsOption</span><span class="o">::</span><span class="n">ProcessUntilQuit</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">SetWindow</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span> <span class="k">const</span><span class="o">&amp;</span><span class="p">)</span>
+    <span class="p">{</span>
+
+    <span class="p">}</span>
+<span class="p">};</span>
+
+
+<span class="kt">int</span> <span class="kr">__stdcall</span> <span class="nf">wWinMain</span><span class="p">(</span><span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">PWSTR</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">winrt</span><span class="o">::</span><span class="n">init_apartment</span><span class="p">();</span>
+
+    <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplication</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">App</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>警告とは無関係に、実行に
+[Platform::MTAThread]かwinrt::init_apartment();のどちらかが必要？
+IUnknown*を得る
+winrt::get_abi
+メモ</p>
+<p>https://github.com/Kitware/CMake/blob/master/Tests/VSWinStorePhone/CMakeLists.txt</p>
+<p>VisualStudio2017のC++/CX Universal D3D11のテンプレートをC++/WinRTバージョンに改造できた。間違ってもコンパイルが通って実行時エラーになるのに難儀したが、C++/CXよりはだいぶ使い勝手がよさげな感じ。</p>
+
+<div class="section">
+   
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2017/cppwinrt_uwp.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

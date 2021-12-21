@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>echo “x11-base/xorg-server udev” &gt;&gt; /etc/portage/package.use &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>xorgインストール
+gentooにxorgをインストールする
+The X Server Configuration HOWTO
+http://www.gentoo.org/doc/en/xorg-config.xml
+/etc/portage/make.conf
+INPUT_DEVICES=”evdev”</p>
+<section class="tex2jax_ignore mathjax_ignore" id="echo-x11-base-xorg-server-udev-etc-portage-package-use">
+<h1>echo “x11-base/xorg-server udev” &gt;&gt; /etc/portage/package.use<a class="headerlink" href="#echo-x11-base-xorg-server-udev-etc-portage-package-use" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-xorg-server">
+<h1>emerge -av xorg-server<a class="headerlink" href="#emerge-av-xorg-server" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="env-update">
+<h1>env-update<a class="headerlink" href="#env-update" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="source-etc-profile">
+<h1>source /etc/profile<a class="headerlink" href="#source-etc-profile" title="Permalink to this headline">¶</a></h1>
+<p>fglrx
+http://wiki.gentoo.org/wiki/Fglrx
+AMD A10 向けにfglrxドライバ</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="cat-proc-cpuinfo-grep-model">
+<h1>cat /proc/cpuinfo | grep model<a class="headerlink" href="#cat-proc-cpuinfo-grep-model" title="Permalink to this headline">¶</a></h1>
+<p>model name      : AMD A10-5700 APU with Radeon(tm) HD Graphics</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="lspci-grep-i-vga">
+<h1>lspci | grep -i vga<a class="headerlink" href="#lspci-grep-i-vga" title="Permalink to this headline">¶</a></h1>
+<p>00:01.0 VGA compatible controller: Advanced Micro Devices [AMD] nee ATI Trinity [Radeon HD 7660D]</p>
+<p>kernel作り直し [Direct Rendering Manager]を無効にする。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="genkernel-lvm2-menuconfig-no-clean-all">
+<h1>genkernel –lvm2 –menuconfig –no-clean all<a class="headerlink" href="#genkernel-lvm2-menuconfig-no-clean-all" title="Permalink to this headline">¶</a></h1>
+<p>VIDEO_CARDS=”fglrx”</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-xorg-drivers">
+<h1>emerge xorg-drivers<a class="headerlink" href="#emerge-xorg-drivers" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="aticonfig-initial">
+<h1>aticonfig –initial<a class="headerlink" href="#aticonfig-initial" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="eselect-opengl-set-ati">
+<h1>eselect opengl set ati<a class="headerlink" href="#eselect-opengl-set-ati" title="Permalink to this headline">¶</a></h1>
+<p>intel
+VIDEO_CARDS=”intel”</p>
+<p>Desktop
+gnomeとかをいれずにopenboxを素で使う。lxdeぽい感じ。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-xterm-xmodmap">
+<h1>emerge -av xterm xmodmap<a class="headerlink" href="#emerge-av-xterm-xmodmap" title="Permalink to this headline">¶</a></h1>
+<p>Window Manager</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-openbox-openbox-menu">
+<h1>emerge -av openbox openbox-menu<a class="headerlink" href="#emerge-av-openbox-openbox-menu" title="Permalink to this headline">¶</a></h1>
+<p>メニュー設定
+./config/openbox/menu.xml</p>
+<p>Display Manager</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-lxdm">
+<h1>emerge -av lxdm<a class="headerlink" href="#emerge-av-lxdm" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="vim-etc-conf-d-xdm">
+<h1>vim /etc/conf.d/xdm<a class="headerlink" href="#vim-etc-conf-d-xdm" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="etc-init-d-xdm-start">
+<h1>/etc/init.d/xdm start<a class="headerlink" href="#etc-init-d-xdm-start" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-xdm-default">
+<h1>rc-update add xdm default<a class="headerlink" href="#rc-update-add-xdm-default" title="Permalink to this headline">¶</a></h1>
+<p>IME</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-scim-anthy">
+<h1>emerge -av scim-anthy<a class="headerlink" href="#emerge-av-scim-anthy" title="Permalink to this headline">¶</a></h1>
+<p>Font</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-ricty">
+<h1>emerge -av ricty<a class="headerlink" href="#emerge-av-ricty" title="Permalink to this headline">¶</a></h1>
+<p>Term</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-xfce4-terminal">
+<h1>emerge -av xfce4-terminal<a class="headerlink" href="#emerge-av-xfce4-terminal" title="Permalink to this headline">¶</a></h1>
+<p>Taskbar</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-av-tint2">
+<h1>emerge -av tint2<a class="headerlink" href="#emerge-av-tint2" title="Permalink to this headline">¶</a></h1>
+<p>Filer</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="pcmanfm-av-pcmanfm">
+<h1>pcmanfm -av pcmanfm<a class="headerlink" href="#pcmanfm-av-pcmanfm" title="Permalink to this headline">¶</a></h1>
+<p>Desktop関連のデーモン
+USEにconsolekit, dbus追加</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="emerge-ask-changed-use-deep-world">
+<h1>emerge –ask –changed-use –deep &#64;world<a class="headerlink" href="#emerge-ask-changed-use-deep-world" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-consolekit-default">
+<h1>rc-update add consolekit default<a class="headerlink" href="#rc-update-add-consolekit-default" title="Permalink to this headline">¶</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rc-update-add-dbus-default">
+<h1>rc-update add dbus default<a class="headerlink" href="#rc-update-add-dbus-default" title="Permalink to this headline">¶</a></h1>
+<p>CapsキーをControlに変更。
+.Xmodmap
+!!
+!! Caps_Lock to Control
+!!
+remove Lock = Caps_Lock
+add Control = Caps_Lock
+keysym Caps_Lock = Control_L</p>
+<p>セッション
+~/.xsession
+xmodmap .Xmodmap</p>
+<p>export LANG=ja_JP.UTF-8</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>日本語入力周り<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>export XMODIFIERS=”&#64;im=SCIM”
+export GTK_IM_MODULE=”scim-bridge”
+export QT_IM_MODULE=”scim-bridge”
+scim -d &amp;</p>
+<p>exec ck-launch-session openbox-session</p>
+<p>TouchPad
+http://wiki.gentoo.org/wiki/Synaptics
+/etc/portage/make.conf
+INPUT_DEVICES=”synaptics”</p>
+<p>emerge –ask –changed-use –deep world</p>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../../20/gentoo/">
+       Gentoo再構築
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../22/alsa/">
+      alsaとかpulseaudio設定 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  21 May 2013 
+</h2>
+
+<ul>
+        
+</ul>
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../../../_sources/posts/2013/05/21/xorg.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

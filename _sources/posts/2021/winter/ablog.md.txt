@@ -6,12 +6,12 @@ tags = ["python", "ssg", "sphinx"]
 
 # ABlog にシステムを変更
 
-nikola は使いこなせなくて短命に終わってしまった。
-`doit` は面白いと思うのだが。
+[nikola](https://getnikola.com/) は使いこなせなくて短命に終わってしまった。
+[doit](https://pydoit.org/) は面白いと思うのだが。
 
 ということで、 `sphinx` プラグインの [ABlog](https://ablog.readthedocs.io/en/latest/) です。
 
-## はまり1
+## はまり1: Sphinx のキャッシュ
 
 `python -m sphinx content build` にデバッガをアタッチして試行錯誤するのだけど、
 キャッシュされて処理されなかった。
@@ -21,7 +21,7 @@ nikola は使いこなせなくて短命に終わってしまった。
 * -E: 全処理(キャッシュを使わない)
 * -v: 詳細メッセージ
 
-## はまり2
+## はまり2: ablog が timezone の有無で日付の比較に失敗する
 
 ```
 can't compare offset-naive and offset-aware datetimes
@@ -37,7 +37,7 @@ self.date = date = info["date"].replace(tzinfo=None)
 
 と対処した。
 
-## はまり3
+## はまり3: myst-parser の toml frontmatter 対応
 
 `myst-parser` が `---` による `yaml` 形式の `frontmatter` にしか対応していない様子。
 [hugo の frontmatter](https://gohugo.io/content-management/front-matter/) にある `toml` 様式に対応するべく改造したい。
@@ -56,9 +56,13 @@ self.date = date = info["date"].replace(tzinfo=None)
 `render_front_matter` で切り出した文字列を `yaml` でパースしている。
 `except` 節で `toml` にリトライさせたら動いた。
 
-### モンキーパッチ
+## モンキーパッチ
 
 とりあえず `conf.py` にて直接修正する。
+
+<https://github.com/ousttrue/ousttrue.github.io/blob/ablog/content/patch.py>
+
+後で PR 送ったりできるかな。
 
 ## ABlog は何をしているのか
 
@@ -84,3 +88,18 @@ blog_post_pattern = "posts/**/*.md"
 `frontmatter` 等から最低限、日付の情報がとれないとトップページから辿る方法が無い状態になる。
 
 あと `sphinx` なのでトップレベルの表題が本文側に必要かも。
+`frontmatter` の `title` を反映できると便利そう。
+
+## ToDo
+
+### タグが変
+### 日付のフォーマット
+
+### 記事のURL
+
+* https://zenn.dev/attakei/articles/sphinx-make-dirhtml
+
+## 参考
+
+* [Sphinxでブログをしてみよう](https://water2litter.net/pisco/doc/ablog.html)
+

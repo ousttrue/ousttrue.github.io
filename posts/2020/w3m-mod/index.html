@@ -1,0 +1,1005 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>下準備 &#8212; 三次元日誌  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" /> 
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../../../blog/atom.xml"
+  title="三次元日誌(ablog)"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <p>以前にも何度かやったことがあるのだけど立ち消えになっていた、 <a class="reference external" href="http://w3m.sourceforge.net/index.ja.html">w3m</a> の改造を試みている。
+w3m はわりと好きなテキストブラウザなのだが、 2011 年くらいの 0.5.3 で開発が終了している様子。</p>
+<p>https://github.com/ousttrue/w3m</p>
+<p>まずは <code class="docutils literal notranslate"><span class="pre">C++</span></code> 化してから、HTML処理などを再入可能にしてタブごとにスレッド独立する方向を目指す。
+同時に、 <code class="docutils literal notranslate"><span class="pre">boehm-GC</span></code> を少しずつ <code class="docutils literal notranslate"><span class="pre">STL</span></code> のコンテナや <code class="docutils literal notranslate"><span class="pre">std::string</span></code> に置き換える。
+どうも、<code class="docutils literal notranslate"><span class="pre">c++</span></code> と <code class="docutils literal notranslate"><span class="pre">boehm-GC</span></code> の共存するのに技がいるらしく、適当に置き換えていくとメモリ破壊で死ぬ。<code class="docutils literal notranslate"><span class="pre">boehm-GC</span></code> をすべて置き換える必要がありそう。<code class="docutils literal notranslate"><span class="pre">C++</span></code> クラスのメンバーに <code class="docutils literal notranslate"><span class="pre">GC</span></code> が要る、<code class="docutils literal notranslate"><span class="pre">GC</span> <span class="pre">struct</span></code> のメンバーに <code class="docutils literal notranslate"><span class="pre">C++</span></code> クラスが居るの両方に問題があるっぽい。一応、 <code class="docutils literal notranslate"><span class="pre">gc_cleanup</span></code> を継承したりしているのだけど、やり方がまずいぽい。</p>
+<p>改造にあたってなるべく機能を維持しようとしていたのだけど、ある程度わりきって機能を落とさないと手に負えないところがある。</p>
+<ul class="simple">
+<li><p>http + https 以外の通信プロトコルは落とす。NNTP とか Gopher 使ったことないしなー、FTPもいったん落とす</p></li>
+<li><p>backend, dump, halfload 等の出力に介入する機能は落とす。コードを読むのが大変</p></li>
+<li><p>M17N, COLOR, IMAGE, MENU は残す</p></li>
+<li><p>Mouse は微妙。削ってもよいかも</p></li>
+<li><p>GetText も削る</p></li>
+</ul>
+<p>量を減らす。思ったよりコードが多かったのだ。</p>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>下準備<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<section id="msys2">
+<h2>msys2 でとりあえずビルド<a class="headerlink" href="#msys2" title="Permalink to this headline">¶</a></h2>
+<p>WSL Ubuntu だとビルドできなかった。
+しかし、msys2 ならわりと簡単にビルドできることを発見。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pacman -S make gcc libgc-devel openssl-devel ncurses-devel
+$ x86_64-pc-msys-gcc --version
+x86_64-pc-msys-gcc (GCC) 9.3.0
+Copyright (C) 2019 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+$ ./configure
+</pre></div>
+</div>
+<p>コンパイル環境の方が昔と変わってしまってビルドでエラーになる。</p>
+<p>修正方法👇</p>
+<p><a class="reference external" href="https://qiita.com/imkitchen/items/02a9df7baaaf434fee66">[CentOS7] emacs24にemacs-w3mインストール</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">#ifdef</span></code> の調整</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">config</span><span class="o">.</span><span class="n">h</span>
+<span class="o">//</span><span class="c1">#define USE_BINMODE_STREAM 1</span>
+<span class="o">//</span><span class="c1">#define USE_EGD</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make
+$ ./w3m www.google.com // 動いた
+</pre></div>
+</div>
+</section>
+<section id="wsl-gc">
+<h2>WSL で GC がクラッシュする問題<a class="headerlink" href="#wsl-gc" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">boehm-GC</span></code> がランタイムにエラーになることで、 <code class="docutils literal notranslate"><span class="pre">make</span></code> 中のコード生成 <code class="docutils literal notranslate"><span class="pre">mktable</span></code> がクラッシュするのが原因でビルドステップが途中で止まるのが原因だった。なので、たとえビルド済みの <code class="docutils literal notranslate"><span class="pre">w3m</span></code> を <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">get</span></code> しても、ランタイムも同じ原因でクラッシュする。</p>
+<p>エラー。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Wrong</span> <span class="n">__data_start</span><span class="o">/</span><span class="n">_end</span> <span class="n">pair</span>
+<span class="n">fish</span><span class="p">:</span> <span class="s1">&#39;./build/w3m&#39;</span> <span class="n">terminated</span> <span class="n">by</span> <span class="n">signal</span> <span class="n">SIGABRT</span> <span class="p">(</span><span class="n">Abort</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>https://hitkey.nekokan.dyndns.info/diary2004.php#D200424</p>
+<p>によると、stack size の制限が原因らしい。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ulimit -s
+8192
+</pre></div>
+</div>
+<p>WSL でこれを変えるには・・・。</p>
+<p>https://github.com/microsoft/WSL/issues/633</p>
+<p>無理。</p>
+<p><code class="docutils literal notranslate"><span class="pre">WSL2</span></code> ならできる？</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">wsl</span> <span class="o">-</span><span class="n">l</span> <span class="o">-</span><span class="n">v</span>
+  <span class="n">NAME</span>            <span class="n">STATE</span>           <span class="n">VERSION</span>
+<span class="o">*</span> <span class="n">Ubuntu</span><span class="o">-</span><span class="mf">20.04</span>    <span class="n">Running</span>         <span class="mi">2</span>
+</pre></div>
+</div>
+<p>やってみる。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ulimit -s unlimited
+&gt; ulimit -s
+unlimited
+</pre></div>
+</div>
+<p>できた。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ w3m
+Wrong __data_start/_end pair
+</pre></div>
+</div>
+<p>うーむ。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ulimit -s 81920
+&gt; ulimit -s
+81920
+</pre></div>
+</div>
+<p>動いた。
+8192KB では足りなく、 unlimited では多すぎるらしい。これは、難しいな。</p>
+<p>ちなみに、 <code class="docutils literal notranslate"><span class="pre">gdb</span></code> 上ならスタック問題を解決しなくても動いた。
+<code class="docutils literal notranslate"><span class="pre">gdb</span></code> がスタックを覆い隠すのかな？
+開発だけならできなくもない。</p>
+</section>
+<section id="id2">
+<h2>ビルドシステム<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>とりあえず慣れたツールに変更。
+WSL 上の vscode で作業しているのもあり、autotools から CMake に変更。
+クロスプラットフォームは後退させて、新しめの gcc(c++20) でビルドできればいいや。
+config.h や funcname 系のコード生成結果はコミットしちゃう。
+libwc が static ライブラリにわかれているのも、ひとまとめにしてしまった。
+あと、適当にソースをフォルダに移動する。</p>
+<p>生成コード一覧</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ファイル</p></th>
+<th class="head"><p>生成方法</p></th>
+<th class="head"><p>入力</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>config.h</p></td>
+<td><p>configure</p></td>
+<td><p></p></td>
+<td><p>各種 #define など</p></td>
+</tr>
+<tr class="row-odd"><td><p>entity.h</p></td>
+<td><p>Makefile(mktable)</p></td>
+<td><p>entity.tab</p></td>
+<td><p>./mktable 100 entity.tab &gt; entity.h</p></td>
+</tr>
+<tr class="row-even"><td><p>funcname.tab</p></td>
+<td><p>Makefile(awk)</p></td>
+<td><p>main.c, menu.c</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>funcname.c</p></td>
+<td><p>Makefile(awk)</p></td>
+<td><p>funcname.tab</p></td>
+<td><p>sort funcname.tab ｜ awk -f funcname0.awk &gt; funcname.c</p></td>
+</tr>
+<tr class="row-even"><td><p>funcname1.h</p></td>
+<td><p>Makefile(awk)</p></td>
+<td><p>funcname.tab</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>funcname2.h</p></td>
+<td><p>Makefile(awk)</p></td>
+<td><p>funcname.tab</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>functable.c</p></td>
+<td><p>Makefile(mktable)</p></td>
+<td><p>funcname.tab</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>tagtable.c</p></td>
+<td><p>Makefile(mktable)</p></td>
+<td><p>funcname.tab</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id3">
+<h2>警告からエラーに引き上げ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>改造していくのに <code class="docutils literal notranslate"><span class="pre">C</span></code> の緩い型制限が危険(コンパイルが通るのに型が不一致になりやすい)なので、
+以下のオプションを追加。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Werror</span><span class="o">=</span><span class="n">implicit</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="n">declaration</span>
+<span class="o">-</span><span class="n">Werror</span><span class="o">=</span><span class="nb">int</span><span class="o">-</span><span class="n">conversion</span>
+<span class="o">-</span><span class="n">Werror</span><span class="o">=</span><span class="n">conversion</span><span class="o">-</span><span class="n">null</span>
+</pre></div>
+</div>
+<p>これで、型宣言を補強しながら進める。</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id4">
+<h1>第1段階<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>extern “C” を追加してソースの拡張子を <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> に変更</p></li>
+<li><p>extern “C” をまとめて取り除く</p></li>
+<li><p>typedef struct tag を取り除く</p></li>
+</ul>
+<p>ここまでやると、自由に <code class="docutils literal notranslate"><span class="pre">c++</span></code> のコードを混ぜることができる。
+<code class="docutils literal notranslate"><span class="pre">std::string</span></code>、<code class="docutils literal notranslate"><span class="pre">std::vector</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::function</span></code>, <code class="docutils literal notranslate"><span class="pre">std::string_view</span></code>, <code class="docutils literal notranslate"><span class="pre">template</span></code>, <code class="docutils literal notranslate"><span class="pre">class</span></code>, 前方宣言, <code class="docutils literal notranslate"><span class="pre">auto</span></code>, <code class="docutils literal notranslate"><span class="pre">inline</span></code> 等使い放題 👍</p>
+<p>特に <code class="docutils literal notranslate"><span class="pre">std::string_view</span></code> の使い勝手を試したい。
+所有しない文字列はすべて、 <code class="docutils literal notranslate"><span class="pre">std::string_view</span></code> でいけると思うのだが。
+<code class="docutils literal notranslate"><span class="pre">split</span></code> の <code class="docutils literal notranslate"><span class="pre">std::string_view</span></code> 版は具合がよかった。</p>
+<section id="c-extern-c">
+<h2>c++ 化 (extern “C”)<a class="headerlink" href="#c-extern-c" title="Permalink to this headline">¶</a></h2>
+<p>手法としては、各ソースの拡張子を <code class="docutils literal notranslate"><span class="pre">.c</span></code> から <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> に変更する。
+<code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> を修正。
+<code class="docutils literal notranslate"><span class="pre">#include</span></code> を <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> で囲む、で <code class="docutils literal notranslate"><span class="pre">c++</span></code> 化することができる。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+<span class="cp">#include</span> <span class="cpf">&quot;xxx.h&quot;</span><span class="cp"></span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただ、 <code class="docutils literal notranslate"><span class="pre">cpp</span></code> で定義する関数の宣言が <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> の中に入らないとリンクエラーになるので、
+そうなるようにソースごとにヘッダを分配してやる。
+<code class="docutils literal notranslate"><span class="pre">w3m</span></code> は関数宣言が少数のファイル <code class="docutils literal notranslate"><span class="pre">proto.h</span></code>, <code class="docutils literal notranslate"><span class="pre">fm.h</span></code> とかに集中しているのだが、いっぱいあるので雑にやる。
+コンパイルが通ればよい。</p>
+<p>分配するときに未定義の型を前方宣言ですませたいのだけど、 <code class="docutils literal notranslate"><span class="pre">c</span></code> の <code class="docutils literal notranslate"><span class="pre">struct</span></code> 定義が、<code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">tag</span></code> と <code class="docutils literal notranslate"><span class="pre">typedef</span></code> に分かれているのがやっかいだった。</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// C</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">hogeTag</span>
+<span class="p">{</span>
+
+<span class="p">}</span> <span class="n">Hoge</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
+
+<span class="c1">// に対する前方宣言は、</span>
+
+<span class="k">struct</span> <span class="n">hogeTag</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="n">hogeTag</span> <span class="n">Hoge</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">C</span></code> の状態で、前方宣言を導入できずヘッダの分割が難航。
+型ごとに別のヘッダに分割することは断念して、
+ほとんど全部の <code class="docutils literal notranslate"><span class="pre">struct</span></code> 定義の入ったヘッダを <code class="docutils literal notranslate"><span class="pre">fm.h</span></code> から分離して作るのに留めた。</p>
+</section>
+<section id="defun">
+<h2>DEFUN<a class="headerlink" href="#defun" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">w3m</span></code> は <code class="docutils literal notranslate"><span class="pre">DEFUN</span></code> でキーアサインできる関数を定義している。</p>
+<p><span class="xref myst">readme.func</span></p>
+<p>以下のように、キーボードなどのイベントをトリガーにアクションを実行するというイメージ。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Key</span>
+    <span class="n">KeyMap</span>
+        <span class="n">DEFUN</span>
+    <span class="n">Menu</span>
+        <span class="n">DEFUN</span>
+<span class="n">MouseAction</span>
+    <span class="n">ActionMap</span>
+        <span class="n">DEFUN</span>
+    <span class="n">Menu</span>
+        <span class="n">DEFUN</span>
+<span class="n">Alarm</span>
+    <span class="n">DEFUN</span>
+</pre></div>
+</div>
+<p>ソースは、<code class="docutils literal notranslate"><span class="pre">main.c</span></code> と <code class="docutils literal notranslate"><span class="pre">menu.c</span></code> に <code class="docutils literal notranslate"><span class="pre">DEFUN</span></code> とそれの使う補助関数がまとめて定義されていて、
+ヘッダは <code class="docutils literal notranslate"><span class="pre">proto.h</span></code> に全部入れとなっている。</p>
+<p>c++ で下記のようなディスパッチャを作った。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">Command</span><span class="o">&gt;</span> <span class="n">g_commandMap</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>使い捨ての python で関数に登録するコードを生成した。</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id5">
+<h1>第２段階<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>PODじゃない型が動くようにする</p>
+<ul>
+<li><p>constructor/destructor</p></li>
+</ul>
+</li>
+<li><p>脱GC</p>
+<ul>
+<li><p>コレクションをSTLに置き換える</p></li>
+<li><p>std::string</p></li>
+<li><p>std::shared_ptr</p></li>
+</ul>
+</li>
+<li><p>機能ごとにモジュール化</p></li>
+<li><p>再入可能</p></li>
+</ul>
+<section id="gc-malloc-gc-cleanup">
+<h2>GC_MALLOC から gc_cleanup 継承へ<a class="headerlink" href="#gc-malloc-gc-cleanup" title="Permalink to this headline">¶</a></h2>
+<p>boehm-GC を <code class="docutils literal notranslate"><span class="pre">c++</span></code> のクラスで使う方法を調べた。</p>
+<p>http://www.namikilab.tuat.ac.jp/~sasada/prog/boehmgc.html#i-0-5</p>
+<p><code class="docutils literal notranslate"><span class="pre">w3m</span></code> では、 <code class="docutils literal notranslate"><span class="pre">GC</span></code> を多用している。</p>
+<p>おもに、</p>
+<ul class="simple">
+<li><p>struct Str</p></li>
+<li><p>コレクション</p></li>
+<li><p>struct の field</p></li>
+</ul>
+<p>という感じに。
+このうち、 struct の field で使われるタイプの単発の <code class="docutils literal notranslate"><span class="pre">GC_MALLOC</span></code> している型を <code class="docutils literal notranslate"><span class="pre">gc_cleanup</span></code> 継承にして、 <code class="docutils literal notranslate"><span class="pre">new</span></code> で初期化するようにする。</p>
+<ul class="simple">
+<li><p>bzero, bcopy, memcpy, sizeof</p></li>
+</ul>
+<p>等でメモリクリアしているところに注意する。
+これで、その型は <code class="docutils literal notranslate"><span class="pre">constructor/destructor</span></code> が動くようになり、
+メンバーに <code class="docutils literal notranslate"><span class="pre">std::string</span></code> 等を配置できるようになる。
+あとで、 <code class="docutils literal notranslate"><span class="pre">gc_cleanup</span></code> から <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> に変更することも視野に入れている。</p>
+</section>
+<section id="gc-str">
+<h2>GC文字列 Str<a class="headerlink" href="#gc-str" title="Permalink to this headline">¶</a></h2>
+<p>アプリ全体で使われていて一挙になくすことはできないのだけど、構造体の末端のメンバーから <code class="docutils literal notranslate"><span class="pre">std::string</span></code> に変える。
+あと、がんばって <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*</span></code> の範囲を増やす。
+<code class="docutils literal notranslate"><span class="pre">libwc</span></code> から <code class="docutils literal notranslate"><span class="pre">Str</span></code> を剥そうと思っていたのだが、逆に <code class="docutils literal notranslate"><span class="pre">libwc</span></code> に <code class="docutils literal notranslate"><span class="pre">Str</span></code> を封じ込める方向に軌道修正。
+<code class="docutils literal notranslate"><span class="pre">indep.c</span></code> の便利文字列関数も少しずつ変えてく。</p>
+</section>
+<section id="id6">
+<h2>グローバル変数を減らす<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>関数の中でグローバル変数にアクセスしている場合(CurrentBufferなど)、これを関数の引数経由とか、クラスのメンバー経由でもらう。面倒でも Getter と Setter を区別して、どこで変更されうるかわかりやすくする。
+クラスのメンバーは、 <code class="docutils literal notranslate"><span class="pre">private</span></code> 化を試みる。</p>
+</section>
+<section id="stream">
+<h2>Stream処理<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h2>
+<p>多分、最難関の <code class="docutils literal notranslate"><span class="pre">loadGeneralFile</span></code> 関数。700行くらいだったか。
+goto とか longjmp があってよくわからなかったのだが、慣れてきた。
+<code class="docutils literal notranslate"><span class="pre">http</span></code>, <code class="docutils literal notranslate"><span class="pre">https</span></code>, <code class="docutils literal notranslate"><span class="pre">NNTP</span> <span class="pre">?</span></code>, <code class="docutils literal notranslate"><span class="pre">gopher</span></code>, <code class="docutils literal notranslate"><span class="pre">ftp</span></code>, <code class="docutils literal notranslate"><span class="pre">pipe</span></code> 等、<code class="docutils literal notranslate"><span class="pre">http</span></code> のプロキシーやリダイレクト、 <code class="docutils literal notranslate"><span class="pre">www-auth</span></code> などを一手に処理していて容易に手を付けられない。
+何度か整理しようとして悉く撃退されたので、雑にやることにした。
+機能を <code class="docutils literal notranslate"><span class="pre">http(https)</span></code> に絞ってそれ以外をコメントアウトしてとにかく量を減らす。
+プロキシーとか、 <code class="docutils literal notranslate"><span class="pre">dump</span></code>, <code class="docutils literal notranslate"><span class="pre">halfload</span></code> などのよく知らない機能もどんどん削る。
+としてなんとか改造できるようになってきた。</p>
+<p>ここを <code class="docutils literal notranslate"><span class="pre">HttpClient</span></code>, <code class="docutils literal notranslate"><span class="pre">LocalFile</span></code>, <code class="docutils literal notranslate"><span class="pre">PipeReader</span></code> あたりに整理したい。</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id7">
+<h1>第３段階<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<p>Tab, Buffer, Line のリンクリストを STL のコレクションに置き換えた。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+<span class="n">tab</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>という形を目指す。</p>
+<p><code class="docutils literal notranslate"><span class="pre">loadGeneralFile</span></code> を解きほぐして、 <code class="docutils literal notranslate"><span class="pre">HTTP</span></code> 機能を抽出、リダイレクトまで動くようにできた。
+<code class="docutils literal notranslate"><span class="pre">loadGeneralFile</span></code> は、</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>* OpenStream/Send HTTP Request
+* HTTP Response
+    * 3xx =&gt; Redirect
+* content-type で分岐
+    * BufferLoader =&gt; Buffer
+</pre></div>
+</div>
+<p>という感じに整理できそう。
+HttpとBufferローダーを副作用の無い関数に整理できれば再入可能が見えてくる。
+早めに分岐させて、分岐したら合流しない。同じ処理は関数で共有するという方向性で整理。</p>
+<p>Buffer が多機能なので、Document, HttpResponse, FileInfo とかに分割したい。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id8">
+<h1>第４段階<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p>mainloop の再実装。libuv, libevent 等を検討していたのだけど、 c++ との親和性の高い asio を使うことにした。
+<code class="docutils literal notranslate"><span class="pre">tty</span> <span class="pre">read</span> <span class="pre">(keyboard</span> <span class="pre">input)</span></code>, <code class="docutils literal notranslate"><span class="pre">signal</span> <span class="pre">callback</span> <span class="pre">(sigint,</span> <span class="pre">winresize)</span></code>, <code class="docutils literal notranslate"><span class="pre">alarm</span></code> の割り込みを asio 経由にする。
+アプリの終了をloop の終了にして、自然に destructor がコールされるようになる。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id9">
+<h1>第５段階<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
+<p>html parse から term へのレンダリング部分の分解。
+やっと解読できて１パス目</p>
+<ul class="simple">
+<li><p>内部文字コード(wtf-8)に変換</p></li>
+<li><p>tokenize</p></li>
+<li><p>tag をパースして属性取得 =&gt; パースに成功したら行バッファに書き戻す。フォームの情報を蓄積する。テーブルのレイアウト</p></li>
+</ul>
+<p>結果として、行のリストと、フォーム情報を得る。</p>
+<p>２パス目</p>
+<ul class="simple">
+<li><p>行のリストを再度パース</p></li>
+<li><p>非タグ部分をBufferに出力</p></li>
+<li><p>Aタグやフォームを Anchor などに出力</p></li>
+</ul>
+<p>という感じだった。
+１パス目で html 化するときに知らない属性を捨てたり、内部属性を追加したりしている様子。
+この、内部属性がよくわからなくて難しい。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id10">
+<h1>文字コード<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">content-charset</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">wtf</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">DisplayCharset</span></code> と文字コードを変換して動作していることがわかった。
+試しに、<code class="docutils literal notranslate"><span class="pre">utf-8</span></code> であることが分かっている <code class="docutils literal notranslate"><span class="pre">html</span></code> で <code class="docutils literal notranslate"><span class="pre">wtf</span></code> 変換を飛ばしてみたところ表示が壊れた。
+<code class="docutils literal notranslate"><span class="pre">wtf</span></code> は <code class="docutils literal notranslate"><span class="pre">utf-8</span></code> と互換性がないらしい。
+http://simonsapin.github.io/wtf-8/
+なのかと思ったのだが、違う独自形式かもしれない。</p>
+<p>w3m は、この <code class="docutils literal notranslate"><span class="pre">wtf</span></code> エンコーディングで、html タグのパース、文字のバイト幅の判定、文字のカラム幅の判定をしているのだが、
+<code class="docutils literal notranslate"><span class="pre">utf-8</span></code> では、文字のバイト幅、カラム幅の判定が狂う。
+ということで、 <code class="docutils literal notranslate"><span class="pre">utf-8</span></code> でのバイト幅判定を自作して <code class="docutils literal notranslate"><span class="pre">wcwidth</span></code> を組み合わせてみた。
+<code class="docutils literal notranslate"><span class="pre">*#12345;</span></code> 形式の <code class="docutils literal notranslate"><span class="pre">unicode</span></code> 埋め込みに対応するために、追加で <code class="docutils literal notranslate"><span class="pre">unicode</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">utf-8</span></code> 変換も作った。
+正しく表示することができた。</p>
+<p>ということで、<code class="docutils literal notranslate"><span class="pre">euc-jp</span></code> と <code class="docutils literal notranslate"><span class="pre">shift-jis</span></code> と <code class="docutils literal notranslate"><span class="pre">iso-2022-jp</span></code> から <code class="docutils literal notranslate"><span class="pre">utf-8</span></code> への変換を作れば日本語は対応できそう。
+<code class="docutils literal notranslate"><span class="pre">std::string_view</span></code>, <code class="docutils literal notranslate"><span class="pre">char32_t</span></code>, <code class="docutils literal notranslate"><span class="pre">char8_t</span></code> あたりの新しい型を使った <code class="docutils literal notranslate"><span class="pre">\0</span></code> 終端に頼らないライブラリを作ってみる。</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id11">
+<h1>メモ<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h1>
+<section id="id12">
+<h2>モジュールに分割<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>機能ごとにモジュールに分割する。</p>
+<ul class="simple">
+<li><p>UI(frontend)</p>
+<ul>
+<li><p>Term</p>
+<ul>
+<li><p>低レベル描画</p>
+<ul>
+<li><p>termcap の関数を直接呼ぶ。curses の自前実装的な</p></li>
+<li><p>マルチバイト、マルチカラムの文字列と密接に関連していて libwc と不可分</p></li>
+</ul>
+</li>
+<li><p>キーボード入力</p></li>
+<li><p>マウス入力</p></li>
+<li><p>リサイズイベント</p></li>
+<li><p>SIGNALハンドリング</p>
+<ul>
+<li><p>SIGINT =&gt; longjmp でキャンセル処理を実現している。c++ のデストラクタとかまずそう</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>高レベル描画</p>
+<ul>
+<li><p>Lineの構築(byte ごとに char と Lineprop がペアになる)</p></li>
+</ul>
+</li>
+<li><p>Tab</p></li>
+<li><p>Buffer</p></li>
+<li><p>Message</p></li>
+<li><p>Menu</p></li>
+<li><p>Keymap</p></li>
+<li><p>LineInput</p>
+<ul>
+<li><p>SearchKey</p></li>
+<li><p>History</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>IO(transport)</p>
+<ul>
+<li><p>IStream</p>
+<ul>
+<li><p>union =&gt; class polymorphism化</p></li>
+<li><p>file descriptor</p></li>
+<li><p>FILE*</p></li>
+<li><p>ssl</p></li>
+<li><p>memory</p></li>
+<li><p>Compression</p></li>
+</ul>
+</li>
+<li><p>LocalCGI</p></li>
+</ul>
+</li>
+<li><p>http</p>
+<ul>
+<li><p>HttpSession</p>
+<ul>
+<li><p>HttpRequest</p></li>
+<li><p>HttpResponse</p></li>
+</ul>
+</li>
+<li><p>cookie</p></li>
+<li><p>redirect</p></li>
+<li><p>referer</p></li>
+<li><p>https</p></li>
+<li><p>ftp</p></li>
+<li><p>URL</p></li>
+</ul>
+</li>
+<li><p>HTML</p>
+<ul>
+<li><p>HTMLtagproc1</p></li>
+<li><p>HTMLlineproc2body</p>
+<ul>
+<li><p>process_form</p></li>
+<li><p>process_form_int</p></li>
+</ul>
+</li>
+<li><p>form</p></li>
+<li><p>table</p></li>
+<li><p>frame</p></li>
+<li><p>term rendering</p></li>
+</ul>
+</li>
+<li><p>String</p>
+<ul>
+<li><p>文字コード</p></li>
+<li><p>quote</p></li>
+<li><p>url escape</p></li>
+<li><p>html escape</p></li>
+<li><p>html entity</p></li>
+<li><p>char_util</p>
+<ul>
+<li><p>myctype</p></li>
+</ul>
+</li>
+<li><p>string_view_util</p>
+<ul>
+<li><p>strip</p></li>
+</ul>
+</li>
+<li><p>string_util</p>
+<ul>
+<li><p>malloc</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="followlink">
+<h2>リンクをたどる(followLink)<a class="headerlink" href="#followlink" title="Permalink to this headline">¶</a></h2>
+<p>followA();
+loadLink();
+loadGeneralFile();</p>
+<p>cmd_loadURL();
+loadGeneralFile();</p>
+<p>cmd_loadURL();
+loadGeneralFile();</p>
+</section>
+<section id="id13">
+<h2>描画する<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p>displayBuffer
+redrawBuffer
+redrawNLine</p>
+</section>
+<section id="key">
+<h2>key入力<a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+<div class="section">
+     
+<div class="section">
+  <span style="float: left">
+     Previous:
+    
+    <a href="../hugo-github-pages/">
+       Github Pages の種類
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     Next: 
+    <a href="../../2021/init_zola/">
+      サイトジェネレーターを Zola に変更 
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../">三次元日誌</a></h1>
+
+
+
+
+
+
+
+
+  
+<h2>
+   
+  25 July 2020 
+</h2>
+
+<ul>
+  
+<li id="published">
+  <span
+    >Update:</span
+  >
+  25 July 2020
+</li>
+      
+</ul>
+<h3>Navigation</h3>
+
+
+<h3>
+  <a href="../../../blog/">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../2021/winter/python_imgui/"
+      >20 December - imgui の python バインディングをまた作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/ablog/"
+      >20 December - SSGをABlogに変更</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/python_typing_stub/"
+      >12 December - python の型ヒント</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/winter/cindex/"
+      >04 December - libclang で 言語バインディングを作る</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2021/fall/ktx2/"
+      >21 November - ktx2 情報収集</a
+    >
+  </li>
+  
+</ul>
+
+<h3><a href="../../../blog/tag/">Tags</a></h3>
+<style type="text/css">
+  ul.ablog-cloud {
+    list-style: none;
+    overflow: auto;
+  }
+  ul.ablog-cloud li {
+    float: left;
+    height: 20pt;
+    line-height: 18pt;
+    margin-right: 5px;
+  }
+  ul.ablog-cloud a {
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  li.ablog-cloud-1 {
+    font-size: 80%;
+  }
+  li.ablog-cloud-2 {
+    font-size: 95%;
+  }
+  li.ablog-cloud-3 {
+    font-size: 110%;
+  }
+  li.ablog-cloud-4 {
+    font-size: 125%;
+  }
+  li.ablog-cloud-5 {
+    font-size: 140%;
+  }
+</style>
+<ul class="ablog-cloud">
+   
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/asio/">"asio"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c/">"c++"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/com/">"com"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">"cpp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/css/">"css"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cython/">"cython"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/dap/">"dap"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/dlang/">"dlang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ffi/">"ffi"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">"imgui"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/libclang/">"libclang"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lsp/">"lsp"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">"lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/luajit/">"luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msgpack/">"msgpack"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">"nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">"opengl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">"python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/qt/">"qt"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">"rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sphinx/">"sphinx"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">"ssg"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim/">"vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vscode/">"vscode"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">"wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/3d/">["3D"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opengl/">["OpenGL"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">["blender"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clang/">["clang"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cpp/">["cpp"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gltf/">["gltf"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/imgui/">["imgui"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/lua/">["lua"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">["lua"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/luajit/">["luajit"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mdbook/">["mdbook"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/msys2/">["msys2"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/nvim/">["nvim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nvim/">["nvim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/python/">["python"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/python/">["python"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">["rust"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sq/">["sq"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ssg/">["ssg"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/vim/">["vim"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-3">
+    <a href="../../../blog/tag/vim/">["vim"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wayland/">["wayland"</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wsl/">["wsl"]</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/zola/">["zola"</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="../../../blog/archive/">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="../../../blog/2021/">2021 (38)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2020/">2020 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2019/">2019 (24)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2017/">2017 (15)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2016/">2016 (1)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2015/">2015 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013/">2013 (12)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012/">2012 (1)</a>
+  </li>
+   
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, ousttrue.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/posts/2020/w3m-mod.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
