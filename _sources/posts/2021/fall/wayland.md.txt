@@ -23,3 +23,17 @@ tags = ["wayland", "wsl"]
 * <https://gitlab.freedesktop.org/mstoeckl/waypipe>
 
 (2019) [Network transparency with Wayland](https://mstoeckl.com/notes/gsoc/blog.html)
+
+## OpenGL ES
+
+サンプルを試したら WSLg でも動作した。
+pyOpenGL からできる方法が分かるとよいのだが。
+
+## python
+
+* https://github.com/flacjacket/pywayland
+
+## 参考
+
+* https://wayland-book.com/introduction.html
+
