@@ -18,15 +18,19 @@ tiny gizmo を改造しようとしてて、動かなくなっている。
 
 <https://github.com/ddiakopoulos/tinygizmo>
 
+`minalg.h`. <https://github.com/sgorsten/linalg> の改造版
+
 ## im3d
 
 <https://github.com/john-chapman/im3d>
 
+`im3d_math.h` 300行くらいでシンプル。
+
 ## ImGuizmo
 
-ImGui のDrawListに相乗りするぽい。
-
 <https://github.com/CedricGuillemet/ImGuizmo>
+
+ImGui のDrawListに相乗りするぽい。
 
 # memo
 ## 2021 0921
@@ -54,6 +58,7 @@ cython から使えるようにインターフェース改修。
 ## 2021 1226
 マウス操作でモデルにポーズを付けられるところを目標に。
 
+* [ ] 小さい数学ライブラリ
 * [ ] TRS node hierarchy
 * [ ] AABB node selector
 * [ ] gizmo hover
