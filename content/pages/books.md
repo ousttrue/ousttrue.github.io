@@ -13,6 +13,8 @@ tags: []
 
 * [blender_book](https://ousttrue.github.io/blender_book/)
 
+* [HumanBoneStructure](https://ousttrue.github.io/humanbonestructure/)
+
 # memo...
 
 * [unity memo](https://ousttrue.github.io/unity_book/)

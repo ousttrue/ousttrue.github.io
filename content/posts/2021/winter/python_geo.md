@@ -1,7 +1,7 @@
 +++
-title = "python で GEO"
+title = "python で地理情報を扱う"
 date = 2021-12-28
-tags = ["python", "geo"]
+tags = ["python", "gis"]
 +++
 
 # python で地理情報を扱う
@@ -56,14 +56,16 @@ version ?
 
 * <http://python-visualization.github.io/folium/#>
 
-## data
+## geohash
 
-* https://github.com/dataofjapan/land
+* <http://geohash.org/site/tips.html>
 
-## geojson OpenGL
+## 地図タイル
 
-* <https://github.com/jeremyfromearth/cinder-geojson-experiments>
-* <https://github.com/soolmaz-mk/Atlasi>
+* <https://blog.geolonia.com/2020/07/06/zoom-level.html>
+* <https://www.cariot.jp/blog/2017/07/14/maptiler/>
+* <https://maps.gsi.go.jp/development/ichiran.html>
+* <https://ujicya.jp/blog-mapping/xyz-tiles-url/>
 
 ## 参考
 
