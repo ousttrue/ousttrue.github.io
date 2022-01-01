@@ -66,6 +66,8 @@ self.date = date = info["date"].replace(tzinfo=None)
 
 ## ABlog は何をしているのか
 
+### toctree無しのpost記事
+
 特定の条件で、記事をブログ記事と見做して `toctree` 無しで辿れるようにする。
 記事は、日付やタグでグループ化してくれる。
 
@@ -90,16 +92,67 @@ blog_post_pattern = "posts/**/*.md"
 あと `sphinx` なのでトップレベルの表題が本文側に必要かも。
 `frontmatter` の `title` を反映できると便利そう。
 
+### 追加のページ生成
+
+`ablog/templates` に格納されている。
+
+```python
+# -- ABlog Sidebars -------------------------------------------------------
+
+# There are seven sidebars you can include in your HTML output.
+# postcard.html provides information regarding the current post.
+# recentposts.html lists most recent five posts. Others provide
+# a link to a archive pages generated for each tag, category, and year.
+# In addition, there are authors.html, languages.html, and locations.html
+# sidebars that link to author and location archive pages.
+html_sidebars = {
+    '**': [
+        'about.html',
+        'postcard.html',
+        'navigation.html',
+        'recentposts.html',
+        'tagcloud.html',
+        'categories.html',
+        'archives.html',
+        'searchbox.html',
+    ],
+}
+```
+
+これらに対して追加のページ生成を行っている。
+`genindex.html` などのように。
+
 ## ToDo
 
 ### タグが変
-### 日付のフォーマット
 
-### 記事のURL
+toml 由来の tag の処理に失敗している。
 
-* https://zenn.dev/attakei/articles/sphinx-make-dirhtml
+`["python", "ssg", "sphinx"]`
+
+が、
+
+* `["python"`
+* `"ssg"`
+* `"sphinx"]`
+
+になっちゃってる。
+
+### ✅ 日付のフォーマット
+
+`conf.py`
+
+```python
+post_date_format = r'%Y/%m/%d'
+post_date_format_short = r'%Y/%m'
+```
+
+### ✅ 記事のURL
+
+* <https://zenn.dev/attakei/articles/sphinx-make-dirhtml>
+
+### 記事タイトルは最初の見出しではなく、frontmatter の title にしたい
 
 ## 参考
 
 * [Sphinxでブログをしてみよう](https://water2litter.net/pisco/doc/ablog.html)
-

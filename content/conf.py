@@ -33,8 +33,7 @@ blog_baseurl = "https://ousttrue.github.io/"
 # up project building.
 # blog_archive_titles = False
 
-blog_post_pattern = ['posts/**/*.md', 'qiita/**/*.md', 'github/**/*.md', 'gists/**/*.md']
-
+blog_post_pattern = ['posts/**/*.md', 'qiita/**/*.md', 'github/**/*.md']
 # -- Blog Authors, Languages, and Locations -----------------------------------
 
 # A dictionary of author names mapping to author full display names and
@@ -63,7 +62,8 @@ blog_authors = {
 # -- Blog Post Related --------------------------------------------------------
 
 # Format date for a post.
-# post_date_format = '%%b %%d, %%Y'
+post_date_format = r'%Y/%m/%d'
+post_date_format_short = r'%Y/%m'
 
 # Number of paragraphs (default is ``1``) that will be displayed as an excerpt
 # from the post. Setting this ``0`` will result in displaying no post excerpt
@@ -239,7 +239,7 @@ language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = [""]
+exclude_patterns = ["gists/*", "github/*"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -272,7 +272,7 @@ todo_include_todos = "False"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'custom'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -282,7 +282,8 @@ html_theme_options = {
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [alabaster.get_path()]
+# html_theme_path = [alabaster.get_path()]
+html_theme_path=['.']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
