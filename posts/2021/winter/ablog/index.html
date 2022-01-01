@@ -138,6 +138,44 @@
 <p>あと <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> なのでトップレベルの表題が本文側に必要かも。
 <code class="docutils literal notranslate"><span class="pre">frontmatter</span></code> の <code class="docutils literal notranslate"><span class="pre">title</span></code> を反映できると便利そう。</p>
 </section>
+<section id="event-doctree-read">
+<h3>event: ‘doctree-read’<a class="headerlink" href="#event-doctree-read" title="Permalink to this headline">¶</a></h3>
+<p>doctree から <code class="docutils literal notranslate"><span class="pre">PostNode</span></code> を集める。</p>
+<p><code class="docutils literal notranslate"><span class="pre">alog/post#process_posts(app,</span> <span class="pre">doctree)</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">postinfo</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;docname&quot;</span><span class="p">:</span> <span class="n">docname</span><span class="p">,</span>
+            <span class="s2">&quot;section&quot;</span><span class="p">:</span> <span class="n">section_name</span><span class="p">,</span>
+            <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">order</span><span class="p">,</span>
+            <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+            <span class="s2">&quot;update&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">update_dates</span> <span class="o">+</span> <span class="p">[</span><span class="n">date</span><span class="p">]),</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+            <span class="s2">&quot;excerpt&quot;</span><span class="p">:</span> <span class="n">excerpt</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;author&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;language&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;redirect&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;redirect&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;nocomments&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;nocomments&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;exclude&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;doctree&quot;</span><span class="p">:</span> <span class="n">section_copy</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">docname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">ablog_posts</span><span class="p">:</span>
+            <span class="n">env</span><span class="o">.</span><span class="n">ablog_posts</span><span class="p">[</span><span class="n">docname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">ablog_posts</span><span class="p">[</span><span class="n">docname</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postinfo</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CheckFrontMatter</span><span class="p">(</span><span class="n">SphinxTransform</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">():</span>
+        <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">add_transform</span><span class="p">(</span><span class="n">CheckFrontMatter</span><span class="p">)</span>    
+</pre></div>
+</div>
+</section>
 <section id="id4">
 <h3>追加のページ生成<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ablog/templates</span></code> に格納されている。</p>
@@ -180,6 +218,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;sphinx&quot;]</span></code></p></li>
 </ul>
 <p>になっちゃってる。</p>
+<p>https://github.com/sunpy/ablog/pull/119</p>
+<p>送ってみた。</p>
 </section>
 <section id="id6">
 <h3>✅ 日付のフォーマット<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
@@ -263,9 +303,9 @@
     >Tags: </span
   >
    
-  <a href="../../../../blog/tag/python/">["python"</a>   
-  <a href="../../../../blog/tag/ssg/">"ssg"</a>   
-  <a href="../../../../blog/tag/sphinx/">"sphinx"]</a>  
+  <a href="../../../../blog/tag/python/">python</a>   
+  <a href="../../../../blog/tag/ssg/">ssg</a>   
+  <a href="../../../../blog/tag/sphinx/">sphinx</a>  
 </li>
  
 </ul>
@@ -342,251 +382,147 @@
 <ul class="ablog-cloud">
    
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">"OpenGL"]</a>
+    <a href="../../../../blog/tag/3d/">3D</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/asio/">"asio"]</a>
+    <a href="../../../../blog/tag/opengl/">OpenGL</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">"c++"]</a>
+    <a href="../../../../blog/tag/asio/">asio</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/com/">"com"]</a>
+    <a href="../../../../blog/tag/blender/">blender</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cpp/">"cpp"</a>
+    <a href="../../../../blog/tag/c/">c++</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cpp/">"cpp"]</a>
+    <a href="../../../../blog/tag/clang/">clang</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/css/">"css"</a>
+    <a href="../../../../blog/tag/com/">com</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cython/">"cython"</a>
+    <a href="../../../../blog/tag/cpp/">cpp</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cython/">"cython"]</a>
+    <a href="../../../../blog/tag/css/">css</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/cython/">cython</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dap/">dap</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/dlang/">dlang</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ffi/">ffi</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/gis/">gis</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/gltf/">gltf</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/imgui/">imgui</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/libclang/">libclang</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/lsp/">lsp</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/dap/">"dap"]</a>
+    <a href="../../../../blog/tag/lua/">lua</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dlang/">"dlang"</a>
+    <a href="../../../../blog/tag/luajit/">luajit</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ffi/">"ffi"</a>
+    <a href="../../../../blog/tag/mdbook/">mdbook</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ffi/">"ffi"]</a>
+    <a href="../../../../blog/tag/msgpack/">msgpack</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gis/">"gis"]</a>
+    <a href="../../../../blog/tag/msys2/">msys2</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/imgui/">"imgui"</a>
+    <a href="../../../../blog/tag/nvim/">nvim</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/imgui/">"imgui"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/libclang/">"libclang"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/libclang/">"libclang"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lsp/">"lsp"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lsp/">"lsp"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">"lua"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">"lua"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/luajit/">"luajit"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msgpack/">"msgpack"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nvim/">"nvim"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">"opengl"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python/">"python"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/python/">"python"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/qt/">"qt"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">"rust"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sphinx/">"sphinx"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ssg/">"ssg"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ssg/">"ssg"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">"vim"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">"vscode"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wsl/">"wsl"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">["3D"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">["OpenGL"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">["blender"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">["blender"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clang/">["clang"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cpp/">["cpp"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gis/">["gis"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gltf/">["gltf"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/imgui/">["imgui"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-3">
-    <a href="../../../../blog/tag/lua/">["lua"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">["lua"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/luajit/">["luajit"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mdbook/">["mdbook"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msys2/">["msys2"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/nvim/">["nvim"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nvim/">["nvim"]</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-3">
-    <a href="../../../../blog/tag/python/">["python"</a>
+    <a href="../../../../blog/tag/opengl/">opengl</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../blog/tag/python/">["python"]</a>
+    <a href="../../../../blog/tag/python/">python</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">["rust"</a>
+    <a href="../../../../blog/tag/qt/">qt</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sq/">["sq"]</a>
+    <a href="../../../../blog/tag/rust/">rust</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ssg/">["ssg"</a>
+    <a href="../../../../blog/tag/sphinx/">sphinx</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/sq/">sq</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ssg/">ssg</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/vim/">["vim"</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-3">
-    <a href="../../../../blog/tag/vim/">["vim"]</a>
+    <a href="../../../../blog/tag/vim/">vim</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wayland/">["wayland"</a>
+    <a href="../../../../blog/tag/vscode/">vscode</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wsl/">["wsl"]</a>
+    <a href="../../../../blog/tag/wayland/">wayland</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zola/">["zola"</a>
+    <a href="../../../../blog/tag/wsl/">wsl</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/zola/">zola</a>
   </li>
    
 </ul>
@@ -650,6 +586,7 @@
 <li><a class="reference internal" href="#id2">モンキーパッチ</a></li>
 <li><a class="reference internal" href="#id3">ABlog は何をしているのか</a><ul>
 <li><a class="reference internal" href="#toctreepost">toctree無しのpost記事</a></li>
+<li><a class="reference internal" href="#event-doctree-read">event: ‘doctree-read’</a></li>
 <li><a class="reference internal" href="#id4">追加のページ生成</a></li>
 </ul>
 </li>

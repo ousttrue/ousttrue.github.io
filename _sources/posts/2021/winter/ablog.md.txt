@@ -92,6 +92,47 @@ blog_post_pattern = "posts/**/*.md"
 あと `sphinx` なのでトップレベルの表題が本文側に必要かも。
 `frontmatter` の `title` を反映できると便利そう。
 
+### event: 'doctree-read'
+
+doctree から `PostNode` を集める。
+
+`alog/post#process_posts(app, doctree)`
+
+```python
+        postinfo = {
+            "docname": docname,
+            "section": section_name,
+            "order": order,
+            "date": date,
+            "update": max(update_dates + [date]),
+            "title": title,
+            "excerpt": excerpt,
+            "tags": node["tags"],
+            "author": node["author"],
+            "category": node["category"],
+            "location": node["location"],
+            "language": node["language"],
+            "redirect": node["redirect"],
+            "nocomments": node["nocomments"],
+            "image": node["image"],
+            "exclude": node["exclude"],
+            "doctree": section_copy,
+        }
+
+        if docname not in env.ablog_posts:
+            env.ablog_posts[docname] = []
+        env.ablog_posts[docname].append(postinfo)
+```
+
+```python
+class CheckFrontMatter(SphinxTransform):
+    def apply():
+        pass
+
+def setup(app):
+    app.add_transform(CheckFrontMatter)    
+```
+
 ### 追加のページ生成
 
 `ablog/templates` に格納されている。
@@ -137,6 +178,10 @@ toml 由来の tag の処理に失敗している。
 * `"sphinx"]`
 
 になっちゃってる。
+
+https://github.com/sunpy/ablog/pull/119
+
+送ってみた。
 
 ### ✅ 日付のフォーマット
 
