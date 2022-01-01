@@ -4,6 +4,7 @@
 import ablog.post
 import yaml
 import toml
+import logging
 
 
 def register_posts(app):
@@ -202,3 +203,64 @@ def safe_load(src):
 
 
 yaml.safe_load = safe_load
+
+
+from sphinx.transforms import SphinxTransform
+from docutils import nodes
+from ablog.post import *
+from ablog.blog import Blog
+from docutils.parsers.rst import Directive, directives
+
+def apply(self):
+    # Check if page-level metadata has been given
+    docinfo = list(self.document.traverse(nodes.docinfo))
+    if not docinfo:
+        return None
+    docinfo = docinfo[0]
+
+    # Pull the metadata for the page to check if it is a blog post
+    metadata = {fn.children[0].astext(): fn.children[1].astext() for fn in docinfo.traverse(nodes.field)}
+    tags = metadata.get("tags")
+    if isinstance(tags, str):
+        # myst_parser store front-matter field to TextNode in dict_to_fm_field_list.
+        # like ["a", "b", "c"]
+        # remove [] and quote
+        try:
+            tags = eval(tags)
+            metadata["tags"] = ",".join(tags)
+        except Exception:
+            logging.warning(f"fail to eval tags: {tags}")
+    if docinfo.traverse(nodes.author):
+        metadata["author"] = list(docinfo.traverse(nodes.author))[0].astext()
+    # These two fields are special-cased in docutils
+    if docinfo.traverse(nodes.date):
+        metadata["date"] = list(docinfo.traverse(nodes.date))[0].astext()
+    if "blogpost" not in metadata and self.env.docname not in self.config.matched_blog_posts:
+        return None
+    if self.document.traverse(PostNode):
+        logging.warning(f"Found blog post front-matter as well as post directive, using post directive.")
+
+    # Iterate through metadata and create a PostNode with relevant fields
+    option_spec = PostDirective.option_spec
+    for key, val in metadata.items():
+        if key in option_spec:
+            if callable(option_spec[key]):
+                new_val = option_spec[key](val)
+            elif isinstance(option_spec[key], directives.flag):
+                new_val = True
+            metadata[key] = new_val
+
+    node = PostNode()
+    node.document = self.document
+    node = ablog.post._update_post_node(node, metadata, [])
+    node["date"] = metadata.get("date")
+
+    if not metadata.get("excerpt"):
+        blog = Blog(self.app)
+        node["excerpt"] = blog.post_auto_excerpt
+
+    sections = list(self.document.traverse(nodes.section))
+    if sections:
+        sections[0].children.append(node)
+        node.parent = sections[0]
+ablog.post.CheckFrontMatter.apply = apply

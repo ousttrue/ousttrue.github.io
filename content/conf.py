@@ -6,16 +6,16 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
 import sys
-import ablog
-import alabaster
 import pathlib
 
 HERE = pathlib.Path(__file__).absolute().parent
-
 sys.path.append(str(HERE))
 import patch
+
+import os
+import ablog
+import alabaster
 
 # -- General ABlog Options ----------------------------------------------------
 
@@ -283,7 +283,7 @@ html_theme_options = {
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = [alabaster.get_path()]
-html_theme_path=['.']
+html_theme_path = ['.']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
