@@ -99,29 +99,37 @@ doctree から `PostNode` を集める。
 `alog/post#process_posts(app, doctree)`
 
 ```python
-        postinfo = {
-            "docname": docname,
-            "section": section_name,
-            "order": order,
-            "date": date,
-            "update": max(update_dates + [date]),
-            "title": title,
-            "excerpt": excerpt,
-            "tags": node["tags"],
-            "author": node["author"],
-            "category": node["category"],
-            "location": node["location"],
-            "language": node["language"],
-            "redirect": node["redirect"],
-            "nocomments": node["nocomments"],
-            "image": node["image"],
-            "exclude": node["exclude"],
-            "doctree": section_copy,
-        }
+def process_posts(app, doctree):
+    post_nodes = list(doctree.traverse(PostNode))
+    if not post_nodes:
+        # PostNode が必要
+        return
 
-        if docname not in env.ablog_posts:
-            env.ablog_posts[docname] = []
-        env.ablog_posts[docname].append(postinfo)
+    # 省略
+
+    postinfo = {
+        "docname": docname,
+        "section": section_name,
+        "order": order,
+        "date": date,
+        "update": max(update_dates + [date]),
+        "title": title,
+        "excerpt": excerpt,
+        "tags": node["tags"],
+        "author": node["author"],
+        "category": node["category"],
+        "location": node["location"],
+        "language": node["language"],
+        "redirect": node["redirect"],
+        "nocomments": node["nocomments"],
+        "image": node["image"],
+        "exclude": node["exclude"],
+        "doctree": section_copy,
+    }
+
+    if docname not in env.ablog_posts:
+        env.ablog_posts[docname] = []
+    env.ablog_posts[docname].append(postinfo)
 ```
 
 ```python
@@ -165,7 +173,7 @@ html_sidebars = {
 
 ## ToDo
 
-### タグが変
+### ✅ タグが変
 
 toml 由来の tag の処理に失敗している。
 
@@ -183,6 +191,8 @@ https://github.com/sunpy/ablog/pull/119
 
 送ってみた。
 
+`v0.10.22` で修正。👍
+
 ### ✅ 日付のフォーマット
 
 `conf.py`
@@ -196,7 +206,11 @@ post_date_format_short = r'%Y/%m'
 
 * <https://zenn.dev/attakei/articles/sphinx-make-dirhtml>
 
-### 記事タイトルは最初の見出しではなく、frontmatter の title にしたい
+### ✅ 記事タイトルは最初の見出しではなく、frontmatter の title にしたい
+
+`MystParser` を改造した。
+わりと Sphinx わかってきた。
+`python` でデバッガがアタッチできるとなんでもできる(慣れ)。
 
 ## 参考
 

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>vimのカレントフォルダ問題</title>
+    <title>workspacefolder</title>
 <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
 <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
 <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../_static/pygments_dark.css" />
@@ -24,6 +24,8 @@
   title="三次元日誌(ablog)"
 />
  
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
 <style type="text/css">
   ul.ablog-archive {
     list-style: none;
@@ -62,11 +64,13 @@
             <a href="../../../genindex/" title="General Index" accesskey="I">index</a>
         </li>
         <li class="nav-item nav-item-0"><a href="../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">vimのカレントフォルダ問題</a></li> 
+        <li class="nav-item nav-item-this"><a href="">workspacefolder</a></li> 
     </ul>
 </div>
     </div>
-    <div id="document"> <p>https://github.com/ousttrue/WorkspaceFolder</p>
+    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="workspacefolder">
+<h1>workspacefolder<a class="headerlink" href="#workspacefolder" title="Permalink to this headline">¶</a></h1>
+<p>https://github.com/ousttrue/WorkspaceFolder</p>
 <p>要件は、</p>
 <ul class="simple">
 <li><p>WindowsとLinuxで共用にできる</p></li>
@@ -95,7 +99,7 @@ command = [&#39;make&#39;]
 <p><code class="docutils literal notranslate"><span class="pre">duck</span> <span class="pre">build</span></code></p>
 <p>のように呼ぶ。</p>
 <section id="vim">
-<h1>vimのカレントフォルダ問題<a class="headerlink" href="#vim" title="Permalink to this headline">¶</a></h1>
+<h2>vimのカレントフォルダ問題<a class="headerlink" href="#vim" title="Permalink to this headline">¶</a></h2>
 <p>親フォルダを遡って設定を探しに行くというのが重要です。例えば <code class="docutils literal notranslate"><span class="pre">vim</span></code> でサブフォルダのファイルを編集しているときに、親フォルダの <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> でビルドしたい場合がある。このときに、<code class="docutils literal notranslate"><span class="pre">vim</span></code> のカレントフォルダを考慮するのが無理なのです。
 そういうわけで <code class="docutils literal notranslate"><span class="pre">vim</span></code> では単純に <code class="docutils literal notranslate"><span class="pre">autocd</span></code> して、カレントフォルダを意識しないことにしました。
 代わりにツール側で親フォルダに遡れるようにして、そのツールがプロジェクトのルートから指定のコマンドを呼び出すのです。</p>
@@ -110,30 +114,33 @@ command = [&#39;make&#39;]
 <p>特定の <code class="docutils literal notranslate"><span class="pre">LSP</span></code> (D言語向けの <code class="docutils literal notranslate"><span class="pre">dls</span></code> ) がカレントフォルダをプロジェクトルートに移動してから起動しないといけないなどの癖があるようなので、その辺を吸収させるのも狙っている。</p>
 </section>
 <section id="windowscmake">
-<h1>WindowsでCMakeをどうやって見つけるのか<a class="headerlink" href="#windowscmake" title="Permalink to this headline">¶</a></h1>
+<h2>WindowsでCMakeをどうやって見つけるのか<a class="headerlink" href="#windowscmake" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">unix</span></code> 的なシステムでは、<code class="docutils literal notranslate"><span class="pre">/usr/bin/cmake</span></code> であろうことが期待できるのだけど、
 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> ではそうはいかない。でも最近の <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> がインストールされていれば、その中に <code class="docutils literal notranslate"><span class="pre">cmake</span></code> が入っている。だから <code class="docutils literal notranslate"><span class="pre">Program</span> <span class="pre">Files</span></code> から決め打ちで探してくるという方法があるのだけど、もう一歩進めて <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> のインストールパスを <code class="docutils literal notranslate"><span class="pre">registry</span></code> から取ってくるという手法がある。しかし、たくさんのバージョンとエディションで少しずつ違うのでやってられない。で、これに対応するツールとして <code class="docutils literal notranslate"><span class="pre">vswhere</span></code> というツールがある。たぶん、<a class="reference external" href="https://github.com/Microsoft/vcpkg">vcpkg</a>のために作られたのだと思うのだけど、これでインストールされている <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> の情報を得ることができる。まだ、 <code class="docutils literal notranslate"><span class="pre">vswhere</span></code> をどうやって得るのか問題があるのだが、小さいので自分のプロジェクトに入れておくとか、ダウンロードするとか、 <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> に入っているので決め打ちでパスを探すといったことになろうと思う。</p>
 <p>要するに <code class="docutils literal notranslate"><span class="pre">vc</span></code> が入っている環境では、9割くらいの確率で <code class="docutils literal notranslate"><span class="pre">cmake</span></code> を発見できます。
 <code class="docutils literal notranslate"><span class="pre">duck</span></code> にもこの機能を入れようとしている。</p>
 <p>https://github.com/ChaosinaCan/pyvswhere</p>
 </section>
+</section>
 
 <div class="section">
      
 <div class="section">
   <span style="float: left">
-     Previous:
-    
-    <a href="../nvim_cmake/">
-       nvim で CMake
+     
+    <a href="../../../github/WorkspaceFolder/">
+      <i class="fa fa-arrow-circle-left"></i> WorkspaceFolder
     </a>
     
   </span>
   <span>&nbsp;</span>
   <span style="float: right">
-     Next: 
+     
     <a href="../vim_lsp/">
-      vim で LSP 
+      vim で LSP <i
+        class="fa fa-arrow-circle-right"
+      ></i
+      >
     </a>
     
   </span>
@@ -157,13 +164,12 @@ command = [&#39;make&#39;]
     <h3><a href="../../../">Table of Contents</a></h3>
     <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">books</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/#memo">memo…</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">Books</a></li>
 </ul>
 
 </div>  
 <h2>
-   
+   <i class="fa fa-calendar"></i>
   2019/04/19 
 </h2>
 
@@ -171,14 +177,14 @@ command = [&#39;make&#39;]
   
 <li id="published">
   <span
-    >Update:</span
+    ><i class="fa fa-pencil-square-o"></i></span
   >
   2019/04/19
 </li>
      
 <li id="tags">
   <span
-    >Tags: </span
+    ><i class="fa-fw fa fa-tags"></i> </span
   >
    
   <a href="../../../blog/tag/python/">python</a>   
@@ -259,11 +265,235 @@ command = [&#39;make&#39;]
 <ul class="ablog-cloud">
    
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/netcore/">.NETCore</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/3d/">3D</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/3d/">3d</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/azurekinect/">AzureKinect</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">Blender</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender28/">Blender2.8</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/build/">Build</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c/">C</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/c/">C#</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/c/">C++</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c-cli/">C++-CLI</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c17/">C++17</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cmake/">CMake</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/d/">D</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/directx/">DirectX</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/directx11/">DirectX11</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/html/">HTML</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/hololens/">HoloLens</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/java/">Java</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/javascript/">JavaScript</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/linq/">LINQ</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/livet/">Livet</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">Lua</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mef/">MEF</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mvvm/">MVVM</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nodejs/">Node.js</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opencv/">OpenCV</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/opengl/">OpenGL</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/openvr/">OpenVR</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/pixarusd/">PixarUSD</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/plugin/">Plugin</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">Python</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python3/">Python3</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ruby/">Ruby</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">Rust</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sdl2/">SDL2</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/scala/">Scala</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sharpdx/">SharpDX</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sprache/">Sprache</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/steamvr/">SteamVR</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/typescript/">TypeScript</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/usd/">USD</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/uwp/">UWP</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/uni/">Uni</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/unity/">Unity</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/unity3d/">Unity3D</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vscode/">VSCode</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim/">Vim</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim-script/">Vim script</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/viml/">VimL</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/visualstudio/">VisualStudio</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vulkan/">Vulkan</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wpf/">WPF</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wpf3d/">WPF3D</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/windows/">Windows</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -279,7 +509,19 @@ command = [&#39;make&#39;]
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cerbero/">cerbero</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/clang/">clang</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clangd/">clangd</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cmake/">cmake</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -291,11 +533,19 @@ command = [&#39;make&#39;]
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/csharp/">csharp</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/css/">css</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cython/">cython</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/d3d/">d3d</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -311,11 +561,23 @@ command = [&#39;make&#39;]
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/grpc/">gRPC</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/gis/">gis</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/gltf/">gltf</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gstreamer/">gstreamer</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gulp/">gulp</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -330,7 +592,7 @@ command = [&#39;make&#39;]
     <a href="../../../blog/tag/lsp/">lsp</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-2">
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/lua/">lua</a>
   </li>
     
@@ -351,6 +613,10 @@ command = [&#39;make&#39;]
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/natvis/">natvis</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim/">nvim</a>
   </li>
     
@@ -358,12 +624,32 @@ command = [&#39;make&#39;]
     <a href="../../../blog/tag/opengl/">opengl</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/openvr/">openvr</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/premake/">premake</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/python/">python</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/qiita/">qiita</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/qt/">qt</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/repository/">repository</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -382,12 +668,24 @@ command = [&#39;make&#39;]
     <a href="../../../blog/tag/ssg/">ssg</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-2">
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/usd/">usd</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vcpkg/">vcpkg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/vim/">vim</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/vscode/">vscode</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vvvv/">vvvv</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -414,35 +712,55 @@ command = [&#39;make&#39;]
   </li>
     
   <li>
-    <a href="../../../blog/2021/">2021 (40)</a>
+    <a href="../../../blog/2021/">2021 (53)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2020/">2020 (2)</a>
+    <a href="../../../blog/2020/">2020 (38)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2019/">2019 (24)</a>
+    <a href="../../../blog/2019/">2019 (67)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017/">2017 (15)</a>
+    <a href="../../../blog/2018/">2018 (28)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2016/">2016 (1)</a>
+    <a href="../../../blog/2017/">2017 (87)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2015/">2015 (2)</a>
+    <a href="../../../blog/2016/">2016 (31)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2013/">2013 (12)</a>
+    <a href="../../../blog/2015/">2015 (58)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2012/">2012 (1)</a>
+    <a href="../../../blog/2014/">2014 (19)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013/">2013 (52)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012/">2012 (10)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2011/">2011 (6)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2010/">2010 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2009/">2009 (1)</a>
   </li>
    
 </ul>
@@ -452,8 +770,11 @@ command = [&#39;make&#39;]
         
   <h3><a href="../../../">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">vimのカレントフォルダ問題</a></li>
+<li><a class="reference internal" href="#">workspacefolder</a><ul>
+<li><a class="reference internal" href="#vim">vimのカレントフォルダ問題</a></li>
 <li><a class="reference internal" href="#windowscmake">WindowsでCMakeをどうやって見つけるのか</a></li>
+</ul>
+</li>
 </ul>
 
     </div>

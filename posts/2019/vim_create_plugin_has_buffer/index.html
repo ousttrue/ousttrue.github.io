@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>BufferList読んでみる</title>
+    <title>vim_create_plugin_has_buffer</title>
 <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
 <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
 <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../_static/pygments_dark.css" />
@@ -24,6 +24,8 @@
   title="三次元日誌(ablog)"
 />
  
+<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+
 <style type="text/css">
   ul.ablog-archive {
     list-style: none;
@@ -62,20 +64,22 @@
             <a href="../../../genindex/" title="General Index" accesskey="I">index</a>
         </li>
         <li class="nav-item nav-item-0"><a href="../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">BufferList読んでみる</a></li> 
+        <li class="nav-item nav-item-this"><a href="">vim_create_plugin_has_buffer</a></li> 
     </ul>
 </div>
     </div>
-    <div id="document"> <p>独自のバッファを持つpluginを作りたい</p>
+    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="vim-create-plugin-has-buffer">
+<h1>vim_create_plugin_has_buffer<a class="headerlink" href="#vim-create-plugin-has-buffer" title="Permalink to this headline">¶</a></h1>
+<p>独自のバッファを持つpluginを作りたい</p>
 <section id="bufferlist">
-<h1>BufferList読んでみる<a class="headerlink" href="#bufferlist" title="Permalink to this headline">¶</a></h1>
+<h2>BufferList読んでみる<a class="headerlink" href="#bufferlist" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>https://github.com/vim-scripts/bufferlist.vim/blob/master/plugin/bufferlist.vim</p></li>
 </ul>
 <p>273行</p>
 <p>この量なら読める。</p>
 <section id="id1">
-<h2>インクルードガード<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h3>インクルードガード<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> exists<span class="p">(</span><span class="s1">&#39;g:BufferListLoaded&#39;</span><span class="p">)</span>
   <span class="k">finish</span>
 <span class="k">endif</span>
@@ -84,7 +88,7 @@
 </div>
 </section>
 <section id="id2">
-<h2>初期値決め<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h3>初期値決め<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; vimrcで先に値を決められるようにしている？</span>
 <span class="c">&quot; vimrc より plugin の方が後に実行されるからか？</span>
 <span class="k">if</span> <span class="p">!</span>exists<span class="p">(</span><span class="s1">&#39;g:BufferListWidth&#39;</span><span class="p">)</span>
@@ -98,7 +102,7 @@
 </div>
 </section>
 <section id="id3">
-<h2>BufferList関数<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h3>BufferList関数<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">__BUFFERLIST__</span></code> という Buffer を専用のバッファとして扱う。</p>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; toggled the buffer list on/off</span>
 <span class="k">function</span><span class="p">!</span> BufferList<span class="p">()</span>
@@ -117,7 +121,7 @@
 </pre></div>
 </div>
 <section id="id4">
-<h3>バッファを作る<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h4>バッファを作る<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>作ったバッファがアクティブになり、以降の操作対象になる。</p>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">  &quot; now, create the buffer &amp; set it up</span>
   exec <span class="s1">&#39;silent! &#39;</span> . <span class="k">l</span>:width . <span class="s1">&#39;vne __BUFFERLIST__&#39;</span>
@@ -125,7 +129,7 @@
 </div>
 </section>
 <section id="id5">
-<h3>色決め<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h4>色決め<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">  &quot; set up syntax highlighting</span>
   <span class="k">if</span> has<span class="p">(</span><span class="s2">&quot;syntax&quot;</span><span class="p">)</span>
     <span class="k">syn</span> clear
@@ -138,7 +142,7 @@
 </div>
 </section>
 <section id="buffer">
-<h3>Buffer構築<a class="headerlink" href="#buffer" title="Permalink to this headline">¶</a></h3>
+<h4>Buffer構築<a class="headerlink" href="#buffer" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">setlocal</span> <span class="pre">nomodifiable</span></code> で編集不可に</p>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span>  <span class="k">setlocal</span> <span class="nb">modifiable</span>
   <span class="k">if</span> <span class="k">l</span>:displayedbufs <span class="p">&gt;</span> <span class="m">0</span>
@@ -161,7 +165,7 @@
 </div>
 </section>
 <section id="id6">
-<h3>操作を設定<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h4>操作を設定<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <p>バッファローカルに <code class="docutils literal notranslate"><span class="pre">map</span></code> を設定する。
 <code class="docutils literal notranslate"><span class="pre">map</span></code> がキーボード・マウス入力へのコールバック設定になっているのか。なるほど。</p>
 <div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">  &quot; set up the keymap</span>
@@ -205,7 +209,7 @@
 </section>
 </section>
 <section id="id7">
-<h1>情報収集<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<h2>情報収集<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">nomodifiable</span></code> で調べてみた</p>
 <ul class="simple">
 <li><p>http://tyru.hatenablog.com/entry/20101107/modifiable_and_readonly</p></li>
@@ -220,16 +224,16 @@
 </ul>
 </section>
 <section id="nerdtree">
-<h1>NERDTree解読<a class="headerlink" href="#nerdtree" title="Permalink to this headline">¶</a></h1>
+<h2>NERDTree解読<a class="headerlink" href="#nerdtree" title="Permalink to this headline">¶</a></h2>
 <section id="split">
-<h2>左側にどうやって <code class="docutils literal notranslate"><span class="pre">split</span></code> して開くのか<a class="headerlink" href="#split" title="Permalink to this headline">¶</a></h2>
+<h3>左側にどうやって <code class="docutils literal notranslate"><span class="pre">split</span></code> して開くのか<a class="headerlink" href="#split" title="Permalink to this headline">¶</a></h3>
 </section>
 <section id="id8">
-<h2>ファイルを選択して開くとき開き先をどうやって決めるのか<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<h3>ファイルを選択して開くとき開き先をどうやって決めるのか<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 </section>
 </section>
 <section id="python">
-<h1>pythonに移植できんやろか<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h1>
+<h2>pythonに移植できんやろか<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
 <p>つまり、Pythonでvimから見える関数を定義できれば勝つるのでは。</p>
 <ul class="simple">
 <li><p>http://candidtim.github.io/vim/2017/08/11/write-vim-plugin-in-python.html</p></li>
@@ -245,23 +249,26 @@
 <li><p>[Pythonでvim pluginを書く https://qiita.com/zakuro9715/items/98449dd4c6b9e1d61ef5]</p></li>
 </ul>
 </section>
+</section>
 
 <div class="section">
      
 <div class="section">
   <span style="float: left">
-     Previous:
-    
+     
     <a href="../vim_completion/">
-       vim の Completion について調べる
+      <i class="fa fa-arrow-circle-left"></i> vim の Completion について調べる
     </a>
     
   </span>
   <span>&nbsp;</span>
   <span style="float: right">
-     Next: 
-    <a href="../vim_buffer/">
-      vim の Buffer 操作のメモ 
+     
+    <a href="../../../github/vim-pycall/">
+      vim-pycall <i
+        class="fa fa-arrow-circle-right"
+      ></i
+      >
     </a>
     
   </span>
@@ -285,13 +292,12 @@
     <h3><a href="../../../">Table of Contents</a></h3>
     <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">books</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/#memo">memo…</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">Books</a></li>
 </ul>
 
 </div>  
 <h2>
-   
+   <i class="fa fa-calendar"></i>
   2019/04/23 
 </h2>
 
@@ -299,14 +305,17 @@
   
 <li id="published">
   <span
-    >Update:</span
+    ><i class="fa fa-pencil-square-o"></i></span
   >
   2019/04/23
 </li>
      
 <li id="tags">
   <span
-    >Tag:</span
+    ><i
+      class="fa-fw fa fa-tag"
+    ></i
+    ></span
   >
    
   <a href="../../../blog/tag/vim/">vim</a>  
@@ -386,11 +395,235 @@
 <ul class="ablog-cloud">
    
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/netcore/">.NETCore</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/3d/">3D</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/3d/">3d</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/azurekinect/">AzureKinect</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender/">Blender</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/blender28/">Blender2.8</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/build/">Build</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c/">C</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/c/">C#</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/c/">C++</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c-cli/">C++-CLI</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/c17/">C++17</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cmake/">CMake</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/d/">D</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/directx/">DirectX</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/directx11/">DirectX11</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/html/">HTML</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/hololens/">HoloLens</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/java/">Java</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/javascript/">JavaScript</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/linq/">LINQ</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/livet/">Livet</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/lua/">Lua</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mef/">MEF</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/mvvm/">MVVM</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/nodejs/">Node.js</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/opencv/">OpenCV</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/opengl/">OpenGL</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/openvr/">OpenVR</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/pixarusd/">PixarUSD</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/plugin/">Plugin</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python/">Python</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/python3/">Python3</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ruby/">Ruby</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/rust/">Rust</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sdl2/">SDL2</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/scala/">Scala</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sharpdx/">SharpDX</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/sprache/">Sprache</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/steamvr/">SteamVR</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/typescript/">TypeScript</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/usd/">USD</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/uwp/">UWP</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/uni/">Uni</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/unity/">Unity</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/unity3d/">Unity3D</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vscode/">VSCode</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim/">Vim</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vim-script/">Vim script</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/viml/">VimL</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/visualstudio/">VisualStudio</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vulkan/">Vulkan</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wpf/">WPF</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/wpf3d/">WPF3D</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/windows/">Windows</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -406,7 +639,19 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cerbero/">cerbero</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/clang/">clang</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/clangd/">clangd</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/cmake/">cmake</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -418,11 +663,19 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/csharp/">csharp</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/css/">css</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/cython/">cython</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/d3d/">d3d</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -438,11 +691,23 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/grpc/">gRPC</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/gis/">gis</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/gltf/">gltf</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gstreamer/">gstreamer</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/gulp/">gulp</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -457,7 +722,7 @@
     <a href="../../../blog/tag/lsp/">lsp</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-2">
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/lua/">lua</a>
   </li>
     
@@ -478,6 +743,10 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/natvis/">natvis</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/nvim/">nvim</a>
   </li>
     
@@ -485,12 +754,32 @@
     <a href="../../../blog/tag/opengl/">opengl</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-5">
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/openvr/">openvr</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/premake/">premake</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/python/">python</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-2">
+    <a href="../../../blog/tag/qiita/">qiita</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/qt/">qt</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-5">
+    <a href="../../../blog/tag/repository/">repository</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -509,12 +798,24 @@
     <a href="../../../blog/tag/ssg/">ssg</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-2">
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/usd/">usd</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vcpkg/">vcpkg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/vim/">vim</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/vscode/">vscode</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/vvvv/">vvvv</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -541,35 +842,55 @@
   </li>
     
   <li>
-    <a href="../../../blog/2021/">2021 (40)</a>
+    <a href="../../../blog/2021/">2021 (53)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2020/">2020 (2)</a>
+    <a href="../../../blog/2020/">2020 (38)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2019/">2019 (24)</a>
+    <a href="../../../blog/2019/">2019 (67)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2017/">2017 (15)</a>
+    <a href="../../../blog/2018/">2018 (28)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2016/">2016 (1)</a>
+    <a href="../../../blog/2017/">2017 (87)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2015/">2015 (2)</a>
+    <a href="../../../blog/2016/">2016 (31)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2013/">2013 (12)</a>
+    <a href="../../../blog/2015/">2015 (58)</a>
   </li>
     
   <li>
-    <a href="../../../blog/2012/">2012 (1)</a>
+    <a href="../../../blog/2014/">2014 (19)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2013/">2013 (52)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2012/">2012 (10)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2011/">2011 (6)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2010/">2010 (2)</a>
+  </li>
+    
+  <li>
+    <a href="../../../blog/2009/">2009 (1)</a>
   </li>
    
 </ul>
@@ -579,7 +900,8 @@
         
   <h3><a href="../../../">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">BufferList読んでみる</a><ul>
+<li><a class="reference internal" href="#">vim_create_plugin_has_buffer</a><ul>
+<li><a class="reference internal" href="#bufferlist">BufferList読んでみる</a><ul>
 <li><a class="reference internal" href="#id1">インクルードガード</a></li>
 <li><a class="reference internal" href="#id2">初期値決め</a></li>
 <li><a class="reference internal" href="#id3">BufferList関数</a><ul>
@@ -598,6 +920,8 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#python">pythonに移植できんやろか</a></li>
+</ul>
+</li>
 </ul>
 
     </div>
