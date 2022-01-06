@@ -43,3 +43,16 @@ object の所有権 はまじめに探求しない。
 
 で、 `ctypes` の苦手なところだけをやる。
 `luajit ffi` に倣ったスタイルでまいる。
+
+## 動いた
+
+<https://github.com/ousttrue/pydear>
+
+ImGui ひととおりできた。
+もうちっとパッケージング(sdist, wheel)を整理したら形が整う。
+`github action` で `wheel` をビルドする技もできた(`windows-64bit + python-3.10` のみ実験)。
+
+`str` と `bytes` の切りわけも `C-API` で書けたし、慣れれば直接 `C-API` を使った方が便利そう。
+`Py_INCREF` `Py_DECREF` による参照管理と、`PyErr_Clear` 等のエラーハンドリングなど
+を抑えればよさそう。
+
