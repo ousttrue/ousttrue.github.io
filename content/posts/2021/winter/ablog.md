@@ -212,6 +212,11 @@ post_date_format_short = r'%Y/%m'
 わりと Sphinx わかってきた。
 `python` でデバッガがアタッチできるとなんでもできる(慣れ)。
 
+### [ ] tagの表記振れ
+
+`c++` と `C++`、`c#` と `csharp` などをたばねる。
+
 ## 参考
 
 * [Sphinxでブログをしてみよう](https://water2litter.net/pisco/doc/ablog.html)
+
