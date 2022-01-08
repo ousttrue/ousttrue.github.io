@@ -1,8 +1,9 @@
 ---
-title: "PixarのUniversal Scene Descriptionをビルドしてみる"
 date: 2017-08-14
 taxonomies: {tags: ['usd']}
 ---
+
+# PixarのUniversal Scene Descriptionをビルドしてみる
 
 20170902。実はビルドスクリプトがあって、簡単になっていた。
 
@@ -12,33 +13,37 @@ usdviewが使えるようにするとよいらしい。
 ## Pixar USD の Windows ビルド方法（2017/9 版）
 
 自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
-環境は、Windows10(64bit) + VisualStudio2017 + VisualStudio2015のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)
+環境は、`Windows10(64bit)` + `VisualStudio2017` + `VisualStudio2015 のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)`
 visualstudio補足
 VisualStudioは、最近のバージョンに限ってもいろいろある。
 
-VisualStudio2017(MSVC14.1)のみ
-VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)
-VisualStudio2015(MSVC14.0)のみ
-Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)
+* VisualStudio2017(MSVC14.1)のみ
+* VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)
+* VisualStudio2015(MSVC14.0)のみ
+* Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)
 
-ものによってvcvars.batの場所が違って、bjamとかdistutilsがコンパイラの発見に失敗したりする場合があるようだ。
-cl.exeが見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
+ものによって `vcvars.bat` の場所が違って、`bjam` とか `distutils` がコンパイラの発見に失敗したりする場合があるようだ。
+`cl.exe` が見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
 一応、
-VisualStudio2017 - x64 native tools command promptからはじめる。
+`VisualStudio2017 - x64 native tools command prompt` からはじめる。
 CMakeはVisualStudioの検出にあまり失敗しないので、おもにBoostのビルド対策。
 効果があったかは不明。
+
+```
 D:\work> cl
 Microsoft(R) C/C++ Optimizing Compiler Version 19.10.25019 for x64
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+```
 
-VS2017しか入っていないとき
-build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラはVS2008(MSVC9.0)らしい。
+`VS2017` しか入っていないとき
+build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラは `VS2008(MSVC9.0)` らしい。
 
 <https://www.microsoft.com/en-us/download/details.aspx?id=44266>
 
-python補足
+## python補足
+
 Python27以外のPythonが入っているとはまる率が上がる。
 
 ```
@@ -131,8 +136,12 @@ STATUS: Installing PNG...
 ```
 
 こんな感じに順番にビルドが進んでいく。
-pngのビルドでこけた
+
+## pngのビルドでこけた
+
+```
 pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。
+```
 
 何故か、zlibへのリンクがうまくいっていない？
 CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
@@ -164,8 +173,10 @@ Success! To use USD, please ensure that you have:
 
 ## Boost.Pythonメモ
 
-boost_python-vc140-mt-1_61.dllがpython36.dllとか違うのにリンクしてしまう場合。
+`boost_python-vc140-mt-1_61.dll` が `python36.dll` とか違うのにリンクしてしまう場合。
 最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。
+
+```
 USD_BUILD/user-conifg.jam
 using python
     : 2.7                   # Version
@@ -173,15 +184,20 @@ using python
     : C:\\Python27\\include         # include path
     : C:\\Python27\\libs            # lib path(s)
     ;
+```
 
-を作って環境変数BOOST_BUILD_PATHをuser-config.jamのあるディレクトリに指定する。
-%USERROFILE%\user-config.jamに作ってBOOST_BUILD_PATH無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。
+を作って環境変数 `BOOST_BUILD_PATH` を `user-config.jam` のあるディレクトリに指定する。
+`%USERROFILE%\user-config.jam` に作って `BOOST_BUILD_PATH` 無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。
 
-http://www.boost.org/build/doc/html/bbv2/overview/configuration.html
+<http://www.boost.org/build/doc/html/bbv2/overview/configuration.html>
 
 WindowsのBoost.Pythonは作るときも使うときもリンクではまる。
-usdviewを使ってみる
+
+## usdviewを使ってみる
+
 USD_BUILD/bin/usdviewがある。
+
+```
 USD_BUILD\bin> D:\python27\python usdview
 
 sys.path
@@ -201,11 +217,14 @@ Traceback (most recent call last):
   File "D:\dev\_alembic\USD_build\lib\python\pxr\Sdf\__init__.py", line 24, in <module>
     import _sdf
 ImportError: DLL load failed: 指定されたモジュールが見つかりません。
+```
 
 usdviewを改造してしまおう。
 環境変数PATHとPYTHONPATHを追加。
 usdview.cmd改造でもよいがpythonの方が書きやすいので。
 usdviewの冒頭のimport前に下記を追加。
+
+```python
 import os
 import sys
 
@@ -219,8 +238,11 @@ os.environ['PATH']="%s;%s;" % (bin_dir, lib_dir) + os.environ['PATH']
 
 
 import pxr.Usdviewq as Usdviewq
+```
 
 実行。
+
+```
 USD_BUILD\bin> D:\python27\python usdview
 usage: usdview [-h] [--renderer {opt,simple}] [--select PRIMPATH]
                [--camera CAMERA] [--mask PRIMPATH[,PRIMPATH...]]
@@ -230,24 +252,33 @@ usage: usdview [-h] [--renderer {opt,simple}] [--select PRIMPATH]
                [--complexity COMPLEXITY] [--quitAfterStartup]
                usdFile
 usdview: error: too few arguments
+```
 
 引数が必要と。
+
+```
 cube.usd
 #usda 1.0
 
 def Cube "Cube"
 {
 }
+```
 
 実行。
+
+```
 Warning: in Link at line 180 of D:\dev\_alembic\USD\pxr\imaging\lib\hd\glslProgram.cpp -- Failed to link shader:
 Geometry shader(s) failed to link.
 Geometry link error: HW_UNSUPPORTED.
 ERROR: Internal compile error, error code: E_SC_LITERAL_NOT_DEFINED
 Shader not supported by HW
+```
 
 Windowは出た。しかしglslのエラーで3DViewの描画ができぬ。
 Rx480がだめなのだろうか。
 GTX買わねば・・・
+
 Alembic追加する
 ToDo
+
