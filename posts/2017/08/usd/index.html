@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>usd</title>
+    <title>PixarのUniversal Scene Descriptionをビルドしてみる</title>
 <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
 <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
 <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../_static/pygments_dark.css" />
@@ -64,40 +64,47 @@
             <a href="../../../../genindex/" title="General Index" accesskey="I">index</a>
         </li>
         <li class="nav-item nav-item-0"><a href="../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">usd</a></li> 
+        <li class="nav-item nav-item-this"><a href="">PixarのUniversal Scene Descriptionをビルドしてみる</a></li> 
     </ul>
 </div>
     </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="usd">
-<h1>usd<a class="headerlink" href="#usd" title="Permalink to this headline">¶</a></h1>
+    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="pixaruniversal-scene-description">
+<h1>PixarのUniversal Scene Descriptionをビルドしてみる<a class="headerlink" href="#pixaruniversal-scene-description" title="Permalink to this headline">¶</a></h1>
 <p>20170902。実はビルドスクリプトがあって、簡単になっていた。</p>
 <p>動画でCEDEC2017のセッションを聞いてよさげな気がしたので再度やってみた(ちょっと前に途中までやって放置していた)。
 usdviewが使えるようにするとよいらしい。</p>
 <section id="pixar-usd-windows-2017-9">
 <h2>Pixar USD の Windows ビルド方法（2017/9 版）<a class="headerlink" href="#pixar-usd-windows-2017-9" title="Permalink to this headline">¶</a></h2>
 <p>自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
-環境は、Windows10(64bit) + VisualStudio2017 + VisualStudio2015のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)
+環境は、<code class="docutils literal notranslate"><span class="pre">Windows10(64bit)</span></code> + <code class="docutils literal notranslate"><span class="pre">VisualStudio2017</span></code> + <code class="docutils literal notranslate"><span class="pre">VisualStudio2015</span> <span class="pre">のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)</span></code>
 visualstudio補足
 VisualStudioは、最近のバージョンに限ってもいろいろある。</p>
-<p>VisualStudio2017(MSVC14.1)のみ
-VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)
-VisualStudio2015(MSVC14.0)のみ
-Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</p>
-<p>ものによってvcvars.batの場所が違って、bjamとかdistutilsがコンパイラの発見に失敗したりする場合があるようだ。
-cl.exeが見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
+<ul class="simple">
+<li><p>VisualStudio2017(MSVC14.1)のみ</p></li>
+<li><p>VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)</p></li>
+<li><p>VisualStudio2015(MSVC14.0)のみ</p></li>
+<li><p>Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</p></li>
+</ul>
+<p>ものによって <code class="docutils literal notranslate"><span class="pre">vcvars.bat</span></code> の場所が違って、<code class="docutils literal notranslate"><span class="pre">bjam</span></code> とか <code class="docutils literal notranslate"><span class="pre">distutils</span></code> がコンパイラの発見に失敗したりする場合があるようだ。
+<code class="docutils literal notranslate"><span class="pre">cl.exe</span></code> が見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
 一応、
-VisualStudio2017 - x64 native tools command promptからはじめる。
+<code class="docutils literal notranslate"><span class="pre">VisualStudio2017</span> <span class="pre">-</span> <span class="pre">x64</span> <span class="pre">native</span> <span class="pre">tools</span> <span class="pre">command</span> <span class="pre">prompt</span></code> からはじめる。
 CMakeはVisualStudioの検出にあまり失敗しないので、おもにBoostのビルド対策。
-効果があったかは不明。
-D:\work&gt; cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.10.25019 for x64
-Copyright (C) Microsoft Corporation.  All rights reserved.</p>
-<p>使い方: cl [ オプション… ] ファイル名… [ /link リンク オプション… ]</p>
-<p>VS2017しか入っていないとき
-build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラはVS2008(MSVC9.0)らしい。</p>
+効果があったかは不明。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">cl</span>
+<span class="n">Microsoft</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">C</span><span class="o">/</span><span class="n">C</span><span class="o">++</span> <span class="n">Optimizing</span> <span class="n">Compiler</span> <span class="n">Version</span> <span class="mf">19.10</span><span class="o">.</span><span class="mi">25019</span> <span class="k">for</span> <span class="n">x64</span>
+<span class="n">Copyright</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">Microsoft</span> <span class="n">Corporation</span><span class="o">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="o">.</span>
+
+<span class="n">使い方</span><span class="p">:</span> <span class="n">cl</span> <span class="p">[</span> <span class="n">オプション</span><span class="o">...</span> <span class="p">]</span> <span class="n">ファイル名</span><span class="o">...</span> <span class="p">[</span> <span class="o">/</span><span class="n">link</span> <span class="n">リンク</span> <span class="n">オプション</span><span class="o">...</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VS2017</span></code> しか入っていないとき
+build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラは <code class="docutils literal notranslate"><span class="pre">VS2008(MSVC9.0)</span></code> らしい。</p>
 <p><a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=44266">https://www.microsoft.com/en-us/download/details.aspx?id=44266</a></p>
-<p>python補足
-Python27以外のPythonが入っているとはまる率が上がる。</p>
+</section>
+<section id="python">
+<h2>python補足<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+<p>Python27以外のPythonが入っているとはまる率が上がる。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>D:\work&gt; python -V
 Python 3.6.0 :: Anaconda 4.3.0 (64-bit)
 
@@ -183,9 +190,13 @@ set PATH=D:\Program Files\NASM;%PATH%</p>
 <span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">PNG</span><span class="o">...</span>
 </pre></div>
 </div>
-<p>こんな感じに順番にビルドが進んでいく。
-pngのビルドでこけた
-pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。</p>
+<p>こんな感じに順番にビルドが進んでいく。</p>
+</section>
+<section id="png">
+<h2>pngのビルドでこけた<a class="headerlink" href="#png" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。
+</pre></div>
+</div>
 <p>何故か、zlibへのリンクがうまくいっていない？
 CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
 pythonをフルパスで指定したらなんか治った。違うPythonが意図せず使われていたか。
@@ -214,76 +225,98 @@ Success! To use USD, please ensure that you have:
 </section>
 <section id="boost-python">
 <h2>Boost.Pythonメモ<a class="headerlink" href="#boost-python" title="Permalink to this headline">¶</a></h2>
-<p>boost_python-vc140-mt-1_61.dllがpython36.dllとか違うのにリンクしてしまう場合。
-最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。
-USD_BUILD/user-conifg.jam
-using python
-: 2.7                   # Version
-: C:\Python27\python.exe      # Python Path
-: C:\Python27\include         # include path
-: C:\Python27\libs            # lib path(s)
-;</p>
-<p>を作って環境変数BOOST_BUILD_PATHをuser-config.jamのあるディレクトリに指定する。</p>
-<p>http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</p>
-<p>WindowsのBoost.Pythonは作るときも使うときもリンクではまる。
-usdviewを使ってみる
-USD_BUILD/bin/usdviewがある。
-USD_BUILD\bin&gt; D:\python27\python usdview</p>
-<p>sys.path
+<p><code class="docutils literal notranslate"><span class="pre">boost_python-vc140-mt-1_61.dll</span></code> が <code class="docutils literal notranslate"><span class="pre">python36.dll</span></code> とか違うのにリンクしてしまう場合。
+最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USD_BUILD</span><span class="o">/</span><span class="n">user</span><span class="o">-</span><span class="n">conifg</span><span class="o">.</span><span class="n">jam</span>
+<span class="n">using</span> <span class="n">python</span>
+    <span class="p">:</span> <span class="mf">2.7</span>                   <span class="c1"># Version</span>
+    <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">Python27</span>\\<span class="n">python</span><span class="o">.</span><span class="n">exe</span>      <span class="c1"># Python Path</span>
+    <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">Python27</span>\\<span class="n">include</span>         <span class="c1"># include path</span>
+    <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">Python27</span>\\<span class="n">libs</span>            <span class="c1"># lib path(s)</span>
+    <span class="p">;</span>
+</pre></div>
+</div>
+<p>を作って環境変数 <code class="docutils literal notranslate"><span class="pre">BOOST_BUILD_PATH</span></code> を <code class="docutils literal notranslate"><span class="pre">user-config.jam</span></code> のあるディレクトリに指定する。
+<code class="docutils literal notranslate"><span class="pre">%USERROFILE%\user-config.jam</span></code> に作って <code class="docutils literal notranslate"><span class="pre">BOOST_BUILD_PATH</span></code> 無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。</p>
+<p><a class="reference external" href="http://www.boost.org/build/doc/html/bbv2/overview/configuration.html">http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</a></p>
+<p>WindowsのBoost.Pythonは作るときも使うときもリンクではまる。</p>
+</section>
+<section id="usdview">
+<h2>usdviewを使ってみる<a class="headerlink" href="#usdview" title="Permalink to this headline">¶</a></h2>
+<p>USD_BUILD/bin/usdviewがある。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>USD_BUILD\bin&gt; D:\python27\python usdview
+
+sys.path
 Traceback (most recent call last):
-File “usdview”, line 25, in <module>
-import pxr.Usdviewq as Usdviewq
-ImportError: No module named pxr.Usdviewq</p>
-<p>environ[‘PATH’]
+  File &quot;usdview&quot;, line 25, in &lt;module&gt;
+    import pxr.Usdviewq as Usdviewq
+ImportError: No module named pxr.Usdviewq
+
+environ[‘PATH’]
 Traceback (most recent call last):
-File “usdview”, line 37, in <module>
-Usdviewq.Launcher().Run()
-File “D:\dev_alembic\USD_build\lib\python\pxr\Usdviewq_<em>init</em>_.py”, line 54, in Run
-valid = self.ValidateOptions(arg_parse_result)
-File “D:\dev_alembic\USD_build\lib\python\pxr\Usdviewq_<em>init</em>_.py”, line 167, in ValidateOptions
-from pxr import Sdf
-File “D:\dev_alembic\USD_build\lib\python\pxr\Sdf_<em>init</em>_.py”, line 24, in <module>
-import _sdf
-ImportError: DLL load failed: 指定されたモジュールが見つかりません。</p>
+  File &quot;usdview&quot;, line 37, in &lt;module&gt;
+    Usdviewq.Launcher().Run()
+  File &quot;D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py&quot;, line 54, in Run
+    valid = self.ValidateOptions(arg_parse_result)
+  File &quot;D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py&quot;, line 167, in ValidateOptions
+    from pxr import Sdf
+  File &quot;D:\dev\_alembic\USD_build\lib\python\pxr\Sdf\__init__.py&quot;, line 24, in &lt;module&gt;
+    import _sdf
+ImportError: DLL load failed: 指定されたモジュールが見つかりません。
+</pre></div>
+</div>
 <p>usdviewを改造してしまおう。
 環境変数PATHとPYTHONPATHを追加。
 usdview.cmd改造でもよいがpythonの方が書きやすいので。
-usdviewの冒頭のimport前に下記を追加。
-import os
-import sys</p>
-<p>basepath=os.path.dirname(os.path.dirname(os.path.abspath(<strong>file</strong>)))
-bin_dir=os.path.join(basepath, ‘bin’)
-lib_dir=os.path.join(basepath, ‘lib’)
-libpython_dir=os.path.join(lib_dir, ‘python’)</p>
-<p>sys.path.append(libpython_dir)
-os.environ[‘PATH’]=”%s;%s;” % (bin_dir, lib_dir) + os.environ[‘PATH’]</p>
-<p>import pxr.Usdviewq as Usdviewq</p>
-<p>実行。
-USD_BUILD\bin&gt; D:\python27\python usdview
-usage: usdview [-h] [–renderer {opt,simple}] [–select PRIMPATH]
-[–camera CAMERA] [–mask PRIMPATH[,PRIMPATH…]]
-[–clearsettings] [–norender] [–unloaded] [–timing]
-[–memstats {none,stage,stageAndImaging}]
-[–numThreads NUMTHREADS] [–ff FIRSTFRAME] [–lf LASTFRAME]
-[–complexity COMPLEXITY] [–quitAfterStartup]
-usdFile
-usdview: error: too few arguments</p>
-<p>引数が必要と。
-cube.usd
-#usda 1.0</p>
-<p>def Cube “Cube”
-{
-}</p>
-<p>実行。
-Warning: in Link at line 180 of D:\dev_alembic\USD\pxr\imaging\lib\hd\glslProgram.cpp – Failed to link shader:
-Geometry shader(s) failed to link.
-Geometry link error: HW_UNSUPPORTED.
-ERROR: Internal compile error, error code: E_SC_LITERAL_NOT_DEFINED
-Shader not supported by HW</p>
+usdviewの冒頭のimport前に下記を追加。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">basepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<span class="n">bin_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="s1">&#39;bin&#39;</span><span class="p">)</span>
+<span class="n">lib_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span>
+<span class="n">libpython_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">&#39;python&#39;</span><span class="p">)</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">libpython_dir</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">;</span><span class="si">%s</span><span class="s2">;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bin_dir</span><span class="p">,</span> <span class="n">lib_dir</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span>
+
+
+<span class="kn">import</span> <span class="nn">pxr.Usdviewq</span> <span class="kn">as</span> <span class="nn">Usdviewq</span>
+</pre></div>
+</div>
+<p>実行。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USD_BUILD</span>\<span class="nb">bin</span><span class="o">&gt;</span> <span class="n">D</span><span class="p">:</span>\<span class="n">python27</span>\<span class="n">python</span> <span class="n">usdview</span>
+<span class="n">usage</span><span class="p">:</span> <span class="n">usdview</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">renderer</span> <span class="p">{</span><span class="n">opt</span><span class="p">,</span><span class="n">simple</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">select</span> <span class="n">PRIMPATH</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">camera</span> <span class="n">CAMERA</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mask</span> <span class="n">PRIMPATH</span><span class="p">[,</span><span class="n">PRIMPATH</span><span class="o">...</span><span class="p">]]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">clearsettings</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">norender</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">unloaded</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timing</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">memstats</span> <span class="p">{</span><span class="n">none</span><span class="p">,</span><span class="n">stage</span><span class="p">,</span><span class="n">stageAndImaging</span><span class="p">}]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">numThreads</span> <span class="n">NUMTHREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ff</span> <span class="n">FIRSTFRAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lf</span> <span class="n">LASTFRAME</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">complexity</span> <span class="n">COMPLEXITY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quitAfterStartup</span><span class="p">]</span>
+               <span class="n">usdFile</span>
+<span class="n">usdview</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">too</span> <span class="n">few</span> <span class="n">arguments</span>
+</pre></div>
+</div>
+<p>引数が必要と。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cube</span><span class="o">.</span><span class="n">usd</span>
+<span class="c1">#usda 1.0</span>
+
+<span class="k">def</span> <span class="nf">Cube</span> <span class="s2">&quot;Cube&quot;</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>実行。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">Warning</span><span class="p">:</span> <span class="ow">in</span> <span class="n">Link</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">180</span> <span class="n">of</span> <span class="n">D</span><span class="p">:</span>\<span class="n">dev</span>\<span class="n">_alembic</span>\<span class="n">USD</span>\<span class="n">pxr</span>\<span class="n">imaging</span>\<span class="n">lib</span>\<span class="n">hd</span>\<span class="n">glslProgram</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">link</span> <span class="n">shader</span><span class="p">:</span>
+<span class="n">Geometry</span> <span class="n">shader</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">failed</span> <span class="n">to</span> <span class="n">link</span><span class="o">.</span>
+<span class="n">Geometry</span> <span class="n">link</span> <span class="n">error</span><span class="p">:</span> <span class="n">HW_UNSUPPORTED</span><span class="o">.</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">Internal</span> <span class="nb">compile</span> <span class="n">error</span><span class="p">,</span> <span class="n">error</span> <span class="n">code</span><span class="p">:</span> <span class="n">E_SC_LITERAL_NOT_DEFINED</span>
+<span class="n">Shader</span> <span class="ow">not</span> <span class="n">supported</span> <span class="n">by</span> <span class="n">HW</span>
+</pre></div>
+</div>
 <p>Windowは出た。しかしglslのエラーで3DViewの描画ができぬ。
 Rx480がだめなのだろうか。
-GTX買わねば・・・
-Alembic追加する
+GTX買わねば・・・</p>
+<p>Alembic追加する
 ToDo</p>
 </section>
 </section>
@@ -920,10 +953,13 @@ ToDo</p>
         
   <h3><a href="../../../../">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">usd</a><ul>
+<li><a class="reference internal" href="#">PixarのUniversal Scene Descriptionをビルドしてみる</a><ul>
 <li><a class="reference internal" href="#pixar-usd-windows-2017-9">Pixar USD の Windows ビルド方法（2017/9 版）</a></li>
+<li><a class="reference internal" href="#python">python補足</a></li>
 <li><a class="reference internal" href="#alembic">Alembicとか無しの最小ビルド。</a></li>
+<li><a class="reference internal" href="#png">pngのビルドでこけた</a></li>
 <li><a class="reference internal" href="#boost-python">Boost.Pythonメモ</a></li>
+<li><a class="reference internal" href="#usdview">usdviewを使ってみる</a></li>
 </ul>
 </li>
 </ul>
