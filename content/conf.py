@@ -16,6 +16,10 @@ import patch
 import os
 import ablog
 import alabaster
+import os
+if os.name == 'nt':
+    os.environ['PATH'] = f"{os.environ['PATH']};C:\\Program Files\\Graphviz\\bin"
+
 
 # -- General ABlog Options ----------------------------------------------------
 
@@ -196,7 +200,9 @@ extensions = [
     'alabaster',
     'ablog',
     'myst_parser',
+    'sphinx.ext.graphviz',
 ]
+graphviz_output_format = 'svg'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates", ablog.get_html_templates_path()]
