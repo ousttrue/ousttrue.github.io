@@ -56,3 +56,18 @@ ImGui ひととおりできた。
 `Py_INCREF` `Py_DECREF` による参照管理と、`PyErr_Clear` 等のエラーハンドリングなど
 を抑えればよさそう。
 
+## pypi
+
+<https://pypi.org/project/pydear/>
+
+github actions で wheel をビルドして、 pypi にアップロードするところまでできた。
+あと、 `sdist` も作る。
+
+`pip install pydear` して使えるようになった。
+使いながら整備していこう。
+
+`pyi` が含まれているので、ある程度のインテリセンスが効くところがよい。
+
+* [ ] rawtypes をライブラリとして分離する
+* [ ] clang.cindex でコード生成した結果を `sdist` に含める
+
