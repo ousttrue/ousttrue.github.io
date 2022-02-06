@@ -31,11 +31,11 @@ pyOpenGL からできる方法が分かるとよいのだが。
 
 ## python
 
-* https://github.com/flacjacket/pywayland
+* <https://github.com/flacjacket/pywayland>
 
 ## 参考
 
-* https://wayland-book.com/introduction.html
-* https://aznote.jakou.com/prog/wayland/index.html
+* <https://wayland-book.com/introduction.html>
+* <https://aznote.jakou.com/prog/wayland/index.html>
 * (2017)[作って学ぶWayland](https://qiita.com/maueki/items/34323b2762e3c3342c51)
 
