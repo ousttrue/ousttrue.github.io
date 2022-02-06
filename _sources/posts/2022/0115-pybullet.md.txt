@@ -36,3 +36,9 @@ ExampleBrowser -> SimpleOpenGL3App -> gwen -> "Select DEMO";
 `各デモ` と `Physics` と `Renderer` を分離できればよいのだが。
 わりと規模が大きい。
 
+## 20220122
+
+だいぶ読んだ。`GLInstancingRenderer` がレンダラー本体。
+`btIDebugDraw` とは別に普通の Renderer が実装されていてこっちを解読したい。
+btIDebugDraw だと wireframe になるのかな。
+
