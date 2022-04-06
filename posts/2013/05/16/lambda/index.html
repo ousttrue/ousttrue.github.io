@@ -89,12 +89,12 @@ int main() {
 <p>上記の書き方では普通の関数ポインタを受けることはできるのだが、</p>
 <p>std::functionとlambdaは受けられない。
 std::functionを受けるには下記のようにすることでできた。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">++</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A2</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">register_func</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span> <span class="n">handler</span><span class="p">)</span> <span class="p">{</span>     <span class="c1">// }</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">++</span><span class="w"> </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">register_func</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="w"> </span><span class="n">handler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">     </span><span class="c1">// }</span>
 </pre></div>
 </div>
 <p>残り、lambdaを受けられる記述方法を知りたいのだがどうしたらよいものか。
 下記のような手はうまくいかなかった・・・</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">++</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">F</span><span class="p">,</span> <span class="k">typename</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A2</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">add_handler</span><span class="p">(</span><span class="n">F</span> <span class="n">handler</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">)</span> <span class="p">{</span>     <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span>     <span class="c1">//add_handler }</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">++</span><span class="w"> </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">add_handler</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="n">handler</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span><span class="w">     </span><span class="c1">//add_handler }</span>
 </pre></div>
 </div>
 <p>こちらのサイトから
@@ -123,8 +123,7 @@ decltypeなんかすごいな。</p>
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -183,6 +182,18 @@ decltypeなんかすごいな。</p>
 <ul>
    
   <li>
+    <a href="../../../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -197,18 +208,6 @@ decltypeなんかすごいな。</p>
   <li>
     <a href="../../../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -621,6 +620,10 @@ decltypeなんかすごいな。</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -654,6 +657,10 @@ decltypeなんかすごいな。</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -704,7 +711,7 @@ decltypeなんかすごいな。</p>
 <ul>
    
   <li>
-    <a href="../../../../../blog/2022/">2022 (6)</a>
+    <a href="../../../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -768,7 +775,7 @@ decltypeなんかすごいな。</p>
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

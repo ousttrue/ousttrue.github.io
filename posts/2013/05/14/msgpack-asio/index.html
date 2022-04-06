@@ -86,40 +86,40 @@
 バイナリデータと <code class="docutils literal notranslate"><span class="pre">msgpack-rpc</span></code> の変換部分に <code class="docutils literal notranslate"><span class="pre">msgpack-rpc</span></code> のコードを借用して、
 ネットワーク通信部分は <code class="docutils literal notranslate"><span class="pre">asio</span></code> で普通に作成した。
 だいたいこんな感じのAPIになる予定。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">server_method</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">server_method</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span> 
-    <span class="kt">int</span> <span class="n">port</span><span class="o">=</span><span class="mi">18080</span><span class="p">;</span>
-    <span class="c1">// server</span>
-    <span class="n">boost</span><span class="o">::</span><span class="n">io_service</span> <span class="n">server_io</span><span class="p">;</span>
-    <span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">server</span> <span class="n">s</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span>
-    <span class="n">s</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">server_method</span><span class="p">,</span> <span class="s">&quot;add&quot;</span><span class="p">);</span>
-    <span class="n">s</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">v4</span><span class="p">(),</span> <span class="n">port</span><span class="p">));</span>
-    <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span> <span class="n">server_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">server_io</span><span class="p">](){</span> <span class="n">server_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">}</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">port</span><span class="o">=</span><span class="mi">18080</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// server</span>
+<span class="w">    </span><span class="n">boost</span><span class="o">::</span><span class="n">io_service</span><span class="w"> </span><span class="n">server_io</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">server</span><span class="w"> </span><span class="n">s</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">server_method</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;add&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">v4</span><span class="p">(),</span><span class="w"> </span><span class="n">port</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">boost</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">server_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">server_io</span><span class="p">](){</span><span class="w"> </span><span class="n">server_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// client</span>
-    <span class="n">boost</span><span class="o">::</span><span class="n">io_service</span> <span class="n">client_io</span><span class="p">;</span>
-    <span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">session</span> <span class="n">c</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span> 
-    <span class="n">c</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">),</span> <span class="n">port</span><span class="p">);</span>
-    <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span> <span class="n">client_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">client_io</span><span class="p">](){</span> <span class="n">client_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span> <span class="p">}</span>
+<span class="w">    </span><span class="c1">// client</span>
+<span class="w">    </span><span class="n">boost</span><span class="o">::</span><span class="n">io_service</span><span class="w"> </span><span class="n">client_io</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">msgpack</span><span class="o">::</span><span class="n">asiorpc</span><span class="o">::</span><span class="n">session</span><span class="w"> </span><span class="n">c</span><span class="p">(</span><span class="n">server_io</span><span class="p">);</span><span class="w"> </span>
+<span class="w">    </span><span class="n">c</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">port</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">boost</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">client_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">client_io</span><span class="p">](){</span><span class="w"> </span><span class="n">client_io</span><span class="p">.</span><span class="n">run</span><span class="p">();</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// request</span>
-    <span class="k">auto</span> <span class="n">request</span><span class="o">=</span><span class="n">c</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// request</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">request</span><span class="o">=</span><span class="n">c</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span>
 
-    <span class="c1">// blocking</span>
-    <span class="kt">int</span> <span class="n">result</span><span class="p">;</span>
-    <span class="n">request</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">resut</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// blocking</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">request</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">resut</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-    <span class="c1">// finalize</span>
-    <span class="n">client_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
-    <span class="n">client_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// finalize</span>
+<span class="w">    </span><span class="n">client_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">client_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span><span class="w"></span>
 
-    <span class="n">server_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
-    <span class="n">server_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">    </span><span class="n">server_io</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">server_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span><span class="w"></span>
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>原型はだいたいできて <code class="docutils literal notranslate"><span class="pre">Windows</span></code> でも動いたので続きを作りこんで行きたい。
@@ -134,8 +134,7 @@
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -194,6 +193,18 @@
 <ul>
    
   <li>
+    <a href="../../../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -208,18 +219,6 @@
   <li>
     <a href="../../../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -632,6 +631,10 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -665,6 +668,10 @@
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -715,7 +722,7 @@
 <ul>
    
   <li>
-    <a href="../../../../../blog/2022/">2022 (6)</a>
+    <a href="../../../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -779,7 +786,7 @@
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

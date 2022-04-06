@@ -98,15 +98,15 @@
 <li><p>RPC を <code class="docutils literal notranslate"><span class="pre">c++20</span></code> 化 (co_await)</p></li>
 </ul>
 <p>で、最初の nvim 初期化を</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">api_info</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;nvim_get_api_info&quot;</span><span class="p">);</span>
-<span class="n">rpc</span><span class="p">.</span><span class="n">notity</span><span class="p">(</span><span class="s">&quot;nvim_set_var&quot;</span><span class="p">,</span> <span class="s">&quot;nvy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-<span class="k">auto</span> <span class="n">path</span> <span class="o">=</span> <span class="n">co_await</span> <span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;nvim_eval&quot;</span><span class="p">,</span><span class="s">&quot;stdpath(&#39;config&#39;)&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">api_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;nvim_get_api_info&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">rpc</span><span class="p">.</span><span class="n">notity</span><span class="p">(</span><span class="s">&quot;nvim_set_var&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;nvy&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;nvim_eval&quot;</span><span class="p">,</span><span class="s">&quot;stdpath(&#39;config&#39;)&quot;</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// initialize</span>
 
-<span class="n">rpc</span><span class="p">.</span><span class="n">notify</span><span class="p">(</span><span class="s">&quot;nvim_ui_attach&quot;</span><span class="p">);</span>
+<span class="n">rpc</span><span class="p">.</span><span class="n">notify</span><span class="p">(</span><span class="s">&quot;nvim_ui_attach&quot;</span><span class="p">);</span><span class="w"></span>
 
-<span class="n">rpc</span><span class="p">.</span><span class="n">on_message</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dispatcher</span><span class="p">);</span>
+<span class="n">rpc</span><span class="p">.</span><span class="n">on_message</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dispatcher</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>のように書けるようにして整理する。</p>
@@ -123,8 +123,8 @@
 </ul>
 <p>を実装できた。
 特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="k">case</span> <span class="nl">VK_OEM_2</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nl">VK_OEM_2</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">[2,&quot;nvim_input&quot;,[&quot;&lt;C-/&gt;&quot;]]</span></code> が送信される。</p>
@@ -132,11 +132,11 @@
 <h2>修正が必要<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>非control時に</p>
 <p><code class="docutils literal notranslate"><span class="pre">[2,&quot;nvim_input&quot;,[&quot;&lt;/&gt;&quot;]]</span></code> が送信される。</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="k">case</span> <span class="nl">VK_OEM_2</span><span class="p">:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">GetKeyState</span><span class="p">(</span><span class="n">VK_CONTROL</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// C-/</span>
-      <span class="k">return</span> <span class="s">&quot;/&quot;</span><span class="p">;</span>
-    <span class="p">}</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nl">VK_OEM_2</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GetKeyState</span><span class="p">(</span><span class="n">VK_CONTROL</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// C-/</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>なるほど。</p>
@@ -148,8 +148,7 @@
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -217,6 +216,18 @@
 <ul>
    
   <li>
+    <a href="../../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -231,18 +242,6 @@
   <li>
     <a href="../../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -655,6 +654,10 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -688,6 +691,10 @@
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -738,7 +745,7 @@
 <ul>
    
   <li>
-    <a href="../../../../blog/2022/">2022 (6)</a>
+    <a href="../../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -798,9 +805,8 @@
     </div>
     <div id="local">
         
-  <div>
-    <h3><a href="../../../../">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../../../../">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">nvy</a><ul>
 <li><a class="reference internal" href="#id1">改造</a></li>
 </ul>
@@ -813,12 +819,11 @@
 <li><a class="reference internal" href="#id5">20210829  太字がずれる？</a></li>
 </ul>
 
-  </div>
     </div>
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

@@ -74,12 +74,12 @@
 <p>C++/CXを置き換えるよさげなライブラリC++WinRTを発見した。</p>
 <p>C++/CXの機能を純粋なC++(C++17とか新しめの)で実装したものらしく、WinRTのC++バインディングのような位置。
 C++/CXで</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span> <span class="o">^</span><span class="n">window</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="w"> </span><span class="o">^</span><span class="n">window</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>のようなものを</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
-<span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">Core</span> <span class="n">window</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
+<span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">Core</span><span class="w"> </span><span class="n">window</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>のように置き換える。<code class="docutils literal notranslate"><span class="pre">-&gt;</span> </code>じゃなくて <code class="docutils literal notranslate"><span class="pre">.</span></code> を使うスマートポインタで実装されている。</p>
@@ -100,14 +100,14 @@ C++WinRTはヘッダオンリーライブラリである。
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// main.cpp</span>
 <span class="cp">#pragma comment(lib, &quot;windowsapp&quot;) </span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;winrt/base.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/base.h&gt;</span><span class="cp"></span>
 
-<span class="kt">int</span> <span class="kr">__stdcall</span> <span class="nf">wWinMain</span><span class="p">(</span><span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">PWSTR</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">winrt</span><span class="o">::</span><span class="n">init_apartment</span><span class="p">();</span>
+<span class="kt">int</span><span class="w"> </span><span class="kr">__stdcall</span><span class="w"> </span><span class="n">wWinMain</span><span class="p">(</span><span class="n">HINSTANCE</span><span class="p">,</span><span class="w"> </span><span class="n">HINSTANCE</span><span class="p">,</span><span class="w"> </span><span class="n">PWSTR</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">winrt</span><span class="o">::</span><span class="n">init_apartment</span><span class="p">();</span><span class="w"></span>
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>あえてCMakeで。
@@ -157,57 +157,57 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)</p>
 UWPの作法で空のAppを作ってみる</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma comment(lib, &quot;windowsapp&quot;) </span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;winrt/Windows.ApplicationModel.Core.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.ApplicationModel.Core.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
 
 <span class="c1">//</span>
 <span class="c1">// IFrameworkViewSourceとIFrameworkViewを一体化させるのは必要(ばらすとエラーになった)</span>
 <span class="c1">//</span>
-<span class="k">struct</span> <span class="nl">App</span> <span class="p">:</span> <span class="n">winrt</span><span class="o">::</span><span class="n">implements</span><span class="o">&lt;</span><span class="n">App</span>
-    <span class="p">,</span> <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkViewSource</span>
-    <span class="p">,</span> <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span><span class="o">&gt;</span>
-<span class="p">{</span>
-    <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span> <span class="n">CreateView</span><span class="p">()</span>
-    <span class="p">{</span>
-        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="k">struct</span> <span class="nc">App</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">implements</span><span class="o">&lt;</span><span class="n">App</span><span class="w"></span>
+<span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkViewSource</span><span class="w"></span>
+<span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span><span class="o">&gt;</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span><span class="w"> </span><span class="nf">CreateView</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kt">void</span> <span class="n">Initialize</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplicationView</span> <span class="k">const</span><span class="o">&amp;</span><span class="p">)</span>
-    <span class="p">{</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplicationView</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kt">void</span> <span class="n">Load</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">hstring</span> <span class="k">const</span><span class="o">&amp;</span><span class="p">)</span>
-    <span class="p">{</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">hstring</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kt">void</span> <span class="n">Uninitialize</span><span class="p">()</span>
-    <span class="p">{</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Uninitialize</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kt">void</span> <span class="n">Run</span><span class="p">()</span>
-    <span class="p">{</span>
-        <span class="k">auto</span> <span class="n">window</span> <span class="o">=</span> <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="o">::</span><span class="n">GetForCurrentThread</span><span class="p">();</span>
-        <span class="n">window</span><span class="p">.</span><span class="n">Activate</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Run</span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="o">::</span><span class="n">GetForCurrentThread</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">window</span><span class="p">.</span><span class="n">Activate</span><span class="p">();</span><span class="w"></span>
 
-        <span class="c1">//</span>
+<span class="w">        </span><span class="c1">//</span>
 
-        <span class="k">auto</span> <span class="n">dispatcher</span> <span class="o">=</span> <span class="n">window</span><span class="p">.</span><span class="n">Dispatcher</span><span class="p">();</span>
-        <span class="n">dispatcher</span><span class="p">.</span><span class="n">ProcessEvents</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreProcessEventsOption</span><span class="o">::</span><span class="n">ProcessUntilQuit</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">dispatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">Dispatcher</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">dispatcher</span><span class="p">.</span><span class="n">ProcessEvents</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreProcessEventsOption</span><span class="o">::</span><span class="n">ProcessUntilQuit</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="kt">void</span> <span class="n">SetWindow</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span> <span class="k">const</span><span class="o">&amp;</span><span class="p">)</span>
-    <span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetWindow</span><span class="p">(</span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
 
-    <span class="p">}</span>
-<span class="p">};</span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
 
-<span class="kt">int</span> <span class="kr">__stdcall</span> <span class="nf">wWinMain</span><span class="p">(</span><span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">HINSTANCE</span><span class="p">,</span> <span class="n">PWSTR</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">winrt</span><span class="o">::</span><span class="n">init_apartment</span><span class="p">();</span>
+<span class="kt">int</span><span class="w"> </span><span class="kr">__stdcall</span><span class="w"> </span><span class="n">wWinMain</span><span class="p">(</span><span class="n">HINSTANCE</span><span class="p">,</span><span class="w"> </span><span class="n">HINSTANCE</span><span class="p">,</span><span class="w"> </span><span class="n">PWSTR</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">winrt</span><span class="o">::</span><span class="n">init_apartment</span><span class="p">();</span><span class="w"></span>
 
-    <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplication</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">App</span><span class="p">());</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplication</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">App</span><span class="p">());</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>警告とは無関係に、実行に
@@ -220,8 +220,7 @@ winrt::get_abi
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -280,6 +279,18 @@ winrt::get_abi
 <ul>
    
   <li>
+    <a href="../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -294,18 +305,6 @@ winrt::get_abi
   <li>
     <a href="../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -718,6 +717,10 @@ winrt::get_abi
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -751,6 +754,10 @@ winrt::get_abi
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -801,7 +808,7 @@ winrt::get_abi
 <ul>
    
   <li>
-    <a href="../../../blog/2022/">2022 (6)</a>
+    <a href="../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -865,7 +872,7 @@ winrt::get_abi
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

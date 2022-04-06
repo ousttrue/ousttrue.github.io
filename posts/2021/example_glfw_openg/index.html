@@ -116,7 +116,7 @@ cdecl で FFI 記述できるんだっけ？</p>
 で、このデフォルト引数がないと <code class="docutils literal notranslate"><span class="pre">imgui</span></code> の使い勝手が著しく下がる。
 リファレンスを確認して、デフォルト値を当ててやる必要が出るので。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 例</span>
-<span class="n">IMGUI_API</span> <span class="kt">bool</span> <span class="nf">Begin</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span> <span class="kt">bool</span><span class="o">*</span> <span class="n">p_open</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ImGuiWindowFlags</span> <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">IMGUI_API</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">Begin</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">*</span><span class="w"> </span><span class="n">p_open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">ImGuiWindowFlags</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">NULL</span></code> は <code class="docutils literal notranslate"><span class="pre">nil</span></code> だし、 <code class="docutils literal notranslate"><span class="pre">0</span></code> はそのまま <code class="docutils literal notranslate"><span class="pre">0</span></code> なので、簡単なところだけでも対応する。
@@ -149,7 +149,7 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id2">
 <h1>可変長引数<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">IMGUI_API</span> <span class="kt">void</span> <span class="n">Text</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">IMGUI_API</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">fmt</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"></span>
 </pre></div>
 </div>
 <p>luajit ffi ではそのまま <code class="docutils literal notranslate"><span class="pre">...</span></code> を扱うことができた。</p>
@@ -177,12 +177,12 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
 <h1>template class のごまかし<a class="headerlink" href="#template-class" title="Permalink to this headline">¶</a></h1>
 <p>T を pointer としてしか使わない場合は、
 <code class="docutils literal notranslate"><span class="pre">T*</span></code> を除去して <code class="docutils literal notranslate"><span class="pre">void*</span></code> にすれば動く。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">ImVector</span><span class="p">{</span>
-    <span class="kt">int</span> <span class="n">Size</span><span class="p">;</span>
-    <span class="kt">int</span> <span class="n">Capacity</span><span class="p">;</span>
-    <span class="n">T</span><span class="o">*</span> <span class="n">Data</span><span class="p">;</span>
-<span class="p">};</span>    
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">struct</span> <span class="nc">ImVector</span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">Capacity</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">Data</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w">    </span>
 </pre></div>
 </div>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
@@ -197,8 +197,7 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -268,6 +267,18 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
 <ul>
    
   <li>
+    <a href="../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -282,18 +293,6 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
   <li>
     <a href="../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -706,6 +705,10 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -739,6 +742,10 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -789,7 +796,7 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
 <ul>
    
   <li>
-    <a href="../../../blog/2022/">2022 (6)</a>
+    <a href="../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -849,9 +856,8 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
     </div>
     <div id="local">
         
-  <div>
-    <h3><a href="../../../">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../../../">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">example_glfw_openg</a></li>
 <li><a class="reference internal" href="#id1">メンバー関数呼び出し</a></li>
 <li><a class="reference internal" href="#c">C++ デフォルト引数</a></li>
@@ -859,12 +865,11 @@ FFI 境界の <code class="docutils literal notranslate"><span class="pre">struc
 <li><a class="reference internal" href="#template-class">template class のごまかし</a></li>
 </ul>
 
-  </div>
     </div>
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

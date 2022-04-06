@@ -202,51 +202,51 @@ template msgpack::sbuffer unpack_exec_pack(
 <p><code class="docutils literal notranslate"><span class="pre">msgpack-&gt;引数展開-&gt;c++関数呼び出し-&gt;msgpack</span></code> への一連の操作を 同一のシグネチャの<code class="docutils literal notranslate"><span class="pre">std::function</span></code> に 封じ込めることができる。</p>
 <p>次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。 まず、std::functionから実装。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// std::function用</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">A2</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="n">add_handler</span><span class="p">(</span><span class="n">contt</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// 中身同じ</span>
-<span class="p">}</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="n">add_handler</span><span class="p">(</span><span class="n">contt</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// 中身同じ</span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>呼び出し時に <code class="docutils literal notranslate"><span class="pre">std::function</span></code> を経由するようにすればあらゆる関数呼び出しを登録できる。 例えば、ラムダ関数も以下のように登録できる。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// ラムダ登録</span>
-<span class="n">dispatcher</span> <span class="n">d</span><span class="p">;</span>
-<span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span>
-    <span class="p">[](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">}</span>
-<span class="p">));</span>
+<span class="n">dispatcher</span><span class="w"> </span><span class="n">d</span><span class="p">;</span><span class="w"></span>
+<span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="p">));</span><span class="w"></span>
 </pre></div>
 </div>
 <p>しかし、どうせなら</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">dispatcher</span> <span class="n">d</span><span class="p">;</span>
-<span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span> <span class="p">});</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">dispatcher</span><span class="w"> </span><span class="n">d</span><span class="p">;</span><span class="w"></span>
+<span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">&quot;add&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>と書きたい。</p>
 <p>となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// ラムダの登録</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span> <span class="n">F</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="n">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">F</span> <span class="n">f</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// 型がわからぬ</span>
-<span class="p">}</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span><span class="w"> </span><span class="n">F</span><span class="o">&gt;</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="n">add_handler</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// 型がわからぬ</span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">template</span>
-<span class="kt">void</span> <span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">F</span> <span class="n">f</span><span class="p">,</span> <span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span><span class="k">const</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// 中身同じ</span>
-<span class="p">}</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="k">const</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// 中身同じ</span>
+<span class="p">}</span><span class="w"></span>
 <span class="c1">// ラムダの登録</span>
 <span class="c1">// std::functionも受けられる</span>
 <span class="c1">// std::bindは無理だった</span>
 <span class="c1">// operator()がひとつしかない関数オブジェクトを受け付けられる？</span>
 
-<span class="k">template</span> <span class="kt">void</span> <span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">method</span><span class="p">,</span> <span class="n">F</span> <span class="n">f</span><span class="p">)</span>
-<span class="p">{</span>
-   <span class="c1">// 上の関数で型推論させる</span>
-   <span class="n">add_handler</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">F</span><span class="o">::</span><span class="k">operator</span><span class="p">());</span>
-<span class="p">}</span>
+<span class="k">template</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">add_handler</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="c1">// 上の関数で型推論させる</span>
+<span class="w">   </span><span class="n">add_handler</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="o">::</span><span class="k">operator</span><span class="p">());</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>これでめでたくラムダも直接登録できるようになった。
@@ -254,8 +254,7 @@ template msgpack::sbuffer unpack_exec_pack(
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -314,6 +313,18 @@ template msgpack::sbuffer unpack_exec_pack(
 <ul>
    
   <li>
+    <a href="../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -328,18 +339,6 @@ template msgpack::sbuffer unpack_exec_pack(
   <li>
     <a href="../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -752,6 +751,10 @@ template msgpack::sbuffer unpack_exec_pack(
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -785,6 +788,10 @@ template msgpack::sbuffer unpack_exec_pack(
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -835,7 +842,7 @@ template msgpack::sbuffer unpack_exec_pack(
 <ul>
    
   <li>
-    <a href="../../../blog/2022/">2022 (6)</a>
+    <a href="../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -899,7 +906,7 @@ template msgpack::sbuffer unpack_exec_pack(
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

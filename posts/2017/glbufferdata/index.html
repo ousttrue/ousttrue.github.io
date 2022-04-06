@@ -83,7 +83,7 @@
 <p>非常に読み辛かったがVisualStudioでステップ実行して動きを追ってみた。</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># site-packages/OpenGL/GL/VERSION/GL_1_5.py</span>
 <span class="nd">@_lazy</span><span class="p">(</span> <span class="n">glBufferData</span> <span class="p">)</span>
-<span class="k">def</span> <span class="nf">glBufferData</span><span class="p">(</span> <span class="n">baseOperation</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">None</span> <span class="p">):</span>
+<span class="k">def</span> <span class="nf">glBufferData</span><span class="p">(</span> <span class="n">baseOperation</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copy given data into the currently bound vertex-buffer-data object</span>
 
 <span class="sd">    target -- the symbolic constant indicating which buffer type is intended</span>
@@ -97,12 +97,12 @@
 <span class="sd">    instead of:</span>
 <span class="sd">        glBufferData( target, size, data, usage )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">usage</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">usage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">usage</span> <span class="o">=</span> <span class="n">data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">size</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">ArrayDatatype</span><span class="o">.</span><span class="n">asArray</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span> <span class="c1"># &lt;- ここでPythonの型をOpenGLに渡せるように変換</span>
-    <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">ArrayDatatype</span><span class="o">.</span><span class="n">arrayByteCount</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span>
     <span class="k">return</span> <span class="n">baseOperation</span><span class="p">(</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">usage</span> <span class="p">)</span>
 </pre></div>
@@ -147,7 +147,7 @@
     <span class="p">)</span> <span class="c1"># 3</span>
 <span class="k">class</span> <span class="nc">ArrayDatatype</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
     <span class="n">getHandler</span> <span class="o">=</span> <span class="n">GLOBAL_REGISTRY</span><span class="o">.</span><span class="fm">__call__</span> <span class="c1"># 2</span>
-    <span class="k">def</span> <span class="nf">asArray</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span><span class="o">=</span><span class="bp">None</span> <span class="p">):</span> <span class="c1"># 0 &lt;- glBufferDataから呼ばれる</span>
+    <span class="k">def</span> <span class="nf">asArray</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span> <span class="c1"># 0 &lt;- glBufferDataから呼ばれる</span>
         <span class="sd">&quot;&quot;&quot;Given a value, convert to preferred array representation&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">getHandler</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">asArray</span><span class="p">(</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">typeConstant</span> <span class="p">)</span> <span class="c1"># 1</span>
     <span class="n">asArray</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span> <span class="n">logs</span><span class="o">.</span><span class="n">logOnFail</span><span class="p">(</span> <span class="n">asArray</span><span class="p">,</span> <span class="n">_log</span> <span class="p">)</span> <span class="p">)</span>
@@ -156,8 +156,8 @@
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># site-packages/OpenGL/plugins.py</span>
 <span class="k">class</span> <span class="nc">Plugin</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for plugins to be loaded&quot;&quot;&quot;</span>
-    <span class="n">loaded</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">import_path</span><span class="p">,</span> <span class="n">check</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">named</span> <span class="p">):</span>
+    <span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">import_path</span><span class="p">,</span> <span class="n">check</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">named</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Register the plug-in&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="c1"># &lt;-  FormatHandlerのインスタンスが登録される</span>
 
@@ -172,29 +172,29 @@
             <span class="nb">set</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="n">plugin</span><span class="p">,</span> <span class="s1">&#39;check&#39;</span><span class="p">,</span> <span class="p">())</span>
             <span class="k">if</span> <span class="nb">set</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">plugin</span>
-        <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 </div>
 <p>これらがimport時にFormatHandlerとして登録される。</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># site-packages/OpenGL/__init__.py</span>
-<span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.nones.NoneHandler&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.NoneType&#39;</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+<span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.nones.NoneHandler&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.NoneType&#39;</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.StringHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.str&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
-    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;unicode&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.UnicodeHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.unicode&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.StringHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.str&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;unicode&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.UnicodeHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.unicode&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;bytes&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.StringHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.bytes&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
-    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.UnicodeHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.str&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;bytes&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.StringHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.bytes&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+    <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.strings.UnicodeHandler&#39;</span><span class="p">,[</span><span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.str&#39;</span><span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
     
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.lists.ListHandler&#39;</span><span class="p">,</span> <span class="p">[</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.list&#39;</span><span class="p">,</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.tuple&#39;</span><span class="p">,</span>
-<span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+<span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;numbers&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.numbers.NumberHandler&#39;</span><span class="p">,</span> <span class="p">[</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.int&#39;</span><span class="p">,</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.float&#39;</span><span class="p">,</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.long&#39;</span><span class="p">,</span>
-<span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+<span class="p">],</span> <span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span>
     <span class="s1">&#39;ctypesarrays&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.ctypesarrays.CtypesArrayHandler&#39;</span><span class="p">,</span>
     <span class="p">[</span>
@@ -203,7 +203,7 @@
         <span class="s1">&#39;_ctypes.Array&#39;</span><span class="p">,</span>
         <span class="s1">&#39;_ctypes.array.Array&#39;</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">isOutput</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">isOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span>
     <span class="s1">&#39;ctypesparameter&#39;</span><span class="p">,</span>
@@ -218,25 +218,25 @@
         <span class="s1">&#39;ctypes.c_long&#39;</span><span class="p">,</span>
         <span class="s1">&#39;ctypes.c_longlong&#39;</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">isOutput</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">isOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;ctypespointer&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.ctypespointers.CtypesPointerHandler&#39;</span><span class="p">,[</span>
     <span class="s1">&#39;ctypes.c_void_p&#39;</span><span class="p">,</span>
     <span class="s1">&#39;_ctypes._Pointer&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ctypes.c_char_p&#39;</span><span class="p">,</span>
     <span class="s1">&#39;_ctypes.pointer._Pointer&#39;</span><span class="p">,</span>
-<span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+<span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.numpymodule.NumpyHandler&#39;</span><span class="p">,</span> <span class="p">[</span>
     <span class="s1">&#39;numpy.ndarray&#39;</span><span class="p">,</span>
     <span class="s1">&#39;numpy.core.memmap.memmap&#39;</span><span class="p">,</span>
-<span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="bp">True</span> <span class="p">)</span>
+<span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;buffer&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.buffers.BufferHandler&#39;</span><span class="p">,</span> <span class="p">[</span>
     <span class="s1">&#39;OpenGL.arrays._buffers.Py_buffer&#39;</span><span class="p">,</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.memoryview&#39;</span><span class="p">,</span>
     <span class="n">_bi</span><span class="o">+</span><span class="s1">&#39;.bytearray&#39;</span><span class="p">,</span>
-<span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="bp">True</span> <span class="p">)</span>
-<span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;vbo&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.vbo.VBOHandler&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;OpenGL.arrays.vbo.VBO&#39;</span><span class="p">,</span><span class="s1">&#39;OpenGL_accelerate.vbo.VBO&#39;</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
-<span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;vbooffset&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.vbo.VBOOffsetHandler&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;OpenGL.arrays.vbo.VBOOffset&#39;</span><span class="p">,</span><span class="s1">&#39;OpenGL_accelerate.vbo.VBOOffset&#39;</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+<span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+<span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;vbo&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.vbo.VBOHandler&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;OpenGL.arrays.vbo.VBO&#39;</span><span class="p">,</span><span class="s1">&#39;OpenGL_accelerate.vbo.VBO&#39;</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+<span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">&#39;vbooffset&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenGL.arrays.vbo.VBOOffsetHandler&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;OpenGL.arrays.vbo.VBOOffset&#39;</span><span class="p">,</span><span class="s1">&#39;OpenGL_accelerate.vbo.VBOOffset&#39;</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>numpyとか定義されているね。なるほど。</p>
@@ -244,14 +244,14 @@
 一方、単なるPythonのlistであるverticesは、<code class="docutils literal notranslate"><span class="pre">OpenGL.arrays.lists.ListHandler</span></code> によって処理されて <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> に落ちるのであった。</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ListHandler</span><span class="p">(</span> <span class="n">formathandler</span><span class="o">.</span><span class="n">FormatHandler</span> <span class="p">):</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">asArray</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span><span class="o">=</span><span class="bp">None</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">asArray</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Convert given value to a ctypes array value of given typeCode</span>
 <span class="sd">        </span>
 <span class="sd">        This does a *lot* of work just to get the data into the correct</span>
 <span class="sd">        format.  It&#39;s not going to be anywhere near as fast as a numpy</span>
 <span class="sd">        or similar approach!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">typeCode</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">typeCode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span> <span class="s2">&quot;&quot;&quot;Haven&#39;t implemented type-inference for lists yet&quot;&quot;&quot;</span> <span class="p">)</span>
 </pre></div>
 </div>
@@ -259,8 +259,7 @@
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -328,6 +327,18 @@
 <ul>
    
   <li>
+    <a href="../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -342,18 +353,6 @@
   <li>
     <a href="../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -766,6 +765,10 @@
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -799,6 +802,10 @@
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -849,7 +856,7 @@
 <ul>
    
   <li>
-    <a href="../../../blog/2022/">2022 (6)</a>
+    <a href="../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -913,7 +920,7 @@
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 

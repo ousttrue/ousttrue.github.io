@@ -252,9 +252,9 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 <p>手法としては、各ソースの拡張子を <code class="docutils literal notranslate"><span class="pre">.c</span></code> から <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> に変更する。
 <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> を修正。
 <code class="docutils literal notranslate"><span class="pre">#include</span></code> を <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> で囲む、で <code class="docutils literal notranslate"><span class="pre">c++</span></code> 化することができる。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
-<span class="cp">#include</span> <span class="cpf">&quot;xxx.h&quot;</span><span class="cp"></span>
-<span class="p">}</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;xxx.h&quot;</span><span class="cp"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>ただ、 <code class="docutils literal notranslate"><span class="pre">cpp</span></code> で定義する関数の宣言が <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> の中に入らないとリンクエラーになるので、
@@ -263,18 +263,18 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 コンパイルが通ればよい。</p>
 <p>分配するときに未定義の型を前方宣言ですませたいのだけど、 <code class="docutils literal notranslate"><span class="pre">c</span></code> の <code class="docutils literal notranslate"><span class="pre">struct</span></code> 定義が、<code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">tag</span></code> と <code class="docutils literal notranslate"><span class="pre">typedef</span></code> に分かれているのがやっかいだった。</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// C</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">hogeTag</span>
-<span class="p">{</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span> <span class="nc">hogeTag</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
 
-<span class="p">}</span> <span class="n">Hoge</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Hoge</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// に対する前方宣言は、</span>
 
-<span class="k">struct</span> <span class="n">hogeTag</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="n">hogeTag</span> <span class="n">Hoge</span><span class="p">;</span>
+<span class="k">struct</span> <span class="nc">hogeTag</span><span class="p">;</span><span class="w"></span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">hogeTag</span><span class="w"> </span><span class="n">Hoge</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">C</span></code> の状態で、前方宣言を導入できずヘッダの分割が難航。
@@ -303,8 +303,8 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 <p>ソースは、<code class="docutils literal notranslate"><span class="pre">main.c</span></code> と <code class="docutils literal notranslate"><span class="pre">menu.c</span></code> に <code class="docutils literal notranslate"><span class="pre">DEFUN</span></code> とそれの使う補助関数がまとめて定義されていて、
 ヘッダは <code class="docutils literal notranslate"><span class="pre">proto.h</span></code> に全部入れとなっている。</p>
 <p>c++ で下記のようなディスパッチャを作った。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span>
-<span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">Command</span><span class="o">&gt;</span> <span class="n">g_commandMap</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">Command</span><span class="o">&gt;</span><span class="w"> </span><span class="n">g_commandMap</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>使い捨ての python で関数に登録するコードを生成した。</p>
@@ -376,8 +376,8 @@ goto とか longjmp があってよくわからなかったのだが、慣れて
 <section class="tex2jax_ignore mathjax_ignore" id="id7">
 <h1>第３段階<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
 <p>Tab, Buffer, Line のリンクリストを STL のコレクションに置き換えた。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
-<span class="n">tab</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
+<span class="n">tab</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>という形を目指す。</p>
@@ -574,8 +574,7 @@ redrawNLine</p>
 </section>
 
 <div class="section">
-    
-
+     
 <div class="section">
   <span style="float: left">
      
@@ -641,6 +640,18 @@ redrawNLine</p>
 <ul>
    
   <li>
+    <a href="../../2022/0404-prompt-toolkit/"
+      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
+    >
+  </li>
+  
+  <li>
+    <a href="../../2022/0331-term/"
+      >2022/03 - term周りの更新</a
+    >
+  </li>
+  
+  <li>
     <a href="../../2022/0206-sokol/"
       >2022/02 - sokol やってみる</a
     >
@@ -655,18 +666,6 @@ redrawNLine</p>
   <li>
     <a href="../../2022/0204-zig/"
       >2022/02 - zig やってみる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0115-pybullet/"
-      >2022/01 - ExampleBrowser を読んでいる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0108-usd/"
-      >2022/01 - USDビルドしてみる</a
     >
   </li>
   
@@ -1079,6 +1078,10 @@ redrawNLine</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/ptk/">ptk</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
@@ -1112,6 +1115,10 @@ redrawNLine</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../blog/tag/ssg/">ssg</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../blog/tag/term/">term</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -1162,7 +1169,7 @@ redrawNLine</p>
 <ul>
    
   <li>
-    <a href="../../../blog/2022/">2022 (6)</a>
+    <a href="../../../blog/2022/">2022 (8)</a>
   </li>
     
   <li>
@@ -1222,9 +1229,8 @@ redrawNLine</p>
     </div>
     <div id="local">
         
-  <div>
-    <h3><a href="../../../">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../../../">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">w3m-mod</a></li>
 <li><a class="reference internal" href="#id1">下準備</a><ul>
 <li><a class="reference internal" href="#msys2">msys2 でとりあえずビルド</a></li>
@@ -1258,12 +1264,11 @@ redrawNLine</p>
 </li>
 </ul>
 
-  </div>
     </div>
     <div id="footer">
         
 &#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
 </body>
 
