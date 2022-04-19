@@ -1,7 +1,7 @@
 ---
 title: "Hugoのテーマ作り"
 date: 2017-05-05
-taxonomies: {tags: ["hugo"]}
+tags: ["hugo"]
 ---
 
 hugoの仕組みも気になることだし作ってみることにした。

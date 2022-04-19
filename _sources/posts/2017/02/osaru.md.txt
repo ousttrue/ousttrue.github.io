@@ -1,7 +1,7 @@
 ---
 title: "Unity向けのJSON Parserを作成中"
 date: 2017-02-27
-taxonomies: {tags: ["unity"]}
+tags: ["unity"]
 ---
 
 いつもJSONUtilやMiniJson+JsonNodeを使うのだけど数値周りのcastで苦しんだので自前でつくることにした。

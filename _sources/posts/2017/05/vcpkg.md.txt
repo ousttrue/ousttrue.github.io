@@ -1,7 +1,7 @@
 ---
 title: "vc向けのメタビルドツールvcpkgを発見"
 date: 2017-05-04
-taxonomies: {tags: ['vcpkg']}
+tags: ['vcpkg']
 ---
 
 uwp向けのlibpngのビルドのエラーを修正する過程でvcpkgを見つけた。

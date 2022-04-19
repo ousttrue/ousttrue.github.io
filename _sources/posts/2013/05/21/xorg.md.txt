@@ -1,30 +1,42 @@
 ---
 title: "xorgインストール"
 date: 2013-05-21
-taxonomies: {tags: ['linux']}
+tags: ['linux']
 ---
 
-xorgインストール
-gentooにxorgをインストールする
-The X Server Configuration HOWTO
-http://www.gentoo.org/doc/en/xorg-config.xml
-/etc/portage/make.conf
-INPUT_DEVICES="evdev"
+# xorgインストール
 
+gentooにxorgをインストールする
+
+The X Server Configuration HOWTO
+<http://www.gentoo.org/doc/en/xorg-config.xml>
+
+/etc/portage/make.conf
+```
+INPUT_DEVICES="evdev"
+```
+
+```
 # echo "x11-base/xorg-server udev" >> /etc/portage/package.use
 # emerge -av xorg-server
 # env-update
 # source /etc/profile
+```
 
-fglrx
+## fglrx
 http://wiki.gentoo.org/wiki/Fglrx
 AMD A10 向けにfglrxドライバ
+
+```
 # cat /proc/cpuinfo | grep model
 model name      : AMD A10-5700 APU with Radeon(tm) HD Graphics
 # lspci | grep -i vga
 00:01.0 VGA compatible controller: Advanced Micro Devices [AMD] nee ATI Trinity [Radeon HD 7660D]
+```
 
 kernel作り直し [Direct Rendering Manager]を無効にする。
+
+```
 # genkernel --lvm2 --menuconfig --no-clean all
 
 VIDEO_CARDS="fglrx"
@@ -32,13 +44,18 @@ VIDEO_CARDS="fglrx"
 # emerge xorg-drivers
 # aticonfig --initial
 # eselect opengl set ati
+```
 
-intel
+## intel
 VIDEO_CARDS="intel"
 
-Desktop
+# Desktop
+
 gnomeとかをいれずにopenboxを素で使う。lxdeぽい感じ。
+
+```
 # emerge -av xterm xmodmap
+```
 
 Window Manager
 # emerge -av openbox openbox-menu

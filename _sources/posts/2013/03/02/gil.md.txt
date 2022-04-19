@@ -1,7 +1,7 @@
 ---
 title: "Boost.GIL再学習"
 date: 2013-03-02
-taxonomies: {tags: []}
+tags: []
 ---
 
 Boost.GIL再学習

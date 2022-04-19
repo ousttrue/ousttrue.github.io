@@ -1,7 +1,7 @@
 ---
 title: "Unity5.3でWebGL"
 date: 2015-12-30
-taxonomies: {tags: ["unity"]}
+tags: ["unity"]
 ---
 
 

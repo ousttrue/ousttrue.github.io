@@ -1,7 +1,7 @@
 ---
 title: "IrrlichtにVRPNを合体する"
 date: 2013-06-22
-taxonomies: {tags: []}
+tags: []
 ---
 
 IrrlichtにVRPNを合体する

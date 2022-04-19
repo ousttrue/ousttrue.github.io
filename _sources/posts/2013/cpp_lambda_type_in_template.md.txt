@@ -1,7 +1,7 @@
 ---
 title: lambdaの引数の型を得たい
 date: 2013-05-16
-taxonomies: {tags: ["cpp"]}
+tags: ["cpp"]
 ---
 
 (記事復旧のついでに少し修正)

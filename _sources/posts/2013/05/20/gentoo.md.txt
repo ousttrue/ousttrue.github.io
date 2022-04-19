@@ -1,34 +1,44 @@
 ---
 title: "Gentoo再構築"
 date: 2013-05-20
-taxonomies: {tags: ['linux']}
+tags: ['linux']
 ---
 
-Gentoo再構築
+# Gentoo再構築
+
 gentooのルートファイルシステムに10Gを割り当てていたのだがいつのまにかディスクフルになってしまった。
 portageとhomeをmountしていたので大丈夫かと思っていたのだが意外と容量を使ってしまっていた様子。
 いろいろインストールしすぎなのかもしれぬ。
 とりあえず/var/logの大きいファイルをxzして急場を凌いだが、
 パーティションの割り方の都合で拡大できないので新しく作り直すことにした。
-作業記録。
-ファイルシステム準備
+
+## 作業記録。
+
+### ファイルシステム準備
+
+```
 # lvcreate -L 100G -n gentoo_root mygroup
 # mkfs.ext4 /dev/mygroup/gentoo_root
 # cd /mnt
 # mkdir gentoo
 # mount /dev/mygroup/gentoo_root
+```
 
+### Installing the Gentoo Installation Files
 
-Installing the Gentoo Installation Files
-——————————————-
+<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=5>
 
-http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=5
 stage3ファイルの取得と展開
+
+```
 # cd /mnt/gentoo
 # wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2
 # tar xvjpf stage3-*.tar.bz2
+```
 
 portageは旧パーティションを流用
+
+```
 # mkdir usr/portage
 # mount /dev/mygroup/portage usr/portage
 
@@ -66,13 +76,15 @@ LINGUAS="ja"
 
 MAKEOPTS="-j5"
 GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
+```
 
 CFLAGSに-march=nativeを使えるようになった
 
-Installing the Gentoo Base System
-————————————
+### Installing the Gentoo Base System
 
-http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=6
+<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=6>
+
+```
 # cp -L /etc/resolv.conf /mnt/gentoo/etc/
 # mount -t proc none /mnt/gentoo/proc
 # mount --rbind /sys /mnt/gentoo/sys
@@ -85,36 +97,40 @@ http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=6
 # emerge --sync
 # cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 # echo "Asia/Tokyo" > /etc/timezone
+```
 
+### Configuring the Kernel
 
-Configuring the Kernel
-————————-
+<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=7>
 
-http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=7
+```
 # emerge gentoo-sources
+```
 
 LVMからブートするのでgenkernelを使う
+
+```
 # emerge genkernel
 # genkernel --lvm --install all
+```
 
+### Configuring your System
 
-Configuring your System
-————————–
+<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=8>
 
-http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=8
+### Installing Necessary System Tools
 
-Installing Necessary System Tools
-————————————
+<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=9>
 
-http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=9
+### Configuring the Bootloader
 
-Configuring the Bootloader
-——————————
+<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=10>
 
-http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=10
 /boot/grub/menu.lst
+```
 title genkernel 3.8.13
 root (hd0,0)
 kernel /boot/kernel-genkernel-x86_64-3.8.13-gentoo real_root=/dev/mygroup/gentoo_root rootfstype=ext4 dolvm
 initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo
+```
 

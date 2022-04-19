@@ -1,7 +1,7 @@
 ---
 title: "久しぶりにGentooインストール"
 date: 2017-09-04
-taxonomies: {tags: ['linux']}
+tags: ['linux']
 ---
 
 Linux成分が不足してきたので久しぶりにデスクトップを構築してみる。

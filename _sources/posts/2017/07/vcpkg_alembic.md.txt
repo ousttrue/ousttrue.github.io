@@ -1,7 +1,7 @@
 ---
 title: "vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"
 date: 2017-07-18
-taxonomies: {tags: ['vcpkg', 'cg']}
+tags: ['vcpkg', 'cg']
 ---
 
 mmdbridgeのvcpkgを使ったビルド手順を作ったついでにAlembicのvcpkg向けパッケージを作ってみる。

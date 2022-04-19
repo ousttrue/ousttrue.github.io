@@ -1,7 +1,7 @@
 ---
 title: "Three.jsでbvh"
 date: 2015-12-23
-taxonomies: {tags: []}
+tags: []
 ---
 
 

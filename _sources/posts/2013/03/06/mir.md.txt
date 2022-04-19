@@ -1,7 +1,7 @@
 ---
 title: "Mir"
 date: 2013-03-06
-taxonomies: {tags: []}
+tags: []
 ---
 
 Mir

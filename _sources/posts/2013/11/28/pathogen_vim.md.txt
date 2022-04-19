@@ -1,7 +1,7 @@
 ---
 title: "vim環境整備"
 date: 2013-11-28
-taxonomies: {tags: []}
+tags: []
 ---
 
 vim環境整備

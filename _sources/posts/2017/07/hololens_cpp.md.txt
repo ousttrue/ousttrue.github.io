@@ -1,7 +1,7 @@
 ---
 title: "c++でHololens"
 date: 2017-07-09
-taxonomies: {tags: ['cpp', 'hololens']}
+tags: ['cpp', 'hololens']
 ---
 
 SharpDXでHololensが頓挫したので、C++でまいりましょう。

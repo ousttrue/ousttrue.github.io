@@ -1,7 +1,7 @@
 ---
 title: "hugoでmapを使ってpartialに追加の変数を渡す"
 date: 2017-05-14
-taxonomies: {tags: ["hugo"]}
+tags: ["hugo"]
 ---
 
 hugoのrange内のpartialから.Siteにアクセスできなくて困ったので、代替する方法を探した。

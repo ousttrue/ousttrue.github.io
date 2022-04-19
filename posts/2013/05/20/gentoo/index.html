@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>gentoo</title>
+    <title>Gentoo再構築</title>
 <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
 <link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
 <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
@@ -16,8 +16,6 @@
 <script src="../../../../../_static/jquery.js"></script>
 <script src="../../../../../_static/underscore.js"></script>
 <script src="../../../../../_static/doctools.js"></script>
-<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../../../../../genindex/" />
     <link rel="search" title="Search" href="../../../../../search/" />   
 <link
@@ -67,164 +65,130 @@
             <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
         </li>
         <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">gentoo</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Gentoo再構築</a></li> 
     </ul>
 </div>
     </div>
     <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="gentoo">
-<h1>gentoo<a class="headerlink" href="#gentoo" title="Permalink to this headline">¶</a></h1>
-<p>Gentoo再構築
-gentooのルートファイルシステムに10Gを割り当てていたのだがいつのまにかディスクフルになってしまった。
+<h1>Gentoo再構築<a class="headerlink" href="#gentoo" title="Permalink to this headline">¶</a></h1>
+<p>gentooのルートファイルシステムに10Gを割り当てていたのだがいつのまにかディスクフルになってしまった。
 portageとhomeをmountしていたので大丈夫かと思っていたのだが意外と容量を使ってしまっていた様子。
 いろいろインストールしすぎなのかもしれぬ。
 とりあえず/var/logの大きいファイルをxzして急場を凌いだが、
-パーティションの割り方の都合で拡大できないので新しく作り直すことにした。
-作業記録。
-ファイルシステム準備</p>
+パーティションの割り方の都合で拡大できないので新しく作り直すことにした。</p>
+<section id="id1">
+<h2>作業記録。<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="id2">
+<h3>ファイルシステム準備<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># lvcreate -L 100G -n gentoo_root mygroup</span>
+<span class="c1"># mkfs.ext4 /dev/mygroup/gentoo_root</span>
+<span class="c1"># cd /mnt</span>
+<span class="c1"># mkdir gentoo</span>
+<span class="c1"># mount /dev/mygroup/gentoo_root</span>
+</pre></div>
+</div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="lvcreate-l-100g-n-gentoo-root-mygroup">
-<h1>lvcreate -L 100G -n gentoo_root mygroup<a class="headerlink" href="#lvcreate-l-100g-n-gentoo-root-mygroup" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mkfs-ext4-dev-mygroup-gentoo-root">
-<h1>mkfs.ext4 /dev/mygroup/gentoo_root<a class="headerlink" href="#mkfs-ext4-dev-mygroup-gentoo-root" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="cd-mnt">
-<h1>cd /mnt<a class="headerlink" href="#cd-mnt" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mkdir-gentoo">
-<h1>mkdir gentoo<a class="headerlink" href="#mkdir-gentoo" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mount-dev-mygroup-gentoo-root">
-<h1>mount /dev/mygroup/gentoo_root<a class="headerlink" href="#mount-dev-mygroup-gentoo-root" title="Permalink to this headline">¶</a></h1>
-<p>Installing the Gentoo Installation Files
-——————————————-</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=5
-stage3ファイルの取得と展開</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="cd-mnt-gentoo">
-<h1>cd /mnt/gentoo<a class="headerlink" href="#cd-mnt-gentoo" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-current-stage3-stage3-amd64-20130516-tar-bz2">
-<h1>wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2<a class="headerlink" href="#wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-current-stage3-stage3-amd64-20130516-tar-bz2" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="tar-xvjpf-stage3-tar-bz2">
-<h1>tar xvjpf stage3-*.tar.bz2<a class="headerlink" href="#tar-xvjpf-stage3-tar-bz2" title="Permalink to this headline">¶</a></h1>
+<section id="installing-the-gentoo-installation-files">
+<h3>Installing the Gentoo Installation Files<a class="headerlink" href="#installing-the-gentoo-installation-files" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=5">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=5</a></p>
+<p>stage3ファイルの取得と展開</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cd /mnt/gentoo</span>
+<span class="c1"># wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2</span>
+<span class="c1"># tar xvjpf stage3-*.tar.bz2</span>
+</pre></div>
+</div>
 <p>portageは旧パーティションを流用</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mkdir-usr-portage">
-<h1>mkdir usr/portage<a class="headerlink" href="#mkdir-usr-portage" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mount-dev-mygroup-portage-usr-portage">
-<h1>mount /dev/mygroup/portage usr/portage<a class="headerlink" href="#mount-dev-mygroup-portage-usr-portage" title="Permalink to this headline">¶</a></h1>
-<p>/etc/portage/make.conf</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="these-settings-were-set-by-the-catalyst-build-script-that-automatically">
-<h1>These settings were set by the catalyst build script that automatically<a class="headerlink" href="#these-settings-were-set-by-the-catalyst-build-script-that-automatically" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="built-this-stage">
-<h1>built this stage.<a class="headerlink" href="#built-this-stage" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="please-consult-usr-share-portage-config-make-conf-example-for-a-more">
-<h1>Please consult /usr/share/portage/config/make.conf.example for a more<a class="headerlink" href="#please-consult-usr-share-portage-config-make-conf-example-for-a-more" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="detailed-example">
-<h1>detailed example.<a class="headerlink" href="#detailed-example" title="Permalink to this headline">¶</a></h1>
-<p>CFLAGS=”-march=native -O2 -pipe”
-#CFLAGS=”-march=bdver2 -O2 -pipe”
-CXXFLAGS=”${CFLAGS}”</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="warning-changing-your-chost-is-not-something-that-should-be-done-lightly">
-<h1>WARNING: Changing your CHOST is not something that should be done lightly.<a class="headerlink" href="#warning-changing-your-chost-is-not-something-that-should-be-done-lightly" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="please-consult-http-www-gentoo-org-doc-en-change-chost-xml-before-changing">
-<h1>Please consult http://www.gentoo.org/doc/en/change-chost.xml before changing.<a class="headerlink" href="#please-consult-http-www-gentoo-org-doc-en-change-chost-xml-before-changing" title="Permalink to this headline">¶</a></h1>
-<p>CHOST=”x86_64-pc-linux-gnu”</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="these-are-the-use-flags-that-were-used-in-addition-to-what-is-provided-by-the">
-<h1>These are the USE flags that were used in addition to what is provided by the<a class="headerlink" href="#these-are-the-use-flags-that-were-used-in-addition-to-what-is-provided-by-the" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="profile-used-for-building">
-<h1>profile used for building.<a class="headerlink" href="#profile-used-for-building" title="Permalink to this headline">¶</a></h1>
-<p>USE=””
-USE=”<span class="math notranslate nohighlight">\(USE -ldap&quot;
-USE=&quot;\)</span>USE mmx sse sse2 sse3 ssse3”
-USE=”<span class="math notranslate nohighlight">\(USE openal alsa gstreamer phonon pulseaudio xft xnest&quot;
-USE=&quot;\)</span>USE gtk gnome xfce imlib gconf”
-USE=”<span class="math notranslate nohighlight">\(USE qt4 kde&quot;
-USE=&quot;\)</span>USE gd imlib eigen”
-USE=”<span class="math notranslate nohighlight">\(USE sqlite apache2&quot;
-USE=&quot;\)</span>USE ffmpeg theora lame mms”
-USE=”<span class="math notranslate nohighlight">\(USE samba fuse udisks&quot;
-USE=&quot;\)</span>USE icu”
-USE=”<span class="math notranslate nohighlight">\(USE consolekit dbus pam policykit udev&quot;
-USE=&quot;\)</span>USE c++0x”</p>
-<p>INPUT_DEVICES=”evdev”
-#VIDEO_CARDS=”radeon”
-VIDEO_CARDS=”fglrx”
-LINGUAS=”ja”</p>
-<p>MAKEOPTS=”-j5”
-GENTOO_MIRRORS=”http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># mkdir usr/portage</span>
+<span class="c1"># mount /dev/mygroup/portage usr/portage</span>
+
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">portage</span><span class="o">/</span><span class="n">make</span><span class="o">.</span><span class="n">conf</span>
+<span class="c1"># These settings were set by the catalyst build script that automatically</span>
+<span class="c1"># built this stage.</span>
+<span class="c1"># Please consult /usr/share/portage/config/make.conf.example for a more</span>
+<span class="c1"># detailed example.</span>
+<span class="n">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-march=native -O2 -pipe&quot;</span>
+<span class="c1">#CFLAGS=&quot;-march=bdver2 -O2 -pipe&quot;</span>
+<span class="n">CXXFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{CFLAGS}</span><span class="s2">&quot;</span>
+<span class="c1"># WARNING: Changing your CHOST is not something that should be done lightly.</span>
+<span class="c1"># Please consult http://www.gentoo.org/doc/en/change-chost.xml before changing.</span>
+<span class="n">CHOST</span><span class="o">=</span><span class="s2">&quot;x86_64-pc-linux-gnu&quot;</span>
+<span class="c1"># These are the USE flags that were used in addition to what is provided by the</span>
+<span class="c1"># profile used for building.</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE -ldap&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE mmx sse sse2 sse3 ssse3&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE openal alsa gstreamer phonon pulseaudio xft xnest&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE gtk gnome xfce imlib gconf&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE qt4 kde&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE gd imlib eigen&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE sqlite apache2&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE ffmpeg theora lame mms&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE samba fuse udisks&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE icu&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE consolekit dbus pam policykit udev&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;$USE c++0x&quot;</span>
+
+<span class="n">INPUT_DEVICES</span><span class="o">=</span><span class="s2">&quot;evdev&quot;</span>
+<span class="c1">#VIDEO_CARDS=&quot;radeon&quot;</span>
+<span class="n">VIDEO_CARDS</span><span class="o">=</span><span class="s2">&quot;fglrx&quot;</span>
+<span class="n">LINGUAS</span><span class="o">=</span><span class="s2">&quot;ja&quot;</span>
+
+<span class="n">MAKEOPTS</span><span class="o">=</span><span class="s2">&quot;-j5&quot;</span>
+<span class="n">GENTOO_MIRRORS</span><span class="o">=</span><span class="s2">&quot;http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/&quot;</span>
+</pre></div>
+</div>
 <p>CFLAGSに-march=nativeを使えるようになった</p>
-<p>Installing the Gentoo Base System
-————————————</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=6</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="cp-l-etc-resolv-conf-mnt-gentoo-etc">
-<h1>cp -L /etc/resolv.conf /mnt/gentoo/etc/<a class="headerlink" href="#cp-l-etc-resolv-conf-mnt-gentoo-etc" title="Permalink to this headline">¶</a></h1>
+<section id="installing-the-gentoo-base-system">
+<h3>Installing the Gentoo Base System<a class="headerlink" href="#installing-the-gentoo-base-system" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=6">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=6</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cp -L /etc/resolv.conf /mnt/gentoo/etc/</span>
+<span class="c1"># mount -t proc none /mnt/gentoo/proc</span>
+<span class="c1"># mount --rbind /sys /mnt/gentoo/sys</span>
+<span class="c1"># mount --rbind /dev /mnt/gentoo/dev</span>
+
+<span class="c1"># chroot /mnt/gentoo /bin/bash</span>
+<span class="c1"># source /etc/profile</span>
+<span class="c1"># export PS1=&quot;(chroot) $PS1&quot;</span>
+
+<span class="c1"># emerge --sync</span>
+<span class="c1"># cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime</span>
+<span class="c1"># echo &quot;Asia/Tokyo&quot; &gt; /etc/timezone</span>
+</pre></div>
+</div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="mount-t-proc-none-mnt-gentoo-proc">
-<h1>mount -t proc none /mnt/gentoo/proc<a class="headerlink" href="#mount-t-proc-none-mnt-gentoo-proc" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mount-rbind-sys-mnt-gentoo-sys">
-<h1>mount –rbind /sys /mnt/gentoo/sys<a class="headerlink" href="#mount-rbind-sys-mnt-gentoo-sys" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mount-rbind-dev-mnt-gentoo-dev">
-<h1>mount –rbind /dev /mnt/gentoo/dev<a class="headerlink" href="#mount-rbind-dev-mnt-gentoo-dev" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="chroot-mnt-gentoo-bin-bash">
-<h1>chroot /mnt/gentoo /bin/bash<a class="headerlink" href="#chroot-mnt-gentoo-bin-bash" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="source-etc-profile">
-<h1>source /etc/profile<a class="headerlink" href="#source-etc-profile" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="export-ps1-chroot-ps1">
-<h1>export PS1=”(chroot) $PS1”<a class="headerlink" href="#export-ps1-chroot-ps1" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="emerge-sync">
-<h1>emerge –sync<a class="headerlink" href="#emerge-sync" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="cp-usr-share-zoneinfo-asia-tokyo-etc-localtime">
-<h1>cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime<a class="headerlink" href="#cp-usr-share-zoneinfo-asia-tokyo-etc-localtime" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="echo-asia-tokyo-etc-timezone">
-<h1>echo “Asia/Tokyo” &gt; /etc/timezone<a class="headerlink" href="#echo-asia-tokyo-etc-timezone" title="Permalink to this headline">¶</a></h1>
-<p>Configuring the Kernel
-————————-</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=7</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="emerge-gentoo-sources">
-<h1>emerge gentoo-sources<a class="headerlink" href="#emerge-gentoo-sources" title="Permalink to this headline">¶</a></h1>
+<section id="configuring-the-kernel">
+<h3>Configuring the Kernel<a class="headerlink" href="#configuring-the-kernel" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=7">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=7</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># emerge gentoo-sources</span>
+</pre></div>
+</div>
 <p>LVMからブートするのでgenkernelを使う</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># emerge genkernel</span>
+<span class="c1"># genkernel --lvm --install all</span>
+</pre></div>
+</div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="emerge-genkernel">
-<h1>emerge genkernel<a class="headerlink" href="#emerge-genkernel" title="Permalink to this headline">¶</a></h1>
+<section id="configuring-your-system">
+<h3>Configuring your System<a class="headerlink" href="#configuring-your-system" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=8">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=8</a></p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="genkernel-lvm-install-all">
-<h1>genkernel –lvm –install all<a class="headerlink" href="#genkernel-lvm-install-all" title="Permalink to this headline">¶</a></h1>
-<p>Configuring your System
-————————–</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=8</p>
-<p>Installing Necessary System Tools
-————————————</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=9</p>
-<p>Configuring the Bootloader
-——————————</p>
-<p>http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=10
-/boot/grub/menu.lst
-title genkernel 3.8.13
-root (hd0,0)
-kernel /boot/kernel-genkernel-x86_64-3.8.13-gentoo real_root=/dev/mygroup/gentoo_root rootfstype=ext4 dolvm
-initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
+<section id="installing-necessary-system-tools">
+<h3>Installing Necessary System Tools<a class="headerlink" href="#installing-necessary-system-tools" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=9">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=9</a></p>
+</section>
+<section id="configuring-the-bootloader">
+<h3>Configuring the Bootloader<a class="headerlink" href="#configuring-the-bootloader" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=10">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=10</a></p>
+<p>/boot/grub/menu.lst</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">title</span> <span class="n">genkernel</span> <span class="mf">3.8.13</span>
+<span class="n">root</span> <span class="p">(</span><span class="n">hd0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">kernel</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">kernel</span><span class="o">-</span><span class="n">genkernel</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">3.8.13</span><span class="o">-</span><span class="n">gentoo</span> <span class="n">real_root</span><span class="o">=/</span><span class="n">dev</span><span class="o">/</span><span class="n">mygroup</span><span class="o">/</span><span class="n">gentoo_root</span> <span class="n">rootfstype</span><span class="o">=</span><span class="n">ext4</span> <span class="n">dolvm</span>
+<span class="n">initrd</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">initramfs</span><span class="o">-</span><span class="n">genkernel</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">3.8.13</span><span class="o">-</span><span class="n">gentoo</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
 <div class="section">
@@ -278,7 +242,18 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
 </h2>
 
 <ul>
-        
+       
+<li id="tags">
+  <span
+    ><i
+      class="fa-fw fa fa-tag"
+    ></i
+    ></span
+  >
+   
+  <a href="../../../../../blog/tag/linux/">linux</a>  
+</li>
+ 
 </ul>
 
 <h3>
@@ -593,6 +568,10 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/boost/">boost</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/bullet/">bullet</a>
   </li>
     
@@ -602,6 +581,10 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/cerbero/">cerbero</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/cg/">cg</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -673,11 +656,27 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/gyp/">gyp</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/hololens/">hololens</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/hugo/">hugo</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/imgui/">imgui</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/libclang/">libclang</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/linux/">linux</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -697,6 +696,10 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/msgpack/">msgpack</a>
   </li>
     
@@ -710,6 +713,14 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/nvim/">nvim</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/octpress/">octpress</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/opencv/">opencv</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -732,7 +743,7 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
     <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
   </li>
     
-  <li class="ablog-cloud ablog-cloud-1">
+  <li class="ablog-cloud ablog-cloud-2">
     <a href="../../../../../blog/tag/python/">python</a>
   </li>
     
@@ -769,7 +780,19 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/threejs/">threejs</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/unity/">unity</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/usd/">usd</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/uwp/">uwp</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -789,11 +812,19 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/w3m/">w3m</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/wayland/">wayland</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
     <a href="../../../../../blog/tag/wsl/">wsl</a>
+  </li>
+    
+  <li class="ablog-cloud ablog-cloud-1">
+    <a href="../../../../../blog/tag/wyam/">wyam</a>
   </li>
     
   <li class="ablog-cloud ablog-cloud-1">
@@ -878,38 +909,19 @@ initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo</p>
         
   <h3><a href="../../../../../">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">gentoo</a></li>
-<li><a class="reference internal" href="#lvcreate-l-100g-n-gentoo-root-mygroup">lvcreate -L 100G -n gentoo_root mygroup</a></li>
-<li><a class="reference internal" href="#mkfs-ext4-dev-mygroup-gentoo-root">mkfs.ext4 /dev/mygroup/gentoo_root</a></li>
-<li><a class="reference internal" href="#cd-mnt">cd /mnt</a></li>
-<li><a class="reference internal" href="#mkdir-gentoo">mkdir gentoo</a></li>
-<li><a class="reference internal" href="#mount-dev-mygroup-gentoo-root">mount /dev/mygroup/gentoo_root</a></li>
-<li><a class="reference internal" href="#cd-mnt-gentoo">cd /mnt/gentoo</a></li>
-<li><a class="reference internal" href="#wget-http-ftp-jaist-ac-jp-pub-linux-gentoo-releases-amd64-current-stage3-stage3-amd64-20130516-tar-bz2">wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2</a></li>
-<li><a class="reference internal" href="#tar-xvjpf-stage3-tar-bz2">tar xvjpf stage3-*.tar.bz2</a></li>
-<li><a class="reference internal" href="#mkdir-usr-portage">mkdir usr/portage</a></li>
-<li><a class="reference internal" href="#mount-dev-mygroup-portage-usr-portage">mount /dev/mygroup/portage usr/portage</a></li>
-<li><a class="reference internal" href="#these-settings-were-set-by-the-catalyst-build-script-that-automatically">These settings were set by the catalyst build script that automatically</a></li>
-<li><a class="reference internal" href="#built-this-stage">built this stage.</a></li>
-<li><a class="reference internal" href="#please-consult-usr-share-portage-config-make-conf-example-for-a-more">Please consult /usr/share/portage/config/make.conf.example for a more</a></li>
-<li><a class="reference internal" href="#detailed-example">detailed example.</a></li>
-<li><a class="reference internal" href="#warning-changing-your-chost-is-not-something-that-should-be-done-lightly">WARNING: Changing your CHOST is not something that should be done lightly.</a></li>
-<li><a class="reference internal" href="#please-consult-http-www-gentoo-org-doc-en-change-chost-xml-before-changing">Please consult http://www.gentoo.org/doc/en/change-chost.xml before changing.</a></li>
-<li><a class="reference internal" href="#these-are-the-use-flags-that-were-used-in-addition-to-what-is-provided-by-the">These are the USE flags that were used in addition to what is provided by the</a></li>
-<li><a class="reference internal" href="#profile-used-for-building">profile used for building.</a></li>
-<li><a class="reference internal" href="#cp-l-etc-resolv-conf-mnt-gentoo-etc">cp -L /etc/resolv.conf /mnt/gentoo/etc/</a></li>
-<li><a class="reference internal" href="#mount-t-proc-none-mnt-gentoo-proc">mount -t proc none /mnt/gentoo/proc</a></li>
-<li><a class="reference internal" href="#mount-rbind-sys-mnt-gentoo-sys">mount –rbind /sys /mnt/gentoo/sys</a></li>
-<li><a class="reference internal" href="#mount-rbind-dev-mnt-gentoo-dev">mount –rbind /dev /mnt/gentoo/dev</a></li>
-<li><a class="reference internal" href="#chroot-mnt-gentoo-bin-bash">chroot /mnt/gentoo /bin/bash</a></li>
-<li><a class="reference internal" href="#source-etc-profile">source /etc/profile</a></li>
-<li><a class="reference internal" href="#export-ps1-chroot-ps1">export PS1=”(chroot) $PS1”</a></li>
-<li><a class="reference internal" href="#emerge-sync">emerge –sync</a></li>
-<li><a class="reference internal" href="#cp-usr-share-zoneinfo-asia-tokyo-etc-localtime">cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime</a></li>
-<li><a class="reference internal" href="#echo-asia-tokyo-etc-timezone">echo “Asia/Tokyo” &gt; /etc/timezone</a></li>
-<li><a class="reference internal" href="#emerge-gentoo-sources">emerge gentoo-sources</a></li>
-<li><a class="reference internal" href="#emerge-genkernel">emerge genkernel</a></li>
-<li><a class="reference internal" href="#genkernel-lvm-install-all">genkernel –lvm –install all</a></li>
+<li><a class="reference internal" href="#">Gentoo再構築</a><ul>
+<li><a class="reference internal" href="#id1">作業記録。</a><ul>
+<li><a class="reference internal" href="#id2">ファイルシステム準備</a></li>
+<li><a class="reference internal" href="#installing-the-gentoo-installation-files">Installing the Gentoo Installation Files</a></li>
+<li><a class="reference internal" href="#installing-the-gentoo-base-system">Installing the Gentoo Base System</a></li>
+<li><a class="reference internal" href="#configuring-the-kernel">Configuring the Kernel</a></li>
+<li><a class="reference internal" href="#configuring-your-system">Configuring your System</a></li>
+<li><a class="reference internal" href="#installing-necessary-system-tools">Installing Necessary System Tools</a></li>
+<li><a class="reference internal" href="#configuring-the-bootloader">Configuring the Bootloader</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
     </div>

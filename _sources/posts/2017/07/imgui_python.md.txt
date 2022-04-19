@@ -1,7 +1,7 @@
 ---
 title: "PythonでImGuiする"
 date: 2017-07-31
-taxonomies: {tags: ['python', 'imgui']}
+tags: ['python', 'imgui']
 ---
 
 PythonでImGuiするのがよさげな気がしたのでやってみた。

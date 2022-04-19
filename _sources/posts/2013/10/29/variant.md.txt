@@ -1,7 +1,7 @@
 ---
 title: "wafでdebugとreleaseの設定を記述する(variant)"
 date: 2013-10-29
-taxonomies: {tags: []}
+tags: []
 ---
 
 wafでdebugとreleaseの設定を記述する(variant)

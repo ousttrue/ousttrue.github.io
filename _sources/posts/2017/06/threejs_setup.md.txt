@@ -1,7 +1,7 @@
 ---
 title: "threejsとwebsocketを使った開発環境"
 date: 2017-06-07
-taxonomies: {tags: []}
+tags: []
 ---
 
 threejsのソースを自前で、minimizeする環境を模索する。

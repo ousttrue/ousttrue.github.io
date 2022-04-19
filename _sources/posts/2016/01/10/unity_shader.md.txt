@@ -1,7 +1,7 @@
 ---
 title: "UnityのUsePassを追う"
 date: 2016-01-10
-taxonomies: {tags: ["unity"]}
+tags: ["unity"]
 ---
 
 下記のUnityの半透明シェーダーがいったいどういうメカニズムなのかを調べる。

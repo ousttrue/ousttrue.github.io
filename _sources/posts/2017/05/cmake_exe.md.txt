@@ -1,7 +1,7 @@
 ---
 title: "msbuildとcmakeの在りか"
 date: 2017-05-28
-taxonomies: {tags: ['cmake']}
+tags: ['cmake']
 ---
 
 bat作るときにたまに使う

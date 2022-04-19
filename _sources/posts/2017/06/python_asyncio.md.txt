@@ -1,7 +1,7 @@
 ---
 title: "Python3のasyncioについてのメモ"
 date: 2017-06-10
-taxonomies: {tags: []}
+tags: []
 ---
 
 PythonのVersion3.4から始まったasyncio周りについてのメモ。

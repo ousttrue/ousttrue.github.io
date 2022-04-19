@@ -1,6 +1,6 @@
 ---
 date: 2017-08-14
-taxonomies: {tags: ['usd']}
+tags: ['usd']
 ---
 
 # PixarのUniversal Scene Descriptionをビルドしてみる

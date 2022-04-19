@@ -1,7 +1,7 @@
 ---
 title: "TypeScriptでThree.jsことはじめ"
 date: 2015-12-06
-taxonomies: {tags: []}
+tags: []
 ---
 
 

@@ -1,7 +1,7 @@
 ---
 title: "hwclockの設定"
 date: 2013-05-25
-taxonomies: {tags: []}
+tags: []
 ---
 
 hwclockの設定

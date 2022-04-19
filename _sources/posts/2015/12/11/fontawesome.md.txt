@@ -1,7 +1,7 @@
 ---
 title: "FontAwesomeを取り入れる"
 date: 2015-12-11
-taxonomies: {tags: []}
+tags: []
 ---
 
 
