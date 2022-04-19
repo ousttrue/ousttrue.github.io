@@ -1,7 +1,7 @@
 ---
 title: "sphinxも入れてみる"
 date: 2013-02-28
-taxonomies: {tags: []}
+tags: []
 ---
 
 sphinxも入れてみる

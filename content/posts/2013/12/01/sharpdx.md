@@ -1,7 +1,7 @@
 ---
 title: "SharpDX事始め"
 date: 2013-12-01
-taxonomies: {tags: []}
+tags: []
 ---
 
 SharpDX事始め

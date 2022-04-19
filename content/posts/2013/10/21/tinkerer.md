@@ -1,7 +1,7 @@
 ---
 title: "Tinkererに引越し"
 date: 2013-10-21
-taxonomies: {tags: []}
+tags: []
 ---
 
 Tinkererに引越し

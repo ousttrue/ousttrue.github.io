@@ -1,7 +1,7 @@
 ---
 title: "Gstreamerを始めてみた"
 date: 2013-06-11
-taxonomies: {tags: []}
+tags: []
 ---
 
 動画プログラムでもしてみようということでGstreamerをはじめた。

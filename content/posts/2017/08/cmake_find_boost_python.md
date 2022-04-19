@@ -1,7 +1,7 @@
 ---
 title: "CMakeでBoost.Pythonを使う"
 date: 2017-08-09
-taxonomies: {tags: ['cmake', 'boost', 'python']}
+tags: ['cmake', 'boost', 'python']
 ---
 
 Windows上のCMakeでFIND_PACKAGE(Boost)する件について。

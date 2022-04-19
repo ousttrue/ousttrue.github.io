@@ -1,7 +1,7 @@
 ---
 title: "UnityでToon"
 date: 2016-01-12
-taxonomies: {tags: ["unity"]}
+tags: ["unity"]
 ---
 
 

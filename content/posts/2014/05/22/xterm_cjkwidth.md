@@ -1,7 +1,7 @@
 ---
 title: "cygwin上のxorg上のtermで日本語を表示する"
 date: 2014-05-22
-taxonomies: {tags: []}
+tags: []
 ---
 
 cygwin上のxorg上のtermで日本語を表示する

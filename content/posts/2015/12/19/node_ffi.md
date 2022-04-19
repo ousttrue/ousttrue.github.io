@@ -1,7 +1,7 @@
 ---
 title: "node-ffiでstdcallが使いたい(頓挫)"
 date: 2015-12-19
-taxonomies: {tags: []}
+tags: []
 ---
 
 Windows上でnode-ffiでdllから関数を呼びだしていたのだが、

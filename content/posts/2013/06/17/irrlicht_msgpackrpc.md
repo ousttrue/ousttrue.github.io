@@ -1,7 +1,7 @@
 ---
 title: "IrrlichtにMsgPackRPCを仕込む"
 date: 2013-06-17
-taxonomies: {tags: []}
+tags: []
 ---
 
 IrrlichtにMsgPackRPCを仕込む

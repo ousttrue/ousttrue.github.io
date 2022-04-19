@@ -1,7 +1,7 @@
 ---
 title: "Typescriptのモジュールでまたはまる"
 date: 2017-06-14
-taxonomies: {tags: []}
+tags: []
 ---
 
 Typescriptで出力したjsのimort周りではまったので実験してみる。

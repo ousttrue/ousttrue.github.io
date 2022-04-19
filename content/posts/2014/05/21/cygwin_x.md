@@ -1,7 +1,7 @@
 ---
 title: "gvimのためにcygwinでxorg導入"
 date: 2014-05-21
-taxonomies: {tags: []}
+tags: []
 ---
 
 gvimのためにcygwinでxorg導入

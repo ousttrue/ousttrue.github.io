@@ -1,7 +1,7 @@
 ---
 title: "vcpkgでchcp 65001が必要な件"
 date: 2017-08-31
-taxonomies: {tags: ['vcpkg']}
+tags: ['vcpkg']
 ---
 
 うちの環境では必要。非英語Windowsで散見される。わしも、ロシア？の人の書き込みで分かった。

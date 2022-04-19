@@ -1,7 +1,7 @@
 ---
 title: "Unityちゃんの-Candy Rock Star-を研究する"
 date: 2017-12-15
-taxonomies: {tags: ["unity"]}
+tags: ["unity"]
 ---
 
 わしもギャルが歌って踊るようなシーンを作ってみたいので

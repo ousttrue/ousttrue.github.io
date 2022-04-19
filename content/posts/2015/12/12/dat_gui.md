@@ -1,7 +1,7 @@
 ---
 title: "dat-guiを試してみる"
 date: 2015-12-12
-taxonomies: {tags: []}
+tags: []
 ---
 
 

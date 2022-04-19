@@ -1,7 +1,7 @@
 ---
 title: "Oculusぽちった"
 date: 2013-06-11
-taxonomies: {tags: []}
+tags: []
 ---
 
 Oculusぽちった

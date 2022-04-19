@@ -1,7 +1,7 @@
 ---
 title: "Treeを表示・操作する"
 date: 2015-12-11
-taxonomies: {tags: []}
+tags: []
 ---
 
 JavascriptでTreeを表示操作するライブラリを探してみる。

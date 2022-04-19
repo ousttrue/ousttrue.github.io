@@ -1,7 +1,7 @@
 ---
 title: "FPSカメラにOculus回転を仕込んだ"
 date: 2013-06-26
-taxonomies: {tags: []}
+tags: []
 ---
 
 FPSカメラにOculus回転を仕込んだ

@@ -1,7 +1,7 @@
 ---
 title: "UnityEditorでnativeスレッドからC# delegateを呼ぶと後でフリーズする件"
 date: 2017-10-30
-taxonomies: {tags: ["unity"]}
+tags: ["unity"]
 ---
 
 タイトルが長いが、RenderingスレッドでC#関数を呼び出すと次回play時に固まるの続きです。

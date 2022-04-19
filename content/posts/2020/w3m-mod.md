@@ -1,7 +1,7 @@
 ---
 title: "w3m改造"
 date: 2020-07-25T23:59:50+09:00
-taxonomies: {tags: ["w3m"]}
+tags: ["w3m"]
 ---
 
 以前にも何度かやったことがあるのだけど立ち消えになっていた、 [w3m](http://w3m.sourceforge.net/index.ja.html) の改造を試みている。

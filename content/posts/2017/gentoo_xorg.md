@@ -1,38 +1,50 @@
 ---
 title: "GentooでX11を設定する"
 date: 2017-09-05
-taxonomies: {tags: ['linux']}
+tags: ['linux']
 ---
+
+# GentooでX11を設定する
 
 デスクトップの構築メモ。
 
 xorg-server
 
-https://wiki.gentoo.org/wiki/Xorg/Guide
+<https://wiki.gentoo.org/wiki/Xorg/Guide>
 
+```
 /etc/portage/make.conf
 INPUT_DEVICE="libinput"
 VIDEO_CARDS="radeon"
+```
 
+```
 # emerge -av xorg-server
 ````
 
-# xのアプリを入れる
+## xのアプリを入れる
 
 ```shell
 $ startx
+```
 
 とすると何もないのですぐに終わってしまう。
 古のアプリを入れてみる。
+
+```
 # emerge -av twm xclock xterm 
+```
 
 動作を確認できた。
-Plasma5
 
-https://wiki.gentoo.org/wiki/KDE/Plasma_5_upgrade
-https://wiki.gentoo.org/wiki/KDE#Plasma
+## Plasma5
 
-# eselect profile list
+- <https://wiki.gentoo.org/wiki/KDE/Plasma_5_upgrade>
+- <https://wiki.gentoo.org/wiki/KDE#Plasma>
+
+## eselect profile list
+
+```
 Available profile symlink targets:
   [1]   default/linux/amd64/13.0 *
   [2]   default/linux/amd64/13.0/selinux
@@ -54,58 +66,81 @@ Available profile symlink targets:
   [18]  hardened/linux/musl/amd64/x32
   [19]  default/linux/uclibc/amd64
   [20]  hardened/linux/uclibc/amd64
+```
 
-[6]   default/linux/amd64/13.0/desktop/plasmaを採用する。
+`[6]   default/linux/amd64/13.0/desktop/plasma` を採用する。
+
+```
 # eselect profile set 6
 # emerge --ask --changed-use --newrepo --deep world
 # emerge --ask kde-plasma/plasma-meta
+```
 
-Widgets
+## Widgets
+
+```
 # emerge --ask kde-plasma/kdeplasma-addons
+```
 
-Apps
+## Apps
+
+```
 # # 時間かかる
 # emerge -av kde-apps/kdecore-meta
 
 # emerge -av kde-apps/kdemultimedia-meta
+```
 
-xdm設定
+## xdm設定
+
 起動時に自動でXのログイン画面が起動するようにする
+
+```
 # rc-update add xdm default
 # vim /etc/conf.d/xdm
 sddm
 
 # /etc/init.d/xdm restart
+```
 
-s
-Windows上にX-Server
+## Windows上にX-Server
 
-https://sourceforge.net/projects/vcxsrv/
-https://wiki.archlinuxjp.org/index.php/SDDM
+- <https://sourceforge.net/projects/vcxsrv/>
+- <https://wiki.archlinuxjp.org/index.php/SDDM>
 
 SDDMはXDMCPサポートは無い？
 
-https://wiki.gentoo.org/wiki/Display_manager
+- <https://wiki.gentoo.org/wiki/Display_manager>
 
-LightDMに乗り換え
+## LightDMに乗り換え
 VNC
 
-https://wiki.gentoo.org/wiki/TigerVNC
+<https://wiki.gentoo.org/wiki/TigerVNC>
 
-日本語フォント
+## 日本語フォント
+
+```
 # emerge --ask noto
 # emerge --ask Ricty
+```
 
-日本語入力
+## 日本語入力
+
+```
 # emerge -av fcitx-anthy
 # emerge -av kcm-fcitx
+```
 
 .bash_profile
+```
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
+```
 
-alsa
+## alsa
+
+```
 $ aplay -l
 **** List of PLAYBACK Hardware Devices ****
 card 0: HDMI [HDA ATI HDMI], device 3: HDMI 0 [HDMI 0]
@@ -117,9 +152,12 @@ card 1: Generic [HD-Audio Generic], device 0: ALC887-VD Analog [ALC887-VD Analog
 card 1: Generic [HD-Audio Generic], device 1: ALC887-VD Digital [ALC887-VD Digital]
   Subdevices: 1/1
   Subdevice #0: subdevice #0
+```
 
 3番目のALC887-VD Digitalに出力するように設定
+
 /etc/asound.conf
+```
 defaluts.pcm.card 1
 defaults.pcm.device 1
 defaults.ctl.card 1
@@ -128,12 +166,18 @@ pcm.!default {
     type plug
     slave.pcm "hw:1,1"
 }
+```
 
-
+```
 # rc-update add alsasound boot
+```
 
-browser
+## browser
+
 ビルド時間長いのでバイナリを入れとく
+
+```
 # emerge -av google-chrome
 # emerge -av firefox-bin
+```
 

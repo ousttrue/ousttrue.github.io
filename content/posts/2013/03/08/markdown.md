@@ -1,7 +1,7 @@
 ---
 title: "Markdown形式メモ"
 date: 2013-03-08
-taxonomies: {tags: []}
+tags: []
 ---
 
 Markdown形式メモ

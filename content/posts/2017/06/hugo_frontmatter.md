@@ -1,7 +1,7 @@
 ---
 title: "hugoのfrontmatter"
 date: 2017-06-05
-taxonomies: {tags: ["hugo"]}
+tags: ["hugo"]
 ---
 
 hugo newで新しく記事を作成した時のfrontmatterをカスタマイズするには。

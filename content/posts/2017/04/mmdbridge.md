@@ -1,7 +1,7 @@
 ---
 title: "MmdBridgeをビルドしてみる"
 date: 2017-04-21
-taxonomies: {tags: []}
+tags: []
 ---
 
 MmdBridgeがよさげなのでビルドしてみる。

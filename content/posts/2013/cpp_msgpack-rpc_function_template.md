@@ -1,7 +1,7 @@
 ---
 title: msgpack-rpc-asioの関数登録と実行
 date: 2013-05-19
-taxonomies: {tags: ["cpp"]}
+tags: ["cpp"]
 ---
 
 (記事復旧のついでに少し修正)

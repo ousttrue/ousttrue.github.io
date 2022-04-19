@@ -1,7 +1,7 @@
 ---
 title: "中国語単語帳"
 date: 2017-04-17
-taxonomies: {tags: []}
+tags: []
 ---
 
 中国語単語帳。

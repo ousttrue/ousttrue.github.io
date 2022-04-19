@@ -1,7 +1,7 @@
 ---
 title: "Github Pages の種類"
 date: 2020-07-20T22:50:17+09:00
-taxonomies: {tags: ["hugo", "ssg"]}
+tags: ["hugo", "ssg"]
 ---
 
 https://docs.github.com/ja/github/working-with-github-pages/about-github-pages

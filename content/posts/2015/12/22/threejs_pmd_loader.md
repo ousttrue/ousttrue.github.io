@@ -1,7 +1,7 @@
 ---
 title: "Three.jsでpmd読み込み"
 date: 2015-12-22
-taxonomies: {tags: []}
+tags: []
 ---
 
 

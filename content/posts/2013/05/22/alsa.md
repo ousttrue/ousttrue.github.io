@@ -1,7 +1,7 @@
 ---
 title: "alsaとかpulseaudio設定"
 date: 2013-05-22
-taxonomies: {tags: ['linux']}
+tags: ['linux']
 ---
 
 alsaとかpulseaudio設定

@@ -1,7 +1,7 @@
 ---
 title: "PyBulletを使ってみる"
 date: 2017-08-14
-taxonomies: {tags: []}
+tags: []
 ---
 
 BulletPhysicsの公式Pythonバインディングが出てたので使ってみる。

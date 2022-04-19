@@ -1,7 +1,7 @@
 ---
 title: "W3M HISTORY"
 date: 2001-11-08
-taxonomies: {tags: ["w3m"]}
+tags: ["w3m"]
 ---
 
 ```
