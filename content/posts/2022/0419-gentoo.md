@@ -12,19 +12,37 @@ Ubuntu と同じ `/home` をマウントしてみたら `dotfiles` に互換性�
 
 ## python-3.10
 
+`PYTHON_SINGLE_TARGET`
+
 6月くらいにデフォルトになる予定みたいだ。先にやってみた。
+
+間違い。去年の6月に、 `Python-3.9` がデフォルトになった。
+`Python-3.10` は今のところ予定に無い。
+いろいろインストールできなくなったので、元に戻した。
 
 ## boot
 
-`refind` を試してみた。むしろ `grub2` より楽になった。
+`refind` を試してみた。
+先に、Ubuntu の方でインストールして `gentoo` でエントリーだけ増やした。
+`grub2` より設定が簡単。
 
 ## xorg
 
-予定
+なんとなくできた。
+
+```
+$ startx -- vt1
+```
+
+としないとエラーになる。
+`/etc/X11` は作らなくても動いた。
+
+いつもどおりに `openbox`, `tint2`, `PCManFM`, `conky` という感じだが、今回は新型の `wezterm` がある。
 
 ## yaft
 
-予定
+nerdfonts 入りの bdffont を作りたいのだが未だ。
+mlterm-fb や kmscon も試してみたのだがうまく動かなかった。
 
 ## wayland
 
