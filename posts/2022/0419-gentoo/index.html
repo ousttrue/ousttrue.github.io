@@ -73,8 +73,21 @@
 <h1>Gentoo 構築<a class="headerlink" href="#gentoo" title="Permalink to this headline">¶</a></h1>
 <p>久しぶりに gentoo の機運が高まったので入れてみた。
 先に <code class="docutils literal notranslate"><span class="pre">Ubuntu-20.04</span></code> を入れておいて、後ろのパーティションに gentoo をインストールする作戦。
-Ubuntu と同じ <code class="docutils literal notranslate"><span class="pre">/home</span></code> をマウントしてみたら <code class="docutils literal notranslate"><span class="pre">dotfiles</span></code> に互換性が無かったが、わりと順調にインストールできた。
-ゆくゆくは wsl も gentoo に歓送いたいところじゃ。</p>
+Ubuntu と同じ <code class="docutils literal notranslate"><span class="pre">/home</span></code> をマウントしてみたら <code class="docutils literal notranslate"><span class="pre">dotfiles</span></code> に互換性が無かったのでやめた。
+わりと順調にインストールできた。
+ゆくゆくは wsl も gentoo に換装したいところじゃ。</p>
+<section id="id1">
+<h2>2022-05-05<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>システムを壊してしもた。
+作りなおし。ついでに <a class="reference external" href="https://wiki.gentoo.org/wiki/Btrfs">btffs</a> やってみる。</p>
+</section>
+<section id="btrfs">
+<h2>btrfs<a class="headerlink" href="#btrfs" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb</span>                <span class="o">/</span><span class="n">srv</span>            <span class="n">btrfs</span>           <span class="n">compress</span><span class="o">=</span><span class="n">zstd</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span><span class="n">relatime</span><span class="p">,</span><span class="n">rw</span>     <span class="mi">0</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</section>
 <section id="python-3-10">
 <h2>python-3.10<a class="headerlink" href="#python-3-10" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">PYTHON_SINGLE_TARGET</span></code></p>
@@ -83,11 +96,57 @@ Ubuntu と同じ <code class="docutils literal notranslate"><span class="pre">/h
 <code class="docutils literal notranslate"><span class="pre">Python-3.10</span></code> は今のところ予定に無い。
 いろいろインストールできなくなったので、元に戻した。</p>
 </section>
+<section id="make-conf">
+<h2>make.conf<a class="headerlink" href="#make-conf" title="Permalink to this headline">¶</a></h2>
+<p>ここに貼っておこう。
+こいつを育てているようなものだし。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># These settings were set by the catalyst build script that automatically</span>
+<span class="c1"># built this stage.</span>
+<span class="c1"># Please consult /usr/share/portage/config/make.conf.example for a more</span>
+<span class="c1"># detailed example.</span>
+<span class="n">COMMON_FLAGS</span><span class="o">=</span><span class="s2">&quot;-march=native -O2 -pipe&quot;</span>
+<span class="n">CFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
+<span class="n">CXXFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
+<span class="n">FCFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
+<span class="n">FFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
+
+<span class="c1"># NOTE: This stage was built with the bindist Use flag enabled</span>
+<span class="n">PORTDIR</span><span class="o">=</span><span class="s2">&quot;/var/db/repos/gentoo&quot;</span>
+<span class="n">DISTDIR</span><span class="o">=</span><span class="s2">&quot;/var/cache/distfiles&quot;</span>
+<span class="n">PKGDIR</span><span class="o">=</span><span class="s2">&quot;/var/cache/binpkgs&quot;</span>
+
+<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;X sixel truetype vim-syntax jpeg png python fontforge cjk alsa </span><span class="se">\</span>
+<span class="s2">     pulseaudio mp3 dbus opengl ffmpeg mad mpd elogind gtk&quot;</span>
+<span class="n">INPUT_DEVICES</span><span class="o">=</span><span class="s2">&quot;evdev libinput synaptics&quot;</span>
+<span class="c1">#VIDEO_CARDS=&quot;nouveau&quot;</span>
+<span class="n">VIDEO_CARDS</span><span class="o">=</span><span class="s2">&quot;nvidia&quot;</span>
+<span class="n">ABI_X86</span><span class="o">=</span><span class="s2">&quot;64&quot;</span>
+
+<span class="c1"># This sets the language of build output to English.</span>
+<span class="c1"># Please keep this setting intact when reporting bugs.</span>
+<span class="n">LC_MESSAGES</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
+
+<span class="n">MAKEOPTS</span><span class="o">=</span><span class="s2">&quot;-j6&quot;</span>
+</pre></div>
+</div>
+</section>
 <section id="boot">
 <h2>boot<a class="headerlink" href="#boot" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">refind</span></code> を試してみた。
 先に、Ubuntu の方でインストールして <code class="docutils literal notranslate"><span class="pre">gentoo</span></code> でエントリーだけ増やした。
-<code class="docutils literal notranslate"><span class="pre">grub2</span></code> より設定が簡単。</p>
+<code class="docutils literal notranslate"><span class="pre">grub2</span></code> より設定が簡単だと思った。
+情報は少なめ。</p>
+<p><code class="docutils literal notranslate"><span class="pre">/boot/efi/EFI/refind/refind.conf</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># rootの指定が必要 </span>
+<span class="n">menuentry</span> <span class="n">Gentoo</span> <span class="p">{</span>
+    <span class="n">icon</span> <span class="n">EFI</span><span class="o">/</span><span class="n">refind</span><span class="o">/</span><span class="n">icons</span><span class="o">/</span><span class="n">os_gentoo</span><span class="o">.</span><span class="n">png</span>
+    <span class="n">loader</span> <span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">gentoo</span><span class="o">/</span><span class="n">vmlinuz</span><span class="o">-</span><span class="mf">5.15.32</span><span class="o">-</span><span class="n">gentoo</span><span class="o">-</span><span class="n">r1</span><span class="o">-</span><span class="n">x86_64</span>
+    <span class="n">initrd</span> <span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">gentoo</span><span class="o">/</span><span class="n">initramfs</span><span class="o">-</span><span class="mf">5.15.32</span><span class="o">-</span><span class="n">gentoo</span><span class="o">-</span><span class="n">r1</span><span class="o">-</span><span class="n">x86_64</span><span class="o">.</span><span class="n">img</span>
+    <span class="n">options</span> <span class="s2">&quot;root=/dev/sda4&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>起動時に自動検索と設定に記述したエントリが出てくるので、<code class="docutils literal notranslate"><span class="pre">-</span></code> キーで隠すと見ためがすっきりする。</p>
 </section>
 <section id="xorg">
 <h2>xorg<a class="headerlink" href="#xorg" title="Permalink to this headline">¶</a></h2>
@@ -106,7 +165,7 @@ mlterm-fb や kmscon も試してみたのだがうまく動かなかった。</
 </section>
 <section id="wayland">
 <h2>wayland<a class="headerlink" href="#wayland" title="Permalink to this headline">¶</a></h2>
-<p>予定</p>
+<p>TODO:</p>
 </section>
 </section>
 
@@ -829,7 +888,10 @@ mlterm-fb や kmscon も試してみたのだがうまく動かなかった。</
   <h3><a href="../../../">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Gentoo 構築</a><ul>
+<li><a class="reference internal" href="#id1">2022-05-05</a></li>
+<li><a class="reference internal" href="#btrfs">btrfs</a></li>
 <li><a class="reference internal" href="#python-3-10">python-3.10</a></li>
+<li><a class="reference internal" href="#make-conf">make.conf</a></li>
 <li><a class="reference internal" href="#boot">boot</a></li>
 <li><a class="reference internal" href="#xorg">xorg</a></li>
 <li><a class="reference internal" href="#yaft">yaft</a></li>
