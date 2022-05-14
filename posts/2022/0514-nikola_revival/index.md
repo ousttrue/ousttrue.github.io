@@ -32,6 +32,14 @@ docs
 
 ## 動作
 
+```python
+    site = Nikola(**config)
+    DN = DoitNikola(site, quiet)
+    if _RETURN_DOITNIKOLA:
+        return DN
+    _ = DN.run(oargs)
+```
+
 ### DoitNikola(DoitMain)
 
 <https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L301>
