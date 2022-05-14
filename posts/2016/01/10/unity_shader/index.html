@@ -1,86 +1,54 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>unity_shader</title>
-<link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-<script src="../../../../../_static/jquery.js"></script>
-<script src="../../../../../_static/underscore.js"></script>
-<script src="../../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>UnityのUsePassを追う | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">unity_shader</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="unity-shader">
-<h1>unity_shader<a class="headerlink" href="#unity-shader" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">UnityのUsePassを追う
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2016-01-10T00:00:00+09:00" title="2016-01-10">2016-01-10</time>
+</li>
+    <li><a class="tag p-category" href="../../../../../categories/unity/" rel="tag">unity</a></li>
+</ul>
+</h1>
+
 <p>下記のUnityの半透明シェーダーがいったいどういうメカニズムなのかを調べる。
 Shaderの元ネタはこちら</p>
 <p>Unity で Transparent/Diffuse で描画順が崩れてしまう際の対処法</p>
-<p>Shader “Transparent/Diffuse ZWrite” {
-Properties{
-_Color(“Main Color”, Color) = (1,1,1,1)
-_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader{
-    Tags{ &quot;Queue&quot; = &quot;Transparent&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;RenderType&quot; = &quot;Transparent&quot; }
+<p>Shader "Transparent/Diffuse ZWrite" {
+    Properties{
+        _Color("Main Color", Color) = (1,1,1,1)
+        _MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
+    }</p>
+<pre class="code literal-block">SubShader{
+    Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
     LOD 200
 
     // extra pass that renders to depth buffer only
@@ -90,18 +58,17 @@ _MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
     }
 
     // paste in forward rendering passes from Transparent/Diffuse
-    UsePass &quot;Transparent/Diffuse/FORWARD&quot;
+    UsePass "Transparent/Diffuse/FORWARD"
 }
 
-Fallback &quot;Transparent/VertexLit&quot;
-</pre></div>
-</div>
+Fallback "Transparent/VertexLit"
+</pre>
 <p>}</p>
 <p>２パス描画になる。
 パス1: 深度バッファのみの描画
 Pass{
-ZWrite On
-ColorMask 0
+    ZWrite On
+    ColorMask 0
 }</p>
 <p>これは、ShaderLab ：旧ライティングというものらしく
 Fixed function
@@ -109,935 +76,954 @@ Fixed function
 レガシーとか旧呼ばわりされているけどサンプルコードにしれっと出てくるので知っている必要がある。
 次のようなコードが生成されていた。
 ShaderのInspector: Fixed function. Show generated codeの該当部分
-Pass {
-Tags { “QUEUE”=”Transparent” “IGNOREPROJECTOR”=”true” “RenderType”=”Transparent” }
-ColorMask 0
-CGPROGRAM
-#pragma vertex vert
-#pragma fragment frag
-#include “UnityShaderVariables.cginc”
-#pragma multi_compile_fog
-#include “UnityCG.cginc”
-#define USING_FOG (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))</p>
+ Pass {
+  Tags { "QUEUE"="Transparent" "IGNOREPROJECTOR"="true" "RenderType"="Transparent" }
+  ColorMask 0
+CGPROGRAM</p>
+<h2>pragma vertex vert</h2>
+<h2>pragma fragment frag</h2>
+<h2>include "UnityShaderVariables.cginc"</h2>
+<h2>pragma multi_compile_fog</h2>
+<h2>include "UnityCG.cginc"</h2>
+<h2>define USING_FOG (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))</h2>
 <p>// uniforms</p>
 <p>// vertex shader input data
 struct appdata {
-float3 pos : POSITION;
-half4 color : COLOR;
+  float3 pos : POSITION;
+  half4 color : COLOR;
 };</p>
 <p>// vertex-to-fragment interpolators
 struct v2f {
-fixed4 color : COLOR0;
-#if USING_FOG
-fixed fog : TEXCOORD0;
-#endif
-float4 pos : SV_POSITION;
+  fixed4 color : COLOR0;
+  #if USING_FOG
+    fixed fog : TEXCOORD0;
+  #endif
+  float4 pos : SV_POSITION;
 };</p>
 <p>// vertex shader
 v2f vert (appdata IN) {
-v2f o;
-half4 color = IN.color;
-float3 eyePos = mul (UNITY_MATRIX_MV, float4(IN.pos,1)).xyz;
-half3 viewDir = 0.0;
-o.color = saturate(color);
-// compute texture coordinates
-// fog
-#if USING_FOG
-float fogCoord = length(eyePos.xyz); // radial fog distance
-UNITY_CALC_FOG_FACTOR(fogCoord);
-o.fog = saturate(unityFogFactor);
-#endif
-// transform position
-o.pos = mul(UNITY_MATRIX_MVP, float4(IN.pos,1));
-return o;
+  v2f o;
+  half4 color = IN.color;
+  float3 eyePos = mul (UNITY_MATRIX_MV, float4(IN.pos,1)).xyz;
+  half3 viewDir = 0.0;
+  o.color = saturate(color);
+  // compute texture coordinates
+  // fog
+  #if USING_FOG
+    float fogCoord = length(eyePos.xyz); // radial fog distance
+    UNITY_CALC_FOG_FACTOR(fogCoord);
+    o.fog = saturate(unityFogFactor);
+  #endif
+  // transform position
+  o.pos = mul(UNITY_MATRIX_MVP, float4(IN.pos,1));
+  return o;
 }</p>
 <p>// fragment shader
 fixed4 frag (v2f IN) : SV_Target {
-fixed4 col;
-col = IN.color;
-// fog
-#if USING_FOG
-col.rgb = lerp (unity_FogColor.rgb, col.rgb, IN.fog);
-#endif
-return col;
+  fixed4 col;
+  col = IN.color;
+  // fog
+  #if USING_FOG
+    col.rgb = lerp (unity_FogColor.rgb, col.rgb, IN.fog);
+  #endif
+  return col;
 }
 ENDCG
-}</p>
+ }</p>
 <p>単に頂点カラーをそのまま描画しているようだが、ColorMaskが0なので色は変わらずということらしい。
 パス2: カラーバッファ
 Transparent/Diffuse
-UsePass “Transparent/Diffuse/FORWARD”</p>
+UsePass "Transparent/Diffuse/FORWARD"</p>
 <p>は何なのか。
 https://unity3d.com/jp/get-unity/download/archive
 からビルトインシェーダーをDownloadして観察してみる。
 探してみると”Transparent/Diffuse”という名のシェーダーは無くて、
 “Legacy Shaders/Transparent/Diffuse”が見つかる。
 DefaultResourceExtra/Alpha-Diffuse.shader
-Shader “Legacy Shaders/Transparent/Diffuse” {
+Shader "Legacy Shaders/Transparent/Diffuse" {
 Properties {
-_Color (“Main Color”, Color) = (1,1,1,1)
-_MainTex (“Base (RGB) Trans (A)”, 2D) = “white” {}
+    _Color ("Main Color", Color) = (1,1,1,1)
+    _MainTex ("Base (RGB) Trans (A)", 2D) = "white" {}
 }</p>
 <p>SubShader {
-Tags {“Queue”=”Transparent” “IgnoreProjector”=”True” “RenderType”=”Transparent”}
-LOD 200</p>
-<p>CGPROGRAM
-#pragma surface surf Lambert alpha:fade</p>
+    Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+    LOD 200</p>
+<p>CGPROGRAM</p>
+<h2>pragma surface surf Lambert alpha:fade</h2>
 <p>sampler2D _MainTex;
 fixed4 _Color;</p>
 <p>struct Input {
-float2 uv_MainTex;
+    float2 uv_MainTex;
 };</p>
 <p>void surf (Input IN, inout SurfaceOutput o) {
-fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-o.Albedo = c.rgb;
-o.Alpha = c.a;
+    fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+    o.Albedo = c.rgb;
+    o.Alpha = c.a;
 }
 ENDCG
 }</p>
-<p>Fallback “Legacy Shaders/Transparent/VertexLit”
+<p>Fallback "Legacy Shaders/Transparent/VertexLit"
 }</p>
 <p>surfaceシェーダーらしい。
 surfaceシェーダーが如何なるPassに展開されるのかがまったくわからないが(LightMode等が関係ある？)
 FORWARDパスはどこで定義されているのか。
 Transparent/Diffuse/FORWARD
 DefaultResourcesExtra/Standard.shader
-SubShader
-{
-Tags { “RenderType”=”Opaque” “PerformanceChecks”=”False” }
-LOD 300</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // ------------------------------------------------------------------
-    //  Base forward pass (directional light, emission, lightmaps, ...)
-    Pass
+    SubShader
     {
-        Name &quot;FORWARD&quot; 
-        Tags { &quot;LightMode&quot; = &quot;ForwardBase&quot; }
+        Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
+        LOD 300</p>
+<pre class="code literal-block"><span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="o">------------------------------------------------------------------</span><span class="w"></span>
+<span class="w">    </span><span class="o">//</span><span class="w">  </span><span class="n">Base</span><span class="w"> </span><span class="n">forward</span><span class="w"> </span><span class="n">pass</span><span class="w"> </span><span class="p">(</span><span class="n">directional</span><span class="w"> </span><span class="n">light</span><span class="p">,</span><span class="w"> </span><span class="n">emission</span><span class="p">,</span><span class="w"> </span><span class="n">lightmaps</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"></span>
+<span class="w">    </span><span class="n">Pass</span><span class="w"></span>
+<span class="w">    </span><span class="err">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">Name</span><span class="w"> </span><span class="ss">"FORWARD"</span><span class="w"> </span>
+<span class="w">        </span><span class="n">Tags</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="ss">"LightMode"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">"ForwardBase"</span><span class="w"> </span><span class="err">}</span><span class="w"></span>
 
-        Blend [_SrcBlend] [_DstBlend]
-        ZWrite [_ZWrite]
+<span class="w">        </span><span class="n">Blend</span><span class="w"> </span><span class="o">[</span><span class="n">_SrcBlend</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">_DstBlend</span><span class="o">]</span><span class="w"></span>
+<span class="w">        </span><span class="n">ZWrite</span><span class="w"> </span><span class="o">[</span><span class="n">_ZWrite</span><span class="o">]</span><span class="w"></span>
 
-        CGPROGRAM
-        #pragma target 3.0
-        // TEMPORARY: GLES2.0 temporarily disabled to prevent errors spam on devices without textureCubeLodEXT
-        #pragma exclude_renderers gles
-        
-        // -------------------------------------
-                
-        #pragma shader_feature _NORMALMAP
-        #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-        #pragma shader_feature _EMISSION
-        #pragma shader_feature _METALLICGLOSSMAP 
-        #pragma shader_feature ___ _DETAIL_MULX2
-        #pragma shader_feature _PARALLAXMAP
-        
-        #pragma multi_compile_fwdbase
-        #pragma multi_compile_fog
+<span class="w">        </span><span class="n">CGPROGRAM</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="mf">3.0</span><span class="w"></span>
+<span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="k">TEMPORARY</span><span class="err">:</span><span class="w"> </span><span class="n">GLES2</span><span class="mf">.0</span><span class="w"> </span><span class="n">temporarily</span><span class="w"> </span><span class="n">disabled</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">prevent</span><span class="w"> </span><span class="n">errors</span><span class="w"> </span><span class="n">spam</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">devices</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="n">textureCubeLodEXT</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">exclude_renderers</span><span class="w"> </span><span class="n">gles</span><span class="w"></span>
 
-        #pragma vertex vertBase
-        #pragma fragment fragBase
-        #include &quot;UnityStandardCoreForward.cginc&quot;
+<span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="o">-------------------------------------</span><span class="w"></span>
 
-        ENDCG
-    }
-}
-</pre></div>
-</div>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">shader_feature</span><span class="w"> </span><span class="n">_NORMALMAP</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">shader_feature</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="n">_ALPHATEST_ON</span><span class="w"> </span><span class="n">_ALPHABLEND_ON</span><span class="w"> </span><span class="n">_ALPHAPREMULTIPLY_ON</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">shader_feature</span><span class="w"> </span><span class="n">_EMISSION</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">shader_feature</span><span class="w"> </span><span class="n">_METALLICGLOSSMAP</span><span class="w"> </span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">shader_feature</span><span class="w"> </span><span class="n">___</span><span class="w"> </span><span class="n">_DETAIL_MULX2</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">shader_feature</span><span class="w"> </span><span class="n">_PARALLAXMAP</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">multi_compile_fwdbase</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">multi_compile_fog</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">vertex</span><span class="w"> </span><span class="n">vertBase</span><span class="w"></span>
+<span class="w">        </span><span class="n">#pragma</span><span class="w"> </span><span class="n">fragment</span><span class="w"> </span><span class="n">fragBase</span><span class="w"></span>
+<span class="w">        </span><span class="n">#include</span><span class="w"> </span><span class="ss">"UnityStandardCoreForward.cginc"</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">ENDCG</span><span class="w"></span>
+<span class="w">    </span><span class="err">}</span><span class="w"></span>
+<span class="err">}</span><span class="w"></span>
+</pre>
 <p>vertBaseとfragBaseという関数に辿り着く。
 vertBaseとfragBase
-CGIncludes/UnityStandardCoreForward.cginc
-#ifndef UNITY_STANDARD_CORE_FORWARD_INCLUDED
-#define UNITY_STANDARD_CORE_FORWARD_INCLUDED</p>
-<p>#if defined(UNITY_NO_FULL_STANDARD_SHADER)</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="define-unity-standard-simple-1">
-<h1>define UNITY_STANDARD_SIMPLE 1<a class="headerlink" href="#define-unity-standard-simple-1" title="Permalink to this headline">¶</a></h1>
-<p>#endif</p>
-<p>#include “UnityStandardConfig.cginc”</p>
-<p>#if UNITY_STANDARD_SIMPLE
-#include “UnityStandardCoreForwardSimple.cginc”
-VertexOutputBaseSimple vertBase (VertexInput v) { return vertForwardBaseSimple(v); }
-VertexOutputForwardAddSimple vertAdd (VertexInput v) { return vertForwardAddSimple(v); }
-half4 fragBase (VertexOutputBaseSimple i) : SV_Target { return fragForwardBaseSimpleInternal(i); }
-half4 fragAdd (VertexOutputForwardAddSimple i) : SV_Target { return fragForwardAddSimpleInternal(i); }
-#else
-#include “UnityStandardCore.cginc”
-VertexOutputForwardBase vertBase (VertexInput v) { return vertForwardBase(v); }
-VertexOutputForwardAdd vertAdd (VertexInput v) { return vertForwardAdd(v); }
-half4 fragBase (VertexOutputForwardBase i) : SV_Target { return fragForwardBaseInternal(i); }
-half4 fragAdd (VertexOutputForwardAdd i) : SV_Target { return fragForwardAddInternal(i); }
-#endif</p>
-<p>#endif // UNITY_STANDARD_CORE_FORWARD_INCLUDED</p>
+CGIncludes/UnityStandardCoreForward.cginc</p>
+<h2>ifndef UNITY_STANDARD_CORE_FORWARD_INCLUDED</h2>
+<h2>define UNITY_STANDARD_CORE_FORWARD_INCLUDED</h2>
+<h2>if defined(UNITY_NO_FULL_STANDARD_SHADER)</h2>
+<h2>define UNITY_STANDARD_SIMPLE 1</h2>
+<h2>endif</h2>
+<h2>include "UnityStandardConfig.cginc"</h2>
+<h2>if UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityStandardCoreForwardSimple.cginc"</span><span class="cp"></span>
+<span class="n">VertexOutputBaseSimple</span><span class="w"> </span><span class="nf">vertBase</span><span class="w"> </span><span class="p">(</span><span class="n">VertexInput</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertForwardBaseSimple</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="n">VertexOutputForwardAddSimple</span><span class="w"> </span><span class="nf">vertAdd</span><span class="w"> </span><span class="p">(</span><span class="n">VertexInput</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertForwardAddSimple</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="n">half4</span><span class="w"> </span><span class="nf">fragBase</span><span class="w"> </span><span class="p">(</span><span class="n">VertexOutputBaseSimple</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fragForwardBaseSimpleInternal</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="n">half4</span><span class="w"> </span><span class="nf">fragAdd</span><span class="w"> </span><span class="p">(</span><span class="n">VertexOutputForwardAddSimple</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fragForwardAddSimpleInternal</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre>
+<h2>else</h2>
+<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityStandardCore.cginc"</span><span class="cp"></span>
+<span class="n">VertexOutputForwardBase</span><span class="w"> </span><span class="nf">vertBase</span><span class="w"> </span><span class="p">(</span><span class="n">VertexInput</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertForwardBase</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="n">VertexOutputForwardAdd</span><span class="w"> </span><span class="nf">vertAdd</span><span class="w"> </span><span class="p">(</span><span class="n">VertexInput</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertForwardAdd</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="n">half4</span><span class="w"> </span><span class="nf">fragBase</span><span class="w"> </span><span class="p">(</span><span class="n">VertexOutputForwardBase</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fragForwardBaseInternal</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="n">half4</span><span class="w"> </span><span class="nf">fragAdd</span><span class="w"> </span><span class="p">(</span><span class="n">VertexOutputForwardAdd</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fragForwardAddInternal</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre>
+<h2>endif</h2>
+<h2>endif // UNITY_STANDARD_CORE_FORWARD_INCLUDED</h2>
 <p>シンプルとノットシンプルの振り分けをしている。
 vertBase
-VertexOutputForwardBase vertBase (VertexInput v) { return vertForwardBase(v); }</p>
+    VertexOutputForwardBase vertBase (VertexInput v) { return vertForwardBase(v); }</p>
 <p>CGInlucdes/UnityStandardCore.cginc
 VertexOutputForwardBase vertForwardBase (VertexInput v)
 {
-VertexOutputForwardBase o;
-UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float4 posWorld = mul(_Object2World, v.vertex);
-#if UNITY_SPECCUBE_BOX_PROJECTION
-    o.posWorld = posWorld.xyz;
-#endif
-o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
-o.tex = TexCoords(v);
-o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
-float3 normalWorld = UnityObjectToWorldNormal(v.normal);
-#ifdef _TANGENT_TO_WORLD
-    float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
+    VertexOutputForwardBase o;
+    UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
+<pre class="code literal-block"><span class="n">float4</span><span class="w"> </span><span class="n">posWorld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mul</span><span class="p">(</span><span class="n">_Object2World</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="cp">#if UNITY_SPECCUBE_BOX_PROJECTION</span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">posWorld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">posWorld</span><span class="p">.</span><span class="n">xyz</span><span class="p">;</span><span class="w"></span>
+<span class="cp">#endif</span>
+<span class="n">o</span><span class="p">.</span><span class="n">pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="n">o</span><span class="p">.</span><span class="n">tex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TexCoords</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w"></span>
+<span class="n">o</span><span class="p">.</span><span class="n">eyeVec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NormalizePerVertexNormal</span><span class="p">(</span><span class="n">posWorld</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">_WorldSpaceCameraPos</span><span class="p">);</span><span class="w"></span>
+<span class="n">float3</span><span class="w"> </span><span class="n">normalWorld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span><span class="w"></span>
+<span class="cp">#ifdef _TANGENT_TO_WORLD</span>
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="n">tangentWorld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">float4</span><span class="p">(</span><span class="n">UnityObjectToWorldDir</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">tangent</span><span class="p">.</span><span class="n">xyz</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">tangent</span><span class="p">.</span><span class="n">w</span><span class="p">);</span><span class="w"></span>
 
-    float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
-    o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
-    o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
-    o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
-#else
-    o.tangentToWorldAndParallax[0].xyz = 0;
-    o.tangentToWorldAndParallax[1].xyz = 0;
-    o.tangentToWorldAndParallax[2].xyz = normalWorld;
-#endif
-//We need this for shadow receving
-TRANSFER_SHADOW(o);
+<span class="w">    </span><span class="n">float3x3</span><span class="w"> </span><span class="n">tangentToWorld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateTangentToWorldPerVertex</span><span class="p">(</span><span class="n">normalWorld</span><span class="p">,</span><span class="w"> </span><span class="n">tangentWorld</span><span class="p">.</span><span class="n">xyz</span><span class="p">,</span><span class="w"> </span><span class="n">tangentWorld</span><span class="p">.</span><span class="n">w</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">xyz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tangentToWorld</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">xyz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tangentToWorld</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">xyz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tangentToWorld</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w"></span>
+<span class="cp">#else</span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">xyz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">xyz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">xyz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalWorld</span><span class="p">;</span><span class="w"></span>
+<span class="cp">#endif</span>
+<span class="c1">//We need this for shadow receving</span>
+<span class="n">TRANSFER_SHADOW</span><span class="p">(</span><span class="n">o</span><span class="p">);</span><span class="w"></span>
 
-o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
+<span class="n">o</span><span class="p">.</span><span class="n">ambientOrLightmapUV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VertexGIForward</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">posWorld</span><span class="p">,</span><span class="w"> </span><span class="n">normalWorld</span><span class="p">);</span><span class="w"></span>
 
-#ifdef _PARALLAXMAP
-    TANGENT_SPACE_ROTATION;
-    half3 viewDirForParallax = mul (rotation, ObjSpaceViewDir(v.vertex));
-    o.tangentToWorldAndParallax[0].w = viewDirForParallax.x;
-    o.tangentToWorldAndParallax[1].w = viewDirForParallax.y;
-    o.tangentToWorldAndParallax[2].w = viewDirForParallax.z;
-#endif
+<span class="cp">#ifdef _PARALLAXMAP</span>
+<span class="w">    </span><span class="n">TANGENT_SPACE_ROTATION</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">half3</span><span class="w"> </span><span class="n">viewDirForParallax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mul</span><span class="w"> </span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span><span class="w"> </span><span class="n">ObjSpaceViewDir</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">viewDirForParallax</span><span class="p">.</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">viewDirForParallax</span><span class="p">.</span><span class="n">y</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">tangentToWorldAndParallax</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">viewDirForParallax</span><span class="p">.</span><span class="n">z</span><span class="p">;</span><span class="w"></span>
+<span class="cp">#endif</span>
 
-#if UNITY_OPTIMIZE_TEXCUBELOD
-    o.reflUVW         = reflect(o.eyeVec, normalWorld);
-#endif
+<span class="cp">#if UNITY_OPTIMIZE_TEXCUBELOD</span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">reflUVW</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">reflect</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">eyeVec</span><span class="p">,</span><span class="w"> </span><span class="n">normalWorld</span><span class="p">);</span><span class="w"></span>
+<span class="cp">#endif</span>
 
-UNITY_TRANSFER_FOG(o,o.pos);
-return o;
-</pre></div>
-</div>
+<span class="n">UNITY_TRANSFER_FOG</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">pos</span><span class="p">);</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+</pre>
 <p>}</p>
 <p>普通に頂点シェーダー。たぶん
 fragBase
-half4 fragBase (VertexOutputForwardBase i) : SV_Target { return fragForwardBaseInternal(i); }</p>
+    half4 fragBase (VertexOutputForwardBase i) : SV_Target { return fragForwardBaseInternal(i); }</p>
 <p>CGInlucdes/UnityStandardCore.cginc
-#define FRAGMENT_SETUP(x) FragmentCommonData x = <br />
-FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
+#define FRAGMENT_SETUP(x) FragmentCommonData x = \
+    FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
 <p>struct FragmentCommonData
 {
-half3 diffColor, specColor;
-// Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
-// Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
-half oneMinusReflectivity, oneMinusRoughness;
-half3 normalWorld, eyeVec, posWorld;
-half alpha;</p>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
-half3 reflUVW;
-#endif</p>
-<p>#if UNITY_STANDARD_SIMPLE
-half3 tangentSpaceNormal;
-#endif
-};</p>
+    half3 diffColor, specColor;
+    // Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
+    // Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
+    half oneMinusReflectivity, oneMinusRoughness;
+    half3 normalWorld, eyeVec, posWorld;
+    half alpha;</p>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">half3 reflUVW;
+</pre>
+<h2>endif</h2>
+<h2>if UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">half3 tangentSpaceNormal;
+</pre>
+<h2>endif</h2>
+<p>};</p>
 <p>half4 OutputForward (half4 output, half alphaFromSurface)
 {
-#if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
-output.a = alphaFromSurface;
-#else
-UNITY_OPAQUE_ALPHA(output.a);
-#endif
-return output;
+    #if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
+        output.a = alphaFromSurface;
+    #else
+        UNITY_OPAQUE_ALPHA(output.a);
+    #endif
+    return output;
 }</p>
 <p>half4 fragForwardBaseInternal (VertexOutputForwardBase i)
 {
-FRAGMENT_SETUP(s)
-#if UNITY_OPTIMIZE_TEXCUBELOD
-s.reflUVW        = i.reflUVW;
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UnityLight mainLight = MainLight (s.normalWorld);
-half atten = SHADOW_ATTENUATION(i);
+    FRAGMENT_SETUP(s)</p>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD</h2>
+<pre class="code literal-block">s.reflUVW        = i.reflUVW;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">UnityLight</span> <span class="nv">mainLight</span> <span class="o">=</span> <span class="nv">MainLight</span> <span class="ss">(</span><span class="nv">s</span>.<span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">half</span> <span class="nv">atten</span> <span class="o">=</span> <span class="nv">SHADOW_ATTENUATION</span><span class="ss">(</span><span class="nv">i</span><span class="ss">)</span><span class="c1">;</span>
 
 
-half occlusion = Occlusion(i.tex.xy);
-UnityGI gi = FragmentGI (s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+<span class="nv">half</span> <span class="nv">occlusion</span> <span class="o">=</span> <span class="nv">Occlusion</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">tex</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">UnityGI</span> <span class="nv">gi</span> <span class="o">=</span> <span class="nv">FragmentGI</span> <span class="ss">(</span><span class="nv">s</span>, <span class="nv">occlusion</span>, <span class="nv">i</span>.<span class="nv">ambientOrLightmapUV</span>, <span class="nv">atten</span>, <span class="nv">mainLight</span><span class="ss">)</span><span class="c1">;</span>
 
-half4 c = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
-c.rgb += UNITY_BRDF_GI (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
-c.rgb += Emission(i.tex.xy);
+<span class="nv">half4</span> <span class="nv">c</span> <span class="o">=</span> <span class="nv">UNITY_BRDF_PBS</span> <span class="ss">(</span><span class="nv">s</span>.<span class="nv">diffColor</span>, <span class="nv">s</span>.<span class="nv">specColor</span>, <span class="nv">s</span>.<span class="nv">oneMinusReflectivity</span>, <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="o">-</span><span class="nv">s</span>.<span class="nv">eyeVec</span>, <span class="nv">gi</span>.<span class="nv">light</span>, <span class="nv">gi</span>.<span class="nv">indirect</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">+=</span> <span class="nv">UNITY_BRDF_GI</span> <span class="ss">(</span><span class="nv">s</span>.<span class="nv">diffColor</span>, <span class="nv">s</span>.<span class="nv">specColor</span>, <span class="nv">s</span>.<span class="nv">oneMinusReflectivity</span>, <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="o">-</span><span class="nv">s</span>.<span class="nv">eyeVec</span>, <span class="nv">occlusion</span>, <span class="nv">gi</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">+=</span> <span class="nv">Emission</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">tex</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
 
-UNITY_APPLY_FOG(i.fogCoord, c.rgb);
-return OutputForward (c, s.alpha);
-</pre></div>
-</div>
+<span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">fogCoord</span>, <span class="nv">c</span>.<span class="nv">rgb</span><span class="ss">)</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">OutputForward</span> <span class="ss">(</span><span class="nv">c</span>, <span class="nv">s</span>.<span class="nv">alpha</span><span class="ss">)</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>普通にピクセルシェーダーで便利関数がいっぱい定義済みという感じか。
 しかし、#ifの類がたくさんありどのルートが使われるか不明瞭。
 includeを展開してみる
 UsePassの代わりに自前のファイルにシェーダーのコードをコピーしてそっちを使ってみる。
 DefaultResourcesExtra/Standard.shaderから切り張り
-Pass{
-Name “FORWARD”
-Tags{ “LightMode” = “ForwardBase” }</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>        ZWrite Off
-        ColorMask RGB
-        Blend SrcAlpha OneMinusSrcAlpha
+        Pass{
+            Name "FORWARD"
+            Tags{ "LightMode" = "ForwardBase" }</p>
+<pre class="code literal-block">        <span class="n">ZWrite</span> <span class="n">Off</span>
+        <span class="n">ColorMask</span> <span class="n">RGB</span>
+        <span class="n">Blend</span> <span class="n">SrcAlpha</span> <span class="n">OneMinusSrcAlpha</span>
 
-        CGPROGRAM
-        #pragma target 2.0
-        
-        #pragma shader_feature _NORMALMAP
-        #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-        #pragma shader_feature _EMISSION 
-        #pragma shader_feature _METALLICGLOSSMAP 
-        #pragma shader_feature ___ _DETAIL_MULX2
-        // SM2.0: NOT SUPPORTED shader_feature _PARALLAXMAP
+        <span class="n">CGPROGRAM</span>
+        <span class="c1">#pragma target 2.0</span>
 
-        #pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
+        <span class="c1">#pragma shader_feature _NORMALMAP</span>
+        <span class="c1">#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON</span>
+        <span class="c1">#pragma shader_feature _EMISSION </span>
+        <span class="c1">#pragma shader_feature _METALLICGLOSSMAP </span>
+        <span class="c1">#pragma shader_feature ___ _DETAIL_MULX2</span>
+        <span class="o">//</span> <span class="n">SM2</span><span class="o">.</span><span class="mi">0</span><span class="p">:</span> <span class="n">NOT</span> <span class="n">SUPPORTED</span> <span class="n">shader_feature</span> <span class="n">_PARALLAXMAP</span>
 
-        #pragma multi_compile_fwdbase
-        #pragma multi_compile_fog
+        <span class="c1">#pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE</span>
 
-        #pragma vertex vertBase
-        #pragma fragment fragBase
+        <span class="c1">#pragma multi_compile_fwdbase</span>
+        <span class="c1">#pragma multi_compile_fog</span>
 
-        #include &quot;TransparentDiffuseWithZwrite_FORWARD.cginc&quot;
-        ENDCG
-    }
-</pre></div>
-</div>
+        <span class="c1">#pragma vertex vertBase</span>
+        <span class="c1">#pragma fragment fragBase</span>
+
+        <span class="c1">#include "TransparentDiffuseWithZwrite_FORWARD.cginc"</span>
+        <span class="n">ENDCG</span>
+    <span class="p">}</span>
+</pre>
 <p>UnityStandardCore.cgincから使うところだけ収集。
-TransparentDiffuseWithZwrite_FORWARD.cginc
-#include “UnityStandardConfig.cginc”
-#include “UnityCG.cginc”
-#include “UnityStandardInput.cginc”
-#include “AutoLight.cginc”</p>
+TransparentDiffuseWithZwrite_FORWARD.cginc</p>
+<h2>include "UnityStandardConfig.cginc"</h2>
+<h2>include "UnityCG.cginc"</h2>
+<h2>include "UnityStandardInput.cginc"</h2>
+<h2>include "AutoLight.cginc"</h2>
 <p>struct VertexOutputForwardBase
 {
-float4 pos                            : SV_POSITION;
-float4 tex                            : TEXCOORD0;
-half3 eyeVec                         : TEXCOORD1;
-half4 tangentToWorldAndParallax[3]    : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax]
-half4 ambientOrLightmapUV            : TEXCOORD5;    // SH or Lightmap UV
-SHADOW_COORDS(6)
-UNITY_FOG_COORDS(7)</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    // next ones would not fit into SM2.0 limits, but they are always for SM3.0+
-</pre></div>
-</div>
-<p>#if UNITY_SPECCUBE_BOX_PROJECTION
-float3 posWorld                    : TEXCOORD8;
-#endif</p>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD
-#if UNITY_SPECCUBE_BOX_PROJECTION
-half3 reflUVW                : TEXCOORD9;
-#else
-half3 reflUVW                : TEXCOORD8;
-#endif
-#endif
-};</p>
+    float4 pos                            : SV_POSITION;
+    float4 tex                            : TEXCOORD0;
+    half3 eyeVec                         : TEXCOORD1;
+    half4 tangentToWorldAndParallax[3]    : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax]
+    half4 ambientOrLightmapUV            : TEXCOORD5;    // SH or Lightmap UV
+    SHADOW_COORDS(6)
+        UNITY_FOG_COORDS(7)</p>
+<pre class="code literal-block">    <span class="o">//</span> <span class="k">next</span> <span class="nv">ones</span> <span class="nv">would</span> <span class="nv">not</span> <span class="nv">fit</span> <span class="nv">into</span> <span class="nv">SM2</span>.<span class="mi">0</span> <span class="nv">limits</span>, <span class="nv">but</span> <span class="nv">they</span> <span class="nv">are</span> <span class="nv">always</span> <span class="k">for</span> <span class="nv">SM3</span>.<span class="mi">0</span><span class="o">+</span>
+</pre>
+<h2>if UNITY_SPECCUBE_BOX_PROJECTION</h2>
+<pre class="code literal-block">    float3 posWorld                    : TEXCOORD8;
+</pre>
+<h2>endif</h2>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD</h2>
+<h2>if UNITY_SPECCUBE_BOX_PROJECTION</h2>
+<pre class="code literal-block">half3 reflUVW                : TEXCOORD9;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">half3 reflUVW                : TEXCOORD8;
+</pre>
+<h2>endif</h2>
+<h2>endif</h2>
+<p>};</p>
 <p>half3 NormalizePerVertexNormal(half3 n)
-{
-#if (SHADER_TARGET &lt; 30) || UNITY_STANDARD_SIMPLE
-return normalize(n);
-#else
-return n; // will normalize per-pixel instead
-#endif
-}</p>
+{</p>
+<h2>if (SHADER_TARGET &lt; 30) || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">normalize</span><span class="ss">(</span><span class="nv">n</span><span class="ss">)</span><span class="c1">;</span>
+</pre>
+<h2>else</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">n</span><span class="c1">; // will normalize per-pixel instead</span>
+</pre>
+<h2>endif</h2>
+<p>}</p>
 <p>half3 NormalizePerPixelNormal(half3 n)
-{
-#if (SHADER_TARGET &lt; 30) || UNITY_STANDARD_SIMPLE
-return n;
-#else
-return normalize(n);
-#endif
-}</p>
+{</p>
+<h2>if (SHADER_TARGET &lt; 30) || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">n</span><span class="c1">;</span>
+</pre>
+<h2>else</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">normalize</span><span class="ss">(</span><span class="nv">n</span><span class="ss">)</span><span class="c1">;</span>
+</pre>
+<h2>endif</h2>
+<p>}</p>
 <p>UnityLight MainLight(half3 normalWorld)
 {
-UnityLight l;
-#ifdef LIGHTMAP_OFF</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>l.color = _LightColor0.rgb;
+    UnityLight l;</p>
+<h2>ifdef LIGHTMAP_OFF</h2>
+<pre class="code literal-block">l.color = _LightColor0.rgb;
 l.dir = _WorldSpaceLightPos0.xyz;
 l.ndotl = LambertTerm(normalWorld, l.dir);
-</pre></div>
-</div>
-<p>#else
-// no light specified by the engine
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">// no light specified by the engine
 // analytical light might be extracted from Lightmap data later on in the shader depending on the Lightmap type
 l.color = half3(0.f, 0.f, 0.f);
 l.ndotl = 0.f;
 l.dir = half3(0.f, 0.f, 0.f);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return l;
-</pre></div>
-</div>
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">l</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>inline half4 VertexGIForward(VertexInput v, float3 posWorld, half3 normalWorld)
 {
-half4 ambientOrLightmapUV = 0;
-// Static lightmaps
-#ifndef LIGHTMAP_OFF
-ambientOrLightmapUV.xy = v.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
-ambientOrLightmapUV.zw = 0;
-// Sample light probe for Dynamic objects only (no static or dynamic lightmaps)
-#elif UNITY_SHOULD_SAMPLE_SH
-#ifdef VERTEXLIGHT_ON
-// Approximated illumination from non-important point lights
+    half4 ambientOrLightmapUV = 0;
+    // Static lightmaps</p>
+<h2>ifndef LIGHTMAP_OFF</h2>
+<pre class="code literal-block"><span class="nv">ambientOrLightmapUV</span>.<span class="nv">xy</span> <span class="o">=</span> <span class="nv">v</span>.<span class="nv">uv1</span>.<span class="nv">xy</span> <span class="o">*</span> <span class="nv">unity_LightmapST</span>.<span class="nv">xy</span> <span class="o">+</span> <span class="nv">unity_LightmapST</span>.<span class="nv">zw</span><span class="c1">;</span>
+<span class="nv">ambientOrLightmapUV</span>.<span class="nv">zw</span> <span class="o">=</span> <span class="mi">0</span><span class="c1">;</span>
+<span class="o">//</span> <span class="nv">Sample</span> <span class="nv">light</span> <span class="nv">probe</span> <span class="k">for</span> <span class="nv">Dynamic</span> <span class="nv">objects</span> <span class="nv">only</span> <span class="ss">(</span><span class="nv">no</span> <span class="nv">static</span> <span class="nv">or</span> <span class="nv">dynamic</span> <span class="nv">lightmaps</span><span class="ss">)</span>
+</pre>
+<h2>elif UNITY_SHOULD_SAMPLE_SH</h2>
+<h2>ifdef VERTEXLIGHT_ON</h2>
+<pre class="code literal-block">// Approximated illumination from non-important point lights
 ambientOrLightmapUV.rgb = Shade4PointLights(
-unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
-unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
-unity_4LightAtten0, posWorld, normalWorld);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
-</pre></div>
-</div>
-<p>#endif</p>
-<p>#ifdef DYNAMICLIGHTMAP_ON
-ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return ambientOrLightmapUV;
-</pre></div>
-</div>
+        unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+        unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+        unity_4LightAtten0, posWorld, normalWorld);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block">ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
+</pre>
+<h2>endif</h2>
+<h2>ifdef DYNAMICLIGHTMAP_ON</h2>
+<pre class="code literal-block">ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">ambientOrLightmapUV</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>VertexOutputForwardBase vertForwardBase(VertexInput v)
 {
-VertexOutputForwardBase o;
-UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float4 posWorld = mul(_Object2World, v.vertex);
-</pre></div>
-</div>
-<p>#if UNITY_SPECCUBE_BOX_PROJECTION
-o.posWorld = posWorld.xyz;
-#endif
-o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+    VertexOutputForwardBase o;
+    UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
+<pre class="code literal-block">float4 posWorld = mul(_Object2World, v.vertex);
+</pre>
+<h2>if UNITY_SPECCUBE_BOX_PROJECTION</h2>
+<pre class="code literal-block">o.posWorld = posWorld.xyz;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block">o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
 o.tex = TexCoords(v);
 o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
 float3 normalWorld = UnityObjectToWorldNormal(v.normal);
-#ifdef _TANGENT_TO_WORLD
-float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
+</pre>
+<h2>ifdef _TANGENT_TO_WORLD</h2>
+<pre class="code literal-block">float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
+
+float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
 o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
 o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
 o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
-</pre></div>
-</div>
-<p>#else
-o.tangentToWorldAndParallax[0].xyz = 0;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">o.tangentToWorldAndParallax[0].xyz = 0;
 o.tangentToWorldAndParallax[1].xyz = 0;
 o.tangentToWorldAndParallax[2].xyz = normalWorld;
-#endif
-//We need this for shadow receving
-TRANSFER_SHADOW(o);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
-</pre></div>
-</div>
-<p>#ifdef _PARALLAXMAP
-TANGENT_SPACE_ROTATION;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="o">//</span><span class="nv">We</span> <span class="nv">need</span> <span class="nv">this</span> <span class="k">for</span> <span class="nv">shadow</span> <span class="nv">receving</span>
+<span class="nv">TRANSFER_SHADOW</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span><span class="c1">;</span>
+
+<span class="nv">o</span>.<span class="nv">ambientOrLightmapUV</span> <span class="o">=</span> <span class="nv">VertexGIForward</span><span class="ss">(</span><span class="nv">v</span>, <span class="nv">posWorld</span>, <span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
+</pre>
+<h2>ifdef _PARALLAXMAP</h2>
+<pre class="code literal-block">TANGENT_SPACE_ROTATION;
 half3 viewDirForParallax = mul(rotation, ObjSpaceViewDir(v.vertex));
 o.tangentToWorldAndParallax[0].w = viewDirForParallax.x;
 o.tangentToWorldAndParallax[1].w = viewDirForParallax.y;
 o.tangentToWorldAndParallax[2].w = viewDirForParallax.z;
-#endif</p>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD
-o.reflUVW = reflect(o.eyeVec, normalWorld);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UNITY_TRANSFER_FOG(o,o.pos);
-return o;
-</pre></div>
-</div>
+</pre>
+<h2>endif</h2>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD</h2>
+<pre class="code literal-block">o.reflUVW = reflect(o.eyeVec, normalWorld);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>,<span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>VertexOutputForwardBase vertBase(VertexInput v) { return vertForwardBase(v); }
 //VertexOutputForwardAdd vertAdd(VertexInput v) { return vertForwardAdd(v); }</p>
-<p>#ifdef _PARALLAXMAP
-#define IN_VIEWDIR4PARALLAX(i) NormalizePerPixelNormal(half3(i.tangentToWorldAndParallax[0].w,i.tangentToWorldAndParallax[1].w,i.tangentToWorldAndParallax[2].w))
-#define IN_VIEWDIR4PARALLAX_FWDADD(i) NormalizePerPixelNormal(i.viewDirForParallax.xyz)
-#else
-#define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
-#define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
-#endif</p>
-<p>#if UNITY_SPECCUBE_BOX_PROJECTION
-#define IN_WORLDPOS(i) i.posWorld
-#else
-#define IN_WORLDPOS(i) half3(0,0,0)
-#endif</p>
+<h2>ifdef _PARALLAXMAP</h2>
+<h2>define IN_VIEWDIR4PARALLAX(i) NormalizePerPixelNormal(half3(i.tangentToWorldAndParallax[0].w,i.tangentToWorldAndParallax[1].w,i.tangentToWorldAndParallax[2].w))</h2>
+<h2>define IN_VIEWDIR4PARALLAX_FWDADD(i) NormalizePerPixelNormal(i.viewDirForParallax.xyz)</h2>
+<h2>else</h2>
+<h2>define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)</h2>
+<h2>define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)</h2>
+<h2>endif</h2>
+<h2>if UNITY_SPECCUBE_BOX_PROJECTION</h2>
+<h2>define IN_WORLDPOS(i) i.posWorld</h2>
+<h2>else</h2>
+<h2>define IN_WORLDPOS(i) half3(0,0,0)</h2>
+<h2>endif</h2>
 <p>struct FragmentCommonData
 {
-half3 diffColor, specColor;
-// Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
-// Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
-half oneMinusReflectivity, oneMinusRoughness;
-half3 normalWorld, eyeVec, posWorld;
-half alpha;</p>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
-half3 reflUVW;
-#endif</p>
-<p>#if UNITY_STANDARD_SIMPLE
-half3 tangentSpaceNormal;
-#endif
-};</p>
+    half3 diffColor, specColor;
+    // Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
+    // Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
+    half oneMinusReflectivity, oneMinusRoughness;
+    half3 normalWorld, eyeVec, posWorld;
+    half alpha;</p>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">half3 reflUVW;
+</pre>
+<h2>endif</h2>
+<h2>if UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">half3 tangentSpaceNormal;
+</pre>
+<h2>endif</h2>
+<p>};</p>
 <p>inline FragmentCommonData MetallicSetup(float4 i_tex)
 {
-half2 metallicGloss = MetallicGloss(i_tex.xy);
-half metallic = metallicGloss.x;
-half oneMinusRoughness = metallicGloss.y;        // this is 1 minus the square root of real roughness m.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half oneMinusReflectivity;
-half3 specColor;
-half3 diffColor = DiffuseAndSpecularFromMetallic(Albedo(i_tex), metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
+    half2 metallicGloss = MetallicGloss(i_tex.xy);
+    half metallic = metallicGloss.x;
+    half oneMinusRoughness = metallicGloss.y;        // this is 1 minus the square root of real roughness m.</p>
+<pre class="code literal-block"><span class="nv">half</span> <span class="nv">oneMinusReflectivity</span><span class="c1">;</span>
+<span class="nv">half3</span> <span class="nv">specColor</span><span class="c1">;</span>
+<span class="nv">half3</span> <span class="nv">diffColor</span> <span class="o">=</span> <span class="nv">DiffuseAndSpecularFromMetallic</span><span class="ss">(</span><span class="nv">Albedo</span><span class="ss">(</span><span class="nv">i_tex</span><span class="ss">)</span>, <span class="nv">metallic</span>, <span class="cm">/*out*/</span> <span class="nv">specColor</span>, <span class="cm">/*out*/</span> <span class="nv">oneMinusReflectivity</span><span class="ss">)</span><span class="c1">;</span>
 
-FragmentCommonData o = (FragmentCommonData)0;
-o.diffColor = diffColor;
-o.specColor = specColor;
-o.oneMinusReflectivity = oneMinusReflectivity;
-o.oneMinusRoughness = oneMinusRoughness;
-return o;
-</pre></div>
-</div>
+<span class="nv">FragmentCommonData</span> <span class="nv">o</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">FragmentCommonData</span><span class="ss">)</span><span class="mi">0</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">diffColor</span> <span class="o">=</span> <span class="nv">diffColor</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">specColor</span> <span class="o">=</span> <span class="nv">specColor</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">oneMinusReflectivity</span> <span class="o">=</span> <span class="nv">oneMinusReflectivity</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">oneMinusRoughness</span> <span class="o">=</span> <span class="nv">oneMinusRoughness</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
+</pre>
 <p>}</p>
-<p>#ifndef UNITY_SETUP_BRDF_INPUT
-#define UNITY_SETUP_BRDF_INPUT SpecularSetup
-#endif</p>
+<h2>ifndef UNITY_SETUP_BRDF_INPUT</h2>
+<h2>define UNITY_SETUP_BRDF_INPUT SpecularSetup</h2>
+<h2>endif</h2>
 <p>inline FragmentCommonData SpecularSetup(float4 i_tex)
 {
-half4 specGloss = SpecularGloss(i_tex.xy);
-half3 specColor = specGloss.rgb;
-half oneMinusRoughness = specGloss.a;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half oneMinusReflectivity;
-half3 diffColor = EnergyConservationBetweenDiffuseAndSpecular(Albedo(i_tex), specColor, /*out*/ oneMinusReflectivity);
+    half4 specGloss = SpecularGloss(i_tex.xy);
+    half3 specColor = specGloss.rgb;
+    half oneMinusRoughness = specGloss.a;</p>
+<pre class="code literal-block"><span class="nv">half</span> <span class="nv">oneMinusReflectivity</span><span class="c1">;</span>
+<span class="nv">half3</span> <span class="nv">diffColor</span> <span class="o">=</span> <span class="nv">EnergyConservationBetweenDiffuseAndSpecular</span><span class="ss">(</span><span class="nv">Albedo</span><span class="ss">(</span><span class="nv">i_tex</span><span class="ss">)</span>, <span class="nv">specColor</span>, <span class="cm">/*out*/</span> <span class="nv">oneMinusReflectivity</span><span class="ss">)</span><span class="c1">;</span>
 
-FragmentCommonData o = (FragmentCommonData)0;
-o.diffColor = diffColor;
-o.specColor = specColor;
-o.oneMinusReflectivity = oneMinusReflectivity;
-o.oneMinusRoughness = oneMinusRoughness;
-return o;
-</pre></div>
-</div>
+<span class="nv">FragmentCommonData</span> <span class="nv">o</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">FragmentCommonData</span><span class="ss">)</span><span class="mi">0</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">diffColor</span> <span class="o">=</span> <span class="nv">diffColor</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">specColor</span> <span class="o">=</span> <span class="nv">specColor</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">oneMinusReflectivity</span> <span class="o">=</span> <span class="nv">oneMinusReflectivity</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">oneMinusRoughness</span> <span class="o">=</span> <span class="nv">oneMinusRoughness</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>half3 PerPixelWorldNormal(float4 i_tex, half4 tangentToWorld[3])
-{
-#ifdef _NORMALMAP
-half3 tangent = tangentToWorld[0].xyz;
+{</p>
+<h2>ifdef _NORMALMAP</h2>
+<pre class="code literal-block">half3 tangent = tangentToWorld[0].xyz;
 half3 binormal = tangentToWorld[1].xyz;
-half3 normal = tangentToWorld[2].xyz;</p>
-<p>#if UNITY_TANGENT_ORTHONORMALIZE
-normal = NormalizePerPixelNormal(normal);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// ortho-normalize Tangent
+half3 normal = tangentToWorld[2].xyz;
+</pre>
+<h2>if UNITY_TANGENT_ORTHONORMALIZE</h2>
+<pre class="code literal-block">normal = NormalizePerPixelNormal(normal);
+
+// ortho-normalize Tangent
 tangent = normalize(tangent - normal * dot(tangent, normal));
 
 // recalculate Binormal
 half3 newB = cross(normal, tangent);
 binormal = newB * sign(dot(newB, binormal));
-</pre></div>
-</div>
-<p>#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half3 normalTangent = NormalInTangentSpace(i_tex);
-half3 normalWorld = NormalizePerPixelNormal(tangent * normalTangent.x + binormal * normalTangent.y + normal * normalTangent.z); // @TODO: see if we can squeeze this normalize on SM2.0 as well
-</pre></div>
-</div>
-<p>#else
-half3 normalWorld = normalize(tangentToWorld[2].xyz);
-#endif
-return normalWorld;
-}</p>
-<p>#define FRAGMENT_SETUP(x) FragmentCommonData x = <br />
-FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="n">half3</span><span class="w"> </span><span class="n">normalTangent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NormalInTangentSpace</span><span class="p">(</span><span class="n">i_tex</span><span class="p">);</span><span class="w"></span>
+<span class="n">half3</span><span class="w"> </span><span class="n">normalWorld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NormalizePerPixelNormal</span><span class="p">(</span><span class="n">tangent</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">normalTangent</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">binormal</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">normalTangent</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">normalTangent</span><span class="p">.</span><span class="n">z</span><span class="p">);</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="nv">@TODO</span><span class="err">:</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">squeeze</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">normalize</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">SM2</span><span class="mf">.0</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">well</span><span class="w"></span>
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">half3 normalWorld = normalize(tangentToWorld[2].xyz);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">normalWorld</span><span class="c1">;</span>
+</pre>
+<p>}</p>
+<p>#define FRAGMENT_SETUP(x) FragmentCommonData x = \
+                                                 FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
 <p>inline FragmentCommonData FragmentSetup(float4 i_tex, half3 i_eyeVec, half3 i_viewDirForParallax, half4 tangentToWorld[3], half3 i_posWorld)
 {
-i_tex = Parallax(i_tex, i_viewDirForParallax);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half alpha = Alpha(i_tex.xy);
-</pre></div>
-</div>
-<p>#if defined(_ALPHATEST_ON)
-clip(alpha - _Cutoff);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>FragmentCommonData o = UNITY_SETUP_BRDF_INPUT(i_tex);
-o.normalWorld = PerPixelWorldNormal(i_tex, tangentToWorld);
-o.eyeVec = NormalizePerPixelNormal(i_eyeVec);
-o.posWorld = i_posWorld;
+    i_tex = Parallax(i_tex, i_viewDirForParallax);</p>
+<pre class="code literal-block">half alpha = Alpha(i_tex.xy);
+</pre>
+<h2>if defined(_ALPHATEST_ON)</h2>
+<pre class="code literal-block">clip(alpha - _Cutoff);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nt">FragmentCommonData</span> <span class="nt">o</span> <span class="o">=</span> <span class="nt">UNITY_SETUP_BRDF_INPUT</span><span class="o">(</span><span class="nt">i_tex</span><span class="o">);</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">normalWorld</span> <span class="o">=</span> <span class="nt">PerPixelWorldNormal</span><span class="o">(</span><span class="nt">i_tex</span><span class="o">,</span> <span class="nt">tangentToWorld</span><span class="o">);</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">eyeVec</span> <span class="o">=</span> <span class="nt">NormalizePerPixelNormal</span><span class="o">(</span><span class="nt">i_eyeVec</span><span class="o">);</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">posWorld</span> <span class="o">=</span> <span class="nt">i_posWorld</span><span class="o">;</span>
 
-// NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
-o.diffColor = PreMultiplyAlpha(o.diffColor, alpha, o.oneMinusReflectivity, /*out*/ o.alpha);
-return o;
-</pre></div>
-</div>
+<span class="o">//</span> <span class="nt">NOTE</span><span class="o">:</span> <span class="nt">shader</span> <span class="nt">relies</span> <span class="nt">on</span> <span class="nt">pre-multiply</span> <span class="nt">alpha-blend</span> <span class="o">(</span><span class="nt">_SrcBlend</span> <span class="o">=</span> <span class="nt">One</span><span class="o">,</span> <span class="nt">_DstBlend</span> <span class="o">=</span> <span class="nt">OneMinusSrcAlpha</span><span class="o">)</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">diffColor</span> <span class="o">=</span> <span class="nt">PreMultiplyAlpha</span><span class="o">(</span><span class="nt">o</span><span class="p">.</span><span class="nc">diffColor</span><span class="o">,</span> <span class="nt">alpha</span><span class="o">,</span> <span class="nt">o</span><span class="p">.</span><span class="nc">oneMinusReflectivity</span><span class="o">,</span> <span class="c">/*out*/</span> <span class="nt">o</span><span class="p">.</span><span class="nc">alpha</span><span class="o">);</span>
+<span class="nt">return</span> <span class="nt">o</span><span class="o">;</span>
+</pre>
 <p>}</p>
 <p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light, bool reflections)
 {
-UnityGIInput d;
-d.light = light;
-d.worldPos = s.posWorld;
-d.worldViewDir = -s.eyeVec;
-d.atten = atten;
-#if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)
-d.ambient = 0;
+    UnityGIInput d;
+    d.light = light;
+    d.worldPos = s.posWorld;
+    d.worldViewDir = -s.eyeVec;
+    d.atten = atten;</p>
+<h2>if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)</h2>
+<pre class="code literal-block">d.ambient = 0;
 d.lightmapUV = i_ambientOrLightmapUV;
-#else
-d.ambient = i_ambientOrLightmapUV.rgb;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">d.ambient = i_ambientOrLightmapUV.rgb;
 d.lightmapUV = 0;
-#endif
-d.boxMax[0] = unity_SpecCube0_BoxMax;
-d.boxMin[0] = unity_SpecCube0_BoxMin;
-d.probePosition[0] = unity_SpecCube0_ProbePosition;
-d.probeHDR[0] = unity_SpecCube0_HDR;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>d.boxMax[1] = unity_SpecCube1_BoxMax;
-d.boxMin[1] = unity_SpecCube1_BoxMin;
-d.probePosition[1] = unity_SpecCube1_ProbePosition;
-d.probeHDR[1] = unity_SpecCube1_HDR;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">d</span>.<span class="nv">boxMax</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_BoxMax</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">boxMin</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_BoxMin</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probePosition</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_ProbePosition</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probeHDR</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_HDR</span><span class="c1">;</span>
 
-if (reflections)
+<span class="nv">d</span>.<span class="nv">boxMax</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_BoxMax</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">boxMin</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_BoxMin</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probePosition</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_ProbePosition</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probeHDR</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_HDR</span><span class="c1">;</span>
+
+<span class="k">if</span> <span class="ss">(</span><span class="nv">reflections</span><span class="ss">)</span>
 {
-    Unity_GlossyEnvironmentData g;
-    g.roughness = 1 - s.oneMinusRoughness;
-</pre></div>
-</div>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
-g.reflUVW = s.reflUVW;
-#else
-g.reflUVW = reflect(s.eyeVec, s.normalWorld);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    return UnityGlobalIllumination(d, occlusion, s.normalWorld, g);
+    <span class="nv">Unity_GlossyEnvironmentData</span> <span class="nv">g</span><span class="c1">;</span>
+    <span class="nv">g</span>.<span class="nv">roughness</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span><span class="c1">;</span>
+</pre>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">    g.reflUVW = s.reflUVW;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">    g.reflUVW = reflect(s.eyeVec, s.normalWorld);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block">    <span class="k">return</span> <span class="nv">UnityGlobalIllumination</span><span class="ss">(</span><span class="nv">d</span>, <span class="nv">occlusion</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="nv">g</span><span class="ss">)</span><span class="c1">;</span>
 }
-else
+<span class="k">else</span>
 {
-    return UnityGlobalIllumination(d, occlusion, s.normalWorld);
+    <span class="k">return</span> <span class="nv">UnityGlobalIllumination</span><span class="ss">(</span><span class="nv">d</span>, <span class="nv">occlusion</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
 }
-</pre></div>
-</div>
+</pre>
 <p>}</p>
 <p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light)
 {
-return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
+    return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
 }</p>
 <p>half4 OutputForward(half4 output, half alphaFromSurface)
-{
-#if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
-output.a = alphaFromSurface;
-#else
-UNITY_OPAQUE_ALPHA(output.a);
-#endif
-return output;
-}</p>
+{</p>
+<h2>if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)</h2>
+<pre class="code literal-block">output.a = alphaFromSurface;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">UNITY_OPAQUE_ALPHA(output.a);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">output</span><span class="c1">;</span>
+</pre>
+<p>}</p>
 <p>half4 fragForwardBaseInternal(VertexOutputForwardBase i)
 {
-FRAGMENT_SETUP(s)
-#if UNITY_OPTIMIZE_TEXCUBELOD
-s.reflUVW = i.reflUVW;
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UnityLight mainLight = MainLight(s.normalWorld);
-half atten = SHADOW_ATTENUATION(i);
+    FRAGMENT_SETUP(s)</p>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD</h2>
+<pre class="code literal-block">    s.reflUVW = i.reflUVW;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">UnityLight</span> <span class="nv">mainLight</span> <span class="o">=</span> <span class="nv">MainLight</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">half</span> <span class="nv">atten</span> <span class="o">=</span> <span class="nv">SHADOW_ATTENUATION</span><span class="ss">(</span><span class="nv">i</span><span class="ss">)</span><span class="c1">;</span>
 
 
-half occlusion = Occlusion(i.tex.xy);
-UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+<span class="nv">half</span> <span class="nv">occlusion</span> <span class="o">=</span> <span class="nv">Occlusion</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">tex</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">UnityGI</span> <span class="nv">gi</span> <span class="o">=</span> <span class="nv">FragmentGI</span><span class="ss">(</span><span class="nv">s</span>, <span class="nv">occlusion</span>, <span class="nv">i</span>.<span class="nv">ambientOrLightmapUV</span>, <span class="nv">atten</span>, <span class="nv">mainLight</span><span class="ss">)</span><span class="c1">;</span>
 
-half4 c = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
-c.rgb += UNITY_BRDF_GI(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
-c.rgb += Emission(i.tex.xy);
+<span class="nv">half4</span> <span class="nv">c</span> <span class="o">=</span> <span class="nv">UNITY_BRDF_PBS</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">diffColor</span>, <span class="nv">s</span>.<span class="nv">specColor</span>, <span class="nv">s</span>.<span class="nv">oneMinusReflectivity</span>, <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="o">-</span><span class="nv">s</span>.<span class="nv">eyeVec</span>, <span class="nv">gi</span>.<span class="nv">light</span>, <span class="nv">gi</span>.<span class="nv">indirect</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">+=</span> <span class="nv">UNITY_BRDF_GI</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">diffColor</span>, <span class="nv">s</span>.<span class="nv">specColor</span>, <span class="nv">s</span>.<span class="nv">oneMinusReflectivity</span>, <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="o">-</span><span class="nv">s</span>.<span class="nv">eyeVec</span>, <span class="nv">occlusion</span>, <span class="nv">gi</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">+=</span> <span class="nv">Emission</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">tex</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
 
-UNITY_APPLY_FOG(i.fogCoord, c.rgb);
-return OutputForward(c, s.alpha);
-</pre></div>
-</div>
+<span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">fogCoord</span>, <span class="nv">c</span>.<span class="nv">rgb</span><span class="ss">)</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">OutputForward</span><span class="ss">(</span><span class="nv">c</span>, <span class="nv">s</span>.<span class="nv">alpha</span><span class="ss">)</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>half4 fragBase(VertexOutputForwardBase i) : SV_Target{ return fragForwardBaseInternal(i); }
 //half4 fragAdd(VertexOutputForwardAdd i) : SV_Target{ return fragForwardAddInternal(i); }</p>
 <p>ある程度#includeを除いてシンプル化した。しかし、アルファブレンディングがなかなか有効にならずに悩んだ。
-原因は、
-#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON</p>
+原因は、</p>
+<h2>pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON</h2>
 <p>で、このShaderキーワードの_ALPHABLEND_ONをEnableにしてやる必要があった。
-material.EnableKeyword(“_ALPHABLEND_ON”);</p>
+material.EnableKeyword("_ALPHABLEND_ON");</p>
 <p>ビルトインシェーダーでは何故自動で”_ALPHABLEND_ON”になるのか
 DefaultResourcesExtra/Standard.shaderの末尾
-CustomEditor “StandardShaderGUI”</p>
+    CustomEditor "StandardShaderGUI"</p>
 <p>でカスタムエディタが指定してありこれを経由してマテリアルに介入してたのであった・・・。わかりにくいw
 shader_featureとmulti_compileを剥がす
 少しコード整理。
 shader_featureとmulti_compileを剥がした。
-ピクセルシェーダーは、GIとか書いてあってわりと複雑なのでその辺には手を触れず。
-#include “UnityStandardConfig.cginc”
-#include “UnityCG.cginc”
-#include “UnityStandardInput.cginc”
-#include “AutoLight.cginc”</p>
+ピクセルシェーダーは、GIとか書いてあってわりと複雑なのでその辺には手を触れず。</p>
+<h2>include "UnityStandardConfig.cginc"</h2>
+<h2>include "UnityCG.cginc"</h2>
+<h2>include "UnityStandardInput.cginc"</h2>
+<h2>include "AutoLight.cginc"</h2>
 <p>//////////////////////////////////////////////////////////////////////////////
 // vertBase
 //////////////////////////////////////////////////////////////////////////////
 struct VertexOutputForwardBase
 {
-float4 pos                            : SV_POSITION;
-float4 tex                            : TEXCOORD0;
-half3 eyeVec                         : TEXCOORD1;
-half4 tangentToWorldAndParallax[3]    : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax]
-half4 ambientOrLightmapUV            : TEXCOORD5;    // SH or Lightmap UV
-SHADOW_COORDS(6)
-UNITY_FOG_COORDS(7)
+    float4 pos                            : SV_POSITION;
+    float4 tex                            : TEXCOORD0;
+    half3 eyeVec                         : TEXCOORD1;
+    half4 tangentToWorldAndParallax[3]    : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax]
+    half4 ambientOrLightmapUV            : TEXCOORD5;    // SH or Lightmap UV
+    SHADOW_COORDS(6)
+    UNITY_FOG_COORDS(7)
 };</p>
 <p>inline half4 VertexGIForward(VertexInput v, float3 posWorld, half3 normalWorld)
 {
-half4 ambientOrLightmapUV = 0;
-// Static lightmaps
-#ifndef LIGHTMAP_OFF
-ambientOrLightmapUV.xy = v.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
-ambientOrLightmapUV.zw = 0;
-// Sample light probe for Dynamic objects only (no static or dynamic lightmaps)
-#elif UNITY_SHOULD_SAMPLE_SH
-#ifdef VERTEXLIGHT_ON
-// Approximated illumination from non-important point lights
+    half4 ambientOrLightmapUV = 0;
+    // Static lightmaps</p>
+<h2>ifndef LIGHTMAP_OFF</h2>
+<pre class="code literal-block"><span class="nv">ambientOrLightmapUV</span>.<span class="nv">xy</span> <span class="o">=</span> <span class="nv">v</span>.<span class="nv">uv1</span>.<span class="nv">xy</span> <span class="o">*</span> <span class="nv">unity_LightmapST</span>.<span class="nv">xy</span> <span class="o">+</span> <span class="nv">unity_LightmapST</span>.<span class="nv">zw</span><span class="c1">;</span>
+<span class="nv">ambientOrLightmapUV</span>.<span class="nv">zw</span> <span class="o">=</span> <span class="mi">0</span><span class="c1">;</span>
+<span class="o">//</span> <span class="nv">Sample</span> <span class="nv">light</span> <span class="nv">probe</span> <span class="k">for</span> <span class="nv">Dynamic</span> <span class="nv">objects</span> <span class="nv">only</span> <span class="ss">(</span><span class="nv">no</span> <span class="nv">static</span> <span class="nv">or</span> <span class="nv">dynamic</span> <span class="nv">lightmaps</span><span class="ss">)</span>
+</pre>
+<h2>elif UNITY_SHOULD_SAMPLE_SH</h2>
+<h2>ifdef VERTEXLIGHT_ON</h2>
+<pre class="code literal-block">// Approximated illumination from non-important point lights
 ambientOrLightmapUV.rgb = Shade4PointLights(
-unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
-unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
-unity_4LightAtten0, posWorld, normalWorld);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
-</pre></div>
-</div>
-<p>#endif</p>
-<p>#ifdef DYNAMICLIGHTMAP_ON
-ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return ambientOrLightmapUV;
-</pre></div>
-</div>
+        unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+        unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+        unity_4LightAtten0, posWorld, normalWorld);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block">ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
+</pre>
+<h2>endif</h2>
+<h2>ifdef DYNAMICLIGHTMAP_ON</h2>
+<pre class="code literal-block">ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">ambientOrLightmapUV</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>half3 NormalizePerVertexNormal(half3 n)
 {
-return normalize(n);
+    return normalize(n);
 }</p>
 <p>VertexOutputForwardBase vertForwardBase(VertexInput v)
 {
-VertexOutputForwardBase o;
-UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float4 posWorld = mul(_Object2World, v.vertex);
-</pre></div>
-</div>
-<p>#if UNITY_SPECCUBE_BOX_PROJECTION
-o.posWorld = posWorld.xyz;
-#endif
-o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+    VertexOutputForwardBase o;
+    UNITY_INITIALIZE_OUTPUT(VertexOutputForwardBase, o);</p>
+<pre class="code literal-block">float4 posWorld = mul(_Object2World, v.vertex);
+</pre>
+<h2>if UNITY_SPECCUBE_BOX_PROJECTION</h2>
+<pre class="code literal-block">o.posWorld = posWorld.xyz;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block">o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
 o.tex = TexCoords(v);
 o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
 float3 normalWorld = UnityObjectToWorldNormal(v.normal);
-#ifdef _TANGENT_TO_WORLD
-float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
+</pre>
+<h2>ifdef _TANGENT_TO_WORLD</h2>
+<pre class="code literal-block">float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
+
+float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
 o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
 o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
 o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
-</pre></div>
-</div>
-<p>#else
-o.tangentToWorldAndParallax[0].xyz = 0;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">o.tangentToWorldAndParallax[0].xyz = 0;
 o.tangentToWorldAndParallax[1].xyz = 0;
 o.tangentToWorldAndParallax[2].xyz = normalWorld;
-#endif
-//We need this for shadow receving
-TRANSFER_SHADOW(o);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
-</pre></div>
-</div>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD
-o.reflUVW = reflect(o.eyeVec, normalWorld);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UNITY_TRANSFER_FOG(o,o.pos);
-return o;
-</pre></div>
-</div>
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="o">//</span><span class="nv">We</span> <span class="nv">need</span> <span class="nv">this</span> <span class="k">for</span> <span class="nv">shadow</span> <span class="nv">receving</span>
+<span class="nv">TRANSFER_SHADOW</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span><span class="c1">;</span>
+
+<span class="nv">o</span>.<span class="nv">ambientOrLightmapUV</span> <span class="o">=</span> <span class="nv">VertexGIForward</span><span class="ss">(</span><span class="nv">v</span>, <span class="nv">posWorld</span>, <span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
+</pre>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD</h2>
+<pre class="code literal-block">o.reflUVW = reflect(o.eyeVec, normalWorld);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>,<span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>VertexOutputForwardBase vertBase(VertexInput v) { return vertForwardBase(v); }</p>
 <p>//////////////////////////////////////////////////////////////////////////////
 // fragBase
-//////////////////////////////////////////////////////////////////////////////
-#define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
-#define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
-#define IN_WORLDPOS(i) half3(0,0,0)</p>
+//////////////////////////////////////////////////////////////////////////////</p>
+<h2>define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)</h2>
+<h2>define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)</h2>
+<h2>define IN_WORLDPOS(i) half3(0,0,0)</h2>
 <p>struct FragmentCommonData
 {
-half3 diffColor, specColor;
-// Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
-// Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
-half oneMinusReflectivity, oneMinusRoughness;
-half3 normalWorld, eyeVec, posWorld;
-half alpha;</p>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
-half3 reflUVW;
-#endif</p>
-<p>#if UNITY_STANDARD_SIMPLE
-half3 tangentSpaceNormal;
-#endif
-};</p>
-<p>#ifndef UNITY_SETUP_BRDF_INPUT
-#define UNITY_SETUP_BRDF_INPUT SpecularSetup
-#endif</p>
+    half3 diffColor, specColor;
+    // Note: oneMinusRoughness &amp; oneMinusReflectivity for optimization purposes, mostly for DX9 SM2.0 level.
+    // Most of the math is being done on these (1-x) values, and that saves a few precious ALU slots.
+    half oneMinusReflectivity, oneMinusRoughness;
+    half3 normalWorld, eyeVec, posWorld;
+    half alpha;</p>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">half3 reflUVW;
+</pre>
+<h2>endif</h2>
+<h2>if UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">half3 tangentSpaceNormal;
+</pre>
+<h2>endif</h2>
+<p>};</p>
+<h2>ifndef UNITY_SETUP_BRDF_INPUT</h2>
+<h2>define UNITY_SETUP_BRDF_INPUT SpecularSetup</h2>
+<h2>endif</h2>
 <p>inline FragmentCommonData SpecularSetup(float4 i_tex)
 {
-half4 specGloss = SpecularGloss(i_tex.xy);
-half3 specColor = specGloss.rgb;
-half oneMinusRoughness = specGloss.a;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half oneMinusReflectivity;
-half3 diffColor = EnergyConservationBetweenDiffuseAndSpecular(Albedo(i_tex), specColor, /*out*/ oneMinusReflectivity);
+    half4 specGloss = SpecularGloss(i_tex.xy);
+    half3 specColor = specGloss.rgb;
+    half oneMinusRoughness = specGloss.a;</p>
+<pre class="code literal-block"><span class="nv">half</span> <span class="nv">oneMinusReflectivity</span><span class="c1">;</span>
+<span class="nv">half3</span> <span class="nv">diffColor</span> <span class="o">=</span> <span class="nv">EnergyConservationBetweenDiffuseAndSpecular</span><span class="ss">(</span><span class="nv">Albedo</span><span class="ss">(</span><span class="nv">i_tex</span><span class="ss">)</span>, <span class="nv">specColor</span>, <span class="cm">/*out*/</span> <span class="nv">oneMinusReflectivity</span><span class="ss">)</span><span class="c1">;</span>
 
-FragmentCommonData o = (FragmentCommonData)0;
-o.diffColor = diffColor;
-o.specColor = specColor;
-o.oneMinusReflectivity = oneMinusReflectivity;
-o.oneMinusRoughness = oneMinusRoughness;
-return o;
-</pre></div>
-</div>
+<span class="nv">FragmentCommonData</span> <span class="nv">o</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">FragmentCommonData</span><span class="ss">)</span><span class="mi">0</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">diffColor</span> <span class="o">=</span> <span class="nv">diffColor</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">specColor</span> <span class="o">=</span> <span class="nv">specColor</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">oneMinusReflectivity</span> <span class="o">=</span> <span class="nv">oneMinusReflectivity</span><span class="c1">;</span>
+<span class="nv">o</span>.<span class="nv">oneMinusRoughness</span> <span class="o">=</span> <span class="nv">oneMinusRoughness</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>half3 PerPixelWorldNormal(float4 i_tex, half4 tangentToWorld[3])
 {
-half3 normalWorld = normalize(tangentToWorld[2].xyz);
-return normalWorld;
+    half3 normalWorld = normalize(tangentToWorld[2].xyz);
+    return normalWorld;
 }</p>
-<p>#define FRAGMENT_SETUP(x) FragmentCommonData x = <br />
-FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
+<p>#define FRAGMENT_SETUP(x) FragmentCommonData x = \
+                                                 FragmentSetup(i.tex, i.eyeVec, IN_VIEWDIR4PARALLAX(i), i.tangentToWorldAndParallax, IN_WORLDPOS(i));</p>
 <p>inline FragmentCommonData FragmentSetup(float4 i_tex, half3 i_eyeVec, half3 i_viewDirForParallax, half4 tangentToWorld[3], half3 i_posWorld)
 {
-i_tex = Parallax(i_tex, i_viewDirForParallax);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>half alpha = Alpha(i_tex.xy);
+    i_tex = Parallax(i_tex, i_viewDirForParallax);</p>
+<pre class="code literal-block"><span class="nt">half</span> <span class="nt">alpha</span> <span class="o">=</span> <span class="nt">Alpha</span><span class="o">(</span><span class="nt">i_tex</span><span class="p">.</span><span class="nc">xy</span><span class="o">);</span>
 
-FragmentCommonData o = UNITY_SETUP_BRDF_INPUT(i_tex);
-o.normalWorld = PerPixelWorldNormal(i_tex, tangentToWorld);
-o.eyeVec = i_eyeVec;
-o.posWorld = i_posWorld;
+<span class="nt">FragmentCommonData</span> <span class="nt">o</span> <span class="o">=</span> <span class="nt">UNITY_SETUP_BRDF_INPUT</span><span class="o">(</span><span class="nt">i_tex</span><span class="o">);</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">normalWorld</span> <span class="o">=</span> <span class="nt">PerPixelWorldNormal</span><span class="o">(</span><span class="nt">i_tex</span><span class="o">,</span> <span class="nt">tangentToWorld</span><span class="o">);</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">eyeVec</span> <span class="o">=</span> <span class="nt">i_eyeVec</span><span class="o">;</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">posWorld</span> <span class="o">=</span> <span class="nt">i_posWorld</span><span class="o">;</span>
 
-// NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
-o.diffColor = PreMultiplyAlpha(o.diffColor, alpha, o.oneMinusReflectivity, /*out*/ o.alpha);
-return o;
-</pre></div>
-</div>
+<span class="o">//</span> <span class="nt">NOTE</span><span class="o">:</span> <span class="nt">shader</span> <span class="nt">relies</span> <span class="nt">on</span> <span class="nt">pre-multiply</span> <span class="nt">alpha-blend</span> <span class="o">(</span><span class="nt">_SrcBlend</span> <span class="o">=</span> <span class="nt">One</span><span class="o">,</span> <span class="nt">_DstBlend</span> <span class="o">=</span> <span class="nt">OneMinusSrcAlpha</span><span class="o">)</span>
+<span class="nt">o</span><span class="p">.</span><span class="nc">diffColor</span> <span class="o">=</span> <span class="nt">PreMultiplyAlpha</span><span class="o">(</span><span class="nt">o</span><span class="p">.</span><span class="nc">diffColor</span><span class="o">,</span> <span class="nt">alpha</span><span class="o">,</span> <span class="nt">o</span><span class="p">.</span><span class="nc">oneMinusReflectivity</span><span class="o">,</span> <span class="c">/*out*/</span> <span class="nt">o</span><span class="p">.</span><span class="nc">alpha</span><span class="o">);</span>
+<span class="nt">return</span> <span class="nt">o</span><span class="o">;</span>
+</pre>
 <p>}</p>
 <p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light, bool reflections)
 {
-UnityGIInput d;
-d.light = light;
-d.worldPos = s.posWorld;
-d.worldViewDir = -s.eyeVec;
-d.atten = atten;
-#if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)
-d.ambient = 0;
+    UnityGIInput d;
+    d.light = light;
+    d.worldPos = s.posWorld;
+    d.worldViewDir = -s.eyeVec;
+    d.atten = atten;</p>
+<h2>if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)</h2>
+<pre class="code literal-block">d.ambient = 0;
 d.lightmapUV = i_ambientOrLightmapUV;
-#else
-d.ambient = i_ambientOrLightmapUV.rgb;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">d.ambient = i_ambientOrLightmapUV.rgb;
 d.lightmapUV = 0;
-#endif
-d.boxMax[0] = unity_SpecCube0_BoxMax;
-d.boxMin[0] = unity_SpecCube0_BoxMin;
-d.probePosition[0] = unity_SpecCube0_ProbePosition;
-d.probeHDR[0] = unity_SpecCube0_HDR;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>d.boxMax[1] = unity_SpecCube1_BoxMax;
-d.boxMin[1] = unity_SpecCube1_BoxMin;
-d.probePosition[1] = unity_SpecCube1_ProbePosition;
-d.probeHDR[1] = unity_SpecCube1_HDR;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">d</span>.<span class="nv">boxMax</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_BoxMax</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">boxMin</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_BoxMin</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probePosition</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_ProbePosition</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probeHDR</span>[<span class="mi">0</span>] <span class="o">=</span> <span class="nv">unity_SpecCube0_HDR</span><span class="c1">;</span>
 
-if (reflections)
+<span class="nv">d</span>.<span class="nv">boxMax</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_BoxMax</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">boxMin</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_BoxMin</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probePosition</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_ProbePosition</span><span class="c1">;</span>
+<span class="nv">d</span>.<span class="nv">probeHDR</span>[<span class="mi">1</span>] <span class="o">=</span> <span class="nv">unity_SpecCube1_HDR</span><span class="c1">;</span>
+
+<span class="k">if</span> <span class="ss">(</span><span class="nv">reflections</span><span class="ss">)</span>
 {
-    Unity_GlossyEnvironmentData g;
-    g.roughness = 1 - s.oneMinusRoughness;
-</pre></div>
-</div>
-<p>#if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE
-g.reflUVW = s.reflUVW;
-#else
-g.reflUVW = reflect(s.eyeVec, s.normalWorld);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    return UnityGlobalIllumination(d, occlusion, s.normalWorld, g);
+    <span class="nv">Unity_GlossyEnvironmentData</span> <span class="nv">g</span><span class="c1">;</span>
+    <span class="nv">g</span>.<span class="nv">roughness</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span><span class="c1">;</span>
+</pre>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD || UNITY_STANDARD_SIMPLE</h2>
+<pre class="code literal-block">    g.reflUVW = s.reflUVW;
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">    g.reflUVW = reflect(s.eyeVec, s.normalWorld);
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block">    <span class="k">return</span> <span class="nv">UnityGlobalIllumination</span><span class="ss">(</span><span class="nv">d</span>, <span class="nv">occlusion</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="nv">g</span><span class="ss">)</span><span class="c1">;</span>
 }
-else
+<span class="k">else</span>
 {
-    return UnityGlobalIllumination(d, occlusion, s.normalWorld);
+    <span class="k">return</span> <span class="nv">UnityGlobalIllumination</span><span class="ss">(</span><span class="nv">d</span>, <span class="nv">occlusion</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
 }
-</pre></div>
-</div>
+</pre>
 <p>}</p>
 <p>inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light)
 {
-return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
+    return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
 }</p>
 <p>UnityLight MainLight(half3 normalWorld)
 {
-UnityLight l;
-#ifdef LIGHTMAP_OFF</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>l.color = _LightColor0.rgb;
+    UnityLight l;</p>
+<h2>ifdef LIGHTMAP_OFF</h2>
+<pre class="code literal-block">l.color = _LightColor0.rgb;
 l.dir = _WorldSpaceLightPos0.xyz;
 l.ndotl = LambertTerm(normalWorld, l.dir);
-</pre></div>
-</div>
-<p>#else
-// no light specified by the engine
+</pre>
+<h2>else</h2>
+<pre class="code literal-block">// no light specified by the engine
 // analytical light might be extracted from Lightmap data later on in the shader depending on the Lightmap type
 l.color = half3(0.f, 0.f, 0.f);
 l.ndotl = 0.f;
 l.dir = half3(0.f, 0.f, 0.f);
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return l;
-</pre></div>
-</div>
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">l</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>half4 fragForwardBaseInternal(VertexOutputForwardBase i)
 {
-FRAGMENT_SETUP(s)
-#if UNITY_OPTIMIZE_TEXCUBELOD
-s.reflUVW = i.reflUVW;
-#endif</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UnityLight mainLight = MainLight(s.normalWorld);
-half atten = SHADOW_ATTENUATION(i);
+    FRAGMENT_SETUP(s)</p>
+<h2>if UNITY_OPTIMIZE_TEXCUBELOD</h2>
+<pre class="code literal-block">    s.reflUVW = i.reflUVW;
+</pre>
+<h2>endif</h2>
+<pre class="code literal-block"><span class="nv">UnityLight</span> <span class="nv">mainLight</span> <span class="o">=</span> <span class="nv">MainLight</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">normalWorld</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">half</span> <span class="nv">atten</span> <span class="o">=</span> <span class="nv">SHADOW_ATTENUATION</span><span class="ss">(</span><span class="nv">i</span><span class="ss">)</span><span class="c1">;</span>
 
-half occlusion = Occlusion(i.tex.xy);
-UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+<span class="nv">half</span> <span class="nv">occlusion</span> <span class="o">=</span> <span class="nv">Occlusion</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">tex</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">UnityGI</span> <span class="nv">gi</span> <span class="o">=</span> <span class="nv">FragmentGI</span><span class="ss">(</span><span class="nv">s</span>, <span class="nv">occlusion</span>, <span class="nv">i</span>.<span class="nv">ambientOrLightmapUV</span>, <span class="nv">atten</span>, <span class="nv">mainLight</span><span class="ss">)</span><span class="c1">;</span>
 
-half4 c = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
-c.rgb += UNITY_BRDF_GI(s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
-c.rgb += Emission(i.tex.xy);
+<span class="nv">half4</span> <span class="nv">c</span> <span class="o">=</span> <span class="nv">UNITY_BRDF_PBS</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">diffColor</span>, <span class="nv">s</span>.<span class="nv">specColor</span>, <span class="nv">s</span>.<span class="nv">oneMinusReflectivity</span>, <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="o">-</span><span class="nv">s</span>.<span class="nv">eyeVec</span>, <span class="nv">gi</span>.<span class="nv">light</span>, <span class="nv">gi</span>.<span class="nv">indirect</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">+=</span> <span class="nv">UNITY_BRDF_GI</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">diffColor</span>, <span class="nv">s</span>.<span class="nv">specColor</span>, <span class="nv">s</span>.<span class="nv">oneMinusReflectivity</span>, <span class="nv">s</span>.<span class="nv">oneMinusRoughness</span>, <span class="nv">s</span>.<span class="nv">normalWorld</span>, <span class="o">-</span><span class="nv">s</span>.<span class="nv">eyeVec</span>, <span class="nv">occlusion</span>, <span class="nv">gi</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">+=</span> <span class="nv">Emission</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">tex</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
 
-UNITY_APPLY_FOG(i.fogCoord, c.rgb);
-c.a = s.alpha;
-return c;
-</pre></div>
-</div>
+<span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">i</span>.<span class="nv">fogCoord</span>, <span class="nv">c</span>.<span class="nv">rgb</span><span class="ss">)</span><span class="c1">;</span>
+<span class="nv">c</span>.<span class="nv">a</span> <span class="o">=</span> <span class="nv">s</span>.<span class="nv">alpha</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">c</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>half4 fragBase(VertexOutputForwardBase i) : SV_Target{ return fragForwardBaseInternal(i); }</p>
 <p>1パスでいいんじゃないの？
 UsePassを展開したことによってZWrite Onできるようになったw。Oh…
-Shader “Transparent/Diffuse ZWrite” {
-Properties{
-_Color(“Main Color”, Color) = (1,1,1,1)
-_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SubShader{
+Shader "Transparent/Diffuse ZWrite" {
+    Properties{
+        _Color("Main Color", Color) = (1,1,1,1)
+        _MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
+    }</p>
+<pre class="code literal-block"><span class="n">SubShader</span><span class="p">{</span>
 
-    Tags{ &quot;Queue&quot; = &quot;Transparent&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;RenderType&quot; = &quot;Transparent&quot; }
-    LOD 200
+    <span class="n">Tags</span><span class="p">{</span> <span class="s2">"Queue"</span> <span class="o">=</span> <span class="s2">"Transparent"</span> <span class="s2">"IgnoreProjector"</span> <span class="o">=</span> <span class="s2">"True"</span> <span class="s2">"RenderType"</span> <span class="o">=</span> <span class="s2">"Transparent"</span> <span class="p">}</span>
+    <span class="n">LOD</span> <span class="mi">200</span>
 
-    // paste in forward rendering passes from Transparent/Diffuse
-    //UsePass &quot;Legacy Shaders/Transparent/Diffuse/FORWARD&quot;
+    <span class="o">//</span> <span class="n">paste</span> <span class="ow">in</span> <span class="n">forward</span> <span class="n">rendering</span> <span class="n">passes</span> <span class="n">from</span> <span class="n">Transparent</span><span class="o">/</span><span class="n">Diffuse</span>
+    <span class="o">//</span><span class="n">UsePass</span> <span class="s2">"Legacy Shaders/Transparent/Diffuse/FORWARD"</span>
 
-    Pass{
-        Name &quot;FORWARD&quot;
-        Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }
+    <span class="n">Pass</span><span class="p">{</span>
+        <span class="n">Name</span> <span class="s2">"FORWARD"</span>
+        <span class="n">Tags</span><span class="p">{</span> <span class="s2">"LightMode"</span> <span class="o">=</span> <span class="s2">"ForwardBase"</span> <span class="p">}</span>
 
-        ZWrite On
-        ColorMask RGB
-        Blend SrcAlpha OneMinusSrcAlpha
+        <span class="n">ZWrite</span> <span class="n">On</span>
+        <span class="n">ColorMask</span> <span class="n">RGB</span>
+        <span class="n">Blend</span> <span class="n">SrcAlpha</span> <span class="n">OneMinusSrcAlpha</span>
 
-        CGPROGRAM
-        #pragma target 2.0
+        <span class="n">CGPROGRAM</span>
+        <span class="c1">#pragma target 2.0</span>
 
-        #pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
+        <span class="c1">#pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE</span>
 
-        // これは要るっぽい
-        #pragma multi_compile_fwdbase
-        #pragma multi_compile_fog
+        <span class="o">//</span> <span class="err">これは要るっぽい</span>
+        <span class="c1">#pragma multi_compile_fwdbase</span>
+        <span class="c1">#pragma multi_compile_fog</span>
 
-        #pragma vertex vertBase
-        #pragma fragment fragBase
+        <span class="c1">#pragma vertex vertBase</span>
+        <span class="c1">#pragma fragment fragBase</span>
 
-        #include &quot;TransparentDiffuseWithZwrite_FORWARD.cginc&quot;
-        ENDCG
-    }
+        <span class="c1">#include "TransparentDiffuseWithZwrite_FORWARD.cginc"</span>
+        <span class="n">ENDCG</span>
+    <span class="p">}</span>
 
-} // SubShader
+<span class="p">}</span> <span class="o">//</span> <span class="n">SubShader</span>
 
-//Fallback &quot;Transparent/VertexLit&quot;
-</pre></div>
-</div>
+<span class="o">//</span><span class="n">Fallback</span> <span class="s2">"Transparent/VertexLit"</span>
+</pre>
 <p>}</p>
 <p>よし、スクラッチでシェーダーを書こうw
 multi_compile_fwdbase
@@ -1048,736 +1034,24 @@ FrameDebuggerで見たところシェーダーのdefineがまとめて変わっ�
 UsePassでsurfaceシェーダーのPASSを指定することもできる
 それ故大変分かりにくい(可読性とコード量とのトレードオフが大きい)
 surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集合に展開されている(どう展開されるのか知りたいんだけど)</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../../../2015/12/30/unity_webgl/">
-      <i class="fa fa-arrow-circle-left"></i> Unity5.3でWebGL
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../11/unity_write_shader/">
-      UnityのShaderを書いてみる <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2016/01/10 
-</h2>
-
-<ul>
-       
-<li id="tags">
-  <span
-    ><i
-      class="fa-fw fa fa-tag"
-    ></i
-    ></span
-  >
-   
-  <a href="../../../../../blog/tag/unity/">unity</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">unity_shader</a></li>
-<li><a class="reference internal" href="#define-unity-standard-simple-1">define UNITY_STANDARD_SIMPLE 1</a></li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../../../2015/12/30/unity_webgl/" rel="prev" title="Unity5.3でWebGL">
+            Unity5.3でWebGL 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../11/unity_write_shader/" rel="next" title="UnityのShaderを書いてみる">
+            👉 UnityのShaderを書いてみる
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

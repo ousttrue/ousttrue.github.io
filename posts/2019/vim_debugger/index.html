@@ -1,1069 +1,250 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>vim_debugger</title>
-<link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../_static/pygments_dark.css" />
-<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-<script src="../../../_static/jquery.js"></script>
-<script src="../../../_static/underscore.js"></script>
-<script src="../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" />
-    <link rel="search" title="Search" href="../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>vim で DebugAdapterProtocol する | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">vim_debugger</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="vim-debugger">
-<h1>vim_debugger<a class="headerlink" href="#vim-debugger" title="Permalink to this headline">¶</a></h1>
-<p>vimで <code class="docutils literal notranslate"><span class="pre">breakpoint</span></code> を設置してステップ実行できるようなデバッガを調べた。</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="vim">
-<h1>vim 上のデバッガ<a class="headerlink" href="#vim" title="Permalink to this headline">¶</a></h1>
-<section id="lldb-nvim">
-<h2>lldb.nvim<a class="headerlink" href="#lldb-nvim" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>https://github.com/dbgx/lldb.nvim</p></li>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">vim で DebugAdapterProtocol する
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2019-04-27T19:00:26+09:00" title="2019-04-27">2019-04-27</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/dap/" rel="tag">dap</a></li>
+    <li><a class="tag p-category" href="../../../categories/vim/" rel="tag">vim</a></li>
 </ul>
-</section>
-<section id="vim-vebugger">
-<h2>vim-vebugger<a class="headerlink" href="#vim-vebugger" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>https://github.com/idanarye/vim-vebugger</p></li>
+</h1>
+
+<p>vimで <code>breakpoint</code> を設置してステップ実行できるようなデバッガを調べた。</p>
+<h2>vim 上のデバッガ</h2>
+<h3>lldb.nvim</h3>
+<ul>
+<li>https://github.com/dbgx/lldb.nvim</li>
 </ul>
-<p>なんか動きそうなのだが、 <code class="docutils literal notranslate"><span class="pre">vimproc</span></code> を使っていたので動かせなかった
+<h3>vim-vebugger</h3>
+<ul>
+<li>https://github.com/idanarye/vim-vebugger</li>
+</ul>
+<p>なんか動きそうなのだが、 <code>vimproc</code> を使っていたので動かせなかった
 kaoriya 版の Vim を使うなどしてみたがよくわからず。</p>
-</section>
-<section id="pyclewn">
-<h2>pyclewn<a class="headerlink" href="#pyclewn" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>https://github.com/Mistobaan/pyclewn</p></li>
+<h3>pyclewn</h3>
+<ul>
+<li>https://github.com/Mistobaan/pyclewn</li>
 </ul>
 <p>gdb と pdb のvimフロントエンド？</p>
-</section>
-<section id="pubd">
-<h2>pubd<a class="headerlink" href="#pubd" title="Permalink to this headline">¶</a></h2>
+<h3>pubd</h3>
 <p>pythonのpdb.</p>
-<ul class="simple">
-<li><p>https://github.com/inducer/pudb</p></li>
+<ul>
+<li>https://github.com/inducer/pudb</li>
 </ul>
-</section>
-<section id="vim-breakpts">
-<h2>vim-breakpts<a class="headerlink" href="#vim-breakpts" title="Permalink to this headline">¶</a></h2>
+<h3>vim-breakpts</h3>
 <p>vim スクリプト用？</p>
-<ul class="simple">
-<li><p>https://github.com/albfan/vim-breakpts</p></li>
+<ul>
+<li>https://github.com/albfan/vim-breakpts</li>
 </ul>
-</section>
-<section id="vimspector">
-<h2>vimspector<a class="headerlink" href="#vimspector" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>https://github.com/puremourning/vimspector</p></li>
+<h3>vimspector</h3>
+<ul>
+<li>https://github.com/puremourning/vimspector</li>
 </ul>
-<p>VSCodeの <code class="docutils literal notranslate"><span class="pre">DebugAdapterProtocol</span></code> を使うものらしい。</p>
+<p>VSCodeの <code>DebugAdapterProtocol</code> を使うものらしい。</p>
 <blockquote>
-<div><p>While Language Server Protocol is well known, the Debug Adapter Protocol is less well known, but achieves a similar goal: language agnostic API abstracting debuggers from clients.</p>
-</div></blockquote>
+<p>While Language Server Protocol is well known, the Debug Adapter Protocol is less well known, but achieves a similar goal: language agnostic API abstracting debuggers from clients.</p>
+</blockquote>
 <p>動かし方よくわからず。</p>
-</section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="debugadapterprotocol">
-<h1>DebugAdapterProtocol<a class="headerlink" href="#debugadapterprotocol" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference external" href="https://code.visualstudio.com/blogs/2018/08/07/debug-adapter-protocol-website">DebugAdapterProtocol</a></p>
+<h2>DebugAdapterProtocol</h2>
 <ul>
-<li><p><a class="reference external" href="https://github.com/Microsoft/vscode-debugadapter-node">旧サイト・リポジトリ</a></p></li>
+<li>
+<a href="https://code.visualstudio.com/blogs/2018/08/07/debug-adapter-protocol-website">DebugAdapterProtocol</a><ul>
+<li><a href="https://github.com/Microsoft/vscode-debugadapter-node">旧サイト・リポジトリ</a></li>
 </ul>
 </li>
 </ul>
 <p>読む。</p>
 <blockquote>
-<div><p>The “deep understanding of a language” is surfaced by the Language Server Protocol (LSP) and the “debugging support” by the Debug Adapter Protocol (DAP).</p>
-</div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">editor</span> <span class="o">&lt;=&gt;</span> <span class="n">adapter</span> <span class="o">&lt;=&gt;</span> <span class="n">gdb</span>
-              <span class="o">||</span>
-              <span class="o">++=====&gt;</span> <span class="n">pdb</span>
-</pre></div>
-</div>
+<p>The "deep understanding of a language" is surfaced by the Language Server Protocol (LSP) and the "debugging support" by the Debug Adapter Protocol (DAP).</p>
+</blockquote>
+<pre class="code literal-block">editor &lt;=&gt; adapter &lt;=&gt; gdb
+              ||
+              ++=====&gt; pdb
+</pre>
 <p>adapterでラップして同じに見えるようにする。</p>
-<p>adapterの起動設定は、 <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code> にというわけか。</p>
+<p>adapterの起動設定は、 <code>.vscode/launch.json</code> にというわけか。</p>
 <blockquote>
-<div><p>The Debug Adapter Protocol is not tied to VS Code and can be used as the foundation for a generic debugger UI in other development tools.</p>
-</div></blockquote>
+<p>The Debug Adapter Protocol is not tied to VS Code and can be used as the foundation for a generic debugger UI in other development tools.</p>
+</blockquote>
 <p>新サイトで仕様を公開していくで、って書いてあるね。</p>
-<ul class="simple">
-<li><p>新サイト https://microsoft.github.io/debug-adapter-protocol/</p>
 <ul>
-<li><p>新リポジトリ https://github.com/Microsoft/debug-adapter-protocol</p></li>
+<li>新サイト https://microsoft.github.io/debug-adapter-protocol/<ul>
+<li>新リポジトリ https://github.com/Microsoft/debug-adapter-protocol</li>
 </ul>
 </li>
 </ul>
 <p>読む。</p>
-<ul class="simple">
-<li><p>https://microsoft.github.io/debug-adapter-protocol/overview</p></li>
+<ul>
+<li>https://microsoft.github.io/debug-adapter-protocol/overview</li>
 </ul>
 <blockquote>
-<div><p>single session mode: in this mode, the development tool starts a debug adapter as a standalone process and communicates with it through stdin and stdout.</p>
-</div></blockquote>
-<blockquote>
-<div><p>multi session mode: in this mode, the development tool does not start the debug adapter but assumes that it is already running and that it listens on a specific port for connections attempts.</p>
-</div></blockquote>
-<section id="dap">
-<h2>DAPの仕様<a class="headerlink" href="#dap" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>https://microsoft.github.io/debug-adapter-protocol/specification</p></li>
+<p>single session mode: in this mode, the development tool starts a debug adapter as a standalone process and communicates with it through stdin and stdout.</p>
+<p>multi session mode: in this mode, the development tool does not start the debug adapter but assumes that it is already running and that it listens on a specific port for connections attempts.</p>
+</blockquote>
+<h3>DAPの仕様</h3>
+<ul>
+<li>https://microsoft.github.io/debug-adapter-protocol/specification</li>
 </ul>
-</section>
-<section id="id1">
-<h2>DAPの実装<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/</p></li>
+<h3>DAPの実装</h3>
+<ul>
+<li>https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/</li>
 </ul>
-<p>ネイティブコンパイルするタイプは言語ごとではなく、ネイティブコンパイルの様式ごとに違うものになる。例えば、 <code class="docutils literal notranslate"><span class="pre">vc</span></code> , <code class="docutils literal notranslate"><span class="pre">gcc</span></code> , <code class="docutils literal notranslate"><span class="pre">llvm</span></code> のように。</p>
-<p>となるとVMタイプのものは、 <code class="docutils literal notranslate"><span class="pre">.Net</span></code>, <code class="docutils literal notranslate"><span class="pre">Mono</span></code>, <code class="docutils literal notranslate"><span class="pre">java</span></code> といった分類になるのだろうか。
-<code class="docutils literal notranslate"><span class="pre">C#</span></code>, <code class="docutils literal notranslate"><span class="pre">F#</span></code> が両方デバッグできたりしそうではある。</p>
+<p>ネイティブコンパイルするタイプは言語ごとではなく、ネイティブコンパイルの様式ごとに違うものになる。例えば、 <code>vc</code> , <code>gcc</code> , <code>llvm</code> のように。</p>
+<p>となるとVMタイプのものは、 <code>.Net</code>, <code>Mono</code>, <code>java</code> といった分類になるのだろうか。
+<code>C#</code>, <code>F#</code> が両方デバッグできたりしそうではある。</p>
 <p>インタープリター型はそれぞれの言語ごとになる。</p>
 <p>あとは、リモートデバッグの事情を調べる。</p>
-<section id="native-debug">
-<h3>native debug<a class="headerlink" href="#native-debug" title="Permalink to this headline">¶</a></h3>
+<h4>native debug</h4>
 <p>c++やd, rustなんかのnativeコードを出力するものをまとめて面倒見れるという理解であったいるのかな。ビルド形式とデバッグビルドに付加される情報のフォーマットに対応してデバッガを選択する必要があると。</p>
-<ul class="simple">
-<li><p>https://github.com/Microsoft/vscode-cpptools</p></li>
+<ul>
+<li>https://github.com/Microsoft/vscode-cpptools</li>
 </ul>
 <p>LLVM</p>
-<ul class="simple">
-<li><p>https://github.com/vadimcn/vscode-lldb</p></li>
+<ul>
+<li>https://github.com/vadimcn/vscode-lldb</li>
 </ul>
-</section>
-<section id="net">
-<h3>.Net<a class="headerlink" href="#net" title="Permalink to this headline">¶</a></h3>
+<h4>.Net</h4>
 <blockquote>
-<div><p>Mono debugging is not supported.</p>
-</div></blockquote>
+<p>Mono debugging is not supported.</p>
+</blockquote>
 <p>ILは互換性があるにしても、VMのデバッグインタフェースは互換性が無いということなのかな。</p>
-<ul class="simple">
-<li><p>https://github.com/OmniSharp/omnisharp-vscode</p></li>
+<ul>
+<li>https://github.com/OmniSharp/omnisharp-vscode</li>
 </ul>
-</section>
-<section id="mono">
-<h3>Mono<a class="headerlink" href="#mono" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>https://github.com/Microsoft/vscode-mono-debug</p></li>
+<h4>Mono</h4>
+<ul>
+<li>https://github.com/Microsoft/vscode-mono-debug</li>
 </ul>
-</section>
-<section id="unity">
-<h3>Unity<a class="headerlink" href="#unity" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>https://github.com/Unity-Technologies/vscode-unity-debug</p></li>
+<h4>Unity</h4>
+<ul>
+<li>https://github.com/Unity-Technologies/vscode-unity-debug</li>
 </ul>
 <p>UnityEditorにアタッチできるらしい。
 Unity版のMonoにアタッチできるということかしら。</p>
-</section>
-<section id="lua-ravi">
-<h3>lua / ravi<a class="headerlink" href="#lua-ravi" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>https://github.com/dibyendumajumdar/ravi-vscode-debugger</p></li>
+<h4>lua / ravi</h4>
+<ul>
+<li>https://github.com/dibyendumajumdar/ravi-vscode-debugger</li>
 </ul>
 <p>こんなのあるのか・・・</p>
-</section>
-<section id="powershell">
-<h3>powershell<a class="headerlink" href="#powershell" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>https://github.com/PowerShell/vscode-powershell</p></li>
+<h4>powershell</h4>
+<ul>
+<li>https://github.com/PowerShell/vscode-powershell</li>
 </ul>
-</section>
-<section id="python">
-<h3>python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>https://github.com/Microsoft/vscode-python</p></li>
+<h4>python</h4>
+<ul>
+<li>https://github.com/Microsoft/vscode-python</li>
 </ul>
-</section>
-</section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id2">
-<h1>vimspectorの実装<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p>https://github.com/puremourning/vimspector</p></li>
+<h2>vimspectorの実装</h2>
+<ul>
+<li>https://github.com/puremourning/vimspector</li>
 </ul>
 <p>読む。</p>
-<p><code class="docutils literal notranslate"><span class="pre">.\install_gadget.py</span></code></p>
-<p>を実行することで、 <code class="docutils literal notranslate"><span class="pre">VSCode</span></code> の <code class="docutils literal notranslate"><span class="pre">extension</span></code> を <code class="docutils literal notranslate"><span class="pre">download</span></code> する。
-<code class="docutils literal notranslate"><span class="pre">extension</span></code> に、 <code class="docutils literal notranslate"><span class="pre">DAP</span></code> が含まれているのでこれを使う。</p>
-<p><code class="docutils literal notranslate"><span class="pre">autoload/vimspector.vim</span></code></p>
-<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="k">function</span><span class="p">!</span> vimspector#Launch<span class="p">()</span> abort
+<p><code>.\install_gadget.py</code></p>
+<p>を実行することで、 <code>VSCode</code> の <code>extension</code> を <code>download</code> する。
+<code>extension</code> に、 <code>DAP</code> が含まれているのでこれを使う。</p>
+<p><code>autoload/vimspector.vim</code></p>
+<pre class="code literal-block"><span class="k">function</span><span class="p">!</span> vimspector#Launch<span class="p">()</span> abort
   <span class="k">py3</span> _vimspector_session.Start<span class="p">()</span>
 <span class="k">endfunction</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">python3/vimspector/debug_session.py</span></code></p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DebugSession</span><span class="p">:</span>
+</pre>
+<p><code>python3/vimspector/debug_session.py</code></p>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">DebugSession</span><span class="p">:</span>
   <span class="k">def</span> <span class="nf">Start</span><span class="p">():</span>
     <span class="k">pass</span>
-
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">vim.bindeval</span></code> を使っているので、 <code class="docutils literal notranslate"><span class="pre">vim8</span></code> 専用。
-<code class="docutils literal notranslate"><span class="pre">nvim</span></code> では回避する必要がある。</p>
-<p><code class="docutils literal notranslate"><span class="pre">.vimspector.json</span></code></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;adapters&quot;</span><span class="p">:</span> <span class="p">{</span>
+</pre>
+<p><code>vim.bindeval</code> を使っているので、 <code>vim8</code> 専用。
+<code>nvim</code> では回避する必要がある。</p>
+<p><code>.vimspector.json</code> </p>
+<pre class="code literal-block"><span class="p">{</span>
+    <span class="nt">"adapters"</span><span class="p">:</span> <span class="p">{</span>
     <span class="p">},</span>
-    <span class="nt">&quot;configurations&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">"configurations"</span><span class="p">:</span> <span class="p">{</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</pre></div>
-</div>
-<p>の <code class="docutils literal notranslate"><span class="pre">configurations</span></code> からデバッグセッションの起動方法を取得して、
-デバッグアダプターを <code class="docutils literal notranslate"><span class="pre">vim</span></code> の <code class="docutils literal notranslate"><span class="pre">job</span></code> か <code class="docutils literal notranslate"><span class="pre">channel</span></code> 経由で起動する。
-<code class="docutils literal notranslate"><span class="pre">configurations</span></code> が <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code> に相当するようだ。
-<code class="docutils literal notranslate"><span class="pre">adapters</span></code> は、インストールされている <code class="docutils literal notranslate"><span class="pre">DebugAdapter</span></code> のリスト。</p>
-<p><code class="docutils literal notranslate"><span class="pre">call</span> <span class="pre">vimspector#Launch()</span></code> <code class="docutils literal notranslate"><span class="pre">simple_python</span> <span class="pre">-</span> <span class="pre">launch</span></code> <code class="docutils literal notranslate"><span class="pre">/Users/ousttrue</span></code> と入力することでjobが、アダプター開始するところまでできた。
+</pre>
+<p>の <code>configurations</code> からデバッグセッションの起動方法を取得して、
+デバッグアダプターを <code>vim</code> の <code>job</code> か <code>channel</code> 経由で起動する。
+<code>configurations</code> が <code>.vscode/launch.json</code> に相当するようだ。
+<code>adapters</code> は、インストールされている <code>DebugAdapter</code> のリスト。</p>
+<p><code>call vimspector#Launch()</code> <code>simple_python - launch</code> <code>/Users/ousttrue</code> と入力することでjobが、アダプター開始するところまでできた。
 しかし、アダプターがすぐに死んでいる様子。</p>
 <p>アダプターを手動起動してみる。</p>
-<p><code class="docutils literal notranslate"><span class="pre">node</span> <span class="pre">.\.vscode\extensions\ms-python.python-2019.4.11987\out\client\debugger\debugAdapter\main.js</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">.vimspector.json</span></code> に書いてあるのとバージョンが違う。
-<code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">not</span> <span class="pre">found</span></code> か。</p>
-<p><code class="docutils literal notranslate"><span class="pre">path</span></code> をなおしたら動いた😃</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span>          <span class="s2">&quot;$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js&quot;</span>
-<span class="o">+</span>          <span class="s2">&quot;$HOME/.vscode/extensions/ms-python.python-2019.4.11987/out/client/debugger/debugAdapter/Main.js&quot;</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">neovim</span></code> の <code class="docutils literal notranslate"><span class="pre">rplugin</span></code> での構成を考えてみようか。</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="python3-adapter">
-<h1>python3 で Adapter を起動してみる<a class="headerlink" href="#python3-adapter" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">AdapterAdapter</span></code> というか <code class="docutils literal notranslate"><span class="pre">AdapterBridge</span></code> という感じになりそうだけど、
-<code class="docutils literal notranslate"><span class="pre">vim</span></code> で込み入った実装をするのは手に余るので、可能な限り <code class="docutils literal notranslate"><span class="pre">python</span></code> で事を進めよう。
+<p><code>node .\.vscode\extensions\ms-python.python-2019.4.11987\out\client\debugger\debugAdapter\main.js</code></p>
+<p><code>.vimspector.json</code> に書いてあるのとバージョンが違う。
+<code>file not found</code> か。</p>
+<p><code>path</code> をなおしたら動いた😃</p>
+<pre class="code literal-block">-          "$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js"
++          "$HOME/.vscode/extensions/ms-python.python-2019.4.11987/out/client/debugger/debugAdapter/Main.js"
+</pre>
+<p><code>neovim</code> の <code>rplugin</code> での構成を考えてみようか。</p>
+<h2>python3 で Adapter を起動してみる</h2>
+<p><code>AdapterAdapter</code> というか <code>AdapterBridge</code> という感じになりそうだけど、
+<code>vim</code> で込み入った実装をするのは手に余るので、可能な限り <code>python</code> で事を進めよう。
 pythonでprotocl実験。</p>
 <p>https://github.com/ousttrue/daplauncher</p>
-<ul class="simple">
-<li><p>http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html</p></li>
-<li><p>https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/</p></li>
-<li><p>https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/</p></li>
+<ul>
+<li>http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html</li>
+<li>https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/</li>
+<li>https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/</li>
 </ul>
 <p>launchRequestの後で固まると思ったら、サイトに記述されていないパラメーターがあった。
-<code class="docutils literal notranslate"><span class="pre">console</span></code> どこに書いてあるのか・・・</p>
+<code>console</code> どこに書いてあるのか・・・</p>
 <p>https://github.com/Microsoft/vscode-debugadapter-node/blob/master/debugProtocol.json</p>
 <p>https://github.com/Microsoft/vscode-python/issues/3762</p>
 <p>わかった。</p>
 <p>https://github.com/Microsoft/vscode-go/issues/219</p>
-<p>vscodeの <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code> の起動設定を <code class="docutils literal notranslate"><span class="pre">launch</span></code> の引数に合体するのだ。</p>
+<p>vscodeの <code>.vscode/launch.json</code> の起動設定を <code>launch</code> の引数に合体するのだ。</p>
 <p>https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes</p>
 <p>書いとけよー。</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../../qiita/vimscriptからpythonするのを補助するpycallを作る/">
-      <i class="fa fa-arrow-circle-left"></i> vimscriptからpythonするのを補助するpycallを作る
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../vim_python/">
-      vim の python plugin 関連 <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2019/04/27 
-</h2>
-
-<ul>
-  
-<li id="published">
-  <span
-    ><i class="fa fa-pencil-square-o"></i></span
-  >
-  2019/04/27
-</li>
-     
-<li id="tags">
-  <span
-    ><i class="fa-fw fa fa-tags"></i> </span
-  >
-   
-  <a href="../../../blog/tag/vim/">vim</a>   
-  <a href="../../../blog/tag/dap/">dap</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">vim_debugger</a></li>
-<li><a class="reference internal" href="#vim">vim 上のデバッガ</a><ul>
-<li><a class="reference internal" href="#lldb-nvim">lldb.nvim</a></li>
-<li><a class="reference internal" href="#vim-vebugger">vim-vebugger</a></li>
-<li><a class="reference internal" href="#pyclewn">pyclewn</a></li>
-<li><a class="reference internal" href="#pubd">pubd</a></li>
-<li><a class="reference internal" href="#vim-breakpts">vim-breakpts</a></li>
-<li><a class="reference internal" href="#vimspector">vimspector</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#debugadapterprotocol">DebugAdapterProtocol</a><ul>
-<li><a class="reference internal" href="#dap">DAPの仕様</a></li>
-<li><a class="reference internal" href="#id1">DAPの実装</a><ul>
-<li><a class="reference internal" href="#native-debug">native debug</a></li>
-<li><a class="reference internal" href="#net">.Net</a></li>
-<li><a class="reference internal" href="#mono">Mono</a></li>
-<li><a class="reference internal" href="#unity">Unity</a></li>
-<li><a class="reference internal" href="#lua-ravi">lua / ravi</a></li>
-<li><a class="reference internal" href="#powershell">powershell</a></li>
-<li><a class="reference internal" href="#python">python</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id2">vimspectorの実装</a></li>
-<li><a class="reference internal" href="#python3-adapter">python3 で Adapter を起動してみる</a></li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../../qiita/vimscriptkarapythonsurunowobu-zhu-surupycallwozuo-ru/" rel="prev" title="vimscriptからpythonするのを補助するpycallを作る">
+            vimscriptからpythonするのを補助するpycallを作る 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../vim_python/" rel="next" title="vim の python plugin 関連">
+            👉 vim の python plugin 関連
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

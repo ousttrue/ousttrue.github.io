@@ -1,967 +1,190 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>rust で D3D11 レンダラを進めてきたが・・・</title>
-<link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../_static/pygments_dark.css" />
-<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-<script src="../../../_static/jquery.js"></script>
-<script src="../../../_static/underscore.js"></script>
-<script src="../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" />
-    <link rel="search" title="Search" href="../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>lua による imgui 計画 | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">rust で D3D11 レンダラを進めてきたが・・・</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section id="rust-d3d11">
-<h1>rust で D3D11 レンダラを進めてきたが・・・<a class="headerlink" href="#rust-d3d11" title="Permalink to this headline">¶</a></h1>
-<p>当初 <code class="docutils literal notranslate"><span class="pre">rust</span></code> で <code class="docutils literal notranslate"><span class="pre">d3d11</span></code> のレンダラーを作ろうとして作業を進めていた。
-<code class="docutils literal notranslate"><span class="pre">imgui</span></code> を組み込んで、 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> をロードして <code class="docutils literal notranslate"><span class="pre">unlit</span></code> で描画するところまで作ったが、
-<code class="docutils literal notranslate"><span class="pre">GUI</span></code> の作りこみが大変そうな感じだった。
-<code class="docutils literal notranslate"><span class="pre">rust</span></code> は関数オーバーロードが無いので　<code class="docutils literal notranslate"><span class="pre">imgui</span></code> のラッパーの使い勝手が <code class="docutils literal notranslate"><span class="pre">c++</span></code> より落ちるなど。
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">lua による imgui 計画
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2021-07-17T00:00:00+09:00" title="2021-07-17">2021-07-17</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/imgui/" rel="tag">imgui</a></li>
+    <li><a class="tag p-category" href="../../../categories/lua/" rel="tag">lua</a></li>
+</ul>
+</h1>
+
+<h3>rust で D3D11 レンダラを進めてきたが・・・</h3>
+<p>当初 <code>rust</code> で <code>d3d11</code> のレンダラーを作ろうとして作業を進めていた。
+<code>imgui</code> を組み込んで、 <code>glTF</code> をロードして <code>unlit</code> で描画するところまで作ったが、
+<code>GUI</code> の作りこみが大変そうな感じだった。
+<code>rust</code> は関数オーバーロードが無いので　<code>imgui</code> のラッパーの使い勝手が <code>c++</code> より落ちるなど。
 ポインターを渡せるのは素敵なのだが。</p>
-</section>
-<section id="nvim-0-5">
-<h1>nvim-0.5 はおもしろい<a class="headerlink" href="#nvim-0-5" title="Permalink to this headline">¶</a></h1>
-<p>ここで寄り道して、 <code class="docutils literal notranslate"><span class="pre">nvim</span></code> をいじり始めた。
-ちょうどバージョン <code class="docutils literal notranslate"><span class="pre">0.5</span></code> がリリースされるタイミングで、<code class="docutils literal notranslate"><span class="pre">0.5</span></code> になると lua サポートが強化されて、設定が lua で書けるとのこと。</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://zenn.dev/hituzi_no_sippo/articles/871c06cdbc45b53181e3">NeovimとLua</a></p></li>
+<h3>nvim-0.5 はおもしろい</h3>
+<p>ここで寄り道して、 <code>nvim</code> をいじり始めた。
+ちょうどバージョン <code>0.5</code> がリリースされるタイミングで、<code>0.5</code> になると lua サポートが強化されて、設定が lua で書けるとのこと。</p>
+<ul>
+<li><a href="https://zenn.dev/hituzi_no_sippo/articles/871c06cdbc45b53181e3">NeovimとLua</a></li>
 </ul>
-<p>ということで Windows 向けのソースからのビルドシステムを作って <code class="docutils literal notranslate"><span class="pre">nvim</span></code> 環境を整備してみた。
+<p>ということで Windows 向けのソースからのビルドシステムを作って <code>nvim</code> 環境を整備してみた。
 lua で記述された plugin をなるべく採用。</p>
-<p><a class="reference external" href="https://github.com/ousttrue/my_nvim">https://github.com/ousttrue/my_nvim</a></p>
-<p>最近常用していた、 <code class="docutils literal notranslate"><span class="pre">vscode</span></code> の便利さにどこまで追いつけるか。</p>
-<ul class="simple">
-<li><p>Language Server Protocol。nvim-0.5 から nvim-lsp (luaで書いてある) がある。組み込み</p></li>
-<li><p>Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。<a class="reference external" href="https://github.com/mfussenegger/nvim-dap">https://github.com/mfussenegger/nvim-dap</a></p></li>
+<p><a href="https://github.com/ousttrue/my_nvim">https://github.com/ousttrue/my_nvim</a></p>
+<p>最近常用していた、 <code>vscode</code> の便利さにどこまで追いつけるか。</p>
+<ul>
+<li>Language Server Protocol。nvim-0.5 から nvim-lsp (luaで書いてある) がある。組み込み</li>
+<li>Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。<a href="https://github.com/mfussenegger/nvim-dap">https://github.com/mfussenegger/nvim-dap</a>
+</li>
 </ul>
-<p>vscode から <code class="docutils literal notranslate"><span class="pre">lsp</span></code> と <code class="docutils literal notranslate"><span class="pre">dap</span></code> という重要な資産を持ってこれるので慣れればいけそうである。
+<p>vscode から <code>lsp</code> と <code>dap</code> という重要な資産を持ってこれるので慣れればいけそうである。
 調べたところ下記のようだった。</p>
-<ul class="simple">
-<li><p>codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた <a class="reference external" href="https://github.com/ousttrue/nvim-dap">https://github.com/ousttrue/nvim-dap</a></p></li>
-<li><p>rust-analyzer 動いた</p></li>
-<li><p>python: lsp, dap ともに動きそう</p></li>
-<li><p>lua: lsp, dap ともに動きそう</p></li>
-<li><p>csharp: lsp, dap ともに動きそう(Unityはうまくいかず)</p></li>
+<ul>
+<li>codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた <a href="https://github.com/ousttrue/nvim-dap">https://github.com/ousttrue/nvim-dap</a>
+</li>
+<li>rust-analyzer 動いた</li>
+<li>python: lsp, dap ともに動きそう</li>
+<li>lua: lsp, dap ともに動きそう</li>
+<li>csharp: lsp, dap ともに動きそう(Unityはうまくいかず)</li>
 </ul>
 <p>nvim-lsp も nvim-dap も lua で簡単に記述されているので、コードを読めば、たぶんわかる。
 あとは、タスクランナーを整備すれば開発環境に使えそう。</p>
-</section>
-<section id="luarocks-windows">
-<h1>luarocks の Windows 運用<a class="headerlink" href="#luarocks-windows" title="Permalink to this headline">¶</a></h1>
-<p>lua で記述された nvim のパッケージマネージャー <a class="reference external" href="https://github.com/wbthomason/packer.nvim">https://github.com/wbthomason/packer.nvim</a> を採用したのだが、
-Windows で luarocks 機能が動かなかった。<a class="reference external" href="https://luarocks.org/">https://luarocks.org/</a> は <code class="docutils literal notranslate"><span class="pre">lua</span></code> のパッケージマネージャー。
+<h3>luarocks の Windows 運用</h3>
+<p>lua で記述された nvim のパッケージマネージャー <a href="https://github.com/wbthomason/packer.nvim">https://github.com/wbthomason/packer.nvim</a> を採用したのだが、
+Windows で luarocks 機能が動かなかった。<a href="https://luarocks.org/">https://luarocks.org/</a> は <code>lua</code> のパッケージマネージャー。
 ちょっと、古め(vc2017より前)の vc でないとだめぽい。
 改造した。</p>
-<ul class="simple">
-<li><p>https://github.com/ousttrue/packer.nvim</p></li>
-<li><p>https://github.com/ousttrue/hererocks</p></li>
+<ul>
+<li>https://github.com/ousttrue/packer.nvim</li>
+<li>https://github.com/ousttrue/hererocks</li>
 </ul>
 <p>hererocks は、luarocks のインストーラー。
-<code class="docutils literal notranslate"><span class="pre">LUA_PATH</span></code> <code class="docutils literal notranslate"><span class="pre">package.path</span></code> を理解した。</p>
-</section>
-<section id="lua">
-<h1>スタンドアロンの lua インタプリタによるプロジェクト<a class="headerlink" href="#lua" title="Permalink to this headline">¶</a></h1>
+<code>LUA_PATH</code> <code>package.path</code> を理解した。</p>
+<h3>スタンドアロンの lua インタプリタによるプロジェクト</h3>
 <p>luarocks が無事に Windows で運用できるようになったので、プロジェクトローカルに必要なライブラリをインストールして、
 スタンドアロンの lua インタープリターを起点にしたアプリ開発ができないか探ってみた。
 lua インタプリタがアプリ組み込みだと dap の運用がしづらい(port 開けて attach とかになる)のでスタンドアロンの lua インタープリターを推す。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># フォルダ構成</span>
-<span class="n">project_root</span>
-  <span class="o">+</span> <span class="n">lua</span><span class="p">(</span><span class="o">.</span><span class="n">gitignore</span><span class="p">)</span> <span class="c1"># hererocks でローカルビルドする</span>
-  <span class="o">+</span> <span class="n">main</span><span class="o">.</span><span class="n">lua</span>
-</pre></div>
-</div>
-<p>これで、 <code class="docutils literal notranslate"><span class="pre">lsp</span></code> と <code class="docutils literal notranslate"><span class="pre">dap</span></code> が利用できれば快適になるのではないか。</p>
-<section id="lua-languageserver">
-<h2>lua の LanguageServer<a class="headerlink" href="#lua-languageserver" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">https://marketplace.visualstudio.com/items?itemName=sumneko.lua</a></p>
+<pre class="code literal-block"># フォルダ構成
+project_root
+  + lua(.gitignore) # hererocks でローカルビルドする
+  + main.lua
+</pre>
+<p>これで、 <code>lsp</code> と <code>dap</code> が利用できれば快適になるのではないか。</p>
+<h4>lua の LanguageServer</h4>
 <ul>
-<li><p><a class="reference external" href="https://github.com/sumneko/lua-language-server">https://github.com/sumneko/lua-language-server</a></p></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">https://marketplace.visualstudio.com/items?itemName=sumneko.lua</a></li>
+<li><a href="https://github.com/sumneko/lua-language-server">https://github.com/sumneko/lua-language-server</a></li>
 </ul>
-</li>
-</ul>
-<p>がしっかり動き、<code class="docutils literal notranslate"><span class="pre">EmmyLua</span></code> の型ヒントを活用できることが分かった。</p>
-<p><a class="reference external" href="https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua">https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua</a> に例があって、</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">require</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">.</span><span class="n">sumneko_lua</span><span class="p">.</span><span class="n">setup</span> <span class="p">{</span>
+<p>がしっかり動き、<code>EmmyLua</code> の型ヒントを活用できることが分かった。</p>
+<p><a href="https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua">https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua</a> に例があって、</p>
+<pre class="code literal-block"><span class="nb">require</span><span class="s1">'lspconfig'</span><span class="p">.</span><span class="n">sumneko_lua</span><span class="p">.</span><span class="n">setup</span> <span class="p">{</span>
   <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Lua</span> <span class="o">=</span> <span class="p">{</span>
       <span class="n">workspace</span> <span class="o">=</span> <span class="p">{</span>
         <span class="c1">-- Make the server aware of Neovim runtime files</span>
         <span class="n">library</span> <span class="o">=</span> <span class="p">{</span>
-          <span class="p">[</span><span class="n">vim</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="s1">&#39;$VIMRUNTIME/lua&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- lua標準の型定義がある</span>
-          <span class="p">[</span><span class="n">vim</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="s1">&#39;$VIMRUNTIME/lua/vim/lsp&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- Vimの型定義がある</span>
+          <span class="p">[</span><span class="n">vim</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="s1">'$VIMRUNTIME/lua'</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- lua標準の型定義がある</span>
+          <span class="p">[</span><span class="n">vim</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">expand</span><span class="p">(</span><span class="s1">'$VIMRUNTIME/lua/vim/lsp'</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- Vimの型定義がある</span>
         <span class="p">},</span>
       <span class="p">},</span>
     <span class="p">},</span>
   <span class="p">},</span>
 <span class="p">}</span>
-</pre></div>
-</div>
+</pre>
 <p>インテリセンスが効くし、組み込み関数の型ヒントも追加できる。</p>
-</section>
-<section id="lua-debugadapter">
-<h2>lua の DebugAdapter<a class="headerlink" href="#lua-debugadapter" title="Permalink to this headline">¶</a></h2>
+<h4>lua の DebugAdapter</h4>
 <p>DebugAdapter も問題なく動いた。
 luajit の場合は対応しているものを使うべし。</p>
-<section id="lua-debug">
-<h3>Lua Debug<a class="headerlink" href="#lua-debug" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug">https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug</a></p>
+<h5>Lua Debug</h5>
 <ul>
-<li><p><a class="reference external" href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></p></li>
+<li>
+<a href="https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug">https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug</a><ul>
+<li><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></li>
 </ul>
 </li>
 </ul>
-<p><a class="reference external" href="https://github.com/actboy168/bee.lua">https://github.com/actboy168/bee.lua</a> の</p>
-<ul class="simple">
-<li><p>Add error hook (for debugger)</p></li>
-<li><p>Add resume/yield hook (for debugger)</p></li>
+<p><a href="https://github.com/actboy168/bee.lua">https://github.com/actboy168/bee.lua</a> の</p>
+<ul>
+<li>Add error hook (for debugger)</li>
+<li>Add resume/yield hook (for debugger)</li>
 </ul>
 <p>謎の機能で実装されているぽい。</p>
-</section>
-<section id="local-lua-debugger">
-<h3>Local Lua Debugger<a class="headerlink" href="#local-lua-debugger" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a></p>
+<h5>Local Lua Debugger</h5>
 <ul>
-<li><p><a class="reference external" href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></p></li>
-</ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a></li>
+<li>
+<p><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></p>
 </li>
-<li><p>luajit でも動く</p></li>
-<li><p>TypeScriptToLua で書かれている</p></li>
+<li>
+<p>luajit でも動く</p>
+</li>
+<li>TypeScriptToLua で書かれている</li>
 </ul>
-</section>
-</section>
-</section>
-<section id="lua-3d">
-<h1>lua で 3D<a class="headerlink" href="#lua-3d" title="Permalink to this headline">¶</a></h1>
-<p>ちょっと試したところ、 luajit の <a class="reference external" href="https://luajit.org/ext_ffi.html">FFI</a> を使うのが有望そうという感触を得た。
+<h3>lua で 3D</h3>
+<p>ちょっと試したところ、 luajit の <a href="https://luajit.org/ext_ffi.html">FFI</a> を使うのが有望そうという感触を得た。
 d3d は lua でやっている人があまりいなかった。</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/sonoro1234/LuaJIT-GLFW">https://github.com/sonoro1234/LuaJIT-GLFW</a></p></li>
-<li><p><a class="reference external" href="https://github.com/sonoro1234/LuaJIT-ImGui">https://github.com/sonoro1234/LuaJIT-ImGui</a></p></li>
+<ul>
+<li><a href="https://github.com/sonoro1234/LuaJIT-GLFW">https://github.com/sonoro1234/LuaJIT-GLFW</a></li>
+<li><a href="https://github.com/sonoro1234/LuaJIT-ImGui">https://github.com/sonoro1234/LuaJIT-ImGui</a></li>
 </ul>
 <p>最新の luajit-2.1.0-beta3(lua-5.1仕様) でいく。</p>
-</section>
-<section id="imgui-ffi">
-<h1>imgui の ffi<a class="headerlink" href="#imgui-ffi" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">cimgui</span></code> ではなく 素の <code class="docutils literal notranslate"><span class="pre">imgui</span></code> の luajit ffi できるか実験した。</p>
-<p><a class="reference external" href="https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi">https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi</a></p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
-<span class="s">void Test1_Method1(void) asm(&quot;_ZN5Test17Method1Ev&quot;);</span>
+<h3>imgui の ffi</h3>
+<p><code>cimgui</code> ではなく 素の <code>imgui</code> の luajit ffi できるか実験した。</p>
+<p><a href="https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi">https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi</a></p>
+<pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<span class="s">void Test1_Method1(void) asm("_ZN5Test17Method1Ev");</span>
 <span class="s">]]</span>
-</pre></div>
-</div>
+</pre>
 <p>のように mangling に対応すればできそう。</p>
-</section>
-<section id="libclang">
-<h1>libclang による コード生成<a class="headerlink" href="#libclang" title="Permalink to this headline">¶</a></h1>
-<p>ということで、 <code class="docutils literal notranslate"><span class="pre">luajit</span></code> + <code class="docutils literal notranslate"><span class="pre">FFI</span></code> を中心に <code class="docutils literal notranslate"><span class="pre">imgui</span></code> ラッパーを作ってレンダラーというか 3D ツールのインフラとなる、
-簡単なレンダラーと <code class="docutils literal notranslate"><span class="pre">Gizmo</span></code> に対応したツールキットを作るという方向になってきた。</p>
-<p><code class="docutils literal notranslate"><span class="pre">imgui</span></code> の <code class="docutils literal notranslate"><span class="pre">luajit</span></code> <code class="docutils literal notranslate"><span class="pre">FFI</span></code> の使い勝手が重要。</p>
-<p><a class="reference external" href="https://github.com/ousttrue/limgui">https://github.com/ousttrue/limgui</a></p>
-<ul class="simple">
-<li><p>[ ] libclang で <code class="docutils literal notranslate"><span class="pre">imgui.h</span></code> をパースして、luajit FFI 生成と <code class="docutils literal notranslate"><span class="pre">lsp</span></code> への EmmyLua アノテーション生成を同時にやるツール。</p></li>
-</ul>
-</section>
-
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../../github/limgui/">
-      <i class="fa fa-arrow-circle-left"></i> limgui
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../../github/luajitffi/">
-      luajitffi <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2021/07/17 
-</h2>
-
+<h3>libclang による コード生成</h3>
+<p>ということで、 <code>luajit</code> + <code>FFI</code> を中心に <code>imgui</code> ラッパーを作ってレンダラーというか 3D ツールのインフラとなる、
+簡単なレンダラーと <code>Gizmo</code> に対応したツールキットを作るという方向になってきた。</p>
+<p><code>imgui</code> の <code>luajit</code> <code>FFI</code> の使い勝手が重要。</p>
+<p><a href="https://github.com/ousttrue/limgui">https://github.com/ousttrue/limgui</a></p>
 <ul>
-       
-<li id="tags">
-  <span
-    ><i class="fa-fw fa fa-tags"></i> </span
-  >
-   
-  <a href="../../../blog/tag/lua/">lua</a>   
-  <a href="../../../blog/tag/imgui/">imgui</a>  
-</li>
- 
+<li>[ ] libclang で <code>imgui.h</code> をパースして、luajit FFI 生成と <code>lsp</code> への EmmyLua アノテーション生成を同時にやるツール。</li>
 </ul>
-
-<h3>
-  <a href="../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">rust で D3D11 レンダラを進めてきたが・・・</a></li>
-<li><a class="reference internal" href="#nvim-0-5">nvim-0.5 はおもしろい</a></li>
-<li><a class="reference internal" href="#luarocks-windows">luarocks の Windows 運用</a></li>
-<li><a class="reference internal" href="#lua">スタンドアロンの lua インタプリタによるプロジェクト</a><ul>
-<li><a class="reference internal" href="#lua-languageserver">lua の LanguageServer</a></li>
-<li><a class="reference internal" href="#lua-debugadapter">lua の DebugAdapter</a><ul>
-<li><a class="reference internal" href="#lua-debug">Lua Debug</a></li>
-<li><a class="reference internal" href="#local-lua-debugger">Local Lua Debugger</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#lua-3d">lua で 3D</a></li>
-<li><a class="reference internal" href="#imgui-ffi">imgui の ffi</a></li>
-<li><a class="reference internal" href="#libclang">libclang による コード生成</a></li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../../github/limgui/" rel="prev" title="limgui">
+            limgui 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../../github/luajitffi/" rel="next" title="luajitffi">
+            👉 luajitffi
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

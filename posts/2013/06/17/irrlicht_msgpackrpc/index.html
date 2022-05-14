@@ -1,76 +1,43 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>irrlicht_msgpackrpc</title>
-<link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-<script src="../../../../../_static/jquery.js"></script>
-<script src="../../../../../_static/underscore.js"></script>
-<script src="../../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>IrrlichtにMsgPackRPCを仕込む | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">irrlicht_msgpackrpc</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="irrlicht-msgpackrpc">
-<h1>irrlicht_msgpackrpc<a class="headerlink" href="#irrlicht-msgpackrpc" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">IrrlichtにMsgPackRPCを仕込む
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2013-06-17T00:00:00+09:00" title="2013-06-17">2013-06-17</time>
+</li>
+</ul>
+</h1>
+
 <p>IrrlichtにMsgPackRPCを仕込む
 Oculusの通販ステータスが早くもProcessingに変わって届くのが楽しみな今日この頃。
 レンダリングエンジンにはIrrlichtを選択したのであるが、
@@ -79,146 +46,137 @@ Oculusの通販ステータスが早くもProcessingに変わって届くのが�
 操作しようと構想しておったのだが始めてみると早速問題に突き当たった。
 オブジェクトを生成してそのメソッドをコールするのにどうすればいいのか。
 こういう場合だ。
-IMesh *mesh=CreateMesh(“miku.pmd”);
+IMesh *mesh=CreateMesh("miku.pmd");
 mesh-&gt;SetPosition(0, 0, 5);</p>
 <p>MsgPackRPC経由だと以下のような感じか。</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="python">
-<h1>pythonとかそういうの<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h1>
+<h2>pythonとかそういうの</h2>
 <p>client=msgpac.rpc.client()
-mesh=client.call(“CreateMesh”, “miku.pmd”)
-client.call(“Mesh_SetPosition”, mesh, 0, 0, 5)</p>
+mesh=client.call("CreateMesh", "miku.pmd")
+client.call("Mesh_SetPosition", mesh, 0, 0, 5)</p>
 <p>1つめのCreateMeshはグローバル関数かシングルトン的オブジェクトのメソッド呼び出しになるので特に問題は無い。
 2つめはSetPositionのthisとしてmeshを送ってやる必要がある。
-ここでmsgpack的にはIMesh*をシリアライズ/デシリアライズすることが必要になる。
+ここでmsgpack的にはIMesh<em>をシリアライズ/デシリアライズすることが必要になる。
 案１ ポインタを整数値としてキャストすればいいじゃない
-template <typename Stream>
-inline packer<Stream>&amp; operator&lt;&lt; (packer<Stream>&amp; o, IMesh *v)
+template <typename stream>
+inline packer<stream>&amp; operator&lt;&lt; (packer<stream>&amp; o, IMesh </stream></stream></typename></em>v)
 {
-// ポインタをintにキャスト
-o.pack((int)v);
-return o;
+    // ポインタをintにキャスト
+    o.pack((int)v);
+    return o;
 }</p>
 <p>inline IMesh <em>v operator&gt;&gt; (object o, IMesh</em> v)
 {
-unsigned int p;
-o.convert(&amp;p):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// intをポインタにキャスト
-v=(IMesh*)p;
+    unsigned int p;
+    o.convert(&amp;p):</p>
+<pre class="code literal-block"><span class="o">//</span> <span class="nv">int</span>をポインタにキャスト
+<span class="nv">v</span><span class="o">=</span><span class="ss">(</span><span class="nv">IMesh</span><span class="o">*</span><span class="ss">)</span><span class="nv">p</span><span class="c1">;</span>
 
-return v;
-</pre></div>
-</div>
+<span class="k">return</span> <span class="nv">v</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>さすがにワイルドすぎる。というかポインタが既に開放されている場合になすすべが無いので没
 案２ 適当にユニークなIDを振る
-template <typename Stream>
-inline packer<Stream>&amp; operator&lt;&lt; (packer<Stream>&amp; o, IMesh *v)
+template <typename stream>
+inline packer<stream>&amp; operator&lt;&lt; (packer<stream>&amp; o, IMesh *v)
 {
-// ポインタのuid値
-o.pack(v-&gt;uid());
-return o;
-}</p>
+    // ポインタのuid値
+    o.pack(v-&gt;uid());
+    return o;
+}</stream></stream></typename></p>
 <p>inline IMesh <em>v operator&gt;&gt; (object o, IMesh</em> v)
 {
-unsigned int uid;
-o.convert(&amp;uid):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// uid値からポインタを得る
-v=IMesh::get_from_uid(uid);
+    unsigned int uid;
+    o.convert(&amp;uid):</p>
+<pre class="code literal-block"><span class="o">//</span> <span class="nt">uid値からポインタを得る</span>
+<span class="nt">v</span><span class="o">=</span><span class="nt">IMesh</span><span class="p">::</span><span class="nd">get_from_uid</span><span class="o">(</span><span class="nt">uid</span><span class="o">);</span>
 
-return v;
-</pre></div>
-</div>
+<span class="nt">return</span> <span class="nt">v</span><span class="o">;</span>
+</pre>
 <p>}</p>
 <p>Irrlichtだと本体側に改造が要るけどこれでいってみるか。
-template<typename T>
+template<typename t>
 class IDGenerator
 {
-unsigned int m_uid;</p>
+    unsigned int m_uid;</typename></p>
 <p>public:
-IDGenerator():m_uid(generate_uid())
-{
-m_uid_map.insert(std::make_pair(m_uid, this));
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unsigned int uid()const 
-{
-    return m_uid;
-}
-</pre></div>
-</div>
+    IDGenerator():m_uid(generate_uid())
+    {
+        m_uid_map.insert(std::make_pair(m_uid, this));
+    }</p>
+<pre class="code literal-block"><span class="n">unsigned</span> <span class="nb nb-Type">int</span> <span class="n">uid</span><span class="p">()</span><span class="k">const</span> 
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">m_uid</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
 <p>////////////////////
 // static
 ////////////////////
 private:
-static unsigned int m_next_uid=1;
-static std::hash_map&lt;unsigned int, T*&gt; m_uid_map;
+    static unsigned int m_next_uid=1;
+    static std::hash_map<unsigned int t> m_uid_map;
 public:
-static unsigned int generate_uid(){
-return m_next_uid++;
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>statc T* get_from_uid(unsigned int uid){
-    auto found=m_uid_map.find(uid);
-    if(found==m_uid_map.end()){
-        return 0;
-    }
-    return found-&gt;second;
-}
-</pre></div>
-</div>
+    static unsigned int generate_uid(){ 
+        return m_next_uid++; 
+    }</unsigned></p>
+<pre class="code literal-block"><span class="n">statc</span> <span class="n">T</span><span class="o">*</span> <span class="n">get_from_uid</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">int</span> <span class="n">uid</span><span class="p">){</span>
+    <span class="n">auto</span> <span class="n">found</span><span class="o">=</span><span class="n">m_uid_map</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">uid</span><span class="p">);</span>
+    <span class="nf">if</span><span class="p">(</span><span class="n">found</span><span class="o">==</span><span class="n">m_uid_map</span><span class="p">.</span><span class="kd">end(</span><span class="p">)){</span>
+        <span class="kr">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kr">return</span> <span class="n">found</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
 <p>};</p>
 <p>// 継承階層のIReferenceCountedの下あたりにこんな感じで介入する予定
-class IMesh : public virtual IReferenceCounted, public IDGenerator<IMesh>
+class IMesh : public virtual IReferenceCounted, public IDGenerator<imesh>
 {
-};</p>
+};</imesh></p>
 <p>うまくいくかやってみるとしよう。
 書いてみた
 自由に書いてみたらこうなった。templateクラスのスタティックメンバ変数の書き方を学んだ。
 http://d.hatena.ne.jp/higepon/20100803/1280834422
-template<typename T>
+template<typename t>
 class IDGenerator
 {
-struct Deleter{
-unsigned int m_uid;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    Deleter(unsigned int uid): m_uid(uid){}
+    struct Deleter{
+        unsigned int m_uid;</typename></p>
+<pre class="code literal-block">    Deleter(unsigned int uid): m_uid(uid){}
     ~Deleter(){ remove_from_map(m_uid); }
 };
 Deleter m_deleter;
 unsigned int m_uid;
-</pre></div>
-</div>
+</pre>
 <p>public:
-IDGenerator():m_uid(generate_uid()), m_deleter(m_uid)
-{
-s_uid_map[m_uid]=this;
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unsigned int uid()const 
-{
-    return m_uid;
-}
+    IDGenerator():m_uid(generate_uid()), m_deleter(m_uid)
+    {
+        s_uid_map[m_uid]=this;
+    }</p>
+<pre class="code literal-block"><span class="n">unsigned</span> <span class="nb nb-Type">int</span> <span class="n">uid</span><span class="p">()</span><span class="k">const</span> 
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">m_uid</span><span class="p">;</span>
+<span class="p">}</span>
 
-////////////////////
-// static
-////////////////////
-</pre></div>
-</div>
+<span class="o">////////////////////</span>
+<span class="o">//</span> <span class="k">static</span>
+<span class="o">////////////////////</span>
+</pre>
 <p>private:
-static core::map&lt;unsigned int, IDGenerator*&gt; s_uid_map;
+    static core::map<unsigned int idgenerator> s_uid_map;
 public:
-static unsigned int generate_uid(){
-static unsigned int next_uid=1;
-return next_uid++;
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>static T* get_from_uid(unsigned int uid){
-    return s_uid_map.find(uid);
+    static unsigned int generate_uid(){ 
+        static unsigned int next_uid=1;
+        return next_uid++; 
+    }</unsigned></p>
+<pre class="code literal-block"><span class="nv">static</span> <span class="nv">T</span><span class="o">*</span> <span class="nv">get_from_uid</span><span class="ss">(</span><span class="nv">unsigned</span> <span class="nv">int</span> <span class="nv">uid</span><span class="ss">)</span>{
+    <span class="k">return</span> <span class="nv">s_uid_map</span>.<span class="nv">find</span><span class="ss">(</span><span class="nv">uid</span><span class="ss">)</span><span class="c1">;</span>
 }
 
-static void remove_from_map(unsigned int uid){
-    s_uid_map.remove(uid);
+<span class="nv">static</span> <span class="nv">void</span> <span class="nv">remove_from_map</span><span class="ss">(</span><span class="nv">unsigned</span> <span class="nv">int</span> <span class="nv">uid</span><span class="ss">)</span>{
+    <span class="nv">s_uid_map</span>.<span class="nv">remove</span><span class="ss">(</span><span class="nv">uid</span><span class="ss">)</span><span class="c1">;</span>
 }
-</pre></div>
-</div>
+</pre>
 <p>};
-template <typename T> core::map&lt;unsigned int, IDGenerator<T>*&gt; IDGenerator<T>::s_uid_map;</p>
+template <typename t> core::map<unsigned int idgenerator>*&gt; IDGenerator<t>::s_uid_map;</t></unsigned></typename></p>
 <p>しかし、この設計だとstaticメンバがdll境界を越えて２つ存在してうまくいかない罠があった。没
 案3 適当にユニークなIDを振る(非テンプレート)
 irr::IReferenceCountedを改造する。
@@ -226,56 +184,54 @@ irr::IReferenceCountedを改造する。
 class IReferenceCounted
 {
 public:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>//! Constructor.
-IReferenceCounted()
-    : DebugName(0), ReferenceCounter(1), UID(get_uid())
-{
-    register_uid(UID, this);
-}
+<pre class="code literal-block"><span class="c1">//! Constructor.</span>
+<span class="n">IReferenceCounted</span><span class="p">()</span>
+    <span class="o">:</span> <span class="n">DebugName</span><span class="p">(</span><span class="mh">0</span><span class="p">),</span> <span class="n">ReferenceCounter</span><span class="p">(</span><span class="mh">1</span><span class="p">),</span> <span class="n">UID</span><span class="p">(</span><span class="n">get_uid</span><span class="p">())</span>
+<span class="p">{</span>
+    <span class="n">register_uid</span><span class="p">(</span><span class="n">UID</span><span class="p">,</span> <span class="n">this</span><span class="p">);</span>
+<span class="p">}</span>
 
-u32 uid(){ return UID; }
+<span class="n">u32</span> <span class="n">uid</span><span class="p">(){</span> <span class="k">return</span> <span class="n">UID</span><span class="p">;</span> <span class="p">}</span>
 
-//! Destructor.
-virtual ~IReferenceCounted()
-{
-    unregister_uid(UID);
-}
-</pre></div>
-</div>
+<span class="c1">//! Destructor.</span>
+<span class="n">virtual</span> <span class="o">~</span><span class="n">IReferenceCounted</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">unregister_uid</span><span class="p">(</span><span class="n">UID</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
 <p>// 省略</p>
 <p>};</p>
-<p>#include “IDGenerator.h”
-#include “IReferenceCounted.h”
-#include “irrMap.h”</p>
+<h2>include "IDGenerator.h"</h2>
+<h2>include "IReferenceCounted.h"</h2>
+<h2>include "irrMap.h"</h2>
 <p>namespace irr {</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>extern &quot;C&quot; IRRLICHT_API u32 get_uid()
-{
-    static u32 uid=1;
-    return uid++;
-}
+<pre class="code literal-block"><span class="n">extern</span> <span class="s">"C"</span> <span class="n">IRRLICHT_API</span> <span class="n">u32</span> <span class="n">get_uid</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">static</span> <span class="n">u32</span> <span class="n">uid</span><span class="o">=</span><span class="mh">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">uid</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
 
-static core::map&lt;u32, IReferenceCounted*&gt; g_map;
+<span class="n">static</span> <span class="n">core</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">u32</span><span class="p">,</span> <span class="n">IReferenceCounted</span><span class="o">*&gt;</span> <span class="n">g_map</span><span class="p">;</span>
 
-extern &quot;C&quot; IRRLICHT_API void register_uid(u32 uid, IReferenceCounted *p)
-{
-    g_map.set(uid, p);
-}
+<span class="n">extern</span> <span class="s">"C"</span> <span class="n">IRRLICHT_API</span> <span class="k">void</span> <span class="n">register_uid</span><span class="p">(</span><span class="n">u32</span> <span class="n">uid</span><span class="p">,</span> <span class="n">IReferenceCounted</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">g_map</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span>
+<span class="p">}</span>
 
-extern &quot;C&quot; IRRLICHT_API void unregister_uid(u32 uid)
-{
-    auto found=g_map.remove(uid);
-}
+<span class="n">extern</span> <span class="s">"C"</span> <span class="n">IRRLICHT_API</span> <span class="k">void</span> <span class="n">unregister_uid</span><span class="p">(</span><span class="n">u32</span> <span class="n">uid</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">auto</span> <span class="n">found</span><span class="o">=</span><span class="n">g_map</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">uid</span><span class="p">);</span>
+<span class="p">}</span>
 
-extern &quot;C&quot; IRRLICHT_API IReferenceCounted* get_from_uid(u32 uid)
-{
-    auto found=g_map.find(uid);
-    if(!found){
-        return 0;
-    }
-    return found-&gt;getValue();
-}
-</pre></div>
-</div>
+<span class="n">extern</span> <span class="s">"C"</span> <span class="n">IRRLICHT_API</span> <span class="n">IReferenceCounted</span><span class="o">*</span> <span class="n">get_from_uid</span><span class="p">(</span><span class="n">u32</span> <span class="n">uid</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">auto</span> <span class="n">found</span><span class="o">=</span><span class="n">g_map</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">uid</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">found</span><span class="p">){</span>
+        <span class="k">return</span> <span class="mh">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">found</span><span class="o">-&gt;</span><span class="n">getValue</span><span class="p">();</span>
+<span class="p">}</span>
+</pre>
 <p>}</p>
 <p>動作確認できた。
 ここまでの作業でMsgPackRPCを使ったIrrlichtエクスポートについて見通しを得ることができた。
@@ -283,725 +239,24 @@ PythonやLuaから使えるようにするのと同じような作業でリモ�
 呼び出し側にPythonのMsgPackRPCを使えば違う言語からでも呼び出せるので一石二鳥というもの。
 ということで引き続き作業を進める。
 MsgPackRPCのリモート呼び出しを利用したシーンエディタを作りながら表示できるものを増やしていく。</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../11/irrlicht/">
-      <i class="fa fa-arrow-circle-left"></i> Oculusぽちった
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../22/irrlicht-vrpn/">
-      IrrlichtにVRPNを合体する <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2013/06/17 
-</h2>
-
-<ul>
-        
-</ul>
-
-<h3>
-  <a href="../../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">irrlicht_msgpackrpc</a></li>
-<li><a class="reference internal" href="#python">pythonとかそういうの</a></li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../02/gstreamer/" rel="prev" title="Gstreamerを始めてみた">
+            Gstreamerを始めてみた 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../22/irrlicht-vrpn/" rel="next" title="IrrlichtにVRPNを合体する">
+            👉 IrrlichtにVRPNを合体する
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

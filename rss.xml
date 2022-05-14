@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌</title><link>https://ousttrue.github.io/</link><description>作業記録</description><atom:link href="https://ousttrue.github.io/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:07 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Nikola復活</title><link>https://ousttrue.github.io/posts/0514-nikola_revival/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;Nikola復活&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/"&gt;nikola&lt;/a&gt; 復活。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/dotfiles/blob/master/dodo.py"&gt;https://github.com/ousttrue/dotfiles/blob/master/dodo.py&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;を作りながら &lt;a href="https://pydoit.org/"&gt;doit&lt;/a&gt; を学んだし、 &lt;a href="https://jinja.palletsprojects.com/en/3.1.x/"&gt;jinja&lt;/a&gt;
+も少しやったので、前よりは読めそう。
+使いながら、 nikola のコードを読んで、 doit のカスタムタスクの使い方を眺めてみたい。&lt;/p&gt;
+&lt;h3&gt;sphinx + ablog + myst との違い&lt;/h3&gt;
+&lt;p&gt;nikola は &lt;code&gt;frontmatter&lt;/code&gt; で title を決めるが、 sphinx は 本文の先頭の見出しで決めるという違いがある。
+nikola の方も title と 先頭の見出しを同じにする運用にすれば、だいたい同じになると思う。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;conf.py # nikola の設定
+docs
+  + conf.py # sphinx の設定
+  + posts # content. nikola と sphinx の ablog 両用
+    + post.md
+&lt;/pre&gt;
+&lt;p&gt;みたいな感じにしてもだいたい動く。
+細かく違うところはあると思うが。&lt;/p&gt;
+&lt;h3&gt;動作&lt;/h3&gt;
+&lt;h4&gt;DoitNikola(DoitMain)&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L301"&gt;https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L301&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;ここから入っていく。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;from doit.cmd_base import TaskLoader2&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://pydoit.org/extending.html?highlight=taskloader#doit.cmd_base.TaskLoader2"&gt;https://pydoit.org/extending.html?highlight=taskloader#doit.cmd_base.TaskLoader2&lt;/a&gt;&lt;/p&gt;
+&lt;h4&gt;NikolaTaskLoader(TaskLoader2)&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L257"&gt;https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L257&lt;/a&gt;&lt;/p&gt;</description><category>python</category><category>ssg</category><guid>https://ousttrue.github.io/posts/0514-nikola_revival/</guid><pubDate>Fri, 13 May 2022 15:00:00 GMT</pubDate></item><item><title>0507-bdist_wheel</title><link>https://ousttrue.github.io/posts/2022/0507-bdist_wheel/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;bdist_wheel + pep517 ではまる&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;setup.py bdist_wheel
+&lt;/pre&gt;
+&lt;p&gt;なら成功するが、&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;pip wheel .
+&lt;/pre&gt;
+&lt;p&gt;だと失敗するという現象に悩まされる。
+cmake でビルドしている extension の pyd が含まれないのである。&lt;/p&gt;
+&lt;p&gt;原因は、 &lt;code&gt;setup.py&lt;/code&gt; の下記の記述。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;build_ext_cmake&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;build_ext&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;ext&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;extensions&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;build_cmake&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ext&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;build_cmake&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ext&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="c1"&gt;# these dirs will be created in build_py, so if you don't have&lt;/span&gt;
+        &lt;span class="c1"&gt;# any python sources to bundle, the dirs will be missing&lt;/span&gt;
+        &lt;span class="n"&gt;build_temp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pathlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;build_temp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;build_temp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mkdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parents&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;exist_ok&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;ext_path&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pathlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_ext_fullpath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ext&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# &amp;lt;- これ&lt;/span&gt;
+        &lt;span class="n"&gt;ext_path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mkdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parents&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;exist_ok&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;直した。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;        &lt;span class="n"&gt;ext_path&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pathlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_ext_fullpath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ext&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;absolute&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;たぶん、 &lt;code&gt;get_ext_fullpath&lt;/code&gt; が相対パスを返していて、変なところに &lt;code&gt;pyd&lt;/code&gt; が出力されていた。
+pip の時だけフォルダの構成や pwd が変わっている様子。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;pip wheel . -v
+&lt;/pre&gt;
+&lt;p&gt;として、ログと睨めっこしていたら気付いた。
+pip が subprocess とか使うので、デバッガがアタッチできなくて、なかなかわからなかった。&lt;/p&gt;</description><category>python</category><guid>https://ousttrue.github.io/posts/2022/0507-bdist_wheel/</guid><pubDate>Fri, 06 May 2022 15:00:00 GMT</pubDate></item><item><title>0428-zig2</title><link>https://ousttrue.github.io/posts/2022/0428-zig2/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;zig その2&lt;/h2&gt;
+&lt;p&gt;再度使ってみるべく環境整備から。&lt;/p&gt;
+&lt;h3&gt;zls の master を使う&lt;/h3&gt;
+&lt;p&gt;どうやら @import std 以外がうまく動かないらしく、 最新版を試してみたい。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;glfw&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;import&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"glfw"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;a href="https://ziglang.org/download/"&gt;https://ziglang.org/download/&lt;/a&gt; からダウンロードするべし。&lt;/p&gt;
+&lt;h3&gt;いちおう build を 試みた&lt;/h3&gt;
+&lt;p&gt;zls の最新判を試すには、 zig の最新版(0.9.1じゃなくてmaster)が必要。
+zig のビルドには static build の llvm-13 が必要。
+Windows では頓挫した。
+しかし、最近 gentoo を育成しているのでこっちでやってみる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;cmake -B build -S .
+&lt;/pre&gt;
+&lt;p&gt;してみたが、最後にリンクエラーが出る。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;undefined reference to clang::SourceManager::getFilename
+&lt;/pre&gt;
+&lt;p&gt;しかし、 gentoo の emerge に &lt;code&gt;dev-lang/zig-9999&lt;/code&gt; があった。
+これを使って zls がビルドできた。
+&lt;code&gt;glfw&lt;/code&gt; のインテリセンスも動作した。&lt;/p&gt;
+&lt;h3&gt;zig master(0.10) が変わっていて zls と gyro のビルドが通らない。&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ziglang/zig/commit/a0a2ce92ca129d28e22c63f7bace1672c43776b5"&gt;https://github.com/ziglang/zig/commit/a0a2ce92ca129d28e22c63f7bace1672c43776b5&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;zls&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/zigtools/zls/pull/481"&gt;https://github.com/zigtools/zls/pull/481&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;gyro&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;std.ChildProcess.init&lt;/code&gt; のところ。&lt;/p&gt;
+&lt;h3&gt;OpenGL やってく&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/hexops/mach-glfw"&gt;https://github.com/hexops/mach-glfw&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を起点にやってみる。
+前回は &lt;code&gt;@cImport&lt;/code&gt; を使っているサンプルでインテリセンス効かなくて、続かなかった。
+&lt;code&gt;@import&lt;/code&gt; + &lt;code&gt;最新版zls&lt;/code&gt; で進めていけば慣れるかな。&lt;/p&gt;
+&lt;h3&gt;gyro の使いかた&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;202204&lt;/code&gt; 現在だと、 gyro で import すると zls が解決できないような気がする。&lt;/p&gt;
+&lt;h4&gt;add package&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;gyro add --src github hexops/mach-glfw --root src/main.zig --alias glfw
+&lt;/pre&gt;
+&lt;h4&gt;dep package&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;gyro add --build-dep --src github hexops/mach-glfw --root build.zig --alias build-glfw
+&lt;/pre&gt;
+&lt;h4&gt;use package&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kr"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;glfw&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;@import&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"glfw"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;build.zig&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kr"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pkgs&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;@import&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"deps.zig"&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;pkgs&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="kr"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;glfw&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;@import&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"build-glfw"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="kr"&gt;pub&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;fn&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;Builder&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;exe&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addPackage&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pkgs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;glfw&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;glfw&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;link&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exe&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;.{});&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;zgl&lt;/h4&gt;
+&lt;p&gt;libepoxy&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;gyro add --src github ziglibs/zgl --root zgl.zig --alias gl
+&lt;/pre&gt;</description><category>zig</category><guid>https://ousttrue.github.io/posts/2022/0428-zig2/</guid><pubDate>Wed, 27 Apr 2022 15:00:00 GMT</pubDate></item><item><title>0419-gentoo</title><link>https://ousttrue.github.io/posts/2022/0419-gentoo/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;Gentoo 構築&lt;/h2&gt;
+&lt;p&gt;久しぶりに gentoo の機運が高まったので入れてみた。
+先に &lt;code&gt;Ubuntu-20.04&lt;/code&gt; を入れておいて、後ろのパーティションに gentoo をインストールする作戦。
+Ubuntu と同じ &lt;code&gt;/home&lt;/code&gt; をマウントしてみたら &lt;code&gt;dotfiles&lt;/code&gt; に互換性が無かったのでやめた。
+わりと順調にインストールできた。
+ゆくゆくは wsl も gentoo に換装したいところじゃ。&lt;/p&gt;
+&lt;h3&gt;2022-05-05&lt;/h3&gt;
+&lt;p&gt;システムを壊してしもた。
+作りなおし。ついでに &lt;a href="https://wiki.gentoo.org/wiki/Btrfs"&gt;btffs&lt;/a&gt; やってみる。&lt;/p&gt;
+&lt;h3&gt;btrfs&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;/etc/fstab&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;/dev/sdb                /srv            btrfs           compress=zstd:9,relatime,rw     0 0
+&lt;/pre&gt;
+&lt;h3&gt;python-3.10&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;PYTHON_SINGLE_TARGET&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;6月くらいにデフォルトになる予定みたいだ。先にやってみた。&lt;/p&gt;
+&lt;p&gt;間違い。去年の6月に、 &lt;code&gt;Python-3.9&lt;/code&gt; がデフォルトになった。
+&lt;code&gt;Python-3.10&lt;/code&gt; は今のところ予定に無い。
+いろいろインストールできなくなったので、元に戻した。&lt;/p&gt;
+&lt;h3&gt;make.conf&lt;/h3&gt;
+&lt;p&gt;ここに貼っておこう。
+こいつを育てているようなものだし。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# These settings were set by the catalyst build script that automatically&lt;/span&gt;
+&lt;span class="c1"&gt;# built this stage.&lt;/span&gt;
+&lt;span class="c1"&gt;# Please consult /usr/share/portage/config/make.conf.example for a more&lt;/span&gt;
+&lt;span class="c1"&gt;# detailed example.&lt;/span&gt;
+&lt;span class="n"&gt;COMMON_FLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"-march=native -O2 -pipe"&lt;/span&gt;
+&lt;span class="n"&gt;CFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+&lt;span class="n"&gt;CXXFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+&lt;span class="n"&gt;FCFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+&lt;span class="n"&gt;FFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+
+&lt;span class="c1"&gt;# NOTE: This stage was built with the bindist Use flag enabled&lt;/span&gt;
+&lt;span class="n"&gt;PORTDIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"/var/db/repos/gentoo"&lt;/span&gt;
+&lt;span class="n"&gt;DISTDIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"/var/cache/distfiles"&lt;/span&gt;
+&lt;span class="n"&gt;PKGDIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"/var/cache/binpkgs"&lt;/span&gt;
+
+&lt;span class="n"&gt;USE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"X sixel truetype vim-syntax jpeg png python fontforge cjk alsa &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="s2"&gt;     pulseaudio mp3 dbus opengl ffmpeg mad mpd elogind gtk"&lt;/span&gt;
+&lt;span class="n"&gt;INPUT_DEVICES&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"evdev libinput synaptics"&lt;/span&gt;
+&lt;span class="c1"&gt;#VIDEO_CARDS="nouveau"&lt;/span&gt;
+&lt;span class="n"&gt;VIDEO_CARDS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"nvidia"&lt;/span&gt;
+&lt;span class="n"&gt;ABI_X86&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"64"&lt;/span&gt;
+
+&lt;span class="c1"&gt;# This sets the language of build output to English.&lt;/span&gt;
+&lt;span class="c1"&gt;# Please keep this setting intact when reporting bugs.&lt;/span&gt;
+&lt;span class="n"&gt;LC_MESSAGES&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"C"&lt;/span&gt;
+
+&lt;span class="n"&gt;MAKEOPTS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"-j6"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;boot&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;refind&lt;/code&gt; を試してみた。
+先に、Ubuntu の方でインストールして &lt;code&gt;gentoo&lt;/code&gt; でエントリーだけ増やした。
+&lt;code&gt;grub2&lt;/code&gt; より設定が簡単だと思った。
+情報は少なめ。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/boot/efi/EFI/refind/refind.conf&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# rootの指定が必要 &lt;/span&gt;
+&lt;span class="n"&gt;menuentry&lt;/span&gt; &lt;span class="n"&gt;Gentoo&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;icon&lt;/span&gt; &lt;span class="n"&gt;EFI&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;refind&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;icons&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;os_gentoo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;png&lt;/span&gt;
+    &lt;span class="n"&gt;loader&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;EFI&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;vmlinuz&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.15&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;
+    &lt;span class="n"&gt;initrd&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;EFI&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;initramfs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.15&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;img&lt;/span&gt;
+    &lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="s2"&gt;"root=/dev/sda4"&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;起動時に自動検索と設定に記述したエントリが出てくるので、&lt;code&gt;-&lt;/code&gt; キーで隠すと見ためがすっきりする。&lt;/p&gt;
+&lt;h3&gt;xorg&lt;/h3&gt;
+&lt;p&gt;なんとなくできた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ startx -- vt1
+&lt;/pre&gt;
+&lt;p&gt;としないとエラーになる。
+&lt;code&gt;/etc/X11&lt;/code&gt; は作らなくても動いた。&lt;/p&gt;
+&lt;p&gt;いつもどおりに &lt;code&gt;openbox&lt;/code&gt;, &lt;code&gt;tint2&lt;/code&gt;, &lt;code&gt;PCManFM&lt;/code&gt;, &lt;code&gt;conky&lt;/code&gt; という感じだが、今回は新型の &lt;code&gt;wezterm&lt;/code&gt; がある。&lt;/p&gt;
+&lt;h3&gt;yaft&lt;/h3&gt;
+&lt;p&gt;nerdfonts 入りの bdffont を作りたいのだが未だ。
+mlterm-fb や kmscon も試してみたのだがうまく動かなかった。&lt;/p&gt;
+&lt;h3&gt;wayland&lt;/h3&gt;
+&lt;p&gt;TODO:&lt;/p&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2022/0419-gentoo/</guid><pubDate>Tue, 19 Apr 2022 15:00:00 GMT</pubDate></item><item><title>0404-prompt-toolkit</title><link>https://ousttrue.github.io/posts/2022/0404-prompt-toolkit/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;prompt-toolkit の fullscreen アプリケーション&lt;/h2&gt;
+&lt;h3&gt;Buffer&lt;/h3&gt;
+&lt;p&gt;しばらく試行錯誤していたのだがやっと使い方が分かってきた。
+&lt;code&gt;Window&lt;/code&gt; + &lt;code&gt;BufferControl&lt;/code&gt; が基本形で edit する場合向け。
+&lt;code&gt;Window&lt;/code&gt; + &lt;code&gt;FormatedTextControl&lt;/code&gt; が readonly の装飾済みのテキストに向いていそう。&lt;/p&gt;
+&lt;p&gt;Lexer で基本的な装飾を施して、Preprocess でフォーカスやホバーのUI的な装飾をするという使い分けがよさそう。
+&lt;code&gt;FormattedTextControl&lt;/code&gt; の場合は初期化時にスタイル適用済みのテキストを渡してしまう。&lt;/p&gt;
+&lt;h3&gt;example&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/prompt-toolkit"&gt;https://github.com/prompt-toolkit&lt;/a&gt; の、&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/prompt-toolkit/pyvim"&gt;https://github.com/prompt-toolkit/pyvim&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/prompt-toolkit/pymux"&gt;https://github.com/prompt-toolkit/pymux&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/prompt-toolkit/pyterm"&gt;https://github.com/prompt-toolkit/pyterm&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;が &lt;code&gt;prompt-toolkit2&lt;/code&gt; のままになっているのだが、
+ちょっと手直しすることで、 &lt;code&gt;prompt-toolkit3&lt;/code&gt; で動作させることができた。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ptterm&lt;/code&gt; の &lt;code&gt;prompt-toolkit3&lt;/code&gt; 化に PR を送ってみた。
+主に &lt;code&gt;pipe&lt;/code&gt; 周りの非同期入力を &lt;code&gt;asyncio&lt;/code&gt; に適合させてやることで動く。
+&lt;a href="https://github.com/prompt-toolkit/ptterm/pull/9"&gt;https://github.com/prompt-toolkit/ptterm/pull/9&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;pymux&lt;/code&gt; も &lt;code&gt;fork&lt;/code&gt; しない &lt;code&gt;standalone&lt;/code&gt; 引き数付きならば &lt;code&gt;Windows&lt;/code&gt; + &lt;code&gt;prompt-toolkit3&lt;/code&gt; でも動かすことができた。&lt;/p&gt;
+&lt;p&gt;prompt-toolkit3 では積極的に &lt;code&gt;asyncio&lt;/code&gt; を活用していくのがよさそう。&lt;/p&gt;
+&lt;h3&gt;prompt-toolkit で任意のエスケープシーケンスを入れる&lt;/h3&gt;
+&lt;p&gt;prompt-toolkit で &lt;code&gt;sixel&lt;/code&gt; 画像を表示させたい。
+UIControl が UIContent を生成していて、このとき styled text のデータ構造に対して特殊なスタイル &lt;code&gt;[ZeroWidthEscape]&lt;/code&gt; を指定することでエスケープシーケンスを直接出力できることがわかった。諸々の調整が必要になるが、ここに &lt;code&gt;sixel&lt;/code&gt; のシーケンスを入れることで表示できる。
+処理順の癖に対応するために、
+画像の高さ分の改行を &lt;code&gt;sixel&lt;/code&gt; のエスケープシーケンスに先行させる必要があった。
+&lt;code&gt;prompt-toolkit&lt;/code&gt; + &lt;code&gt;wezterm&lt;/code&gt; 固有の問題かもしれない。&lt;/p&gt;
+&lt;h3&gt;Windows/Linux 共用で console アプリを動かす&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;prompt-toolkit3&lt;/code&gt; でかなりできそう。
+フレームワークの構成を理解するまでとっつきが悪いのだが、
+&lt;code&gt;pypager&lt;/code&gt;, &lt;code&gt;pyvim&lt;/code&gt;, &lt;code&gt;ptterm&lt;/code&gt;, &lt;code&gt;pymux&lt;/code&gt; を研究してやっとわかってきた。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;nerdfont&lt;/code&gt; で賑やかしを入れて、 &lt;code&gt;sixel&lt;/code&gt; で画像表示ができるおもちゃを企画している。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;vim ぽい lsp/dap の実験アプリ&lt;/li&gt;
+&lt;li&gt;w3m ぽい ブラウザ&lt;/li&gt;
+&lt;li&gt;tmux ぽいやつ&lt;/li&gt;
+&lt;li&gt;ranger ぽいやつ&lt;/li&gt;
+&lt;/ul&gt;</description><category>ptk</category><category>python</category><guid>https://ousttrue.github.io/posts/2022/0404-prompt-toolkit/</guid><pubDate>Sun, 03 Apr 2022 15:00:00 GMT</pubDate></item><item><title>0331-term</title><link>https://ousttrue.github.io/posts/2022/0331-term/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;term周りの更新&lt;/h2&gt;
+&lt;h3&gt;terminal emulator を選定・・・&lt;/h3&gt;
+&lt;p&gt;主に3つの動作環境、&lt;code&gt;Windows&lt;/code&gt;, &lt;code&gt;Windows wsl&lt;/code&gt;, &lt;code&gt;Ubuntu-20.04&lt;/code&gt; があってtoolや設定をある程度共通にしたいということで試行錯誤していた。
+他に &lt;code&gt;ssh経由&lt;/code&gt;, &lt;code&gt;Windows wslg&lt;/code&gt; もあるよ。&lt;/p&gt;
+&lt;h4&gt;wezterm&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;wezterm&lt;/code&gt; が有望であることがわかった&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;font fallback&lt;/th&gt;
+&lt;th&gt;multiplexer&lt;/th&gt;
+&lt;th&gt;emoji&lt;/th&gt;
+&lt;th&gt;nerdfnt&lt;/th&gt;
+&lt;th&gt;graphics escape&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;wezterm windows&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;color&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;conpty issue&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;wezterm wsl&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;color&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;conpty issue&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;wezterm ssh&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;color&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;sixel, kitty, iterm2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;wezterm linux&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;color&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;sixel, kitty, iterm2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;conpty を通すときに escape sequence が加工されるとかで、&lt;code&gt;sixel&lt;/code&gt;, &lt;code&gt;kitty&lt;/code&gt;, &lt;code&gt;iterm2&lt;/code&gt; いずれのプロトコルもうまくうごかなかった。&lt;code&gt;iterm2&lt;/code&gt; は絵はでるのだけど場所がずれるという惜しい挙動・・・。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/wez/wezterm/issues/1236"&gt;https://github.com/wez/wezterm/issues/1236&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;SSH 経由で WSL することで対処する。&lt;/p&gt;
+&lt;h4&gt;wslg(xtermなど)&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;xterm&lt;/code&gt; は軽快できれいに表示できるので良かった。フォントのフォールバックができないぽいのが弱点。
+&lt;code&gt;urxvt&lt;/code&gt; は、&lt;code&gt;NerdFonts&lt;/code&gt; がうまくでなかった。
+&lt;code&gt;st&lt;/code&gt; (simple term) もフォントまわりでつまづきだったかな。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;font fallback&lt;/th&gt;
+&lt;th&gt;multiplexer&lt;/th&gt;
+&lt;th&gt;emoji&lt;/th&gt;
+&lt;th&gt;nerdfnt&lt;/th&gt;
+&lt;th&gt;graphics escape&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;xterm wslg&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;mono&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;sixel&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;mlterm wslg&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;mlterm-con&lt;/td&gt;
+&lt;td&gt;color&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;td&gt;sixel&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;mlterm はフォント周りの設定が強力でよかった。
+文字セットごとにフォントを個別に指定できるので、フォントを合成せずともばらのままでよい。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mlterm-con&lt;/code&gt; という multiplexer があり sixel support があるらしい。
+自前ビルドが必要そう(apt には含まれていないぽい)。&lt;/p&gt;
+&lt;p&gt;wslgは、頻繁にキーボードが押しっぱなしになったり不安定なような・・・
+&lt;a href="https://github.com/microsoft/wslg/issues/207"&gt;https://github.com/microsoft/wslg/issues/207&lt;/a&gt;
+なおっているけ、リリースに時間がかかりそう？&lt;/p&gt;
+&lt;h4&gt;libvte&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;libvte&lt;/code&gt; 系のterm。
+&lt;code&gt;gnome-terminal&lt;/code&gt;, &lt;code&gt;xfce4-term&lt;/code&gt; など。&lt;/p&gt;
+&lt;h4&gt;gpu rendering&lt;/h4&gt;
+&lt;p&gt;GPUレンダリングで &lt;code&gt;araclitty&lt;/code&gt;, &lt;code&gt;kitty&lt;/code&gt; そして &lt;code&gt;wezterm&lt;/code&gt; がある。
+&lt;code&gt;wezterm&lt;/code&gt; が &lt;code&gt;Windows&lt;/code&gt; をサポートしていて、フォントのレンダリング、タブのサポートと総合的に良い。&lt;/p&gt;
+&lt;h4&gt;その他&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;tabby&lt;/li&gt;
+&lt;li&gt;RLogin&lt;/li&gt;
+&lt;li&gt;ConEmu&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;など。&lt;/p&gt;
+&lt;h3&gt;要件&lt;/h3&gt;
+&lt;h4&gt;日本語、中文、絵文字, NerdFonts を同時にいい感じに表示したい&lt;/h4&gt;
+&lt;p&gt;となるとすべてを含むひとつのフォントより、主になるフォントを設定してそれにグリフが含まれなかったら、他のフォントにフォールバックする挙動をしてもらう方が便利。
+いくつかのフォントを試してみたのだけど、 &lt;code&gt;HackGenNerd Console&lt;/code&gt; が良かった。
+で、中文の足りない漢字を &lt;code&gt;更紗ゴシックフォント&lt;/code&gt; にフォールバックするという組み合わせ。
+がんばって完璧な合成フォントを自作すればいいのだけど、よくわからないので、 複数フォントのフォールバック機能が必要。&lt;/p&gt;
+&lt;p&gt;かつて w3m で表示が乱れることで苦労した &lt;code&gt;ambigous width&lt;/code&gt; 問題はあまり気にならなくなっていた。
+なんか、表示は２カラム使うが、データ上は1カラムと見なすような扱いになっていて、
+&lt;code&gt;X&lt;/code&gt; につづいて &lt;code&gt;&lt;/code&gt; で隙間を開けることで正しく表示できるようだ。
+NerdFonts や 絵文字 はそのようになっている？&lt;/p&gt;
+&lt;h4&gt;エスケープシーケンスで画像を表示したい&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;sixel&lt;/code&gt; とか &lt;code&gt;kitty&lt;/code&gt; とか &lt;code&gt;iterm2&lt;/code&gt; による画像表示。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;graphics&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Windows Native(conpty)&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;wsltty&lt;/td&gt;
+&lt;td&gt;sixel&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;xterm wslg&lt;/td&gt;
+&lt;td&gt;sixel&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;wezterm linux&lt;/td&gt;
+&lt;td&gt;sixel, kityt ,iterm2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;という感じになった。&lt;code&gt;wsltty&lt;/code&gt; は &lt;code&gt;conpty&lt;/code&gt; ではなくて &lt;code&gt;winpty&lt;/code&gt; なので例外的に &lt;code&gt;sixel&lt;/code&gt; が通過できるらしい。
+動く環境でも &lt;code&gt;tmux&lt;/code&gt; を挟むと動かなくなる。
+代わりに terminal emulator の方で multiplexer(タブ機能) する必要が発生。&lt;/p&gt;
+&lt;h3&gt;まとめ&lt;/h3&gt;
+&lt;p&gt;総合力で wezterm が強い。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;あまり頑張らなくてもフォントがうまく設定できる(cjk, NerdFonts, 絵文字)&lt;/li&gt;
+&lt;li&gt;multiplexer 機能あり&lt;/li&gt;
+&lt;li&gt;sixel, kitty, iterm2 プロトコルで画像を表示できる&lt;/li&gt;
+&lt;li&gt;Windows でも動く&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://zenn.dev/yutakatay/articles/wezterm-intro"&gt;alacritty+tmuxもいいけど、weztermがすごい件&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wezfurlong.org/wezterm/"&gt;wezterm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://sw.kovidgoyal.net/kitty/graphics-protocol/"&gt;https://sw.kovidgoyal.net/kitty/graphics-protocol/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OSC1337 &lt;a href="https://iterm2.com/documentation-images.html"&gt;https://iterm2.com/documentation-images.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://unrealman.hatenablog.com/entry/tty-mintty-winpty"&gt;【Git for Windows】tty/mintty/winptyとは何なのか？【Gitbash】&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description><category>term</category><guid>https://ousttrue.github.io/posts/2022/0331-term/</guid><pubDate>Wed, 30 Mar 2022 15:00:00 GMT</pubDate></item><item><title>0206-sokol</title><link>https://ousttrue.github.io/posts/2022/0206-sokol/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;sokol やってみる&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/shimacpyon/items/0ede2add75ef94c3cf41"&gt;sokol (Сокол)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;imgui サンプル&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/floooh/cimgui-sokol-starterkit"&gt;https://github.com/floooh/cimgui-sokol-starterkit&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://floooh.github.io/2017/08/06/sokol-api-update.html"&gt;https://floooh.github.io/2017/08/06/sokol-api-update.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://floooh.github.io/2017/07/29/sokol-gfx-tour.html"&gt;https://floooh.github.io/2017/07/29/sokol-gfx-tour.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description><category>c++</category><guid>https://ousttrue.github.io/posts/2022/0206-sokol/</guid><pubDate>Sat, 05 Feb 2022 15:00:00 GMT</pubDate></item><item><title>0205-xonsh</title><link>https://ousttrue.github.io/posts/2022/0205-xonsh/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;xonsh メモ&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://xon.sh/contents.html"&gt;https://xon.sh/contents.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;関連&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://vaaaaaanquish.hatenablog.com/archive/category/xonsh"&gt;https://vaaaaaanquish.hatenablog.com/archive/category/xonsh&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://murabitoleg.com/windows-xonsh/"&gt;https://murabitoleg.com/windows-xonsh/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/choge_/items/a4ceb6e2d77a373a8e2e"&gt;https://qiita.com/choge_/items/a4ceb6e2d77a373a8e2e&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://scrapbox.io/PythonOsaka/prompt--toolkit_%E3%82%92%E4%BD%BF%E3%81%84%E3%81%93%E3%81%AA%E3%81%9D%E3%81%86"&gt;https://scrapbox.io/PythonOsaka/prompt--toolkit_%E3%82%92%E4%BD%BF%E3%81%84%E3%81%93%E3%81%AA%E3%81%9D%E3%81%86&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;tools&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/prompt-toolkit/pymux"&gt;https://github.com/prompt-toolkit/pymux&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description><category>python</category><category>xonsh</category><guid>https://ousttrue.github.io/posts/2022/0205-xonsh/</guid><pubDate>Fri, 04 Feb 2022 15:00:00 GMT</pubDate></item><item><title>0204-zig</title><link>https://ousttrue.github.io/posts/2022/0204-zig/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;zig やってみる&lt;/h2&gt;
+&lt;p&gt;新しいめの言語 &lt;a href="https://ziglang.org/"&gt;zig&lt;/a&gt; をやってみる。&lt;/p&gt;
+&lt;p&gt;少しさわってみたとろ以下のような感想。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;言語仕様&lt;/th&gt;
+&lt;th&gt;GC&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;zig&lt;/td&gt;
+&lt;td&gt;小&lt;/td&gt;
+&lt;td&gt;no&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;c&lt;/td&gt;
+&lt;td&gt;小&lt;/td&gt;
+&lt;td&gt;no&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;go&lt;/td&gt;
+&lt;td&gt;小&lt;/td&gt;
+&lt;td&gt;有り&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;rust&lt;/td&gt;
+&lt;td&gt;大&lt;/td&gt;
+&lt;td&gt;no&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;d&lt;/td&gt;
+&lt;td&gt;大&lt;/td&gt;
+&lt;td&gt;有り&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;c++&lt;/td&gt;
+&lt;td&gt;特大&lt;/td&gt;
+&lt;td&gt;no&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;go&lt;/code&gt; が &lt;code&gt;C&lt;/code&gt; の後継ポジションかと思っていたが &lt;code&gt;zig&lt;/code&gt; かもしれぬ。
+&lt;code&gt;rust&lt;/code&gt; は身につかなかったので、今年は &lt;code&gt;zig&lt;/code&gt; やってみよう。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/zig_note"&gt;https://github.com/ousttrue/zig_note&lt;/a&gt; で実験中。&lt;/p&gt;
+&lt;h3&gt;zls&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/zigtools/zls"&gt;https://github.com/zigtools/zls&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Notable language features that are not currently implemented include @cImport as well as most forms of compile time evaluation.&lt;/p&gt;
+&lt;/blockquote&gt;</description><category>zig</category><guid>https://ousttrue.github.io/posts/2022/0204-zig/</guid><pubDate>Thu, 03 Feb 2022 15:00:00 GMT</pubDate></item><item><title>0115-pybullet</title><link>https://ousttrue.github.io/posts/2022/0115-pybullet/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;ExampleBrowser を読んでいる&lt;/h2&gt;
+&lt;p&gt;fork して改造しながら読んでいる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/bullet3"&gt;https://github.com/ousttrue/bullet3&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;やっと構造がわかってきた。
+コードはディレクトリに別れているのだけど、
+CMake を整理しながら推進。&lt;/p&gt;
+&lt;p&gt;ざっくりとこんな感じか。&lt;/p&gt;
+&lt;p&gt;```{digraph} G
+rankdir="BT"&lt;/p&gt;
+&lt;p&gt;ExampleBrowser -&amp;gt; SimpleOpenGL3App -&amp;gt; gwen -&amp;gt; "Select DEMO";&lt;/p&gt;
+&lt;p&gt;```&lt;/p&gt;
+&lt;p&gt;で、この SimpleOpenGL3App を glfw に、gwen を imgui に置き換えてコードを単純化している。
+&lt;code&gt;bulletphysic&lt;/code&gt; の マルチクライアント システム ぽい &lt;code&gt;SharedMemory&lt;/code&gt; を解読したい。
+各 Demo は、 &lt;code&gt;CommonExampleInterface&lt;/code&gt; できれいに分離されている。
+&lt;code&gt;SharedMemory&lt;/code&gt; と各クライアントの通信内容と &lt;code&gt;OpenGL&lt;/code&gt; の繋ぎの部分が知りたい。 &lt;/p&gt;
+&lt;p&gt;この pybullet の下地の部分がシーン同期システムに使えないかと。
+&lt;code&gt;Unity&lt;/code&gt; とかだとノードに剛体をくっつけるのだけど、
+&lt;code&gt;bullet&lt;/code&gt; 的には、剛体に &lt;code&gt;Mesh&lt;/code&gt; をつける考えになるような。&lt;/p&gt;
+&lt;h3&gt;20220118&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;各デモ&lt;/code&gt; と &lt;code&gt;Physics&lt;/code&gt; と &lt;code&gt;Renderer&lt;/code&gt; を分離できればよいのだが。
+わりと規模が大きい。&lt;/p&gt;
+&lt;h3&gt;20220122&lt;/h3&gt;
+&lt;p&gt;だいぶ読んだ。&lt;code&gt;GLInstancingRenderer&lt;/code&gt; がレンダラー本体。
+&lt;code&gt;btIDebugDraw&lt;/code&gt; とは別に普通の Renderer が実装されていてこっちを解読したい。
+btIDebugDraw だと wireframe になるのかな。&lt;/p&gt;</description><category>bullet</category><category>python</category><guid>https://ousttrue.github.io/posts/2022/0115-pybullet/</guid><pubDate>Fri, 14 Jan 2022 15:00:00 GMT</pubDate></item></channel></rss>

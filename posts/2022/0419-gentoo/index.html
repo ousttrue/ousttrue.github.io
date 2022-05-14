@@ -1,911 +1,139 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Gentoo 構築</title>
-<link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../_static/pygments_dark.css" />
-<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-<script src="../../../_static/jquery.js"></script>
-<script src="../../../_static/underscore.js"></script>
-<script src="../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" />
-    <link rel="search" title="Search" href="../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>0419-gentoo | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">Gentoo 構築</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="gentoo">
-<h1>Gentoo 構築<a class="headerlink" href="#gentoo" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">0419-gentoo
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2022-04-20T00:00:00+09:00" title="2022-04-20">2022-04-20</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/linux/" rel="tag">linux</a></li>
+</ul>
+</h1>
+
+<h2>Gentoo 構築</h2>
 <p>久しぶりに gentoo の機運が高まったので入れてみた。
-先に <code class="docutils literal notranslate"><span class="pre">Ubuntu-20.04</span></code> を入れておいて、後ろのパーティションに gentoo をインストールする作戦。
-Ubuntu と同じ <code class="docutils literal notranslate"><span class="pre">/home</span></code> をマウントしてみたら <code class="docutils literal notranslate"><span class="pre">dotfiles</span></code> に互換性が無かったのでやめた。
+先に <code>Ubuntu-20.04</code> を入れておいて、後ろのパーティションに gentoo をインストールする作戦。
+Ubuntu と同じ <code>/home</code> をマウントしてみたら <code>dotfiles</code> に互換性が無かったのでやめた。
 わりと順調にインストールできた。
 ゆくゆくは wsl も gentoo に換装したいところじゃ。</p>
-<section id="id1">
-<h2>2022-05-05<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h3>2022-05-05</h3>
 <p>システムを壊してしもた。
-作りなおし。ついでに <a class="reference external" href="https://wiki.gentoo.org/wiki/Btrfs">btffs</a> やってみる。</p>
-</section>
-<section id="btrfs">
-<h2>btrfs<a class="headerlink" href="#btrfs" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb</span>                <span class="o">/</span><span class="n">srv</span>            <span class="n">btrfs</span>           <span class="n">compress</span><span class="o">=</span><span class="n">zstd</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span><span class="n">relatime</span><span class="p">,</span><span class="n">rw</span>     <span class="mi">0</span> <span class="mi">0</span>
-</pre></div>
-</div>
-</section>
-<section id="python-3-10">
-<h2>python-3.10<a class="headerlink" href="#python-3-10" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">PYTHON_SINGLE_TARGET</span></code></p>
+作りなおし。ついでに <a href="https://wiki.gentoo.org/wiki/Btrfs">btffs</a> やってみる。</p>
+<h3>btrfs</h3>
+<p><code>/etc/fstab</code></p>
+<pre class="code literal-block">/dev/sdb                /srv            btrfs           compress=zstd:9,relatime,rw     0 0
+</pre>
+<h3>python-3.10</h3>
+<p><code>PYTHON_SINGLE_TARGET</code></p>
 <p>6月くらいにデフォルトになる予定みたいだ。先にやってみた。</p>
-<p>間違い。去年の6月に、 <code class="docutils literal notranslate"><span class="pre">Python-3.9</span></code> がデフォルトになった。
-<code class="docutils literal notranslate"><span class="pre">Python-3.10</span></code> は今のところ予定に無い。
+<p>間違い。去年の6月に、 <code>Python-3.9</code> がデフォルトになった。
+<code>Python-3.10</code> は今のところ予定に無い。
 いろいろインストールできなくなったので、元に戻した。</p>
-</section>
-<section id="make-conf">
-<h2>make.conf<a class="headerlink" href="#make-conf" title="Permalink to this headline">¶</a></h2>
+<h3>make.conf</h3>
 <p>ここに貼っておこう。
 こいつを育てているようなものだし。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># These settings were set by the catalyst build script that automatically</span>
+<pre class="code literal-block"><span class="c1"># These settings were set by the catalyst build script that automatically</span>
 <span class="c1"># built this stage.</span>
 <span class="c1"># Please consult /usr/share/portage/config/make.conf.example for a more</span>
 <span class="c1"># detailed example.</span>
-<span class="n">COMMON_FLAGS</span><span class="o">=</span><span class="s2">&quot;-march=native -O2 -pipe&quot;</span>
-<span class="n">CFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
-<span class="n">CXXFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
-<span class="n">FCFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
-<span class="n">FFLAGS</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{COMMON_FLAGS}</span><span class="s2">&quot;</span>
+<span class="n">COMMON_FLAGS</span><span class="o">=</span><span class="s2">"-march=native -O2 -pipe"</span>
+<span class="n">CFLAGS</span><span class="o">=</span><span class="s2">"${COMMON_FLAGS}"</span>
+<span class="n">CXXFLAGS</span><span class="o">=</span><span class="s2">"${COMMON_FLAGS}"</span>
+<span class="n">FCFLAGS</span><span class="o">=</span><span class="s2">"${COMMON_FLAGS}"</span>
+<span class="n">FFLAGS</span><span class="o">=</span><span class="s2">"${COMMON_FLAGS}"</span>
 
 <span class="c1"># NOTE: This stage was built with the bindist Use flag enabled</span>
-<span class="n">PORTDIR</span><span class="o">=</span><span class="s2">&quot;/var/db/repos/gentoo&quot;</span>
-<span class="n">DISTDIR</span><span class="o">=</span><span class="s2">&quot;/var/cache/distfiles&quot;</span>
-<span class="n">PKGDIR</span><span class="o">=</span><span class="s2">&quot;/var/cache/binpkgs&quot;</span>
+<span class="n">PORTDIR</span><span class="o">=</span><span class="s2">"/var/db/repos/gentoo"</span>
+<span class="n">DISTDIR</span><span class="o">=</span><span class="s2">"/var/cache/distfiles"</span>
+<span class="n">PKGDIR</span><span class="o">=</span><span class="s2">"/var/cache/binpkgs"</span>
 
-<span class="n">USE</span><span class="o">=</span><span class="s2">&quot;X sixel truetype vim-syntax jpeg png python fontforge cjk alsa </span><span class="se">\</span>
-<span class="s2">     pulseaudio mp3 dbus opengl ffmpeg mad mpd elogind gtk&quot;</span>
-<span class="n">INPUT_DEVICES</span><span class="o">=</span><span class="s2">&quot;evdev libinput synaptics&quot;</span>
-<span class="c1">#VIDEO_CARDS=&quot;nouveau&quot;</span>
-<span class="n">VIDEO_CARDS</span><span class="o">=</span><span class="s2">&quot;nvidia&quot;</span>
-<span class="n">ABI_X86</span><span class="o">=</span><span class="s2">&quot;64&quot;</span>
+<span class="n">USE</span><span class="o">=</span><span class="s2">"X sixel truetype vim-syntax jpeg png python fontforge cjk alsa </span><span class="se">\</span>
+<span class="s2">     pulseaudio mp3 dbus opengl ffmpeg mad mpd elogind gtk"</span>
+<span class="n">INPUT_DEVICES</span><span class="o">=</span><span class="s2">"evdev libinput synaptics"</span>
+<span class="c1">#VIDEO_CARDS="nouveau"</span>
+<span class="n">VIDEO_CARDS</span><span class="o">=</span><span class="s2">"nvidia"</span>
+<span class="n">ABI_X86</span><span class="o">=</span><span class="s2">"64"</span>
 
 <span class="c1"># This sets the language of build output to English.</span>
 <span class="c1"># Please keep this setting intact when reporting bugs.</span>
-<span class="n">LC_MESSAGES</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
+<span class="n">LC_MESSAGES</span><span class="o">=</span><span class="s2">"C"</span>
 
-<span class="n">MAKEOPTS</span><span class="o">=</span><span class="s2">&quot;-j6&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="boot">
-<h2>boot<a class="headerlink" href="#boot" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">refind</span></code> を試してみた。
-先に、Ubuntu の方でインストールして <code class="docutils literal notranslate"><span class="pre">gentoo</span></code> でエントリーだけ増やした。
-<code class="docutils literal notranslate"><span class="pre">grub2</span></code> より設定が簡単だと思った。
+<span class="n">MAKEOPTS</span><span class="o">=</span><span class="s2">"-j6"</span>
+</pre>
+<h3>boot</h3>
+<p><code>refind</code> を試してみた。
+先に、Ubuntu の方でインストールして <code>gentoo</code> でエントリーだけ増やした。
+<code>grub2</code> より設定が簡単だと思った。
 情報は少なめ。</p>
-<p><code class="docutils literal notranslate"><span class="pre">/boot/efi/EFI/refind/refind.conf</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># rootの指定が必要 </span>
+<p><code>/boot/efi/EFI/refind/refind.conf</code></p>
+<pre class="code literal-block"><span class="c1"># rootの指定が必要 </span>
 <span class="n">menuentry</span> <span class="n">Gentoo</span> <span class="p">{</span>
     <span class="n">icon</span> <span class="n">EFI</span><span class="o">/</span><span class="n">refind</span><span class="o">/</span><span class="n">icons</span><span class="o">/</span><span class="n">os_gentoo</span><span class="o">.</span><span class="n">png</span>
-    <span class="n">loader</span> <span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">gentoo</span><span class="o">/</span><span class="n">vmlinuz</span><span class="o">-</span><span class="mf">5.15.32</span><span class="o">-</span><span class="n">gentoo</span><span class="o">-</span><span class="n">r1</span><span class="o">-</span><span class="n">x86_64</span>
-    <span class="n">initrd</span> <span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">gentoo</span><span class="o">/</span><span class="n">initramfs</span><span class="o">-</span><span class="mf">5.15.32</span><span class="o">-</span><span class="n">gentoo</span><span class="o">-</span><span class="n">r1</span><span class="o">-</span><span class="n">x86_64</span><span class="o">.</span><span class="n">img</span>
-    <span class="n">options</span> <span class="s2">&quot;root=/dev/sda4&quot;</span>
+    <span class="n">loader</span> <span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">gentoo</span><span class="o">/</span><span class="n">vmlinuz</span><span class="o">-</span><span class="mf">5.15</span><span class="o">.</span><span class="mi">32</span><span class="o">-</span><span class="n">gentoo</span><span class="o">-</span><span class="n">r1</span><span class="o">-</span><span class="n">x86_64</span>
+    <span class="n">initrd</span> <span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">gentoo</span><span class="o">/</span><span class="n">initramfs</span><span class="o">-</span><span class="mf">5.15</span><span class="o">.</span><span class="mi">32</span><span class="o">-</span><span class="n">gentoo</span><span class="o">-</span><span class="n">r1</span><span class="o">-</span><span class="n">x86_64</span><span class="o">.</span><span class="n">img</span>
+    <span class="n">options</span> <span class="s2">"root=/dev/sda4"</span>
 <span class="p">}</span>
-</pre></div>
-</div>
-<p>起動時に自動検索と設定に記述したエントリが出てくるので、<code class="docutils literal notranslate"><span class="pre">-</span></code> キーで隠すと見ためがすっきりする。</p>
-</section>
-<section id="xorg">
-<h2>xorg<a class="headerlink" href="#xorg" title="Permalink to this headline">¶</a></h2>
+</pre>
+<p>起動時に自動検索と設定に記述したエントリが出てくるので、<code>-</code> キーで隠すと見ためがすっきりする。</p>
+<h3>xorg</h3>
 <p>なんとなくできた。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ startx -- vt1
-</pre></div>
-</div>
+<pre class="code literal-block">$ startx -- vt1
+</pre>
 <p>としないとエラーになる。
-<code class="docutils literal notranslate"><span class="pre">/etc/X11</span></code> は作らなくても動いた。</p>
-<p>いつもどおりに <code class="docutils literal notranslate"><span class="pre">openbox</span></code>, <code class="docutils literal notranslate"><span class="pre">tint2</span></code>, <code class="docutils literal notranslate"><span class="pre">PCManFM</span></code>, <code class="docutils literal notranslate"><span class="pre">conky</span></code> という感じだが、今回は新型の <code class="docutils literal notranslate"><span class="pre">wezterm</span></code> がある。</p>
-</section>
-<section id="yaft">
-<h2>yaft<a class="headerlink" href="#yaft" title="Permalink to this headline">¶</a></h2>
+<code>/etc/X11</code> は作らなくても動いた。</p>
+<p>いつもどおりに <code>openbox</code>, <code>tint2</code>, <code>PCManFM</code>, <code>conky</code> という感じだが、今回は新型の <code>wezterm</code> がある。</p>
+<h3>yaft</h3>
 <p>nerdfonts 入りの bdffont を作りたいのだが未だ。
 mlterm-fb や kmscon も試してみたのだがうまく動かなかった。</p>
-</section>
-<section id="wayland">
-<h2>wayland<a class="headerlink" href="#wayland" title="Permalink to this headline">¶</a></h2>
+<h3>wayland</h3>
 <p>TODO:</p>
-</section>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../0404-prompt-toolkit/">
-      <i class="fa fa-arrow-circle-left"></i> prompt-toolkit の fullscreen アプリケーション
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../0428-zig2/">
-      zig その2 <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2022/04/20 
-</h2>
-
-<ul>
-       
-<li id="tags">
-  <span
-    ><i
-      class="fa-fw fa fa-tag"
-    ></i
-    ></span
-  >
-   
-  <a href="../../../blog/tag/linux/">linux</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-  <li>
-    <a href="../0206-sokol/"
-      >2022/02 - sokol やってみる</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Gentoo 構築</a><ul>
-<li><a class="reference internal" href="#id1">2022-05-05</a></li>
-<li><a class="reference internal" href="#btrfs">btrfs</a></li>
-<li><a class="reference internal" href="#python-3-10">python-3.10</a></li>
-<li><a class="reference internal" href="#make-conf">make.conf</a></li>
-<li><a class="reference internal" href="#boot">boot</a></li>
-<li><a class="reference internal" href="#xorg">xorg</a></li>
-<li><a class="reference internal" href="#yaft">yaft</a></li>
-<li><a class="reference internal" href="#wayland">wayland</a></li>
-</ul>
-</li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../0404-prompt-toolkit/" rel="prev" title="0404-prompt-toolkit">
+            0404-prompt-toolkit 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../0428-zig2/" rel="next" title="0428-zig2">
+            👉 0428-zig2
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

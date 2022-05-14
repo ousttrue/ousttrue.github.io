@@ -1,1091 +1,362 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>gstreamer</title>
-<link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-<script src="../../../../../_static/jquery.js"></script>
-<script src="../../../../../_static/underscore.js"></script>
-<script src="../../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>Gstreamerを始めてみた | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">gstreamer</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="gstreamer">
-<h1>gstreamer<a class="headerlink" href="#gstreamer" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">Gstreamerを始めてみた
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2013-06-11T00:00:00+09:00" title="2013-06-11">2013-06-11</time>
+</li>
+</ul>
+</h1>
+
 <p>動画プログラムでもしてみようということでGstreamerをはじめた。</p>
-<p>#Hello world
-まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。</p>
+<h2>Hello world</h2>
+<p>まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。</p>
 <p>Basic
 tutorials http://docs.gstreamer.com/display/GstSDK/Basic+tutorials をやってみる</p>
 <p>最初のコードをc++に改造しやすいようにちょっと変更。</p>
-<p>::
-#include &lt;gst/gst.h&gt;</p>
-<p>int main(int argc, char *argv[])
+<p>::</p>
+<h2>include <gst></gst>
+</h2>
+<p>int main(int argc, char *argv[]) 
 {
-gst_init (&amp;argc, &amp;argv);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
-    GstElement *pipeline = gst_parse_launch (
-            &quot;playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm&quot;, 
-            NULL);
+    gst_init (&amp;argc, &amp;argv);</p>
+<pre class="code literal-block"><span class="p">{</span>
+    <span class="err">GstElement</span> <span class="err">*pipeline</span> <span class="err">=</span> <span class="err">gst_parse_launch</span> <span class="err">(</span>
+            <span class="err">"playbin2</span> <span class="err">uri=</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">docs</span><span class="o">.</span><span class="n">gstreamer</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">media</span><span class="o">/</span><span class="n">sintel_trailer-480p</span><span class="o">.</span><span class="n">webm</span><span class="err">"</span><span class="p">,</span> 
+            <span class="n">NULL</span><span class="p">);</span>
 
-    gst_element_set_state (pipeline, GST_STATE_PLAYING);
-    {
-        GstBus *bus = gst_element_get_bus (pipeline);
-        {
-            GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, 
-                    static_cast&lt;GstMessageType&gt;(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-            if (msg != NULL){
-                gst_message_unref (msg);
-            }
-        }
-        gst_object_unref (bus);
-    }
+    <span class="err">gst_element_set_state</span> <span class="err">(pipeline,</span> <span class="err">GST_STATE_PLAYING)</span><span class="p">;</span>
+    <span class="err">{</span>
+        <span class="err">GstBus</span> <span class="err">*bus</span> <span class="err">=</span> <span class="err">gst_element_get_bus</span> <span class="err">(pipeline)</span><span class="p">;</span>
+        <span class="err">{</span>
+            <span class="err">GstMessage</span> <span class="err">*msg</span> <span class="err">=</span> <span class="err">gst_bus_timed_pop_filtered</span> <span class="err">(bus,</span> <span class="err">GST_CLOCK_TIME_NONE,</span> 
+                    <span class="err">static_cast&lt;GstMessageType&gt;(GST_MESSAGE_ERROR</span> <span class="err">|</span> <span class="err">GST_MESSAGE_EOS))</span><span class="p">;</span>
+            <span class="err">if</span> <span class="err">(msg</span> <span class="err">!=</span> <span class="err">NULL){</span>
+                <span class="err">gst_message_unref</span> <span class="err">(msg)</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="err">}</span>
+        <span class="nt">gst_object_unref</span> <span class="o">(</span><span class="nt">bus</span><span class="o">);</span>
+    <span class="err">}</span>
 
-    gst_element_set_state (pipeline, GST_STATE_NULL);
-    gst_object_unref (pipeline);
-}
+    <span class="nt">gst_element_set_state</span> <span class="o">(</span><span class="nt">pipeline</span><span class="o">,</span> <span class="nt">GST_STATE_NULL</span><span class="o">);</span>
+    <span class="nt">gst_object_unref</span> <span class="o">(</span><span class="nt">pipeline</span><span class="o">);</span>
+<span class="err">}</span>
 
-return 0;
-</pre></div>
-</div>
+<span class="nt">return</span> <span class="nt">0</span><span class="o">;</span>
+</pre>
 <p>}</p>
-<p>build $ gcc ‘pkg-config gstreamer-0.10 –cflags –libs’ main.c
+<p>build $ gcc 'pkg-config gstreamer-0.10 --cflags --libs' main.c
 動いた。
 gstreamermmでやってみる</p>
 <p>https://developer.gnome.org/gstreamermm/0.10/</p>
-<p>::
-#include &lt;gstreamermm.h&gt;</p>
-<p>int main(int argc, char *argv[])
+<p>::</p>
+<h2>include <gstreamermm.h></gstreamermm.h>
+</h2>
+<p>int main(int argc, char *argv[]) 
 {
-Gst::init();</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
-    auto pipeline = Gst::Parse::launch (
-            &quot;playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm&quot;);
+    Gst::init();</p>
+<pre class="code literal-block"><span class="p">{</span>
+    <span class="err">auto</span> <span class="err">pipeline</span> <span class="err">=</span> <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">Parse</span><span class="o">::</span><span class="n">launch</span> <span class="p">(</span>
+            <span class="s2">"playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm"</span><span class="p">);</span>
 
-    pipeline-&gt;set_state(Gst::STATE_PLAYING);
-    {
-        auto bus = pipeline-&gt;get_bus();
-        auto msg = bus-&gt;pop(Gst::CLOCK_TIME_NONE, 
-                static_cast&lt;Gst::MessageType&gt;(
-                    Gst::MESSAGE_ERROR 
-                    | Gst::MESSAGE_EOS));
-    }
-    pipeline-&gt;set_state(Gst::STATE_NULL);
-}
+    <span class="err">pipeline-&gt;set_state(</span><span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">STATE_PLAYING</span><span class="p">);</span>
+    <span class="err">{</span>
+        <span class="err">auto</span> <span class="err">bus</span> <span class="err">=</span> <span class="err">pipeline-&gt;get_bus()</span><span class="p">;</span>
+        <span class="err">auto</span> <span class="err">msg</span> <span class="err">=</span> <span class="err">bus-&gt;pop(</span><span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">CLOCK_TIME_NONE</span><span class="p">,</span> 
+                <span class="n">static_cast</span><span class="o">&lt;</span><span class="n">Gst</span><span class="o">::</span><span class="n">MessageType</span><span class="o">&gt;</span><span class="p">(</span>
+                    <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_ERROR</span> 
+                    <span class="o">|</span> <span class="n">Gst</span><span class="o">::</span><span class="n">MESSAGE_EOS</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_NULL</span><span class="o">);</span>
+<span class="err">}</span>
 
-return 0;
-</pre></div>
-</div>
+<span class="nt">return</span> <span class="nt">0</span><span class="o">;</span>
+</pre>
 <p>}</p>
 <p>build
-$ g++ -std=c++0x ‘pkg-config gstreamermm-0.10 –cflags –libs’ main.cpp
+$ g++ -std=c++0x 'pkg-config gstreamermm-0.10 --cflags --libs' main.cpp
 unrefが省略できるのと、method呼び出しの記述方法がかわるのでコードがシンプルになる。
 C版から翻訳するのに少し手間がかかるが、ほぼ機械的に変更するだけなのでこちらでいってみる。
 2
-::
-#include &lt;gstreamermm.h&gt;</p>
-<p>int main(int argc, char *argv[])
+::</p>
+<h2>include <gstreamermm.h></gstreamermm.h>
+</h2>
+<p>int main(int argc, char *argv[]) 
 {
-Gst::init();</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>auto source = Gst::ElementFactory::create_element(&quot;videotestsrc&quot;, &quot;source&quot;);
-auto sink = Gst::ElementFactory::create_element(&quot;autovideosink&quot;, &quot;sink&quot;);
-auto pipeline = Gst::Pipeline::create(&quot;test-pipeline&quot;);
-if (!pipeline || !source || !sink) {
-    g_printerr (&quot;Not all elements could be created.\n&quot;);
-    return -1;
-}
-auto filter=Gst::ElementFactory::create_element(&quot;vertigotv&quot;, &quot;vertigotv_filter&quot;);
-if(!filter){
-    return -1;
-}
-auto filter2=Gst::ElementFactory::create_element(&quot;ffmpegcolorspace&quot;, &quot;color_filter&quot;);
-if(!filter2){
-    return -1;
-}
+    Gst::init();</p>
+<pre class="code literal-block"><span class="nt">auto</span> <span class="nt">source</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"videotestsrc"</span><span class="o">,</span> <span class="s2">"source"</span><span class="o">);</span>
+<span class="nt">auto</span> <span class="nt">sink</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"autovideosink"</span><span class="o">,</span> <span class="s2">"sink"</span><span class="o">);</span>
+<span class="nt">auto</span> <span class="nt">pipeline</span> <span class="o">=</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">Pipeline</span><span class="p">::</span><span class="nd">create</span><span class="o">(</span><span class="s2">"test-pipeline"</span><span class="o">);</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">pipeline</span> <span class="o">||</span> <span class="o">!</span><span class="nt">source</span> <span class="o">||</span> <span class="o">!</span><span class="nt">sink</span><span class="o">)</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Not</span> <span class="err">all</span> <span class="err">elements</span> <span class="err">could</span> <span class="err">be</span> <span class="err">created.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">auto</span> <span class="nt">filter</span><span class="o">=</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"vertigotv"</span><span class="o">,</span> <span class="s2">"vertigotv_filter"</span><span class="o">);</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter</span><span class="o">)</span><span class="p">{</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">auto</span> <span class="nt">filter2</span><span class="o">=</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">ElementFactory</span><span class="p">::</span><span class="nd">create_element</span><span class="o">(</span><span class="s2">"ffmpegcolorspace"</span><span class="o">,</span> <span class="s2">"color_filter"</span><span class="o">);</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter2</span><span class="o">)</span><span class="p">{</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Build the pipeline */
-pipeline-&gt;add(source);
-pipeline-&gt;add(sink);
-pipeline-&gt;add(filter);
-pipeline-&gt;add(filter2);
-if(!source-&gt;link(filter)){
-    g_printerr (&quot;Elements could not be linked.\n&quot;);
-    return -1;
-}
-if(!filter-&gt;link(filter2)){
-    g_printerr (&quot;Elements could not be linked.\n&quot;);
-    return -1;
-}
-if(!filter2-&gt;link(sink)){
-    g_printerr (&quot;Elements could not be linked.\n&quot;);
-    return -1;
-}
+<span class="c">/* Build the pipeline */</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">source</span><span class="o">);</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">sink</span><span class="o">);</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">filter</span><span class="o">);</span>
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">add</span><span class="o">(</span><span class="nt">filter2</span><span class="o">);</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">source-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">filter</span><span class="o">))</span><span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">filter2</span><span class="o">))</span><span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">if</span><span class="o">(!</span><span class="nt">filter2-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">sink</span><span class="o">))</span><span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Elements</span> <span class="err">could</span> <span class="err">not</span> <span class="err">be</span> <span class="err">linked.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Modify the source&#39;s properties */
-source-&gt;set_property(&quot;pattern&quot;, 0);
+<span class="c">/* Modify the source's properties */</span>
+<span class="nt">source-</span><span class="o">&gt;</span><span class="nt">set_property</span><span class="o">(</span><span class="s2">"pattern"</span><span class="o">,</span> <span class="nt">0</span><span class="o">);</span>
 
-/* Start playing */
-if (!pipeline-&gt;set_state(Gst::STATE_PLAYING)) {
-    g_printerr (&quot;Unable to set the pipeline to the playing state.\n&quot;);
-    return -1;
-}
+<span class="c">/* Start playing */</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_PLAYING</span><span class="o">))</span> <span class="p">{</span>
+    <span class="err">g_printerr</span> <span class="err">("Unable</span> <span class="err">to</span> <span class="err">set</span> <span class="err">the</span> <span class="err">pipeline</span> <span class="err">to</span> <span class="err">the</span> <span class="err">playing</span> <span class="err">state.\n")</span><span class="p">;</span>
+    <span class="err">return</span> <span class="err">-1</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Wait until error or EOS */
-auto bus = pipeline-&gt;get_bus ();
-auto msg = bus-&gt;pop(Gst::CLOCK_TIME_NONE, 
-        Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);
+<span class="c">/* Wait until error or EOS */</span>
+<span class="nt">auto</span> <span class="nt">bus</span> <span class="o">=</span> <span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">get_bus</span> <span class="o">();</span>
+<span class="nt">auto</span> <span class="nt">msg</span> <span class="o">=</span> <span class="nt">bus-</span><span class="o">&gt;</span><span class="nt">pop</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">CLOCK_TIME_NONE</span><span class="o">,</span> 
+        <span class="nt">Gst</span><span class="p">::</span><span class="nd">MESSAGE_ERROR</span> <span class="o">|</span> <span class="nt">Gst</span><span class="p">::</span><span class="nd">MESSAGE_EOS</span><span class="o">);</span>
 
-/* Parse message */
-if (msg) {
+<span class="c">/* Parse message */</span>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">msg</span><span class="o">)</span> <span class="p">{</span>
 
-    switch (msg-&gt;get_message_type()) {
-        case Gst::MESSAGE_ERROR:
-            {
-                Glib::Error err;
-                std::string debug_info;
-                Gst::MessageError(msg-&gt;gobj_copy()).parse(err, debug_info);
-                g_printerr (&quot;Error received from element %s: %s\n&quot;, 
-                        msg-&gt;get_source()-&gt;get_name().c_str(), 
-                        err.what().c_str());
-                g_printerr (&quot;Debugging information: %s\n&quot;, debug_info.c_str());
-            }
-            break;
+    <span class="err">switch</span> <span class="err">(msg-&gt;get_message_type())</span> <span class="err">{</span>
+        <span class="err">case</span> <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="n">MESSAGE_ERROR</span><span class="o">:</span>
+            <span class="err">{</span>
+                <span class="n">Glib</span><span class="o">::</span><span class="n">Error</span> <span class="n">err</span><span class="p">;</span>
+                <span class="n">std</span><span class="p">:</span><span class="o">:</span><span class="n">string</span> <span class="n">debug_info</span><span class="p">;</span>
+                <span class="n">Gst</span><span class="p">:</span><span class="o">:</span><span class="nf">MessageError</span><span class="p">(</span><span class="n">msg</span><span class="o">-</span><span class="err">&gt;</span><span class="nf">gobj_copy</span><span class="p">())</span><span class="o">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">debug_info</span><span class="p">);</span>
+                <span class="err">g_printerr</span> <span class="err">("Error</span> <span class="err">received</span> <span class="err">from</span> <span class="err">element</span> <span class="err">%</span><span class="n">s</span><span class="p">:</span> <span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">n</span><span class="s2">", </span>
+<span class="s2">                        msg-&gt;get_source()-&gt;get_name().c_str(), </span>
+<span class="s2">                        err.what().c_str());</span>
+<span class="s2">                g_printerr ("</span><span class="n">Debugging</span> <span class="n">information</span><span class="o">:</span> <span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">n</span><span class="s2">", debug_info.c_str());</span>
+<span class="s2">            }</span>
+<span class="s2">            break;</span>
 
-        case Gst::MESSAGE_EOS:
-            g_print (&quot;End-Of-Stream reached.\n&quot;);
-            break;
+<span class="s2">        case Gst::MESSAGE_EOS:</span>
+<span class="s2">            g_print ("</span><span class="n">End-Of-Stream</span> <span class="n">reached</span><span class="o">.</span><span class="err">\</span><span class="n">n</span><span class="s2">");</span>
+<span class="s2">            break;</span>
 
-        default:
-            /* We should not reach here because we only asked for ERRORs and EOS */
-            g_printerr (&quot;Unexpected message received.\n&quot;);
-            break;
-    }
-}
+<span class="s2">        default:</span>
+<span class="s2">            /* We should not reach here because we only asked for ERRORs and EOS */</span>
+<span class="s2">            g_printerr ("</span><span class="n">Unexpected</span> <span class="n">message</span> <span class="n">received</span><span class="o">.</span><span class="err">\</span><span class="n">n</span><span class="err">"</span><span class="p">);</span>
+            <span class="err">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="err">}</span>
 
-pipeline-&gt;set_state(Gst::STATE_NULL);
+<span class="nt">pipeline-</span><span class="o">&gt;</span><span class="nt">set_state</span><span class="o">(</span><span class="nt">Gst</span><span class="p">::</span><span class="nd">STATE_NULL</span><span class="o">);</span>
 
-return 0;
-</pre></div>
-</div>
+<span class="nt">return</span> <span class="nt">0</span><span class="o">;</span>
+</pre>
 <p>}</p>
 <p>3
-::
-#include &lt;gstreamermm.h&gt;</p>
-<p>struct CustomData
+::</p>
+<h2>include <gstreamermm.h></gstreamermm.h>
+</h2>
+<p>struct CustomData 
 {
-Glib::RefPtr&lt; Gst::Pipeline &gt; pipeline;
-Glib::RefPtr&lt; Gst::Element &gt; source;
-Glib::RefPtr&lt; Gst::Element &gt; convert;
-Glib::RefPtr&lt; Gst::Element &gt; sink;
+    Glib::RefPtr&lt; Gst::Pipeline &gt; pipeline;
+    Glib::RefPtr&lt; Gst::Element &gt; source;
+    Glib::RefPtr&lt; Gst::Element &gt; convert;
+    Glib::RefPtr&lt; Gst::Element &gt; sink;
 };</p>
 <p>// Handler for the pad-added signal
 static void pad_added_handler (
-const Glib::RefPtr<a class="reference external" href="Gst::Pad">Gst::Pad</a> &amp;new_pad,
-CustomData *data)
+        const Glib::RefPtr<:pad> &amp;new_pad, 
+        CustomData *data)
 {
-auto sink_pad = data-&gt;convert-&gt;get_static_pad(“sink”);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>g_print (&quot;Received new pad &#39;%s&#39;\n&quot;, 
-        new_pad-&gt;get_name().c_str());
+    auto sink_pad = data-&gt;convert-&gt;get_static_pad("sink");</:pad></p>
+<pre class="code literal-block"><span class="nt">g_print</span> <span class="o">(</span><span class="s2">"Received new pad '%s'\n"</span><span class="o">,</span> 
+        <span class="nt">new_pad-</span><span class="o">&gt;</span><span class="nt">get_name</span><span class="o">()</span><span class="p">.</span><span class="nc">c_str</span><span class="o">());</span>
 
-/* If our converter is already linked, we have nothing to do here */
-if (sink_pad-&gt;is_linked ()) {
-    g_print (&quot;  We are already linked. Ignoring.\n&quot;);
-    return;
-}
+<span class="c">/* If our converter is already linked, we have nothing to do here */</span>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">sink_pad-</span><span class="o">&gt;</span><span class="nt">is_linked</span> <span class="o">())</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">We</span> <span class="err">are</span> <span class="err">already</span> <span class="err">linked.</span> <span class="err">Ignoring.\n")</span><span class="p">;</span>
+    <span class="err">return</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Check the new pad&#39;s type */
-auto new_pad_caps = new_pad-&gt;get_caps ();
-auto new_pad_struct = new_pad_caps-&gt;get_structure (0);
-std::string new_pad_type = new_pad_struct.get_name();
-if (new_pad_type.find(&quot;audio/x-raw&quot;)==std::string::npos) {
-    g_print (&quot;  It has type &#39;%s&#39; which is not raw audio. Ignoring.\n&quot;, 
-            new_pad_type.c_str());
-    return;
-}
+<span class="c">/* Check the new pad's type */</span>
+<span class="nt">auto</span> <span class="nt">new_pad_caps</span> <span class="o">=</span> <span class="nt">new_pad-</span><span class="o">&gt;</span><span class="nt">get_caps</span> <span class="o">();</span>
+<span class="nt">auto</span> <span class="nt">new_pad_struct</span> <span class="o">=</span> <span class="nt">new_pad_caps-</span><span class="o">&gt;</span><span class="nt">get_structure</span> <span class="o">(</span><span class="nt">0</span><span class="o">);</span>
+<span class="nt">std</span><span class="p">::</span><span class="nd">string</span> <span class="nt">new_pad_type</span> <span class="o">=</span> <span class="nt">new_pad_struct</span><span class="p">.</span><span class="nc">get_name</span><span class="o">();</span>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">new_pad_type</span><span class="p">.</span><span class="nc">find</span><span class="o">(</span><span class="s2">"audio/x-raw"</span><span class="o">)==</span><span class="nt">std</span><span class="p">::</span><span class="nd">string</span><span class="p">::</span><span class="nd">npos</span><span class="o">)</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">It</span> <span class="err">has</span> <span class="err">type</span> <span class="err">'%s'</span> <span class="err">which</span> <span class="err">is</span> <span class="err">not</span> <span class="err">raw</span> <span class="err">audio.</span> <span class="err">Ignoring.\n",</span> 
+            <span class="err">new_pad_type.c_str())</span><span class="p">;</span>
+    <span class="err">return</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Attempt the link */
-if (!new_pad-&gt;link(sink_pad)) {
-    g_print (&quot;  Type is &#39;%s&#39; but link failed.\n&quot;, new_pad_type.c_str());
-} 
-else {
-    g_print (&quot;  Link succeeded (type &#39;%s&#39;).\n&quot;, new_pad_type.c_str());
-}
-</pre></div>
-</div>
+<span class="c">/* Attempt the link */</span>
+<span class="nt">if</span> <span class="o">(!</span><span class="nt">new_pad-</span><span class="o">&gt;</span><span class="nt">link</span><span class="o">(</span><span class="nt">sink_pad</span><span class="o">))</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">Type</span> <span class="err">is</span> <span class="err">'%s'</span> <span class="err">but</span> <span class="err">link</span> <span class="err">failed.\n",</span> <span class="err">new_pad_type.c_str())</span><span class="p">;</span>
+<span class="p">}</span> 
+<span class="nt">else</span> <span class="p">{</span>
+    <span class="err">g_print</span> <span class="err">("</span>  <span class="err">Link</span> <span class="err">succeeded</span> <span class="err">(type</span> <span class="err">'%s').\n",</span> <span class="err">new_pad_type.c_str())</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
 <p>}</p>
-<p>int main(int argc, char *argv[])
+<p>int main(int argc, char *argv[]) 
 {
-Gst::init();</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CustomData data;
-data.source = Gst::ElementFactory::create_element (&quot;uridecodebin&quot;, &quot;source&quot;);
-data.convert = Gst::ElementFactory::create_element (&quot;audioconvert&quot;, &quot;convert&quot;);
-data.sink = Gst::ElementFactory::create_element (&quot;autoaudiosink&quot;, &quot;sink&quot;);
-data.pipeline = Gst::Pipeline::create (&quot;test-pipeline&quot;);
+    Gst::init();</p>
+<pre class="code literal-block"><span class="n">CustomData</span> <span class="n">data</span><span class="p">;</span>
+<span class="n">data</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">Gst</span><span class="p">::</span><span class="n">ElementFactory</span><span class="p">::</span><span class="n">create_element</span> <span class="p">(</span><span class="s2">"uridecodebin"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">);</span>
+<span class="n">data</span><span class="o">.</span><span class="n">convert</span> <span class="o">=</span> <span class="n">Gst</span><span class="p">::</span><span class="n">ElementFactory</span><span class="p">::</span><span class="n">create_element</span> <span class="p">(</span><span class="s2">"audioconvert"</span><span class="p">,</span> <span class="s2">"convert"</span><span class="p">);</span>
+<span class="n">data</span><span class="o">.</span><span class="n">sink</span> <span class="o">=</span> <span class="n">Gst</span><span class="p">::</span><span class="n">ElementFactory</span><span class="p">::</span><span class="n">create_element</span> <span class="p">(</span><span class="s2">"autoaudiosink"</span><span class="p">,</span> <span class="s2">"sink"</span><span class="p">);</span>
+<span class="n">data</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Gst</span><span class="p">::</span><span class="n">Pipeline</span><span class="p">::</span><span class="n">create</span> <span class="p">(</span><span class="s2">"test-pipeline"</span><span class="p">);</span>
 
-if (!data.pipeline || !data.source || !data.convert || !data.sink) {
-    g_printerr (&quot;Not all elements could be created.\n&quot;);
-    return -1;
-}
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">data</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">||</span> <span class="o">!</span><span class="n">data</span><span class="o">.</span><span class="n">source</span> <span class="o">||</span> <span class="o">!</span><span class="n">data</span><span class="o">.</span><span class="n">convert</span> <span class="o">||</span> <span class="o">!</span><span class="n">data</span><span class="o">.</span><span class="n">sink</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">g_printerr</span> <span class="p">(</span><span class="s2">"Not all elements could be created.</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Build the pipeline. Note that we are NOT linking the source at this
- *    * point. We will do it later. */
-data.pipeline-&gt;add(data.source);
-data.pipeline-&gt;add(data.convert);
-data.pipeline-&gt;add(data.sink);
-if (!data.convert-&gt;link(data.sink)) {
-    g_printerr (&quot;Elements could not be linked.\n&quot;);
-    return -1;
-}
+<span class="o">/*</span> <span class="n">Build</span> <span class="n">the</span> <span class="n">pipeline</span><span class="o">.</span> <span class="n">Note</span> <span class="n">that</span> <span class="n">we</span> <span class="n">are</span> <span class="n">NOT</span> <span class="n">linking</span> <span class="n">the</span> <span class="n">source</span> <span class="n">at</span> <span class="n">this</span>
+ <span class="o">*</span>    <span class="o">*</span> <span class="n">point</span><span class="o">.</span> <span class="n">We</span> <span class="n">will</span> <span class="n">do</span> <span class="n">it</span> <span class="n">later</span><span class="o">.</span> <span class="o">*/</span>
+<span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">source</span><span class="p">);</span>
+<span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">convert</span><span class="p">);</span>
+<span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">sink</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">data</span><span class="o">.</span><span class="n">convert</span><span class="o">-&gt;</span><span class="n">link</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">sink</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">g_printerr</span> <span class="p">(</span><span class="s2">"Elements could not be linked.</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Set the URI to play */
-data.source-&gt;set_property(
-        &quot;uri&quot;, 
-        Glib::ustring(&quot;http://docs.gstreamer.com/media/sintel_trailer-480p.webm&quot;)
-        );
+<span class="o">/*</span> <span class="n">Set</span> <span class="n">the</span> <span class="n">URI</span> <span class="n">to</span> <span class="n">play</span> <span class="o">*/</span>
+<span class="n">data</span><span class="o">.</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">set_property</span><span class="p">(</span>
+        <span class="s2">"uri"</span><span class="p">,</span> 
+        <span class="n">Glib</span><span class="p">::</span><span class="n">ustring</span><span class="p">(</span><span class="s2">"http://docs.gstreamer.com/media/sintel_trailer-480p.webm"</span><span class="p">)</span>
+        <span class="p">);</span>
 
-/* Connect to the pad-added signal */
-data.source-&gt;signal_pad_added().connect([&amp;data](
-            const Glib::RefPtr&lt;Gst::Pad&gt; &amp;pad)
-        {
-        pad_added_handler(pad, &amp;data);
-        });
+<span class="o">/*</span> <span class="n">Connect</span> <span class="n">to</span> <span class="n">the</span> <span class="n">pad</span><span class="o">-</span><span class="n">added</span> <span class="k">signal</span> <span class="o">*/</span>
+<span class="n">data</span><span class="o">.</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">signal_pad_added</span><span class="p">()</span><span class="o">.</span><span class="n">connect</span><span class="p">([</span><span class="o">&amp;</span><span class="n">data</span><span class="p">](</span>
+            <span class="k">const</span> <span class="n">Glib</span><span class="p">::</span><span class="n">RefPtr</span><span class="o">&lt;</span><span class="n">Gst</span><span class="p">::</span><span class="n">Pad</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">pad</span><span class="p">)</span>
+        <span class="p">{</span>
+        <span class="n">pad_added_handler</span><span class="p">(</span><span class="n">pad</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">);</span>
+        <span class="p">});</span>
 
-/* Start playing */
-if (!data.pipeline-&gt;set_state(Gst::STATE_PLAYING)) {
-    g_printerr (&quot;Unable to set the pipeline to the playing state.\n&quot;);
-    return -1;
-}
+<span class="o">/*</span> <span class="n">Start</span> <span class="n">playing</span> <span class="o">*/</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="o">-&gt;</span><span class="n">set_state</span><span class="p">(</span><span class="n">Gst</span><span class="p">::</span><span class="n">STATE_PLAYING</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">g_printerr</span> <span class="p">(</span><span class="s2">"Unable to set the pipeline to the playing state.</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
 
-/* Listen to the bus */
-auto bus = data.pipeline-&gt;get_bus();
-gboolean terminate = FALSE;
-do {
-    auto msg = bus-&gt;pop(Gst::CLOCK_TIME_NONE,
-            Gst::MESSAGE_STATE_CHANGED | Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);
+<span class="o">/*</span> <span class="n">Listen</span> <span class="n">to</span> <span class="n">the</span> <span class="n">bus</span> <span class="o">*/</span>
+<span class="n">auto</span> <span class="n">bus</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="o">-&gt;</span><span class="n">get_bus</span><span class="p">();</span>
+<span class="n">gboolean</span> <span class="n">terminate</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+<span class="n">do</span> <span class="p">{</span>
+    <span class="n">auto</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">bus</span><span class="o">-&gt;</span><span class="n">pop</span><span class="p">(</span><span class="n">Gst</span><span class="p">::</span><span class="n">CLOCK_TIME_NONE</span><span class="p">,</span>
+            <span class="n">Gst</span><span class="p">::</span><span class="n">MESSAGE_STATE_CHANGED</span> <span class="o">|</span> <span class="n">Gst</span><span class="p">::</span><span class="n">MESSAGE_ERROR</span> <span class="o">|</span> <span class="n">Gst</span><span class="p">::</span><span class="n">MESSAGE_EOS</span><span class="p">);</span>
 
-    /* Parse message */
-    if (msg) {
+    <span class="o">/*</span> <span class="n">Parse</span> <span class="n">message</span> <span class="o">*/</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="p">{</span>
 
-        switch (msg-&gt;get_message_type()) {
-            case Gst::MESSAGE_ERROR:
-                {
-                    Glib::Error err;
-                    std::string debug_info;
-                    Gst::MessageError(msg-&gt;gobj_copy()).parse(err, debug_info);
-                    g_printerr (&quot;Error received from element %s: %s\n&quot;, 
-                            msg-&gt;get_source()-&gt;get_name().c_str(),
-                            err.what().c_str());
-                    g_printerr (&quot;Debugging information: %s\n&quot;, debug_info.c_str());
-                    terminate = TRUE;
-                }
-                break;
+        <span class="n">switch</span> <span class="p">(</span><span class="n">msg</span><span class="o">-&gt;</span><span class="n">get_message_type</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">case</span> <span class="n">Gst</span><span class="p">::</span><span class="n">MESSAGE_ERROR</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="n">Glib</span><span class="p">::</span><span class="n">Error</span> <span class="n">err</span><span class="p">;</span>
+                    <span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">debug_info</span><span class="p">;</span>
+                    <span class="n">Gst</span><span class="p">::</span><span class="n">MessageError</span><span class="p">(</span><span class="n">msg</span><span class="o">-&gt;</span><span class="n">gobj_copy</span><span class="p">())</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">debug_info</span><span class="p">);</span>
+                    <span class="n">g_printerr</span> <span class="p">(</span><span class="s2">"Error received from element </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> 
+                            <span class="n">msg</span><span class="o">-&gt;</span><span class="n">get_source</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">(),</span>
+                            <span class="n">err</span><span class="o">.</span><span class="n">what</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">());</span>
+                    <span class="n">g_printerr</span> <span class="p">(</span><span class="s2">"Debugging information: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">debug_info</span><span class="o">.</span><span class="n">c_str</span><span class="p">());</span>
+                    <span class="n">terminate</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">break</span><span class="p">;</span>
 
-            case Gst::MESSAGE_EOS:
-                g_print (&quot;End-Of-Stream reached.\n&quot;);
-                terminate = TRUE;
-                break;
+            <span class="n">case</span> <span class="n">Gst</span><span class="p">::</span><span class="n">MESSAGE_EOS</span><span class="p">:</span>
+                <span class="n">g_print</span> <span class="p">(</span><span class="s2">"End-Of-Stream reached.</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+                <span class="n">terminate</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
 
-            case Gst::MESSAGE_STATE_CHANGED:
-                /* We are only interested in state-changed messages from the pipeline */
-                if (msg-&gt;get_source() == data.pipeline) {
-                    Gst::State old_state;
-                    Gst::State new_state;
-                    Gst::State pending_state;
-                    Gst::MessageStateChanged(msg-&gt;gobj_copy()).parse(
-                            old_state, new_state, pending_state);
-                    g_print (&quot;Pipeline state changed from %s to %s:\n&quot;,
-                            typeid(old_state).name(),
-                            typeid(new_state).name());
-                }
-                break;
-            default:
-                /* We should not reach here */
-                g_printerr (&quot;Unexpected message received.\n&quot;);
-                break;
-        }
-    }
-} while (!terminate);
+            <span class="n">case</span> <span class="n">Gst</span><span class="p">::</span><span class="n">MESSAGE_STATE_CHANGED</span><span class="p">:</span>
+                <span class="o">/*</span> <span class="n">We</span> <span class="n">are</span> <span class="n">only</span> <span class="n">interested</span> <span class="ow">in</span> <span class="n">state</span><span class="o">-</span><span class="n">changed</span> <span class="n">messages</span> <span class="n">from</span> <span class="n">the</span> <span class="n">pipeline</span> <span class="o">*/</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="o">-&gt;</span><span class="n">get_source</span><span class="p">()</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Gst</span><span class="p">::</span><span class="n">State</span> <span class="n">old_state</span><span class="p">;</span>
+                    <span class="n">Gst</span><span class="p">::</span><span class="n">State</span> <span class="n">new_state</span><span class="p">;</span>
+                    <span class="n">Gst</span><span class="p">::</span><span class="n">State</span> <span class="n">pending_state</span><span class="p">;</span>
+                    <span class="n">Gst</span><span class="p">::</span><span class="n">MessageStateChanged</span><span class="p">(</span><span class="n">msg</span><span class="o">-&gt;</span><span class="n">gobj_copy</span><span class="p">())</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+                            <span class="n">old_state</span><span class="p">,</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">pending_state</span><span class="p">);</span>
+                    <span class="n">g_print</span> <span class="p">(</span><span class="s2">"Pipeline state changed from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
+                            <span class="n">typeid</span><span class="p">(</span><span class="n">old_state</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+                            <span class="n">typeid</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">());</span>
+                <span class="p">}</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="n">default</span><span class="p">:</span>
+                <span class="o">/*</span> <span class="n">We</span> <span class="n">should</span> <span class="ow">not</span> <span class="n">reach</span> <span class="n">here</span> <span class="o">*/</span>
+                <span class="n">g_printerr</span> <span class="p">(</span><span class="s2">"Unexpected message received.</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">terminate</span><span class="p">);</span>
 
-/* Free resources */
-data.pipeline-&gt;set_state(Gst::STATE_NULL);
-return 0;
-</pre></div>
-</div>
+<span class="o">/*</span> <span class="n">Free</span> <span class="n">resources</span> <span class="o">*/</span>
+<span class="n">data</span><span class="o">.</span><span class="n">pipeline</span><span class="o">-&gt;</span><span class="n">set_state</span><span class="p">(</span><span class="n">Gst</span><span class="p">::</span><span class="n">STATE_NULL</span><span class="p">);</span>
+<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</pre>
 <p>}</p>
 <p>.. categories:: programming
 .. taxonomies: {tags: : cpp, gstreamer}</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../../../../github/tornado-msgpack/">
-      <i class="fa fa-arrow-circle-left"></i> tornado-msgpack
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../11/irrlicht/">
-      Oculusぽちった <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2013/06/11 
-</h2>
-
-<ul>
-        
-</ul>
-
-<h3>
-  <a href="../../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../11/irrlicht/" rel="prev" title="Oculusぽちった">
+            Oculusぽちった 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../17/irrlicht_msgpackrpc/" rel="next" title="IrrlichtにMsgPackRPCを仕込む">
+            👉 IrrlichtにMsgPackRPCを仕込む
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

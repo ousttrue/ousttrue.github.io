@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (wyamについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/wyam.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>wyam ことはじめ</title><link>https://ousttrue.github.io/posts/2019/wyam-start/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;ソースの方のリポジトリがハードディスククラッシュで失われて
+更新できなくなっていたので、サイトを作りなおし。
+&lt;a href="https://wyam.io/"&gt;wyam&lt;/a&gt;を使ってみる。&lt;/p&gt;
+&lt;h3&gt;インストール&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ dotnet tool install -g Wyam.Tool
+&lt;/pre&gt;
+&lt;h3&gt;初期化する&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ mkdir site
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; site
+$ wyam new --recipe blog
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;config.wyam(siteの設定)&lt;/li&gt;
+&lt;li&gt;input(記事置き場)&lt;/li&gt;
+&lt;li&gt;about.md&lt;/li&gt;
+&lt;li&gt;posts&lt;ul&gt;
+&lt;li&gt;first-post.md&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;設定ファイル&lt;/h4&gt;
+&lt;p&gt;config.wyam がそれで、C# を Roslyn で処理するらしい。
+おもしろい。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;// config.wyam
+#recipe Blog
+#theme Phantom
+
+// Customize your settings and add new ones here
+Settings[Keys.Host] = "ousttrue.github.io";
+Settings[BlogKeys.Title] = "三次元日誌";
+Settings[BlogKeys.Description] = "programming とか";
+
+// Add any pipeline customizations here
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;#recipe Blog&lt;/code&gt; がパイプライン設定で、 input フォルダの構成と処理を設定している。
+設定ファイルに展開したものを記述することもできるみたい。&lt;/p&gt;
+&lt;h4&gt;gitignore&lt;/h4&gt;
+&lt;p&gt;https://wyam.io/docs/advanced/what_to_exclude_from_source_control&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;#.gitignore&lt;/span&gt;
+&lt;span class="na"&gt;.vs&lt;/span&gt;&lt;span class="err"&gt;/&lt;/span&gt;
+&lt;span class="nf"&gt;output&lt;/span&gt;&lt;span class="err"&gt;/&lt;/span&gt;
+&lt;span class="nf"&gt;config.wyam.hash&lt;/span&gt;
+&lt;span class="nf"&gt;config.wyam.dll&lt;/span&gt;
+&lt;span class="nf"&gt;config.wyam.packages.xml&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;生成する&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ wyam
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;output&lt;/li&gt;
+&lt;li&gt;index.html&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;$ wyam --watch --preview&lt;/code&gt; で更新を監視して livereload できる。&lt;/p&gt;
+&lt;h4&gt;動作&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;input/posts/ 配下の markdown が /posts/ 下にhtml化される&lt;/li&gt;
+&lt;li&gt;input/posts/**/hoge.md が /posts/hoge.html のように階層は無くなる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;テーマを変えてみる&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://wyam.io/recipes/blog/themes/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;コマンドラインに、 &lt;code&gt;--theme THEME_NAME&lt;/code&gt; とするか config.wyam に&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;// config.wyam
+#theme THEME_NAME
+&lt;/pre&gt;
+&lt;p&gt;とすれば OK。&lt;/p&gt;
+&lt;h3&gt;appveyor で GitHub-Pages に展開&lt;/h3&gt;
+&lt;p&gt;https://wyam.io/docs/deployment/appveyor&lt;/p&gt;
+&lt;p&gt;CIよくわかってないので難航したが動くようになった。&lt;/p&gt;
+&lt;p&gt;GitHub-pages のユーザー頁を使ったので、
+ソースのリポジトリと、html置き場のリポジトリを分けた。&lt;/p&gt;
+&lt;p&gt;ソースのリポジトリに AppVeyor を仕掛けて、
+push したときにビルドして、html置き場に push する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;branches&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="nt"&gt;only&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;master&lt;/span&gt;
+
+&lt;span class="nt"&gt;environment&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="nt"&gt;access_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;# EDIT the encrypted version of your GitHub access token&lt;/span&gt;
+    &lt;span class="c1"&gt;# https://www.appveyor.com/docs/deployment/github/&lt;/span&gt;
+    &lt;span class="nt"&gt;secure&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;E+wmFkBHvRVLnVcg9mIBXP7iTXKIqJyi/DewA+0SEtkpWmtiNFKKhYzD4bs0nw2L&lt;/span&gt;
+
+&lt;span class="nt"&gt;install&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mkdir ..\Wyam&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mkdir ..\output&lt;/span&gt;
+  &lt;span class="c1"&gt;# Fetch the latest version of Wyam &lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="s"&gt;"curl&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;-s&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;https://raw.githubusercontent.com/Wyamio/Wyam/master/RELEASE&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;-o&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;..\\Wyam\\wyamversion.txt"&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;set /P WYAMVERSION=&amp;lt; ..\Wyam\wyamversion.txt&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;echo %WYAMVERSION%&lt;/span&gt;
+  &lt;span class="c1"&gt;# Get and unzip the latest version of Wyam&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;ps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Start-FileDownload "https://github.com/Wyamio/Wyam/releases/download/$env:WYAMVERSION/Wyam-$env:WYAMVERSION.zip" -FileName "..\Wyam\Wyam.zip"&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;7z x ..\Wyam\Wyam.zip -o..\Wyam -r&lt;/span&gt;
+
+&lt;span class="nt"&gt;build_script&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;dotnet ..\Wyam\Wyam.dll --output ..\output&lt;/span&gt;
+
+&lt;span class="nt"&gt;on_success&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="c1"&gt;# Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push&lt;/span&gt;
+  &lt;span class="c1"&gt;# See http://www.appveyor.com/docs/how-to/git-push for more info&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git config --global credential.helper store&lt;/span&gt;
+  &lt;span class="c1"&gt;# EDIT your Git email and name&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git config --global user.email ousttrue@gmail.com&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git config --global user.name ousttrue&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;ps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git checkout gh-pages&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git rm -rf .&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;xcopy ..\output . /E&lt;/span&gt;
+  &lt;span class="c1"&gt;# EDIT your domain name or remove if not using a custom domain&lt;/span&gt;
+  &lt;span class="c1"&gt;# - echo wyam.io &amp;gt; CNAME&lt;/span&gt;
+  &lt;span class="c1"&gt;# EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# 送り先(push できるように environment access token をセットしている)&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git remote set-url origin https://github.com/ousttrue/ousttrue.github.io.git&lt;/span&gt;
+  &lt;span class="c1"&gt;# 空の gh-pages ブランチに変更を追加&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git add -A&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git commit -a -m "Commit from AppVeyor"&lt;/span&gt;
+  &lt;span class="c1"&gt;# gh-pages ブランチから origin の master に送る(use の GitHubPages を使っているので master ブランチ運用)&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git push -f origin gh-pages:master&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;vscode で編集する&lt;/h3&gt;
+&lt;p&gt;watch タスクを作成してバックグランドで &lt;code&gt;input&lt;/code&gt; の変更を監視。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;See&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;go&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;microsoft&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;fwlink&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="vm"&gt;?&lt;/span&gt;&lt;span class="n"&gt;LinkId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;733558&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;documentation&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;about&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;format&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="ss"&gt;"version"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;"2.0.0"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="ss"&gt;"tasks"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;        {&lt;/span&gt;
+&lt;span class="n"&gt;            "label": "watch",&lt;/span&gt;
+&lt;span class="n"&gt;            "type": "shell",&lt;/span&gt;
+&lt;span class="n"&gt;            "command": "wyam",&lt;/span&gt;
+&lt;span class="n"&gt;            "args": [&lt;/span&gt;
+&lt;span class="n"&gt;                "--watch", "--preview",&lt;/span&gt;
+&lt;span class="n"&gt;            &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="ss"&gt;"problemMatcher"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;            &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="ss"&gt;"isBackground"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;true&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;launch.json を作成して F5 でブラウザを開く。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:5080",
+            "webRoot": "&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;workspaceFolder&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;"
+        }
+    ]
+}
+&lt;/pre&gt;
+&lt;p&gt;自動でリロードがかかるので快適。&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://www.staticgen.com/wyam&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;https://wyam.io/docs/resources/built-with-wyam&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://qiita.com/MeilCli/items/425a5436aced08ba7062"&gt;静的サイトジェネレーターでC#を使いたかったからWyamを試したら最高だった&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;日本語で wyam に言及しているサイトはこれしかなかった。
+マイナーでござる。&lt;/p&gt;</description><category>ssg</category><category>wyam</category><guid>https://ousttrue.github.io/posts/2019/wyam-start/</guid><pubDate>Fri, 16 Aug 2019 15:00:00 GMT</pubDate></item><item><title>wyam のテーマをカスタマイズする</title><link>https://ousttrue.github.io/posts/2019/wyam-theme/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;cssとかの調整。&lt;/p&gt;
+&lt;h3&gt;調べる&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://wyam.io/docs/&lt;/li&gt;
+&lt;li&gt;https://wyam.io/recipes/blog/themes/&lt;/li&gt;
+&lt;li&gt;https://wyam.io/docs/extensibility/creating-a-theme&lt;/li&gt;
+&lt;li&gt;https://wyam.io/docs/extensibility/customizing-themes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ローカルにファイルを配置することでテーマをオーバーライドできると書いてあるのだが、
+どのように配置するか正確なところがわからん。&lt;/p&gt;
+&lt;p&gt;試行錯誤したところ、&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;input&lt;/code&gt; にテーマのファイルを直接コピーしたら反映された。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;theme&lt;/code&gt; フォルダでもよさそうなのだけど、 &lt;code&gt;input&lt;/code&gt; しか &lt;code&gt;--watch&lt;/code&gt; の対象にならないので、
+&lt;code&gt;input&lt;/code&gt; に入れてしまうのがよさそう。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;input
+  + assets
+  + _Layout.cshtml
+&lt;/pre&gt;
+&lt;h3&gt;レイアウトの構成&lt;/h3&gt;
+&lt;p&gt;ASP.Net のtemplateエンジン、 &lt;a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-2.2"&gt;Razor&lt;/a&gt; で構成されていて拡張子は、 &lt;code&gt;cshtml&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;ファイル名は、&lt;a href="https://wyam.io/recipes/blog/overview"&gt;Blog Recipe&lt;/a&gt;が規定している。&lt;/p&gt;
+&lt;p&gt;サイトのルート(index), 各記事(post), 記事一覧(archive, tag), タグ一覧(tags)などがある。単純な例はこれ。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;https://github.com/Wyamio/Wyam/tree/develop/themes/Blog/BlogTemplate&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;テーマを作ってみる&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://github.com/Wyamio/Wyam.git&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;をクローンして、&lt;code&gt;themes/Blog/BlogTemplate/*&lt;/code&gt; を &lt;code&gt;input&lt;/code&gt; にコピーする。
+config.yml も &lt;code&gt;#theme BlogTemplate&lt;/code&gt; とする。&lt;/p&gt;
+&lt;p&gt;共通のレイアウトが &lt;code&gt;_Layout.cshtml&lt;/code&gt; 。 その中の、 &lt;code&gt;@RenderBody()&lt;/code&gt; にルート(_Index.cshtml), 記事(_PostLayout.cshtml), 記事一覧(_Archive.cshtml, _Tag.cshtml), タグ一覧(_Tags.cshtml)がはめ込まれる様子。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;_PostIndex.cshtml&lt;/code&gt; は廃止されたので使われない。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;[Breaking Change]&lt;/strong&gt;[Refactoring] Moved Blog recipe theme file &lt;code&gt;/_PostIndex.cshtml&lt;/code&gt; to &lt;code&gt;/_Archive.cshtml&lt;/code&gt;, no other changes should be needed to this file in themes other than to move it - sorry for the rename (again), the first name was kind of dumb, this one is better&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;日本語が文字化けするので、 &lt;code&gt;_Layout.cshtml&lt;/code&gt; に &lt;code&gt;&amp;lt;meta charset="UTF-8"&amp;gt;&lt;/code&gt; だけ足す。
+あとは適当にやってみる。&lt;/p&gt;
+&lt;h3&gt;cshtml からアクセスできる変数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Model&lt;/li&gt;
+&lt;li&gt;Context&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;&amp;lt;a&lt;/span&gt; &lt;span class="na"&gt;href=&lt;/span&gt;&lt;span class="s"&gt;"@Context.GetLink(Context.String(BlogKeys.PostsPath))"&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;Back To posts&lt;span class="nt"&gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;作業メモ&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;scss(wyamが対応している)&lt;/li&gt;
+&lt;li&gt;highlight.js (phantom themeからコピー)&lt;/li&gt;
+&lt;li&gt;旧記事を雑に復旧&lt;/li&gt;
+&lt;li&gt;locale https://wyam.io/docs/advanced/setting-the-culture&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;ToDo&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;404頁&lt;/li&gt;
+&lt;li&gt;一覧をpageで分割&lt;/li&gt;
+&lt;li&gt;記事内のTOC&lt;/li&gt;
+&lt;li&gt;https://github.com/Wyamio/Wyam/issues/29&lt;/li&gt;
+&lt;li&gt;https://blog.kabrt.cz/posts/2018-11-wyam-blog&lt;/li&gt;
+&lt;li&gt;https://konpa.github.io/devicon/&lt;/li&gt;
+&lt;li&gt;http://fizzed.com/oss/font-mfizz&lt;/li&gt;
+&lt;li&gt;https://www.digitaltapestry.net/posts/poshwyam&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;動作&lt;/h3&gt;
+&lt;p&gt;複数のパイプラインが登録してあって(Recipe)、ひとつずつ実行する&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;public&lt;/span&gt; &lt;span class="n"&gt;IReadOnlyList&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IDocument&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Execute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ExecutionContext&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;IEnumerable&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IModule&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ImmutableArray&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IDocument&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;inputDocuments&lt;/span&gt;
+
+&lt;span class="n"&gt;foreach&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt; &lt;span class="n"&gt;pipeline&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;pipelines&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="n"&gt;ExecutionPipeline&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Execute&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;</description><category>wyam</category><guid>https://ousttrue.github.io/posts/2019/wyam-theme/</guid><pubDate>Fri, 16 Aug 2019 15:00:00 GMT</pubDate></item></channel></rss>

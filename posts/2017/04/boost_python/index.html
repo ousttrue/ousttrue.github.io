@@ -1,76 +1,45 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>boost_python</title>
-<link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-<script src="../../../../_static/jquery.js"></script>
-<script src="../../../../_static/underscore.js"></script>
-<script src="../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../assets/js/all-nocdn.js"></script><title>Boost.Pythonのリンク周り | 三次元日誌</title>
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">boost_python</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="boost-python">
-<h1>boost_python<a class="headerlink" href="#boost-python" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../archive.html">Archives</a></li>
+<li><a href="../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../about">About</a></li>
+<li><a href="../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">Boost.Pythonのリンク周り
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2017-04-22T00:00:00+09:00" title="2017-04-22">2017-04-22</time>
+</li>
+    <li><a class="tag p-category" href="../../../../categories/cpp/" rel="tag">cpp</a></li>
+    <li><a class="tag p-category" href="../../../../categories/python/" rel="tag">python</a></li>
+</ul>
+</h1>
+
 <p>mmdbridgeのビルドで必要になったBoost.Python周り。
 どうやら、OpenEXR界隈では結構使われている様子。
 AlembicとかUSDとか。
@@ -82,97 +51,69 @@ python_dへのリンクの必要性は、リンクするライブラリをDebug�
 pydを作っているときは必要ない。python.exeではなくpython_d.exeから実行して何もかもが、Debugを参照するようにするのはつらい。そうではなくて自分のアプリがPythonを内臓する場合は、python_dにリンクした方がよい。DebugとReleaseの混在によるエラーが出る可能性があるので。で、mmdbridgeは後者なのでpython_dをリンクすることに妥当性がある。
 python_d.libへのリンクを防止する</p>
 <p>https://stackoverflow.com/questions/16200997/why-doesnt-include-python-h-work</p>
-<p>#ifdef _DEBUG
-#undef _DEBUG
-#include &lt;Python.h&gt;
-#define _DEBUG
-#else
-#include &lt;Python.h&gt;
-#endif</p>
+<h2>ifdef _DEBUG</h2>
+<p>#undef _DEBUG
+  #include <python.h>
+  #define _DEBUG</python.h></p>
+<h2>else</h2>
+<p>#include <python.h></python.h></p>
+<h2>endif</h2>
 <p>これが、常套手段になるようでpydの開発時には入れておくとよい。
 Boost.Pythonがpython_dにリンクする</p>
 <p>boost-1.64.0
 python-3.5.3</p>
 <p>debug版のboostをビルドしたのだが、よく見るとRelease版のpython35.dllの方がリンクされていた。がんばって、DEBUGマクロの定義等を調べたのだがなかなかわからなかった。どうやらどこかでundef _DEBUGされているらしいと当たりがついた。</p>
 <p>boost/python/detail/wrap_python.hpp</p>
-<p>#ifdef _DEBUG</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="ifndef-boost-debug-python">
-<h1>ifndef BOOST_DEBUG_PYTHON<a class="headerlink" href="#ifndef-boost-debug-python" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="ifdef-msc-ver">
-<h1>ifdef _MSC_VER<a class="headerlink" href="#ifdef-msc-ver" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// VC8.0 will complain if system headers are #included both with
-// and without _DEBUG defined, so we have to #include all the
-// system headers used by pyconfig.h right here.
-</pre></div>
-</div>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-stddef-h">
-<h1>include &lt;stddef.h&gt;<a class="headerlink" href="#include-stddef-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-stdarg-h">
-<h1>include &lt;stdarg.h&gt;<a class="headerlink" href="#include-stdarg-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-stdio-h">
-<h1>include &lt;stdio.h&gt;<a class="headerlink" href="#include-stdio-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-stdlib-h">
-<h1>include &lt;stdlib.h&gt;<a class="headerlink" href="#include-stdlib-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-assert-h">
-<h1>include &lt;assert.h&gt;<a class="headerlink" href="#include-assert-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-errno-h">
-<h1>include &lt;errno.h&gt;<a class="headerlink" href="#include-errno-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-ctype-h">
-<h1>include &lt;ctype.h&gt;<a class="headerlink" href="#include-ctype-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-wchar-h">
-<h1>include &lt;wchar.h&gt;<a class="headerlink" href="#include-wchar-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-basetsd-h">
-<h1>include &lt;basetsd.h&gt;<a class="headerlink" href="#include-basetsd-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-io-h">
-<h1>include &lt;io.h&gt;<a class="headerlink" href="#include-io-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-limits-h">
-<h1>include &lt;limits.h&gt;<a class="headerlink" href="#include-limits-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-float-h">
-<h1>include &lt;float.h&gt;<a class="headerlink" href="#include-float-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-string-h">
-<h1>include &lt;string.h&gt;<a class="headerlink" href="#include-string-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-math-h">
-<h1>include &lt;math.h&gt;<a class="headerlink" href="#include-math-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="include-time-h">
-<h1>include &lt;time.h&gt;<a class="headerlink" href="#include-time-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="endif">
-<h1>endif<a class="headerlink" href="#endif" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="undef-debug-don-t-let-python-force-the-debug-library-just-because-we-re-debugging">
-<h1>undef _DEBUG // Don’t let Python force the debug library just because we’re debugging.<a class="headerlink" href="#undef-debug-don-t-let-python-force-the-debug-library-just-because-we-re-debugging" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="define-debug-undefined-from-wrap-python-h">
-<h1>define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H<a class="headerlink" href="#define-debug-undefined-from-wrap-python-h" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>endif<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>#endif</p>
+<h2>ifdef _DEBUG</h2>
+<h2>ifndef BOOST_DEBUG_PYTHON</h2>
+<h2>ifdef _MSC_VER</h2>
+<pre class="code literal-block"><span class="o">//</span> <span class="nv">VC8</span>.<span class="mi">0</span> <span class="nv">will</span> <span class="nv">complain</span> <span class="k">if</span> <span class="nv">system</span> <span class="nv">headers</span> <span class="nv">are</span> #<span class="nv">included</span> <span class="nv">both</span> <span class="nv">with</span>
+<span class="o">//</span> <span class="nv">and</span> <span class="nv">without</span> <span class="nv">_DEBUG</span> <span class="nv">defined</span>, <span class="nv">so</span> <span class="nv">we</span> <span class="nv">have</span> <span class="nv">to</span> #<span class="k">include</span> <span class="nv">all</span> <span class="nv">the</span>
+<span class="o">//</span> <span class="nv">system</span> <span class="nv">headers</span> <span class="nv">used</span> <span class="nv">by</span> <span class="nv">pyconfig</span>.<span class="nv">h</span> <span class="nv">right</span> <span class="nv">here</span>.
+</pre>
+<h2>include <stddef.h></stddef.h>
+</h2>
+<h2>include <stdarg.h></stdarg.h>
+</h2>
+<h2>include <stdio.h></stdio.h>
+</h2>
+<h2>include <stdlib.h></stdlib.h>
+</h2>
+<h2>include <assert.h></assert.h>
+</h2>
+<h2>include <errno.h></errno.h>
+</h2>
+<h2>include <ctype.h></ctype.h>
+</h2>
+<h2>include <wchar.h></wchar.h>
+</h2>
+<h2>include <basetsd.h></basetsd.h>
+</h2>
+<h2>include <io.h></io.h>
+</h2>
+<h2>include <limits.h></limits.h>
+</h2>
+<h2>include <float.h></float.h>
+</h2>
+<h2>include <string.h></string.h>
+</h2>
+<h2>include <math.h></math.h>
+</h2>
+<h2>include <time.h></time.h>
+</h2>
+<h2>endif</h2>
+<h2>undef _DEBUG // Don't let Python force the debug library just because we're debugging.</h2>
+<h2>define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H</h2>
+<h2>endif</h2>
+<h2>endif</h2>
 <p>python_d.libにリンクするには
-b2 –with-python –debug-configuration python-debugging=on</p>
+b2 --with-python --debug-configuration python-debugging=on</p>
 <p>として
 libboost_python3-vc140-mt-gyd-1_64
 を作成する。gydのyがpython debugらしい。
 Boost.Pythonへのリンク
-boostはどうやってリンクするライブラリの名前を決めているのか
-#pragma comment(lib,”wsock32.lib”)</p>
+boostはどうやってリンクするライブラリの名前を決めているのか</p>
+<h2>pragma comment(lib,"wsock32.lib")</h2>
 <p>どこかに#pragmaが記述されているはずだが。</p>
 <p>https://stackoverflow.com/questions/16200997/why-doesnt-include-python-h-work
 http://d.hatena.ne.jp/torutk/20121004/p1</p>
@@ -186,8 +127,8 @@ boost_python3_vc140-mt-gd-1_64にリンクしたいのいだがlibboost_python-v
 python3はどうやって決まるのか
 むしろboost_python3がBOOST_LIB_NAMEから決まる。
 BOOST_LIB_NAMEは、boost/python/detail/config.hppで下記の記述がある。
-boost-1.61.0
-#define BOOST_LIB_NAME boost_python</p>
+boost-1.61.0</p>
+<h2>define BOOST_LIB_NAME boost_python</h2>
 <p>boost_python3.dllとboost_python.dllは両方Python3にリンクされとった
 なんだってー。つまり、boostは複数のPythonに対するビルド結果を共存させることは考慮されていないということだった。なるほど
 ReleaseビルドとDebugビルドは同じReleaseのdllにリンクするべき
@@ -200,754 +141,24 @@ pybindを使おう
 <p>https://github.com/pybind/pybind11</p>
 <p>既存のBoost.Pythonを使ったコードでも、pybindはBoost.Pythonと似たAPIになっているので簡単に置き換えられる。</p>
 <p>pybind11でC++の関数をpythonから使う</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../mmdbridge/">
-      <i class="fa fa-arrow-circle-left"></i> MmdBridgeをビルドしてみる
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../mmdbrige_build/">
-      MmdBridgeのビルドスクリプトを作った <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2017/04/22 
-</h2>
-
-<ul>
-       
-<li id="tags">
-  <span
-    ><i class="fa-fw fa fa-tags"></i> </span
-  >
-   
-  <a href="../../../../blog/tag/python/">python</a>   
-  <a href="../../../../blog/tag/cpp/">cpp</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">boost_python</a></li>
-<li><a class="reference internal" href="#ifndef-boost-debug-python">ifndef BOOST_DEBUG_PYTHON</a></li>
-<li><a class="reference internal" href="#ifdef-msc-ver">ifdef _MSC_VER</a></li>
-<li><a class="reference internal" href="#include-stddef-h">include &lt;stddef.h&gt;</a></li>
-<li><a class="reference internal" href="#include-stdarg-h">include &lt;stdarg.h&gt;</a></li>
-<li><a class="reference internal" href="#include-stdio-h">include &lt;stdio.h&gt;</a></li>
-<li><a class="reference internal" href="#include-stdlib-h">include &lt;stdlib.h&gt;</a></li>
-<li><a class="reference internal" href="#include-assert-h">include &lt;assert.h&gt;</a></li>
-<li><a class="reference internal" href="#include-errno-h">include &lt;errno.h&gt;</a></li>
-<li><a class="reference internal" href="#include-ctype-h">include &lt;ctype.h&gt;</a></li>
-<li><a class="reference internal" href="#include-wchar-h">include &lt;wchar.h&gt;</a></li>
-<li><a class="reference internal" href="#include-basetsd-h">include &lt;basetsd.h&gt;</a></li>
-<li><a class="reference internal" href="#include-io-h">include &lt;io.h&gt;</a></li>
-<li><a class="reference internal" href="#include-limits-h">include &lt;limits.h&gt;</a></li>
-<li><a class="reference internal" href="#include-float-h">include &lt;float.h&gt;</a></li>
-<li><a class="reference internal" href="#include-string-h">include &lt;string.h&gt;</a></li>
-<li><a class="reference internal" href="#include-math-h">include &lt;math.h&gt;</a></li>
-<li><a class="reference internal" href="#include-time-h">include &lt;time.h&gt;</a></li>
-<li><a class="reference internal" href="#endif">endif</a></li>
-<li><a class="reference internal" href="#undef-debug-don-t-let-python-force-the-debug-library-just-because-we-re-debugging">undef _DEBUG // Don’t let Python force the debug library just because we’re debugging.</a></li>
-<li><a class="reference internal" href="#define-debug-undefined-from-wrap-python-h">define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H</a></li>
-<li><a class="reference internal" href="#id1">endif</a></li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../mmdbridge/" rel="prev" title="MmdBridgeをビルドしてみる">
+            MmdBridgeをビルドしてみる 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../mmdbrige_build/" rel="next" title="MmdBridgeのビルドスクリプトを作った">
+            👉 MmdBridgeのビルドスクリプトを作った
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

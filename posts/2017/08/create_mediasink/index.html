@@ -1,76 +1,45 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>create_mediasink</title>
-<link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-<script src="../../../../_static/jquery.js"></script>
-<script src="../../../../_static/underscore.js"></script>
-<script src="../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../assets/js/all-nocdn.js"></script><title>MediaSinkを実装する | 三次元日誌</title>
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">create_mediasink</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="create-mediasink">
-<h1>create_mediasink<a class="headerlink" href="#create-mediasink" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../archive.html">Archives</a></li>
+<li><a href="../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../about">About</a></li>
+<li><a href="../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">MediaSinkを実装する
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2017-08-27T00:00:00+09:00" title="2017-08-27">2017-08-27</time>
+</li>
+    <li><a class="tag p-category" href="../../../../categories/d3d/" rel="tag">d3d</a></li>
+    <li><a class="tag p-category" href="../../../../categories/mediafoundation/" rel="tag">mediafoundation</a></li>
+</ul>
+</h1>
+
 <p>DX11VideoRendererを解読して、VideoRenderer要件を探る。</p>
 <p>Microsoftのサンプルがあり参考になる。</p>
 <p>https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</p>
@@ -80,149 +49,146 @@ IMFMediaSinkを作る
 https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h
 を参考に最低限を実装してみる。
 guidgen.exeでguidを決めた。
-CustomVideoRenderer.h
-#pragma once
-#include &lt;windows.h&gt;</p>
+CustomVideoRenderer.h</p>
+<h2>pragma once</h2>
+<h2>include <windows.h></windows.h>
+</h2>
 <p>// {8C5C51AD-F400-4B2A-BD36-4990D07420B4}
-DEFINE_GUID(CLSID_CustomVideoRenderer,
+DEFINE_GUID(CLSID_CustomVideoRenderer, 
 0x8c5c51ad, 0xf400, 0x4b2a, 0xbd, 0x36, 0x49, 0x90, 0xd0, 0x74, 0x20, 0xb4);</p>
 <p>STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject);</p>
 <p>DX11VideoRendererから必要な部分をコピペしてくるだけである。
-CustomVideoRenderer.c++
-#include “CustomVideoRenderer.h”
-#include &lt;mfidl.h&gt;</p>
+CustomVideoRenderer.c++</p>
+<h2>include "CustomVideoRenderer.h"</h2>
+<h2>include <mfidl.h></mfidl.h>
+</h2>
 <p>class CustomVideoRenderer: public IMFMediaSink
 {
-ULONG m_nRefCount = 1;</p>
+    ULONG m_nRefCount = 1;</p>
 <p>public:
-// IUnknown
-STDMETHODIMP_(ULONG) AddRef(void)override
-{
-return InterlockedIncrement(&amp;m_nRefCount);
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>STDMETHODIMP QueryInterface(REFIID iid, __RPC__deref_out _Result_nullonfailure_ void** ppv)override
-{
-    if (!ppv)
+    // IUnknown
+    STDMETHODIMP_(ULONG) AddRef(void)override
     {
-        return E_POINTER;
-    }
-    if (iid == IID_IUnknown)
-    {
-        *ppv = static_cast&lt;IUnknown*&gt;(static_cast&lt;IMFMediaSink*&gt;(this));
-    }
-    else if (iid == __uuidof(IMFMediaSink))
-    {
-        *ppv = static_cast&lt;IMFMediaSink*&gt;(this);
-    }
-    else
-    {
-        *ppv = NULL;
-        return E_NOINTERFACE;
-    }
-    AddRef();
-    return S_OK;
-}
+        return InterlockedIncrement(&amp;m_nRefCount);
+    }</p>
+<pre class="code literal-block"><span class="n">STDMETHODIMP</span> <span class="n">QueryInterface</span><span class="p">(</span><span class="n">REFIID</span> <span class="n">iid</span><span class="p">,</span> <span class="n">__RPC__deref_out</span> <span class="n">_Result_nullonfailure_</span> <span class="n">void</span><span class="o">**</span> <span class="n">ppv</span><span class="p">)</span><span class="n">override</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">ppv</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">E_POINTER</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">iid</span> <span class="o">==</span> <span class="n">IID_IUnknown</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="o">*</span><span class="n">ppv</span> <span class="o">=</span> <span class="n">static_cast</span><span class="o">&lt;</span><span class="n">IUnknown</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="n">IMFMediaSink</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">this</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">iid</span> <span class="o">==</span> <span class="n">__uuidof</span><span class="p">(</span><span class="n">IMFMediaSink</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="o">*</span><span class="n">ppv</span> <span class="o">=</span> <span class="n">static_cast</span><span class="o">&lt;</span><span class="n">IMFMediaSink</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="o">*</span><span class="n">ppv</span> <span class="o">=</span> <span class="n">NULL</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">E_NOINTERFACE</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">AddRef</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">S_OK</span><span class="p">;</span>
+<span class="p">}</span>
 
-STDMETHODIMP_(ULONG) Release(void)override
-{
-    ULONG uCount = InterlockedDecrement(&amp;m_nRefCount);
-    if (uCount == 0)
-    {
-        delete this;
-    }
-    // For thread safety, return a temporary variable.
-    return uCount;
-}
+<span class="n">STDMETHODIMP_</span><span class="p">(</span><span class="n">ULONG</span><span class="p">)</span> <span class="n">Release</span><span class="p">(</span><span class="n">void</span><span class="p">)</span><span class="n">override</span>
+<span class="p">{</span>
+    <span class="n">ULONG</span> <span class="n">uCount</span> <span class="o">=</span> <span class="n">InterlockedDecrement</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m_nRefCount</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">uCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">delete</span> <span class="n">this</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="o">//</span> <span class="n">For</span> <span class="n">thread</span> <span class="n">safety</span><span class="p">,</span> <span class="k">return</span> <span class="n">a</span> <span class="n">temporary</span> <span class="n">variable</span><span class="o">.</span>
+    <span class="k">return</span> <span class="n">uCount</span><span class="p">;</span>
+<span class="p">}</span>
 
-// IMFMediaSink methods
-STDMETHODIMP AddStreamSink(DWORD dwStreamSinkIdentifier, __RPC__in_opt IMFMediaType* pMediaType, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
-STDMETHODIMP GetCharacteristics(__RPC__out DWORD* pdwCharacteristics)override;
-STDMETHODIMP GetPresentationClock(__RPC__deref_out_opt IMFPresentationClock** ppPresentationClock)override;
-STDMETHODIMP GetStreamSinkById(DWORD dwIdentifier, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
-STDMETHODIMP GetStreamSinkByIndex(DWORD dwIndex, __RPC__deref_out_opt IMFStreamSink** ppStreamSink)override;
-STDMETHODIMP GetStreamSinkCount(__RPC__out DWORD* pcStreamSinkCount)override;
-STDMETHODIMP RemoveStreamSink(DWORD dwStreamSinkIdentifier)override;
-STDMETHODIMP SetPresentationClock(__RPC__in_opt IMFPresentationClock* pPresentationClock)override;
-STDMETHODIMP Shutdown(void)override;
-</pre></div>
-</div>
+<span class="o">//</span> <span class="n">IMFMediaSink</span> <span class="n">methods</span>
+<span class="n">STDMETHODIMP</span> <span class="n">AddStreamSink</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwStreamSinkIdentifier</span><span class="p">,</span> <span class="n">__RPC__in_opt</span> <span class="n">IMFMediaType</span><span class="o">*</span> <span class="n">pMediaType</span><span class="p">,</span> <span class="n">__RPC__deref_out_opt</span> <span class="n">IMFStreamSink</span><span class="o">**</span> <span class="n">ppStreamSink</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetCharacteristics</span><span class="p">(</span><span class="n">__RPC__out</span> <span class="n">DWORD</span><span class="o">*</span> <span class="n">pdwCharacteristics</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetPresentationClock</span><span class="p">(</span><span class="n">__RPC__deref_out_opt</span> <span class="n">IMFPresentationClock</span><span class="o">**</span> <span class="n">ppPresentationClock</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetStreamSinkById</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwIdentifier</span><span class="p">,</span> <span class="n">__RPC__deref_out_opt</span> <span class="n">IMFStreamSink</span><span class="o">**</span> <span class="n">ppStreamSink</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetStreamSinkByIndex</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwIndex</span><span class="p">,</span> <span class="n">__RPC__deref_out_opt</span> <span class="n">IMFStreamSink</span><span class="o">**</span> <span class="n">ppStreamSink</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetStreamSinkCount</span><span class="p">(</span><span class="n">__RPC__out</span> <span class="n">DWORD</span><span class="o">*</span> <span class="n">pcStreamSinkCount</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">RemoveStreamSink</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwStreamSinkIdentifier</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">SetPresentationClock</span><span class="p">(</span><span class="n">__RPC__in_opt</span> <span class="n">IMFPresentationClock</span><span class="o">*</span> <span class="n">pPresentationClock</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">Shutdown</span><span class="p">(</span><span class="n">void</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+</pre>
 <p>};</p>
 <p>STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject)
 {
-if(!ppvObject){
-return E_FAIL;
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>auto sink=new CustomVideoRenderer();
-*ppvObject=sink;
-return S_OK;
-</pre></div>
-</div>
+    if(!ppvObject){
+        return E_FAIL;
+    }</p>
+<pre class="code literal-block"><span class="nv">auto</span> <span class="nv">sink</span><span class="o">=</span><span class="nv">new</span> <span class="nv">CustomVideoRenderer</span><span class="ss">()</span><span class="c1">;</span>
+<span class="o">*</span><span class="nv">ppvObject</span><span class="o">=</span><span class="nv">sink</span><span class="c1">;</span>
+<span class="k">return</span> <span class="nv">S_OK</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>使う
 IMFStreamSinkからIMFTopologyNodeを作る。</p>
 <p>Creating Output Nodes</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Microsoft::WRL::ComPtr&lt;IMFTopologyNode&gt; pOutputNode;
-if(FAILED(hr = MFCreateTopologyNode(MF_TOPOLOGY_OUTPUT_NODE, &amp;pOutputNode)))
-{
-    return hr;
-}
+<pre class="code literal-block"><span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFTopologyNode</span><span class="o">&gt;</span> <span class="nt">pOutputNode</span><span class="o">;</span>
+<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span> <span class="o">=</span> <span class="nt">MFCreateTopologyNode</span><span class="o">(</span><span class="nt">MF_TOPOLOGY_OUTPUT_NODE</span><span class="o">,</span> <span class="o">&amp;</span><span class="nt">pOutputNode</span><span class="o">)))</span>
+<span class="p">{</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
 
-Microsoft::WRL::ComPtr&lt;IMFMediaSink&gt; pSink;
-// 自前のIMFMediaSinkを作る
-if(FAILED(hr=CreateCustomVideoRenderer(IID_PPV_ARGS(&amp;pSink)))){
-    return hr;
-}
+<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFMediaSink</span><span class="o">&gt;</span> <span class="nt">pSink</span><span class="o">;</span>
+<span class="o">//</span> <span class="nt">自前のIMFMediaSinkを作る</span>
+<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span><span class="o">=</span><span class="nt">CreateCustomVideoRenderer</span><span class="o">(</span><span class="nt">IID_PPV_ARGS</span><span class="o">(&amp;</span><span class="nt">pSink</span><span class="o">))))</span><span class="p">{</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
 
-Microsoft::WRL::ComPtr&lt;IMFStreamSink&gt; pSSink;
-if(FAILED(hr=pSink-&gt;GetStreamSinkByIndex(0, &amp;pSSink))){
-    // まだ作っていないのでここでエラーになる
-    return hr;
-}
+<span class="nt">Microsoft</span><span class="p">::</span><span class="nd">WRL</span><span class="p">::</span><span class="nd">ComPtr</span><span class="o">&lt;</span><span class="nt">IMFStreamSink</span><span class="o">&gt;</span> <span class="nt">pSSink</span><span class="o">;</span>
+<span class="nt">if</span><span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span><span class="o">=</span><span class="nt">pSink-</span><span class="o">&gt;</span><span class="nt">GetStreamSinkByIndex</span><span class="o">(</span><span class="nt">0</span><span class="o">,</span> <span class="o">&amp;</span><span class="nt">pSSink</span><span class="o">)))</span><span class="p">{</span>
+    <span class="err">//</span> <span class="err">まだ作っていないのでここでエラーになる</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
 
-if (FAILED(hr = pOutputNode-&gt;SetObject(pSSink.Get())))
-{
-    return hr;
-}
-</pre></div>
-</div>
+<span class="nt">if</span> <span class="o">(</span><span class="nt">FAILED</span><span class="o">(</span><span class="nt">hr</span> <span class="o">=</span> <span class="nt">pOutputNode-</span><span class="o">&gt;</span><span class="nt">SetObject</span><span class="o">(</span><span class="nt">pSSink</span><span class="p">.</span><span class="nc">Get</span><span class="o">())))</span>
+<span class="p">{</span>
+    <span class="err">return</span> <span class="err">hr</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
 <p>IMFStreamSinkがひとつは必要
 作る。
 class CustomVideoStreamSink: public IMFStreamSink
 {
-ULONG m_nRefCount = 1;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>const DWORD                 STREAM_ID;
-CCritSec&amp;                   m_critSec;                      // critical section for thread safety
-Microsoft::WRL::ComPtr&lt;IMFMediaSink&gt;               m_pSink; 
-</pre></div>
-</div>
+    ULONG m_nRefCount = 1;</p>
+<pre class="code literal-block"><span class="k">const</span> <span class="n">DWORD</span>                 <span class="n">STREAM_ID</span><span class="p">;</span>
+<span class="n">CCritSec</span><span class="o">&amp;</span>                   <span class="n">m_critSec</span><span class="p">;</span>                      <span class="o">//</span> <span class="n">critical</span> <span class="n">section</span> <span class="k">for</span> <span class="n">thread</span> <span class="n">safety</span>
+<span class="n">Microsoft</span><span class="p">::</span><span class="n">WRL</span><span class="p">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">IMFMediaSink</span><span class="o">&gt;</span>               <span class="n">m_pSink</span><span class="p">;</span>
+</pre>
 <p>public:
-CustomVideoStreamSink(DWORD dwStreamId, CCritSec&amp; critSec
-, IMFMediaSink *parent)
-: STREAM_ID(dwStreamId)
-, m_critSec(critSec)
-, m_pSink(parent)
-{
-}</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// IUnknown
-STDMETHODIMP_(ULONG) AddRef(void)override;
-STDMETHODIMP QueryInterface(REFIID iid, __RPC__deref_out _Result_nullonfailure_ void** ppv)override;
-STDMETHODIMP_(ULONG) Release(void)override;
+    CustomVideoStreamSink(DWORD dwStreamId, CCritSec&amp; critSec
+            , IMFMediaSink *parent)
+        : STREAM_ID(dwStreamId)
+          , m_critSec(critSec)
+          , m_pSink(parent)
+    {
+    }</p>
+<pre class="code literal-block"><span class="o">//</span> <span class="n">IUnknown</span>
+<span class="n">STDMETHODIMP_</span><span class="p">(</span><span class="n">ULONG</span><span class="p">)</span> <span class="n">AddRef</span><span class="p">(</span><span class="n">void</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">QueryInterface</span><span class="p">(</span><span class="n">REFIID</span> <span class="n">iid</span><span class="p">,</span> <span class="n">__RPC__deref_out</span> <span class="n">_Result_nullonfailure_</span> <span class="n">void</span><span class="o">**</span> <span class="n">ppv</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP_</span><span class="p">(</span><span class="n">ULONG</span><span class="p">)</span> <span class="n">Release</span><span class="p">(</span><span class="n">void</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
 
-// IMFStreamSink
-STDMETHODIMP Flush(void)override;
-STDMETHODIMP GetIdentifier(__RPC__out DWORD* pdwIdentifier)override;
-STDMETHODIMP GetMediaSink(__RPC__deref_out_opt IMFMediaSink** ppMediaSink)override;
-STDMETHODIMP GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)override;
-STDMETHODIMP PlaceMarker(MFSTREAMSINK_MARKER_TYPE eMarkerType, __RPC__in const PROPVARIANT* pvarMarkerValue, __RPC__in const PROPVARIANT* pvarContextValue)override;
-STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override;
+<span class="o">//</span> <span class="n">IMFStreamSink</span>
+<span class="n">STDMETHODIMP</span> <span class="n">Flush</span><span class="p">(</span><span class="n">void</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetIdentifier</span><span class="p">(</span><span class="n">__RPC__out</span> <span class="n">DWORD</span><span class="o">*</span> <span class="n">pdwIdentifier</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetMediaSink</span><span class="p">(</span><span class="n">__RPC__deref_out_opt</span> <span class="n">IMFMediaSink</span><span class="o">**</span> <span class="n">ppMediaSink</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetMediaTypeHandler</span><span class="p">(</span><span class="n">__RPC__deref_out_opt</span> <span class="n">IMFMediaTypeHandler</span><span class="o">**</span> <span class="n">ppHandler</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">PlaceMarker</span><span class="p">(</span><span class="n">MFSTREAMSINK_MARKER_TYPE</span> <span class="n">eMarkerType</span><span class="p">,</span> <span class="n">__RPC__in</span> <span class="k">const</span> <span class="n">PROPVARIANT</span><span class="o">*</span> <span class="n">pvarMarkerValue</span><span class="p">,</span> <span class="n">__RPC__in</span> <span class="k">const</span> <span class="n">PROPVARIANT</span><span class="o">*</span> <span class="n">pvarContextValue</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">ProcessSample</span><span class="p">(</span><span class="n">__RPC__in_opt</span> <span class="n">IMFSample</span><span class="o">*</span> <span class="n">pSample</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
 
-// IMFMediaEventGenerator (from IMFStreamSink)
-STDMETHODIMP BeginGetEvent(IMFAsyncCallback* pCallback,IUnknown* punkState)override;
-STDMETHODIMP EndGetEvent(IMFAsyncResult* pResult, _Out_ IMFMediaEvent** ppEvent)override;
-STDMETHODIMP GetEvent(DWORD dwFlags, __RPC__deref_out_opt IMFMediaEvent** ppEvent)override;
-STDMETHODIMP QueueEvent(MediaEventType met, __RPC__in REFGUID guidExtendedType, HRESULT hrStatus, __RPC__in_opt const PROPVARIANT* pvValue)override;
-</pre></div>
-</div>
+<span class="o">//</span> <span class="n">IMFMediaEventGenerator</span> <span class="p">(</span><span class="n">from</span> <span class="n">IMFStreamSink</span><span class="p">)</span>
+<span class="n">STDMETHODIMP</span> <span class="n">BeginGetEvent</span><span class="p">(</span><span class="n">IMFAsyncCallback</span><span class="o">*</span> <span class="n">pCallback</span><span class="p">,</span><span class="n">IUnknown</span><span class="o">*</span> <span class="n">punkState</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">EndGetEvent</span><span class="p">(</span><span class="n">IMFAsyncResult</span><span class="o">*</span> <span class="n">pResult</span><span class="p">,</span> <span class="n">_Out_</span> <span class="n">IMFMediaEvent</span><span class="o">**</span> <span class="n">ppEvent</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">GetEvent</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwFlags</span><span class="p">,</span> <span class="n">__RPC__deref_out_opt</span> <span class="n">IMFMediaEvent</span><span class="o">**</span> <span class="n">ppEvent</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+<span class="n">STDMETHODIMP</span> <span class="n">QueueEvent</span><span class="p">(</span><span class="n">MediaEventType</span> <span class="n">met</span><span class="p">,</span> <span class="n">__RPC__in</span> <span class="n">REFGUID</span> <span class="n">guidExtendedType</span><span class="p">,</span> <span class="n">HRESULT</span> <span class="n">hrStatus</span><span class="p">,</span> <span class="n">__RPC__in_opt</span> <span class="k">const</span> <span class="n">PROPVARIANT</span><span class="o">*</span> <span class="n">pvValue</span><span class="p">)</span><span class="n">override</span><span class="p">;</span>
+</pre>
 <p>};</p>
 <p>メソッドの中身は
 return E_FAIL;</p>
@@ -236,62 +202,60 @@ IMFMediaSink::RemoveStreamSink実装
 // Handler for Media Session events.
 void OnPlayerEvent(HWND hwnd, WPARAM pUnkPtr)
 {
-HRESULT hr = g_pPlayer-&gt;HandleEvent(pUnkPtr);
-if (FAILED(hr))
-{
-// ここに来る
-NotifyError(hwnd, L”An error occurred.”, hr);
-}
-UpdateUI(hwnd, g_pPlayer-&gt;GetState());
+    HRESULT hr = g_pPlayer-&gt;HandleEvent(pUnkPtr);
+    if (FAILED(hr))
+    {
+        // ここに来る
+        NotifyError(hwnd, L"An error occurred.", hr);
+    }
+    UpdateUI(hwnd, g_pPlayer-&gt;GetState());
 }</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Get the event status. If the operation that triggered the event 
-// did not succeed, the status is a failure code.
-HRESULT hrStatus = S_OK;
-hr = pEvent-&gt;GetStatus(&amp;hrStatus);
+<pre class="code literal-block"><span class="c1">// Get the event status. If the operation that triggered the event </span>
+<span class="c1">// did not succeed, the status is a failure code.</span>
+<span class="n">HRESULT</span> <span class="n">hrStatus</span> <span class="o">=</span> <span class="n">S_OK</span><span class="p">;</span>
+<span class="n">hr</span> <span class="o">=</span> <span class="n">pEvent</span><span class="o">-&gt;</span><span class="n">GetStatus</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hrStatus</span><span class="p">);</span>
 
-// Check if the async operation succeeded.
-if (SUCCEEDED(hr) &amp;&amp; FAILED(hrStatus)) 
-{
-    // ここに来る
-    hr=hrStatus;
-}
-</pre></div>
-</div>
+<span class="c1">// Check if the async operation succeeded.</span>
+<span class="nf">if</span> <span class="p">(</span><span class="n">SUCCEEDED</span><span class="p">(</span><span class="n">hr</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">FAILED</span><span class="p">(</span><span class="n">hrStatus</span><span class="p">))</span> 
+<span class="p">{</span>
+    <span class="c1">// ここに来る</span>
+    <span class="n">hr</span><span class="o">=</span><span class="n">hrStatus</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
 <p>デバッガで調べたらIMFStreamSink::GetMediaSinkの直後にエラーになることがわかった。
 IMFStreamSink::GetMediaSink実装
 たんたんとエラーを直していく。
 IMFStreamSink::GetMediaTypeHandler実装
 HRESULT DX11VideoRenderer::CStreamSink::GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)
 {
-CAutoLock lock(&amp;m_critSec);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if (ppHandler == NULL)
-{
-    return E_POINTER;
-}
+    CAutoLock lock(&amp;m_critSec);</p>
+<pre class="code literal-block"><span class="nf">if</span> <span class="p">(</span><span class="n">ppHandler</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kr">return</span> <span class="n">E_POINTER</span><span class="p">;</span>
+<span class="p">}</span>
 
-HRESULT hr = CheckShutdown();
+<span class="n">HRESULT</span> <span class="n">hr</span> <span class="o">=</span> <span class="n">CheckShutdown</span><span class="p">();</span>
 
-// This stream object acts as its own type handler, so we QI ourselves.
-if (SUCCEEDED(hr))
-{
-    hr = this-&gt;QueryInterface(IID_IMFMediaTypeHandler, (void**)ppHandler);
-}
+<span class="c1">// This stream object acts as its own type handler, so we QI ourselves.</span>
+<span class="nf">if</span> <span class="p">(</span><span class="n">SUCCEEDED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">hr</span> <span class="o">=</span> <span class="n">this</span><span class="o">-&gt;</span><span class="n">QueryInterface</span><span class="p">(</span><span class="n">IID_IMFMediaTypeHandler</span><span class="p">,</span> <span class="p">(</span><span class="n">void</span><span class="o">**</span><span class="p">)</span><span class="n">ppHandler</span><span class="p">);</span>
+<span class="p">}</span>
 
-return hr;
-</pre></div>
-</div>
+<span class="kr">return</span> <span class="n">hr</span><span class="p">;</span>
+</pre>
 <p>}</p>
 <p>IMFMediaTypeHandlerが必要。
 StreamSinkにIMFMediaTypeHandlerを実装
 このインタフェースはStreamSinkが処理できるMediaTypeを示すので必要。
 サポートするフォーマットを決める。
 // IMFMediaTypeHandler
-STDMETHODIMP GetCurrentMediaType(<em>Outptr</em> IMFMediaType** ppMediaType);
+STDMETHODIMP GetCurrentMediaType(<em>Outptr</em> IMFMediaType<strong> ppMediaType);
 STDMETHODIMP GetMajorType(__RPC__out GUID* pguidMajorType);
-STDMETHODIMP GetMediaTypeByIndex(DWORD dwIndex, <em>Outptr</em> IMFMediaType** ppType);
-STDMETHODIMP GetMediaTypeCount(__RPC__out DWORD* pdwTypeCount);
-STDMETHODIMP IsMediaTypeSupported(IMFMediaType* pMediaType, <em>Outptr_opt_result_maybenull</em> IMFMediaType** ppMediaType);
-STDMETHODIMP SetCurrentMediaType(IMFMediaType* pMediaType);</p>
+STDMETHODIMP GetMediaTypeByIndex(DWORD dwIndex, <em>Outptr</em> IMFMediaType</strong> ppType);
+STDMETHODIMP GetMediaTypeCount(__RPC__out DWORD<em> pdwTypeCount);
+STDMETHODIMP IsMediaTypeSupported(IMFMediaType</em> pMediaType, <em>Outptr_opt_result_maybenull</em> IMFMediaType*<em> ppMediaType);
+STDMETHODIMP SetCurrentMediaType(IMFMediaType</em> pMediaType);</p>
 <p>PresentationClockが必要</p>
 <p>Presentation Clock</p>
 <p>IMFMediaSink::GetPresentationClock実装
@@ -322,97 +286,91 @@ OnClockStop: MEStreamSinkStopped event</p>
 <p>なるほど。
 STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset)override
 {
-CAutoLock lock(&amp;m_csMediaSink);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>HRESULT hr = CheckShutdown();
-if (SUCCEEDED(hr))
-{
-    //
-    // これが必要。このあとMEStreamSinkRequestSampleを受け付ける
-    //
-    hr = m_pStream-&gt;QueueEvent(MEStreamSinkStarted, GUID_NULL, hr, NULL);
-}
-if (SUCCEEDED(hr))
-{
-    hr = m_pStream-&gt;QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
-}
+    CAutoLock lock(&amp;m_csMediaSink);</p>
+<pre class="code literal-block"><span class="n">HRESULT</span> <span class="n">hr</span> <span class="o">=</span> <span class="n">CheckShutdown</span><span class="p">();</span>
+<span class="nf">if</span> <span class="p">(</span><span class="n">SUCCEEDED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="c1">//</span>
+    <span class="c1">// これが必要。このあとMEStreamSinkRequestSampleを受け付ける</span>
+    <span class="c1">//</span>
+    <span class="n">hr</span> <span class="o">=</span> <span class="n">m_pStream</span><span class="o">-&gt;</span><span class="n">QueueEvent</span><span class="p">(</span><span class="n">MEStreamSinkStarted</span><span class="p">,</span> <span class="n">GUID_NULL</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nf">if</span> <span class="p">(</span><span class="n">SUCCEEDED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">hr</span> <span class="o">=</span> <span class="n">m_pStream</span><span class="o">-&gt;</span><span class="n">QueueEvent</span><span class="p">(</span><span class="n">MEStreamSinkRequestSample</span><span class="p">,</span> <span class="n">GUID_NULL</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+<span class="p">}</span>
 
-return hr;
-</pre></div>
-</div>
+<span class="kr">return</span> <span class="n">hr</span><span class="p">;</span>
+</pre>
 <p>}</p>
 <p>ついにIMFStreamSink::ProcessSampleがコールされた。
 試しに下記のような実装にしてみたがこれではClock無視で最速でフレームを消化してしまうのでだめ。
 int m_count = 0;
 STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
 {
-++m_count;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>auto hr = S_OK;
-hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
+    ++m_count;</p>
+<pre class="code literal-block"><span class="nv">auto</span> <span class="nv">hr</span> <span class="o">=</span> <span class="nv">S_OK</span><span class="c1">;</span>
+<span class="nv">hr</span> <span class="o">=</span> <span class="nv">QueueEvent</span><span class="ss">(</span><span class="nv">MEStreamSinkRequestSample</span>, <span class="nv">GUID_NULL</span>, <span class="nv">hr</span>, <span class="nv">NULL</span><span class="ss">)</span><span class="c1">;</span>
 
-return hr;
-</pre></div>
-</div>
+<span class="k">return</span> <span class="nv">hr</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>MEStreamSinkRequestSampleをスケジューリングする</p>
 <p>Scheduled Work Items</p>
 <p>これを使ってみる。
 BOOL NeedMoreSamples(void)
 {
-const DWORD cSamplesInFlight = /<em>m_SamplesToProcess.GetCount() +</em>/ m_cOutstandingSampleRequests;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>return cSamplesInFlight &lt; SAMPLE_QUEUE_HIWATER_THRESHOLD;
-</pre></div>
-</div>
+    const DWORD cSamplesInFlight = /<em>m_SamplesToProcess.GetCount() +</em>/ m_cOutstandingSampleRequests;</p>
+<pre class="code literal-block"><span class="k">return</span> <span class="nv">cSamplesInFlight</span> <span class="o">&lt;</span> <span class="nv">SAMPLE_QUEUE_HIWATER_THRESHOLD</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>HRESULT RequestSamples(IMFAsyncResult* pAsyncResult)
 {
-HRESULT hr = S_OK;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>while (NeedMoreSamples())
+    HRESULT hr = S_OK;</p>
+<pre class="code literal-block"><span class="k">while</span> <span class="ss">(</span><span class="nv">NeedMoreSamples</span><span class="ss">())</span>
 {
-    hr = CheckShutdown();
-    if (FAILED(hr))
+    <span class="nv">hr</span> <span class="o">=</span> <span class="nv">CheckShutdown</span><span class="ss">()</span><span class="c1">;</span>
+    <span class="k">if</span> <span class="ss">(</span><span class="nv">FAILED</span><span class="ss">(</span><span class="nv">hr</span><span class="ss">))</span>
     {
-        break;
+        <span class="k">break</span><span class="c1">;</span>
     }
 
-    m_cOutstandingSampleRequests++;
+    <span class="nv">m_cOutstandingSampleRequests</span><span class="o">++</span><span class="c1">;</span>
 
-    hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, S_OK, NULL);
+    <span class="nv">hr</span> <span class="o">=</span> <span class="nv">QueueEvent</span><span class="ss">(</span><span class="nv">MEStreamSinkRequestSample</span>, <span class="nv">GUID_NULL</span>, <span class="nv">S_OK</span>, <span class="nv">NULL</span><span class="ss">)</span><span class="c1">;</span>
 }
 
-// 再突入
-hr=QueueRequest();
+<span class="o">//</span> 再突入
+<span class="nv">hr</span><span class="o">=</span><span class="nv">QueueRequest</span><span class="ss">()</span><span class="c1">;</span>
 
-return hr;
-</pre></div>
-</div>
+<span class="k">return</span> <span class="nv">hr</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>// 正しいRateにする必要がある
 const INT64 interval = 1000 / 30;</p>
 <p>HRESULT QueueRequest()
 {
-HRESULT hr = S_OK;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if (SUCCEEDED(hr))
+    HRESULT hr = S_OK;</p>
+<pre class="code literal-block"><span class="k">if</span> <span class="ss">(</span><span class="nv">SUCCEEDED</span><span class="ss">(</span><span class="nv">hr</span><span class="ss">))</span>
 {
-    // Enqueue
-    MFWORKITEM_KEY cancelKey;
-    hr = MFScheduleWorkItem(&amp;m_WorkQueueCB, nullptr, -interval, &amp;cancelKey);
+    <span class="o">//</span> <span class="nv">Enqueue</span>
+    <span class="nv">MFWORKITEM_KEY</span> <span class="nv">cancelKey</span><span class="c1">;</span>
+    <span class="nv">hr</span> <span class="o">=</span> <span class="nv">MFScheduleWorkItem</span><span class="ss">(</span><span class="o">&amp;</span><span class="nv">m_WorkQueueCB</span>, <span class="nv">nullptr</span>, <span class="o">-</span><span class="nv">interval</span>, <span class="o">&amp;</span><span class="nv">cancelKey</span><span class="ss">)</span><span class="c1">;</span>
 }
 
-return hr;
-</pre></div>
-</div>
+<span class="k">return</span> <span class="nv">hr</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>int m_count = 0;
 STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
 {
-++m_count;</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>m_cOutstandingSampleRequests--;
+    ++m_count;</p>
+<pre class="code literal-block"><span class="nv">m_cOutstandingSampleRequests</span><span class="o">--</span><span class="c1">;</span>
 
-// do something
+<span class="o">//</span> <span class="k">do</span> <span class="nv">something</span>
 
-return  S_OK;
-</pre></div>
-</div>
+<span class="k">return</span>  <span class="nv">S_OK</span><span class="c1">;</span>
+</pre>
 <p>}</p>
 <p>DX11VideoRenderer::CSchedulerを使えばよいと思う。
 だいたい仕組みがわかった。
@@ -421,728 +379,24 @@ DX11VideoRendererから引き算して最小限の構成にする(ProcessSample�
 <p>Scheduler
 StreamSink: IMFStreamSink, IMFMediaTypeHandler
 MesiaSink: IMFMediaSink, IMFClockStateSink</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../media_foundation/">
-      <i class="fa fa-arrow-circle-left"></i> MeidaFoundation情報収集
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../mediasink_use_dxva/">
-      MediaSinkでDXVA <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2017/08/27 
-</h2>
-
-<ul>
-       
-<li id="tags">
-  <span
-    ><i class="fa-fw fa fa-tags"></i> </span
-  >
-   
-  <a href="../../../../blog/tag/d3d/">d3d</a>   
-  <a href="../../../../blog/tag/mediafoundation/">mediafoundation</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../../../github/mediafoundationsample/" rel="prev" title="MediaFoundationSample">
+            MediaFoundationSample 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../mediasink_use_dxva/" rel="next" title="MediaSinkでDXVA">
+            👉 MediaSinkでDXVA
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

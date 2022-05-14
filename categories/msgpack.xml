@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (msgpackについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/msgpack.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:07 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NvimTexture開発開始</title><link>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</link><dc:creator>ousttrue</dc:creator><description>&lt;figure&gt;&lt;img src="https://ousttrue.github.io/posts/2021/summer/nvimtexture.jpg"&gt;&lt;/figure&gt; &lt;p&gt;&lt;code&gt;Nvy&lt;/code&gt; の改造をしてだいたい構造を理解した。
+&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;msgpack-rpc-asio&lt;/a&gt; をオーバーホールして使えるようになった。
+ということで一から組みなおすで。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/NvimTexture"&gt;https://github.com/ousttrue/NvimTexture&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;部品を疎結合にする&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Window(HWND, resize, keyboard, mouse event)&lt;/li&gt;
+&lt;li&gt;NvimPipe(stdin, stdout, msgpack-rpc transport)&lt;/li&gt;
+&lt;li&gt;EventDispatcher(WindowEvent と MsgPackRPCMessage の処理)&lt;/li&gt;
+&lt;li&gt;D3D DeviceManager&lt;/li&gt;
+&lt;li&gt;D3D Renderer(RenderTarget)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;            &lt;span class="o"&gt;+--------+&lt;/span&gt;
+&lt;span class="o"&gt;+----+&lt;/span&gt; &lt;span class="kr"&gt;pipe&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;Renderer&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;redraw&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;nvim&lt;/span&gt;&lt;span class="o"&gt;|-----&amp;gt;+--------+&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt;    &lt;span class="o"&gt;|&amp;lt;-----+------+&lt;/span&gt;
+&lt;span class="o"&gt;+----+&lt;/span&gt;      &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;Window&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;resize&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;keyboard&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mouse&lt;/span&gt; &lt;span class="nf"&gt;event&lt;/span&gt;
+            &lt;span class="o"&gt;+------+&lt;/span&gt;
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;MainLoop&lt;/li&gt;
+&lt;li&gt;NvimMsgPackRPC Read-Dispatch Loop&lt;/li&gt;
+&lt;li&gt;RenderLoop(30FPS)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Sample&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;FullWindow&lt;/li&gt;
+&lt;li&gt;imgui と混在させる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210910&lt;/h2&gt;
+&lt;p&gt;それなりに動くようになった。
+key-logger や msgpack-rpc の通信ログを横に表示できるようにしたい。&lt;/p&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvimtexture/</guid><pubDate>Sat, 21 Aug 2021 15:00:00 GMT</pubDate></item><item><title>nvim frontend nvy</title><link>https://ousttrue.github.io/posts/2021/summer/nvy/</link><dc:creator>ousttrue</dc:creator><description>&lt;figure&gt;&lt;img src="https://ousttrue.github.io/posts/2021/summer/nvy.jpg"&gt;&lt;/figure&gt; &lt;p&gt;よさげなレポジトリを発見した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/RMichelsen/Nvy"&gt;https://github.com/RMichelsen/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;だいぶ前に作ろうとして頓挫した&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/nvim-dx"&gt;https://github.com/ousttrue/nvim-dx&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;の完成形。
+どこがうまくいかなかったのか忘れてしまったが。&lt;/p&gt;
+&lt;h3&gt;改造&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/Nvy"&gt;https://github.com/ousttrue/Nvy&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] RenderTarget に対して Nvim をレンダリングする&lt;/li&gt;
+&lt;li&gt;[x] nvim の IO を &lt;a href="https://think-async.com/Asio/#"&gt;https://think-async.com/Asio/#&lt;/a&gt; にのせる&lt;/li&gt;
+&lt;li&gt;[ ] imgui と合体する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210815&lt;/h2&gt;
+&lt;p&gt;MsgPack-RPC のバックエンドに昔作った&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/msgpack-rpc-asio"&gt;https://github.com/ousttrue/msgpack-rpc-asio&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;におきかえる。&lt;/p&gt;
+&lt;p&gt;さらに、これのシリアライザーを自前の &lt;a href="https://github.com/ousttrue/msgpackpp"&gt;https://github.com/ousttrue/msgpackpp&lt;/a&gt; におきかえる。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CMake 化&lt;/li&gt;
+&lt;li&gt;RPC を &lt;code&gt;c++20&lt;/code&gt; 化 (co_await)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;で、最初の nvim 初期化を&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;api_info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;co_await&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_get_api_info"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notity&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_set_var"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;"nvy"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;co_await&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_eval"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;"stdpath('config')"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// initialize&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;notify&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"nvim_ui_attach"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;on_message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;dispatcher&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;のように書けるようにして整理する。&lt;/p&gt;
+&lt;h2&gt;20210829&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] MsgPack-RPC のバックエンドを置きかえた&lt;/li&gt;
+&lt;li&gt;[x] logger に RPC の内容を JSON 化して表示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;だいたいリファクタリングが終わって改造しやすい状態になった。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] &lt;code&gt;&amp;lt;C-/&amp;gt;&lt;/code&gt; できるようにする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を実装できた。
+特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;case&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;""&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",["&amp;lt;C-/&amp;gt;"]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;h3&gt;修正が必要&lt;/h3&gt;
+&lt;p&gt;非control時に&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[2,"nvim_input",[""]]&lt;/code&gt; が送信される。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;case&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;VK_OEM_2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;GetKeyState&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;VK_CONTROL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="c1"&gt;// C-/&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;"/"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;なるほど。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ousttrue.github.io/posts/2021/summer/nvy/@/posts/2021/summer/nvimtexture.md"&gt;NvimTexture&lt;/a&gt; へ続く&lt;/p&gt;
+&lt;h2&gt;20210829  太字がずれる？&lt;/h2&gt;</description><category>msgpack</category><category>nvim</category><guid>https://ousttrue.github.io/posts/2021/summer/nvy/</guid><pubDate>Fri, 06 Aug 2021 15:00:00 GMT</pubDate></item><item><title>pyMsgPack</title><link>https://ousttrue.github.io/github/pymsgpack/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/ousttrue/pyMsgPack"&gt;https://github.com/ousttrue/pyMsgPack&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;alternative pure python msgpack implementation&lt;/p&gt;</description><category>msgpack</category><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/pymsgpack/</guid><pubDate>Mon, 25 Sep 2017 14:14:01 GMT</pubDate></item><item><title>C++でMessagePack-RPCを実装する</title><link>https://ousttrue.github.io/posts/2017/06/cpp11_rpc/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。&lt;/p&gt;
+&lt;h2&gt;基本設計&lt;/h2&gt;
+&lt;p&gt;MessagePack-RPCの仕様をおさらいすると以下の通り。&lt;/p&gt;
+&lt;p&gt;request&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[type, msgid, method, params]&lt;/span&gt;
+ &lt;span class="na"&gt;(0)   (int)  (str)   (array)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;response&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[type, msgid, error, result]&lt;/span&gt;
+ &lt;span class="na"&gt;(1)   (int)  (any)  (any)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;msgpackのバイト列を受け取って、msgpackのバイト列を返す関数として一般化する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;typedef&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;vector&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="kt"&gt;uint8_t&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="c1"&gt;// msgpackのバイト列を引数にとり、msgpackのバイト列を返す&lt;/span&gt;
+&lt;span class="k"&gt;typedef&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;procedurecall&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;任意の関数呼び出しからprocedurecallを作り出せるようにして、MessagePack-RPCシステムの部品として使えるようにする。
+簡単な例
+例として&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;static&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;をprocedurecallに変換してみる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;procedurecall&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;// request -&amp;gt; response ではなくparams -&amp;gt; result&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;](&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;// unpack args&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tuple&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;// call&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;// pack result&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_payload&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;int add(int, int)&lt;/code&gt; を &lt;code&gt;procedurecall&lt;/code&gt; に変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;procedurecall&lt;/code&gt; の使い方は以下の通り。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// register&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;proc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// call&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;make_tuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;proc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_payload&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// result&lt;/span&gt;
+&lt;span class="n"&gt;REQUIRE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;get_number&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;とりあえず動いたが、関数を増やすたびにこれだけのコードを記述するのはやってられませぬ。
+以下のような理想形を目指して作りこんでゆく。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;REQUIRE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpack_procedurecall&lt;/span&gt;&lt;span class="p"&gt;([](&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;lambda&lt;/code&gt; が動けば他も動くようにできるので、&lt;code&gt;lambda&lt;/code&gt; を第一に実装する。&lt;/p&gt;
+&lt;h2&gt;実装&lt;/h2&gt;
+&lt;p&gt;ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;make_procedurecall&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;F&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;R&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="kt"&gt;size_t&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;IS&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;procedurecall&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;_make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::*&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...)&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// template引数R, C, ASを受け付けるためのダミー&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;index_sequence&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IS&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// template引数ISを受け付けるためのダミー&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;// request -&amp;gt; response ではなくparams -&amp;gt; result&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;](&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;bytes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;// unpack args&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;tuple&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;// call&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IS&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)...);&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 可変長テンプレート引数を展開できる。ISと...が離れていることに注意&lt;/span&gt;
+
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;// pack result&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_payload&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;F&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;R&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;procedurecall&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;_make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::*&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...)&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// template引数R, C, ASを受け付けるためのダミー&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;_make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="k"&gt;decltype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="k"&gt;operator&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// lambdaの返り値と引数の型を次のテンプレートに渡す&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;index_sequence_for&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;{}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// std::get呼び出しのためにindex_sequenceを作る。&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="c1"&gt;//&lt;/span&gt;
+&lt;span class="c1"&gt;// あらゆる型のlambdaを受け付けるようにした&lt;/span&gt;
+&lt;span class="c1"&gt;//&lt;/span&gt;
+&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;F&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;procedurecall&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;_make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="k"&gt;decltype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="k"&gt;operator&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// lambdaの返り値と引数の型を次のテンプレートに渡す&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;msgpack_call&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;F&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;R&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;C&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;decltype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;_msgpack_call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;C&lt;/span&gt;&lt;span class="o"&gt;::*&lt;/span&gt;&lt;span class="p"&gt;)(&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...)&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// template引数R, C, ASを受けるためのダミー&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;proc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;rpc&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;make_procedurecall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;// call&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;make_tuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;...);&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 可変長テンプレート引数を展開できる&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;proc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;packer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_payload&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;// unpack result&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;msgpackpp&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;F&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;decltype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;msgpack_call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;F&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;AS&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 返り値の型はreturnから型推論&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;_msgpack_call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="k"&gt;decltype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="k"&gt;operator&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// lambdaの返り値と引数の型をテンプレート引数に渡す&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h2&gt;使う。&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;REQUIRE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;msgpack_call&lt;/span&gt;&lt;span class="p"&gt;([](&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;REQUIRE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;-1&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;msgpack_call&lt;/span&gt;&lt;span class="p"&gt;([](&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;valiadic template&lt;/code&gt; おそるべし。
+従来であれば、1引数、２引数・・・と引数の個数ごとに手作業でバージョンを増やさねばならなかったものが、わりとさくっと書けるな。&lt;/p&gt;</description><category>cpp</category><category>msgpack</category><guid>https://ousttrue.github.io/posts/2017/06/cpp11_rpc/</guid><pubDate>Fri, 02 Jun 2017 15:00:00 GMT</pubDate></item><item><title>Header-OnlyのMessagePack実装とmsgpack-rpc-asioの更新</title><link>https://ousttrue.github.io/posts/2017/05/headeronly_msgpack/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;車輪の再発明的だけどmessagepackのc++実装をまた作った。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/msgpackpp"&gt;https://github.com/ousttrue/msgpackpp&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;refrange&lt;/code&gt; と &lt;code&gt;osaru&lt;/code&gt; の知見を基に実装というか、編集した。
+実装のシンプルさと使いやすさを優先して、パフォーマンスと汎用性にあまり配慮していない。&lt;code&gt;refrange&lt;/code&gt; のAPIがダメダメなのを反省し、&lt;code&gt;osaru&lt;/code&gt; で &lt;code&gt;serializer/deserializer&lt;/code&gt; のレイヤーと &lt;code&gt;formatter/parser&lt;/code&gt; のレイヤーを分けた設計を踏襲。なかなかよいのではないか。で、本家の &lt;code&gt;messagepack&lt;/code&gt; を見たらバージョンが結構進んでいて、&lt;code&gt;c++11&lt;/code&gt; 版ならヘッダーオンリーあるよと書いてあった。あったのかー。知ってたような気もするが、カスタムのオレオレ車輪でいく。
+あと、ついでに &lt;code&gt;msgpackpp-rpc-asio&lt;/code&gt; も更新した。githubで地味に★をいただくので、微妙に需要があるらしい。今回の更新で、この前発見した &lt;code&gt;asio standalone&lt;/code&gt; を組み込んで &lt;code&gt;boost::test&lt;/code&gt; を &lt;code&gt;catch&lt;/code&gt; で置き換えて、 &lt;code&gt;boost::thread&lt;/code&gt; を &lt;code&gt;std::thead&lt;/code&gt; に置き換えるなどして、 &lt;code&gt;boost&lt;/code&gt; への依存を取り除いた。ちょっとした機能ならばヘッダオンリーなのが最近の潮流ですな。もう少し手を入れて&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;msgpack&lt;/code&gt; 部分を &lt;code&gt;msgpackpp&lt;/code&gt; で置き換え
+可変長テンプレート引数
+メッセージを &lt;code&gt;std::cout&lt;/code&gt; じゃなくて &lt;code&gt;plog&lt;/code&gt; に出力
+ヘッダオンリー&lt;/p&gt;
+&lt;p&gt;という感じにしようか。&lt;code&gt;websocketpp&lt;/code&gt; と組み合わせて使うのに便利な形にしたい。&lt;/p&gt;</description><category>cpp</category><category>msgpack</category><guid>https://ousttrue.github.io/posts/2017/05/headeronly_msgpack/</guid><pubDate>Sat, 27 May 2017 15:00:00 GMT</pubDate></item><item><title>msgpackpp</title><link>https://ousttrue.github.io/github/msgpackpp/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/ousttrue/msgpackpp"&gt;https://github.com/ousttrue/msgpackpp&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;msgpack parser &amp;amp; packer&lt;/p&gt;</description><category>c++</category><category>cpp</category><category>msgpack</category><category>repository</category><guid>https://ousttrue.github.io/github/msgpackpp/</guid><pubDate>Sat, 27 May 2017 09:34:56 GMT</pubDate></item><item><title>NMPUtil</title><link>https://ousttrue.github.io/github/nmputil/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/ousttrue/NMPUtil"&gt;https://github.com/ousttrue/NMPUtil&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;MsgPack for C#&lt;/p&gt;</description><category>cs</category><category>csharp</category><category>msgpack</category><category>repository</category><guid>https://ousttrue.github.io/github/nmputil/</guid><pubDate>Mon, 01 Sep 2014 00:20:15 GMT</pubDate></item><item><title>refrange</title><link>https://ousttrue.github.io/github/refrange/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/ousttrue/refrange"&gt;https://github.com/ousttrue/refrange&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Reimplment msgpack&lt;/p&gt;</description><category>c++</category><category>cpp</category><category>msgpack</category><category>repository</category><guid>https://ousttrue.github.io/github/refrange/</guid><pubDate>Thu, 13 Feb 2014 13:49:11 GMT</pubDate></item><item><title>tornado-msgpack</title><link>https://ousttrue.github.io/github/tornado-msgpack/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/ousttrue/tornado-msgpack"&gt;https://github.com/ousttrue/tornado-msgpack&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Yet another MessagePack RPC for Python&lt;/p&gt;</description><category>msgpack</category><category>python</category><category>repository</category><guid>https://ousttrue.github.io/github/tornado-msgpack/</guid><pubDate>Fri, 31 May 2013 00:35:57 GMT</pubDate></item><item><title>おれおれmsgpack-rpc-pythonを作る</title><link>https://ousttrue.github.io/posts/2013/05/31/msgpack-rpc-python/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;おれおれmsgpack-rpc-pythonを作る
+MsgPackRPCのpythonバインディング(クライアント側)が必要になったのでmsgpack-rpc-pythonを使ってみたのだが、
+GUI(pyqt)に載せて接続制御とエラーハンドリングを細やかに制御したいので俺俺で類似品を作ることにした。
+tonado-msgpackと名付けて取り合えず作業開始。
+https://github.com/ousttrue/tornado-msgpack
+msgpack-rpc-pythonのおかげでtornadoの存在を知ったのだがtornado.ioloopが見れば見るほどboost::asioっぽい。
+ということで、c++で作成中のmsgpack-rpc-asioのpython版のような感じのAPIにしてみた。
+以下の点を考慮している。&lt;/p&gt;
+&lt;p&gt;tornado.ioloopを隠さない
+tornado.ioloopをスレッドに乗せて回しっぱなしにする
+tornado.ioloopひとつで複数の接続を扱う
+dispatcherを乗せ換え易くする。
+接続ステータスの変化をコールバックで受け取る
+非同期リクエストのコールバックを早期にセットする
+TCP以外は考慮しない&lt;/p&gt;
+&lt;p&gt;プロジェクト作成
+tonado_msgpack/
+    setup.py
+    sample/
+        sample.py
+    tonado_msgpack&lt;/p&gt;
+&lt;p&gt;setup.py
+from distutils.core import setup&lt;/p&gt;
+&lt;p&gt;setup(
+    name='tonado_msgpack',
+    version='0.1',
+    py_modules=['tonado_msgpack'],
+    )&lt;/p&gt;
+&lt;p&gt;作業開始
+$ python setup.py develop --user&lt;/p&gt;
+&lt;p&gt;sample/sample.py&lt;/p&gt;
+&lt;h2&gt;!/usr/bin/env python&lt;/h2&gt;
+&lt;p&gt;import tornado_msgpack
+import tornado&lt;/p&gt;
+&lt;p&gt;if &lt;strong&gt;name&lt;/strong&gt;=="&lt;strong&gt;main&lt;/strong&gt;":
+    port=18080&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# &lt;span class="nv"&gt;dispatcher&lt;/span&gt;
+&lt;span class="nv"&gt;dispatcher&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;tornado_msgpack&lt;/span&gt;.&lt;span class="nv"&gt;Dispatcher&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+&lt;span class="nv"&gt;def&lt;/span&gt; &lt;span class="nv"&gt;add&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;a&lt;/span&gt;, &lt;span class="nv"&gt;b&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;a&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nv"&gt;b&lt;/span&gt;
+&lt;span class="nv"&gt;dispatcher&lt;/span&gt;.&lt;span class="nv"&gt;add_handler&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;add&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;, &lt;span class="nv"&gt;add&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+
+# &lt;span class="nv"&gt;server&lt;/span&gt;
+&lt;span class="nv"&gt;server_loop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;tornado&lt;/span&gt;.&lt;span class="nv"&gt;ioloop&lt;/span&gt;.&lt;span class="nv"&gt;IOLoop&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+&lt;span class="nv"&gt;def&lt;/span&gt; &lt;span class="nv"&gt;on_receive&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;msg&lt;/span&gt;, &lt;span class="nv"&gt;session&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:
+    &lt;span class="nb"&gt;result&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;dispatcher&lt;/span&gt;.&lt;span class="nv"&gt;dispatch&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;msg&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+    &lt;span class="nv"&gt;session&lt;/span&gt;.&lt;span class="nv"&gt;send_async&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;result&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;server&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;tornado_msgpack&lt;/span&gt;.&lt;span class="nv"&gt;Server&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;server_loop&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;server&lt;/span&gt;.&lt;span class="nv"&gt;listen&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;localhost&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;, &lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;server_thread&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;threading&lt;/span&gt;.&lt;span class="nv"&gt;Thread&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;target&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;lambda&lt;/span&gt; : &lt;span class="nv"&gt;server_loop&lt;/span&gt;.&lt;span class="nv"&gt;start&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt; &lt;span class="ss"&gt;)&lt;/span&gt;
+
+# &lt;span class="nv"&gt;clinet&lt;/span&gt;
+&lt;span class="nv"&gt;client_loop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;tornado&lt;/span&gt;.&lt;span class="nv"&gt;ioloop&lt;/span&gt;.&lt;span class="nv"&gt;IOLoop&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+&lt;span class="nv"&gt;client&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;tornado_msgpack&lt;/span&gt;.&lt;span class="nv"&gt;Client&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;client_loop&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;def&lt;/span&gt; &lt;span class="nv"&gt;on_status_changed&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;status&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:
+    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;status&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;clinet&lt;/span&gt;.&lt;span class="nv"&gt;attach_status_callback&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;on_status_changed&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;client&lt;/span&gt;.&lt;span class="k"&gt;connect&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;localhost&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;, &lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;clinet_thread&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;threading&lt;/span&gt;.&lt;span class="nv"&gt;Thread&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;target&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;lambda&lt;/span&gt; : &lt;span class="nv"&gt;client_loop&lt;/span&gt;.&lt;span class="nv"&gt;start&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt; &lt;span class="ss"&gt;)&lt;/span&gt;
+
+# &lt;span class="nv"&gt;request&lt;/span&gt;
+&lt;span class="nv"&gt;def&lt;/span&gt; &lt;span class="nv"&gt;on_receive&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;result&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;:
+    &lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;result&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+
+&lt;span class="nv"&gt;future&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;clinet&lt;/span&gt;.&lt;span class="nv"&gt;call_async_with_callback&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;on_receive&lt;/span&gt;, &lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;add&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;, &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;future&lt;/span&gt;.&lt;span class="nv"&gt;join&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+
+&lt;span class="nv"&gt;future&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;clinet&lt;/span&gt;.&lt;span class="nv"&gt;call_async_with_callback&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;on_receive&lt;/span&gt;, &lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;add&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;, &lt;span class="mi"&gt;1&lt;/span&gt;, &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;future&lt;/span&gt;.&lt;span class="nv"&gt;join&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+
+&lt;span class="nv"&gt;future&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;clinet&lt;/span&gt;.&lt;span class="nv"&gt;call_async_with_callback&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;on_receive&lt;/span&gt;, &lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;add&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;, &lt;span class="mi"&gt;1&lt;/span&gt;, &lt;span class="mi"&gt;2&lt;/span&gt;, &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;future&lt;/span&gt;.&lt;span class="nv"&gt;join&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+
+&lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;stop client...&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;client_loop&lt;/span&gt;.&lt;span class="nv"&gt;stop&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+&lt;span class="nv"&gt;clinet_thread&lt;/span&gt;.&lt;span class="nv"&gt;join&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+
+&lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;stop server...&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;server_loop&lt;/span&gt;.&lt;span class="nv"&gt;stop&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+&lt;span class="nv"&gt;server_thread&lt;/span&gt;.&lt;span class="nv"&gt;join&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;
+
+&lt;span class="nv"&gt;print&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="s"&gt;done&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;とりあえずこんな感じを予定。
+./sample/sample.pyでシンタックスエラーが出なくなるところまで確認。
+tornado_msgpackを順次実装していく。
+Tornado Reference - http://www.tornadoweb.org/en/stable/
+だいたい動くようになった。
+$ ./sample/sample
+connected
+&amp;lt;_MainThread(MainThread, started 140102020679424)&amp;gt;:send 9 bytes
+&lt;thread started&gt;:on_read
+&lt;thread started&gt;:send 48 bytes
+&lt;thread started&gt;:on_read
+on_receive:[1, 1, True, 'add() takes exactly 2 arguments (1 given)']
+&amp;lt;_MainThread(MainThread, started 140102020679424)&amp;gt;:send 10 bytes
+&lt;thread started&gt;:on_read
+&lt;thread started&gt;:send 5 bytes
+&lt;thread started&gt;:on_read
+on_receive:[1, 2, False, 3]
+&amp;lt;_MainThread(MainThread, started 140102020679424)&amp;gt;:send 11 bytes
+&lt;thread started&gt;:on_read
+&lt;thread started&gt;:send 59 bytes
+&lt;thread started&gt;:on_read
+on_receive:[1, 3, True, 'add() takes exactly 2 positional arguments (3 given)']
+stop client...
+stop server...
+done&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/thread&gt;&lt;/p&gt;
+&lt;p&gt;サーバースレッドのioloopと、クライアントスレッドのioloopが相互にやり取りしている感じでちゃんと動いている。&lt;/p&gt;</description><category>cpp</category><category>msgpack</category><guid>https://ousttrue.github.io/posts/2013/05/31/msgpack-rpc-python/</guid><pubDate>Thu, 30 May 2013 15:00:00 GMT</pubDate></item></channel></rss>

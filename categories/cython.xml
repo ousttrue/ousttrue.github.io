@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (cythonについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/cython.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>imgui の python バインディングをまた作る</title><link>https://ousttrue.github.io/posts/2021/winter/python_imgui/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;名付けて cydeer&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/cydeer"&gt;https://github.com/ousttrue/cydeer&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;python&lt;/code&gt;, &lt;code&gt;cython&lt;/code&gt;, &lt;code&gt;dear imgui&lt;/code&gt; の組み合わせで名前を付けようと思ったのだが、既に先人がいっぱいいて名前が被るので適当に決めた。🦌&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/HankiDesign/awesome-dear-imgui#languages"&gt;https://github.com/HankiDesign/awesome-dear-imgui#languages&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;最初、&lt;code&gt;DearPyGui&lt;/code&gt; のサイトが強そうだったので試そうと思ったのだけど用途が違いそうだった。
+次に、しばらく &lt;code&gt;pyimgui&lt;/code&gt; を使っていい感じだったので、 &lt;code&gt;docking&lt;/code&gt; ブランチ対応を見たら開発ブランチならば動いたので、自前ビルドを改造して使っていた。
+PR も送ってみたのだが、
+どうせなら自分で作ろうという機運が高まったので、作った。
+cydeer は pyOpenGL とともに使う &lt;code&gt;薄い&lt;/code&gt; ImGui ラッパーという路線である。
+&lt;code&gt;ctypes&lt;/code&gt; を併用することでポインタを直接扱う。 &lt;code&gt;camel case&lt;/code&gt; と &lt;code&gt;snake case&lt;/code&gt; の変換を含めて何も変えない。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;lib&lt;/th&gt;
+&lt;th&gt;binder&lt;/th&gt;
+&lt;th&gt;imgui&lt;/th&gt;
+&lt;th&gt;window &amp;amp; graphincs&lt;/th&gt;
+&lt;th&gt;コメント&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;(python)cydeer&lt;/td&gt;
+&lt;td&gt;cython + ctypes(generate using libclang.cindex )&lt;/td&gt;
+&lt;td&gt;imgui docking branch&lt;/td&gt;
+&lt;td&gt;glfw など + pyOpenGL でがんばる&lt;/td&gt;
+&lt;td&gt;可能な限りAPIの改変をしない。ポインタは ctypes で作る&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(python)pyimgui&lt;/td&gt;
+&lt;td&gt;cython&lt;/td&gt;
+&lt;td&gt;imgui&lt;/td&gt;
+&lt;td&gt;glfw など + pyOpenGL でがんばる&lt;/td&gt;
+&lt;td&gt;ポインタ引数(p_openなど)による返り値を、tuple による複値で表現&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(python)DearPyGui&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;DirectX11。python からアクセスできない？&lt;/td&gt;
+&lt;td&gt;imgui をラップして独自 API。python で OpenGL するという目的には使えぬ&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(c)cimgui&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;imgui を &lt;code&gt;extern C&lt;/code&gt; にラップしたもの。他言語バインド向け&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(rust)imgui-rs&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;builder パターンで Default 引数を代替&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;imgui ラップには、 &lt;code&gt;関数オーバーロード&lt;/code&gt; , &lt;code&gt;デフォルト引数&lt;/code&gt; , &lt;code&gt;メンバー関数&lt;/code&gt; という難所がある。
+要するに &lt;code&gt;c++&lt;/code&gt; 要素なのだけど、&lt;code&gt;c++&lt;/code&gt; 要素含めての imgui の使い勝手なので。各言語バインディングで悩ましいところです。
+たとえば、 &lt;code&gt;rust&lt;/code&gt; は関数オーバーロードやデフォルト引数が無いので API を変えてます。&lt;/p&gt;
+&lt;p&gt;C# とかでも、 &lt;code&gt;const ImVec2 pos&amp;amp; = ImVec2(0, 0)&lt;/code&gt; のような引数を解決するのは手間がかかったりする。
+DLLImport 定義に対するデフォルト引数では解決できないので、 C# 側で一時変数を作ってポインターを取得する必要がある。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;デフォルト引数&lt;/code&gt; は cython で普通に解決した。
+clang.cindex から値を取れれば難しくない。
+&lt;code&gt;メンバー関数&lt;/code&gt; は &lt;code&gt;ctypes&lt;/code&gt; に &lt;code&gt;cython&lt;/code&gt; のメソッドを定義して、 &lt;code&gt;self&lt;/code&gt; を &lt;code&gt;this pointer&lt;/code&gt; に cast して呼び出すコードを作った(ImGuiFontAtlas)。
+&lt;code&gt;関数オーバーロード&lt;/code&gt; は &lt;code&gt;cython&lt;/code&gt; でディスパッチするのはつらいので、&lt;code&gt;MenuItem_2&lt;/code&gt; のような suffix をつけて人間が選ぶようにした。&lt;/p&gt;
+&lt;p&gt;忘れていたが、もっとも問題になるのが &lt;code&gt;構造体の値渡し・返し&lt;/code&gt; だった(C++に限らない？)。
+&lt;code&gt;D言語&lt;/code&gt; , &lt;code&gt;rust&lt;/code&gt; ともにこれができない(vcのコンパイラと互換性がない？)ので注意が必要だった。コンパイルは通るが動作がおかしかったような。
+ImGui の ImVec2 を値返しする関数でヒットする。
+&lt;code&gt;cydeer&lt;/code&gt; は、 &lt;code&gt;cython&lt;/code&gt; を採用したので、&lt;code&gt;cython&lt;/code&gt; 関数の出口で python 型に入れ替えるだけである。&lt;/p&gt;
+&lt;p&gt;あと、 &lt;code&gt;cydeer&lt;/code&gt; は &lt;code&gt;pyi&lt;/code&gt; 標準装備でいい感じである(一部実際のpython型と齟齬があるが・・・)。&lt;/p&gt;
+&lt;h3&gt;実装上の課題&lt;/h3&gt;
+&lt;p&gt;cython の cimport の扱いがやっかいで、&lt;code&gt;imgui&lt;/code&gt;, &lt;code&gt;imgui.internal&lt;/code&gt; に分割しようとするとうまくいかなかった。
+&lt;code&gt;cydeer&lt;/code&gt; に関しては巨大な単一のモジュールで行くのが無難かもしれない。
+&lt;code&gt;internal&lt;/code&gt; やノードエディターとか追加するときに分けたいのだけど。&lt;/p&gt;
+&lt;p&gt;現状、Windows + python-3.10 しか試していない。
+Windows11 の wslg + wayland で動くようにしたい。&lt;/p&gt;</description><category>cython</category><category>imgui</category><category>libclang</category><category>python</category><guid>https://ousttrue.github.io/posts/2021/winter/python_imgui/</guid><pubDate>Sun, 19 Dec 2021 15:00:00 GMT</pubDate></item><item><title>libclang で 言語バインディングを作る</title><link>https://ousttrue.github.io/posts/2021/winter/cindex/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;今まで試作したものたち&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;(2019)&lt;a href="https://github.com/ousttrue/pycpptool"&gt;https://github.com/ousttrue/pycpptool&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pip install clang&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/posts/2019/python_clang/"&gt;pythonモジュール clang で C++ ヘッダーを変換する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;途中でデバッグが困難になった&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2020)&lt;a href="https://github.com/ousttrue/regenerator"&gt;https://github.com/ousttrue/regenerator&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;D&lt;/code&gt; + &lt;code&gt;lua&lt;/code&gt; (text template によるコード生成部)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2020)&lt;a href="https://github.com/ousttrue/ClangCaster"&gt;https://github.com/ousttrue/ClangCaster&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C#&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/ousttrue/items/d878ec97483cb8834793"&gt;libclangでWindowsKitsをDllImportするライブラリを作った(ている)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2020)&lt;a href="https://github.com/ousttrue/clalua"&gt;https://github.com/ousttrue/clalua&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C++&lt;/code&gt; + &lt;code&gt;lua&lt;/code&gt; (text template によるコード生成部)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2021)&lt;a href="https://github.com/ousttrue/frame_factory/tree/master/clanggen"&gt;https://github.com/ousttrue/frame_factory/tree/master/clanggen&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rust&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2021)&lt;a href="https://github.com/ousttrue/luajitffi/tree/master/clang/cdef"&gt;https://github.com/ousttrue/luajitffi/tree/master/clang/cdef&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/posts/2019/luajitffi/"&gt;libclang で luajit 向けの FFI を生成する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;imgui による cindex のパース結果のビューワーを作ってみたが動作が遅かった。&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/luajitffi/tree/master/clangffi"&gt;https://github.com/ousttrue/luajitffi/tree/master/clangffi&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/limgui/blob/master/samples/clang_viewer.lua"&gt;https://github.com/ousttrue/limgui/blob/master/samples/clang_viewer.lua&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ものによるのだけど、 &lt;code&gt;d3d11.h&lt;/code&gt; をパースしたりすると
+要素が数万とかになる巨大なツリーを構築するので練習に良い。
+同じものを作りすぎである。&lt;/p&gt;
+&lt;h3&gt;imgui.h&lt;/h3&gt;
+&lt;p&gt;限定的にだが &lt;code&gt;c++&lt;/code&gt; の機能を使っているので、言語によっては気持ちよくラップできない。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;関数オーバーロードとデフォルト引き数&lt;ul&gt;
+&lt;li&gt;mangling は libclang で対処できる&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rust&lt;/code&gt; などオーバーロードが無いものは厳しい。&lt;/li&gt;
+&lt;li&gt;あってもディスパッチするコードを生成するのが厳しい。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;const ImVec2 &amp;amp;pos = ImVec2(0, 0)&lt;/code&gt; みたいなのが厳しい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;フォント設定とかのメンバー関数&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C&lt;/code&gt; の呼び出し関数を用意する必要があるかもしれない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;d3d11.h&lt;/h3&gt;
+&lt;p&gt;COM の仮想関数テーブルを工夫すれば行ける。
+GC言語だとデストラクターの呼びだしが制御できないかも。&lt;/p&gt;
+&lt;h2&gt;cython&lt;/h2&gt;
+&lt;p&gt;最近、 &lt;code&gt;C&lt;/code&gt; のライブラリーを &lt;code&gt;cython&lt;/code&gt; でラップするのに着目している。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/seung-lab/DracoPy"&gt;https://github.com/seung-lab/DracoPy&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/pyimgui/pyimgui"&gt;https://github.com/pyimgui/pyimgui&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;練習に作ってみた。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/pymikktspace"&gt;https://github.com/ousttrue/pymikktspace&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;予定&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;cindex&lt;/code&gt; で &lt;code&gt;cython&lt;/code&gt; 部分の自動生成をやってみる。
+更に、 &lt;code&gt;.pyi&lt;/code&gt; を同時に生成すればコード補完の効くネイティブモジュールが作れるのでは。
+あと、 &lt;code&gt;cindex&lt;/code&gt; の使いかたについてのメモをまとめたい。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/cywrap"&gt;https://github.com/ousttrue/cywrap&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;imgui&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/cydeer"&gt;https://github.com/ousttrue/cydeer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;サブモジュールだけ cython にする&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/AshleySetter/HowToPackageCythonAndCppFuncs"&gt;https://github.com/AshleySetter/HowToPackageCythonAndCppFuncs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.py4u.net/discuss/175142"&gt;https://www.py4u.net/discuss/175142&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description><category>cython</category><category>libclang</category><category>python</category><guid>https://ousttrue.github.io/posts/2021/winter/cindex/</guid><pubDate>Fri, 03 Dec 2021 15:00:00 GMT</pubDate></item></channel></rss>

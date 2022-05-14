@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (linuxについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>0419-gentoo</title><link>https://ousttrue.github.io/posts/2022/0419-gentoo/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;Gentoo 構築&lt;/h2&gt;
+&lt;p&gt;久しぶりに gentoo の機運が高まったので入れてみた。
+先に &lt;code&gt;Ubuntu-20.04&lt;/code&gt; を入れておいて、後ろのパーティションに gentoo をインストールする作戦。
+Ubuntu と同じ &lt;code&gt;/home&lt;/code&gt; をマウントしてみたら &lt;code&gt;dotfiles&lt;/code&gt; に互換性が無かったのでやめた。
+わりと順調にインストールできた。
+ゆくゆくは wsl も gentoo に換装したいところじゃ。&lt;/p&gt;
+&lt;h3&gt;2022-05-05&lt;/h3&gt;
+&lt;p&gt;システムを壊してしもた。
+作りなおし。ついでに &lt;a href="https://wiki.gentoo.org/wiki/Btrfs"&gt;btffs&lt;/a&gt; やってみる。&lt;/p&gt;
+&lt;h3&gt;btrfs&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;/etc/fstab&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;/dev/sdb                /srv            btrfs           compress=zstd:9,relatime,rw     0 0
+&lt;/pre&gt;
+&lt;h3&gt;python-3.10&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;PYTHON_SINGLE_TARGET&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;6月くらいにデフォルトになる予定みたいだ。先にやってみた。&lt;/p&gt;
+&lt;p&gt;間違い。去年の6月に、 &lt;code&gt;Python-3.9&lt;/code&gt; がデフォルトになった。
+&lt;code&gt;Python-3.10&lt;/code&gt; は今のところ予定に無い。
+いろいろインストールできなくなったので、元に戻した。&lt;/p&gt;
+&lt;h3&gt;make.conf&lt;/h3&gt;
+&lt;p&gt;ここに貼っておこう。
+こいつを育てているようなものだし。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# These settings were set by the catalyst build script that automatically&lt;/span&gt;
+&lt;span class="c1"&gt;# built this stage.&lt;/span&gt;
+&lt;span class="c1"&gt;# Please consult /usr/share/portage/config/make.conf.example for a more&lt;/span&gt;
+&lt;span class="c1"&gt;# detailed example.&lt;/span&gt;
+&lt;span class="n"&gt;COMMON_FLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"-march=native -O2 -pipe"&lt;/span&gt;
+&lt;span class="n"&gt;CFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+&lt;span class="n"&gt;CXXFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+&lt;span class="n"&gt;FCFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+&lt;span class="n"&gt;FFLAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"${COMMON_FLAGS}"&lt;/span&gt;
+
+&lt;span class="c1"&gt;# NOTE: This stage was built with the bindist Use flag enabled&lt;/span&gt;
+&lt;span class="n"&gt;PORTDIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"/var/db/repos/gentoo"&lt;/span&gt;
+&lt;span class="n"&gt;DISTDIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"/var/cache/distfiles"&lt;/span&gt;
+&lt;span class="n"&gt;PKGDIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"/var/cache/binpkgs"&lt;/span&gt;
+
+&lt;span class="n"&gt;USE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"X sixel truetype vim-syntax jpeg png python fontforge cjk alsa &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="s2"&gt;     pulseaudio mp3 dbus opengl ffmpeg mad mpd elogind gtk"&lt;/span&gt;
+&lt;span class="n"&gt;INPUT_DEVICES&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"evdev libinput synaptics"&lt;/span&gt;
+&lt;span class="c1"&gt;#VIDEO_CARDS="nouveau"&lt;/span&gt;
+&lt;span class="n"&gt;VIDEO_CARDS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"nvidia"&lt;/span&gt;
+&lt;span class="n"&gt;ABI_X86&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"64"&lt;/span&gt;
+
+&lt;span class="c1"&gt;# This sets the language of build output to English.&lt;/span&gt;
+&lt;span class="c1"&gt;# Please keep this setting intact when reporting bugs.&lt;/span&gt;
+&lt;span class="n"&gt;LC_MESSAGES&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"C"&lt;/span&gt;
+
+&lt;span class="n"&gt;MAKEOPTS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"-j6"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;boot&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;refind&lt;/code&gt; を試してみた。
+先に、Ubuntu の方でインストールして &lt;code&gt;gentoo&lt;/code&gt; でエントリーだけ増やした。
+&lt;code&gt;grub2&lt;/code&gt; より設定が簡単だと思った。
+情報は少なめ。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/boot/efi/EFI/refind/refind.conf&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# rootの指定が必要 &lt;/span&gt;
+&lt;span class="n"&gt;menuentry&lt;/span&gt; &lt;span class="n"&gt;Gentoo&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;icon&lt;/span&gt; &lt;span class="n"&gt;EFI&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;refind&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;icons&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;os_gentoo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;png&lt;/span&gt;
+    &lt;span class="n"&gt;loader&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;EFI&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;vmlinuz&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.15&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;
+    &lt;span class="n"&gt;initrd&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;EFI&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;initramfs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.15&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gentoo&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;img&lt;/span&gt;
+    &lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="s2"&gt;"root=/dev/sda4"&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;起動時に自動検索と設定に記述したエントリが出てくるので、&lt;code&gt;-&lt;/code&gt; キーで隠すと見ためがすっきりする。&lt;/p&gt;
+&lt;h3&gt;xorg&lt;/h3&gt;
+&lt;p&gt;なんとなくできた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ startx -- vt1
+&lt;/pre&gt;
+&lt;p&gt;としないとエラーになる。
+&lt;code&gt;/etc/X11&lt;/code&gt; は作らなくても動いた。&lt;/p&gt;
+&lt;p&gt;いつもどおりに &lt;code&gt;openbox&lt;/code&gt;, &lt;code&gt;tint2&lt;/code&gt;, &lt;code&gt;PCManFM&lt;/code&gt;, &lt;code&gt;conky&lt;/code&gt; という感じだが、今回は新型の &lt;code&gt;wezterm&lt;/code&gt; がある。&lt;/p&gt;
+&lt;h3&gt;yaft&lt;/h3&gt;
+&lt;p&gt;nerdfonts 入りの bdffont を作りたいのだが未だ。
+mlterm-fb や kmscon も試してみたのだがうまく動かなかった。&lt;/p&gt;
+&lt;h3&gt;wayland&lt;/h3&gt;
+&lt;p&gt;TODO:&lt;/p&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2022/0419-gentoo/</guid><pubDate>Tue, 19 Apr 2022 15:00:00 GMT</pubDate></item><item><title>GentooでX11を設定する</title><link>https://ousttrue.github.io/posts/2017/gentoo_xorg/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;GentooでX11を設定する&lt;/h2&gt;
+&lt;p&gt;デスクトップの構築メモ。&lt;/p&gt;
+&lt;p&gt;xorg-server&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://wiki.gentoo.org/wiki/Xorg/Guide"&gt;https://wiki.gentoo.org/wiki/Xorg/Guide&lt;/a&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;/etc/portage/make.conf
+INPUT_DEVICE="libinput"
+VIDEO_CARDS="radeon"
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;# emerge -av xorg-server
+````
+
+## xのアプリを入れる
+
+```shell
+$ startx
+&lt;/pre&gt;
+&lt;p&gt;とすると何もないのですぐに終わってしまう。
+古のアプリを入れてみる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# emerge -av twm xclock xterm 
+&lt;/pre&gt;
+&lt;p&gt;動作を確認できた。&lt;/p&gt;
+&lt;h3&gt;Plasma5&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://wiki.gentoo.org/wiki/KDE/Plasma_5_upgrade"&gt;https://wiki.gentoo.org/wiki/KDE/Plasma_5_upgrade&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.gentoo.org/wiki/KDE#Plasma"&gt;https://wiki.gentoo.org/wiki/KDE#Plasma&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;eselect profile list&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;Available profile symlink targets:
+  [1]   default/linux/amd64/13.0 *
+  [2]   default/linux/amd64/13.0/selinux
+  [3]   default/linux/amd64/13.0/desktop
+  [4]   default/linux/amd64/13.0/desktop/gnome
+  [5]   default/linux/amd64/13.0/desktop/gnome/systemd
+  [6]   default/linux/amd64/13.0/desktop/plasma
+  [7]   default/linux/amd64/13.0/desktop/plasma/systemd
+  [8]   default/linux/amd64/13.0/developer
+  [9]   default/linux/amd64/13.0/no-multilib
+  [10]  default/linux/amd64/13.0/systemd
+  [11]  default/linux/amd64/13.0/x32
+  [12]  hardened/linux/amd64
+  [13]  hardened/linux/amd64/selinux
+  [14]  hardened/linux/amd64/no-multilib
+  [15]  hardened/linux/amd64/no-multilib/selinux
+  [16]  hardened/linux/amd64/x32
+  [17]  hardened/linux/musl/amd64
+  [18]  hardened/linux/musl/amd64/x32
+  [19]  default/linux/uclibc/amd64
+  [20]  hardened/linux/uclibc/amd64
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;[6]   default/linux/amd64/13.0/desktop/plasma&lt;/code&gt; を採用する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# eselect profile set 6
+# emerge --ask --changed-use --newrepo --deep world
+# emerge --ask kde-plasma/plasma-meta
+&lt;/pre&gt;
+&lt;h3&gt;Widgets&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;# emerge --ask kde-plasma/kdeplasma-addons
+&lt;/pre&gt;
+&lt;h3&gt;Apps&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;# # 時間かかる
+# emerge -av kde-apps/kdecore-meta
+
+# emerge -av kde-apps/kdemultimedia-meta
+&lt;/pre&gt;
+&lt;h3&gt;xdm設定&lt;/h3&gt;
+&lt;p&gt;起動時に自動でXのログイン画面が起動するようにする&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# rc-update add xdm default
+# vim /etc/conf.d/xdm
+sddm
+
+# /etc/init.d/xdm restart
+&lt;/pre&gt;
+&lt;h3&gt;Windows上にX-Server&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://sourceforge.net/projects/vcxsrv/"&gt;https://sourceforge.net/projects/vcxsrv/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.archlinuxjp.org/index.php/SDDM"&gt;https://wiki.archlinuxjp.org/index.php/SDDM&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;SDDMはXDMCPサポートは無い？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://wiki.gentoo.org/wiki/Display_manager"&gt;https://wiki.gentoo.org/wiki/Display_manager&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;LightDMに乗り換え&lt;/h3&gt;
+&lt;p&gt;VNC&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://wiki.gentoo.org/wiki/TigerVNC"&gt;https://wiki.gentoo.org/wiki/TigerVNC&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;日本語フォント&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;# emerge --ask noto
+# emerge --ask Ricty
+&lt;/pre&gt;
+&lt;h3&gt;日本語入力&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;# emerge -av fcitx-anthy
+# emerge -av kcm-fcitx
+&lt;/pre&gt;
+&lt;p&gt;.bash_profile&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;export&lt;/span&gt; &lt;span class="n"&gt;GTK_IM_MODULE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;fcitx&lt;/span&gt;
+&lt;span class="k"&gt;export&lt;/span&gt; &lt;span class="n"&gt;QT_IM_MODULE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;fcitx&lt;/span&gt;
+&lt;span class="k"&gt;export&lt;/span&gt; &lt;span class="n"&gt;XMODIFIERS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;im&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;fcitx&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;alsa&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ aplay -l
+**** List of PLAYBACK Hardware Devices ****
+card &lt;span class="m"&gt;0&lt;/span&gt;: HDMI &lt;span class="o"&gt;[&lt;/span&gt;HDA ATI HDMI&lt;span class="o"&gt;]&lt;/span&gt;, device &lt;span class="m"&gt;3&lt;/span&gt;: HDMI &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;HDMI &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+  Subdevices: &lt;span class="m"&gt;1&lt;/span&gt;/1
+  Subdevice &lt;span class="c1"&gt;#0: subdevice #0&lt;/span&gt;
+card &lt;span class="m"&gt;1&lt;/span&gt;: Generic &lt;span class="o"&gt;[&lt;/span&gt;HD-Audio Generic&lt;span class="o"&gt;]&lt;/span&gt;, device &lt;span class="m"&gt;0&lt;/span&gt;: ALC887-VD Analog &lt;span class="o"&gt;[&lt;/span&gt;ALC887-VD Analog&lt;span class="o"&gt;]&lt;/span&gt;
+  Subdevices: &lt;span class="m"&gt;1&lt;/span&gt;/1
+  Subdevice &lt;span class="c1"&gt;#0: subdevice #0&lt;/span&gt;
+card &lt;span class="m"&gt;1&lt;/span&gt;: Generic &lt;span class="o"&gt;[&lt;/span&gt;HD-Audio Generic&lt;span class="o"&gt;]&lt;/span&gt;, device &lt;span class="m"&gt;1&lt;/span&gt;: ALC887-VD Digital &lt;span class="o"&gt;[&lt;/span&gt;ALC887-VD Digital&lt;span class="o"&gt;]&lt;/span&gt;
+  Subdevices: &lt;span class="m"&gt;1&lt;/span&gt;/1
+  Subdevice &lt;span class="c1"&gt;#0: subdevice #0&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;3番目のALC887-VD Digitalに出力するように設定&lt;/p&gt;
+&lt;p&gt;/etc/asound.conf&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;defaluts.pcm.card 1
+defaults.pcm.device 1
+defaults.ctl.card 1
+
+pcm.!default {
+    type plug
+    slave.pcm "hw:1,1"
+}
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;# rc-update add alsasound boot
+&lt;/pre&gt;
+&lt;h3&gt;browser&lt;/h3&gt;
+&lt;p&gt;ビルド時間長いのでバイナリを入れとく&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# emerge -av google-chrome
+# emerge -av firefox-bin
+&lt;/pre&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2017/gentoo_xorg/</guid><pubDate>Mon, 04 Sep 2017 15:00:00 GMT</pubDate></item><item><title>久しぶりにGentooインストール</title><link>https://ousttrue.github.io/posts/2017/gentoo_install/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Linux成分が不足してきたので久しぶりにデスクトップを構築してみる。&lt;/p&gt;
+&lt;p&gt;ISO入手からUEFI bootのUSBメモリ作成&lt;/p&gt;
+&lt;p&gt;SystemRescueCdがよい
+Rufasで起動するUSBメモリを作成する&lt;/p&gt;
+&lt;p&gt;パーティション構成とターゲットシステムの種類をGPT UEFIコンピュータ用のパーティション構成を選択するべし&lt;/p&gt;
+&lt;p&gt;起動
+USBメモリを差し込んでPCを起動し、delキーでUEFI画面に入る。
+UEFIの起動メニューからUSBメモリを選択してSystemRescueCdを起動する。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;efibootmgr # UEFIモードで起動したか確認
+passwd # sshログイン用のパスワードを決める
+startx
+ifconfig # ip確認&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Handbook(Preparing the disks)&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks&lt;/p&gt;
+&lt;h2&gt;parted /dev/sda&lt;/h2&gt;
+&lt;p&gt;(parted) print
+Model: ATA ST3500418AS (scsi)
+Disk /dev/sda: 476940MiB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:&lt;/p&gt;
+&lt;p&gt;Number  Start    End        Size       File system     Name     Flags
+ 1      1.00MiB  129MiB     128MiB                     efi      boot, esp
+ 2      129MiB   641MiB     512MiB     linux-swap(v1)  primary
+ 3      641MiB   102401MiB  101760MiB                  gentoo&lt;/p&gt;
+&lt;h2&gt;mkswap /dev/sda2&lt;/h2&gt;
+&lt;h2&gt;swapon /dev/sda2&lt;/h2&gt;
+&lt;h2&gt;mkfs.ext4/dev/sda3&lt;/h2&gt;
+&lt;h2&gt;mount /dev/sda3 /mnt/gentoo&lt;/h2&gt;
+&lt;h2&gt;mkfs.vfat /dev/sda1&lt;/h2&gt;
+&lt;h2&gt;mkdir /mnt/gentoo/boot&lt;/h2&gt;
+&lt;h2&gt;mount /dev/sda1 /mnt/gentoo/boot&lt;/h2&gt;
+&lt;p&gt;Installing the Gentoo installation files
+clock設定。&lt;/p&gt;
+&lt;h2&gt;ntpd -q -g&lt;/h2&gt;
+&lt;p&gt;Stage3のdownloadと解凍&lt;/p&gt;
+&lt;h2&gt;cd /mnt/gentoo&lt;/h2&gt;
+&lt;h2&gt;wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/autobuilds/20170831/stage3-amd64-20170831.tar.bz2&lt;/h2&gt;
+&lt;h2&gt;tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner&lt;/h2&gt;
+&lt;p&gt;portage設定&lt;/p&gt;
+&lt;h2&gt;nano -w /mnt/gentoo/etc/portage/make.conf&lt;/h2&gt;
+&lt;p&gt;CFLAGS="-march=native -O2 -pipe"&lt;/p&gt;
+&lt;h2&gt;Use the same settings for both variables&lt;/h2&gt;
+&lt;p&gt;CXXFLAGS="${CFLAGS}"&lt;/p&gt;
+&lt;p&gt;MAKEOPTS="-j5" # 4コアなので&lt;/p&gt;
+&lt;p&gt;Installing the Gentoo base system&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base&lt;/p&gt;
+&lt;p&gt;mirror設定
+日本のサーバーを選択&lt;/p&gt;
+&lt;h2&gt;mirrorselect -i -o &amp;gt;&amp;gt; /mnt/gentoo/etc/portage/make.conf&lt;/h2&gt;
+&lt;p&gt;repository設定
+ここよくわからぬ&lt;/p&gt;
+&lt;h2&gt;mkdir /mnt/gentoo/etc/portage/repos.conf&lt;/h2&gt;
+&lt;h2&gt;cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf&lt;/h2&gt;
+&lt;p&gt;chroot準備&lt;/p&gt;
+&lt;h2&gt;cp -L /etc/resolv.conf /mnt/gentoo/etc/&lt;/h2&gt;
+&lt;h2&gt;mount -t proc /proc /mnt/gentoo/proc&lt;/h2&gt;
+&lt;h2&gt;mount --rbind /sys /mnt/gentoo/sys&lt;/h2&gt;
+&lt;h2&gt;mount --make-rslave /mnt/gentoo/sys&lt;/h2&gt;
+&lt;h2&gt;mount --rbind /dev /mnt/gentoo/dev&lt;/h2&gt;
+&lt;h2&gt;mount --make-rslave /mnt/gentoo/dev&lt;/h2&gt;
+&lt;p&gt;chroot&lt;/p&gt;
+&lt;h2&gt;chroot /mnt/gentoo /bin/bash&lt;/h2&gt;
+&lt;h2&gt;source /etc/profile&lt;/h2&gt;
+&lt;h2&gt;export PS1="(chroot) $PS1"&lt;/h2&gt;
+&lt;p&gt;(chroot) livecd / #&lt;/p&gt;
+&lt;p&gt;構築&lt;/p&gt;
+&lt;h2&gt;emerge-webrsync&lt;/h2&gt;
+&lt;h2&gt;eselect news read&lt;/h2&gt;
+&lt;h2&gt;emerge --ask --update --deep --newuse @world&lt;/h2&gt;
+&lt;p&gt;profile選択は後で起動するようになってからやればいいのでここではやらない。
+timezone。&lt;/p&gt;
+&lt;h2&gt;echo "Asia/Tokyo" &amp;gt; /etc/timezone&lt;/h2&gt;
+&lt;h2&gt;emerge --config sys-libs/timezone-data&lt;/h2&gt;
+&lt;p&gt;nanoでなくてvimを使いたいので入れとく。&lt;/p&gt;
+&lt;h2&gt;emerge -av vim&lt;/h2&gt;
+&lt;p&gt;locale。日本語を有効にして、システムはen_us.UTF-8に。&lt;/p&gt;
+&lt;h2&gt;vim /etc/locale.gen&lt;/h2&gt;
+&lt;p&gt;en_US.UTF-8 UTF-8
+ja_JP.EUC-JP EUC-JP
+ja_JP.UTF-8 UTF-8&lt;/p&gt;
+&lt;h2&gt;locale-gen&lt;/h2&gt;
+&lt;h2&gt;eselect locale list&lt;/h2&gt;
+&lt;p&gt;Available targets for the LANG variable:
+  [1]   C
+  [2]   en_US.utf8 *
+  [3]   ja_JP
+  [4]   ja_JP.eucjp
+  [5]   ja_JP.ujis
+  [6]   ja_JP.utf8
+  [7]   japanese
+  [8]   japanese.euc
+  [9]   POSIX
+  [ ]   (free form)&lt;/p&gt;
+&lt;p&gt;Configuring the Linux kernel&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel&lt;/p&gt;
+&lt;p&gt;source&lt;/p&gt;
+&lt;h2&gt;emerge --ask sys-kernel/gentoo-sources&lt;/h2&gt;
+&lt;p&gt;genkernel
+bootパーティションは分けなかった。&lt;/p&gt;
+&lt;h2&gt;emerge --ask sys-kernel/genkernel&lt;/h2&gt;
+&lt;h2&gt;genkernel all # 長時間かかる&lt;/h2&gt;
+&lt;h2&gt;emerge --ask sys-kernel/linux-firmware&lt;/h2&gt;
+&lt;p&gt;Configuring the system&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/System&lt;/p&gt;
+&lt;p&gt;/etc/fstab
+/dev/sda3               /               ext4            noatime         0 1&lt;/p&gt;
+&lt;h2&gt;EFI。EFI起動するときに使ったデバイスでないといかん&lt;/h2&gt;
+&lt;h2&gt;/dev/sda1              /boot           vfat            noatime         0 1&lt;/h2&gt;
+&lt;p&gt;/dev/sdb2               /boot           vfat            noatime         0 1&lt;/p&gt;
+&lt;p&gt;/dev/cdrom              /mnt/cdrom      auto            noauto,ro       0 0
+/dev/sda2               none            swap            sw              0 0&lt;/p&gt;
+&lt;p&gt;network&lt;/p&gt;
+&lt;h2&gt;vim /etc/conf.d/hostname&lt;/h2&gt;
+&lt;h2&gt;vim /etc/conf.d/net&lt;/h2&gt;
+&lt;p&gt;config_eth0="192.168.0.2 netmask 255.255.255.0 brd 192.168.0.255"
+routes_eth0="default via 192.168.0.1"&lt;/p&gt;
+&lt;h2&gt;emerge --ask --noreplace net-misc/netifrc&lt;/h2&gt;
+&lt;h2&gt;cd /etc/init.d&lt;/h2&gt;
+&lt;h2&gt;ln -s net.lo net.eth0&lt;/h2&gt;
+&lt;h2&gt;rc-update add net.eth0 default&lt;/h2&gt;
+&lt;p&gt;root password&lt;/p&gt;
+&lt;h2&gt;root passwd&lt;/h2&gt;
+&lt;p&gt;Installing system tools&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Tools&lt;/p&gt;
+&lt;p&gt;logger&lt;/p&gt;
+&lt;h2&gt;emerge --ask app-admin/sysklogd&lt;/h2&gt;
+&lt;h2&gt;rc-update add sysklogd default&lt;/h2&gt;
+&lt;p&gt;cron&lt;/p&gt;
+&lt;h2&gt;emerge --ask sys-process/cronie&lt;/h2&gt;
+&lt;h2&gt;rc-update add cronie default&lt;/h2&gt;
+&lt;p&gt;sshd&lt;/p&gt;
+&lt;h2&gt;rc-update add sshd default&lt;/h2&gt;
+&lt;p&gt;Configuring the bootloader&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Bootloader&lt;/p&gt;
+&lt;p&gt;efibootmgrではまる&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/EFI_stub_kernel
+https://wiki.gentoo.org/wiki/Efibootmgr&lt;/p&gt;
+&lt;h2&gt;emerge --ask sys-boot/efibootmgr&lt;/h2&gt;
+&lt;h2&gt;mkdir -p /boot/efi/boot&lt;/h2&gt;
+&lt;h2&gt;cp /boot/kernel-genkernel-x86_64-4.12.5-gentoo /boot/efi/boot/bootx64.efi&lt;/h2&gt;
+&lt;h2&gt;efibootmgr -c -d /dev/sda -p 1 -L "Gentoo" -l "\efi\boot\bootx64.efi" initrd='\initramfs-genkernel-x86_64-4.12.5-gentoo'&lt;/h2&gt;
+&lt;p&gt;EFI variables are not supported on this system.&lt;/p&gt;
+&lt;p&gt;ぐぬぬ。&lt;/p&gt;
+&lt;h2&gt;mount | grep efivars&lt;/h2&gt;
+&lt;h2&gt;mount -t efivarfs efivarfs /sys/firmware/efi/efivars&lt;/h2&gt;
+&lt;p&gt;mount: mount point /sys/firmware/efi/efivars does not exist&lt;/p&gt;
+&lt;p&gt;EFIモードになっていないぽい？
+UEFI軌道のusbメモリの作成ができていない？
+minimal.isoじゃなくてlivedvd.isoで起動して続きからやってみる。&lt;/p&gt;
+&lt;p&gt;SystemRescueCd&lt;/p&gt;
+&lt;p&gt;efiがリードオンリー&lt;/p&gt;
+&lt;h2&gt;efibootmgr -c -d /dev/sdb -p 2 -L "Gentoo" -l "\efi\gentoo\kernel-genkernel-x86_64-4.12.5-gentoo" initrd='\efi\gentoo\initramfs-genkernel-x86_64-4.12.5-gentoo'&lt;/h2&gt;
+&lt;p&gt;Could not prepare Boot variable: Read-only file system&lt;/p&gt;
+&lt;h2&gt;mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime&lt;/h2&gt;
+&lt;p&gt;https://wiki.archlinuxjp.org/index.php/EFISTUB&lt;/p&gt;
+&lt;h2&gt;efibootmgr -c -d /dev/sdb -p 2 -L "Gentoo" -l "/EFI/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo" -u "root=/dev/sda3 rw initrd=/EFI/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo"&lt;/h2&gt;
+&lt;p&gt;BootCurrent: 000C
+Timeout: 0 seconds
+BootOrder: 0001,0000,000C,000D,0008,0009
+Boot0000&lt;em&gt; Windows Boot Manager
+Boot0008&lt;/em&gt; CD/DVD Drive
+Boot0009&lt;em&gt; Hard Drive
+Boot000C&lt;/em&gt; UEFI: Sony Storage Media PMAP
+Boot000D&lt;em&gt; ubuntu
+Boot0001&lt;/em&gt; Gentoo&lt;/p&gt;
+&lt;p&gt;しかし、起動するとカーネルパニック。うまくいかぬ。
+GRUB2のシェルから起動&lt;/p&gt;
+&lt;p&gt;https://jp.linux.com/news/linuxcom-exclusive/418274-lco20140625&lt;/p&gt;
+&lt;p&gt;SystemRescueCdの起動時のgrubメニューでcを押してgrubのシェルに入る。
+grub&amp;gt; ls (hd2,gpt2)/
+efi
+grub&amp;gt; set root=(hd2,gpt2)
+grub&amp;gt; linux /efi/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo root=/dev/sda3
+grub&amp;gt; initrd /efi/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo&lt;/p&gt;
+&lt;p&gt;起動できた。カーネルパニックになるのはブートパラメーターの与え方が間違っているぽい。
+efibootmgr
+うまくいった手順。
+-uでカーネルパラメーターを指定する？&lt;/p&gt;
+&lt;h2&gt;mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime&lt;/h2&gt;
+&lt;h2&gt;efibootmgr -c -d /dev/sdb -p 2 -L "Gentoo" -l "/EFI/gentoo/kernel-genkernel-x86_64-4.12.5-gentoo1" -u "root=/dev/sda3 rw initrd=/EFI/gentoo/initramfs-genkernel-x86_64-4.12.5-gentoo"&lt;/h2&gt;
+&lt;p&gt;なんとか起動。
+Finalizing&lt;/p&gt;
+&lt;p&gt;https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Finalizing&lt;/p&gt;
+&lt;p&gt;eth0の修正
+net.eth0で起動するようにenp3s0を修正する。
+/etc/udev/rules.d/50-ether.rules
+SUBSYSTEM=="net", ATTR{address}=="XX:XX:XX:XX:XX:XX", NAME="eth0"&lt;/p&gt;
+&lt;h2&gt;udevadm test /sys/class/net/enp3s0&lt;/h2&gt;
+&lt;p&gt;changing net interface name from 'enp3s0' to 'eth0'&lt;/p&gt;
+&lt;h2&gt;/etc/init.d/net.eth0 start&lt;/h2&gt;
+&lt;h2&gt;ping www.google.com&lt;/h2&gt;
+&lt;p&gt;...&lt;/p&gt;
+&lt;p&gt;user追加&lt;/p&gt;
+&lt;h2&gt;useradd -m -G users,wheel,audio -s /bin/bash larry&lt;/h2&gt;
+&lt;h2&gt;passwd larry&lt;/h2&gt;
+&lt;p&gt;sshで外部から新しく作ったユーザーでアクセスできることを確認。
+shell設定
+/etc/inputrc
+set bell-style none&lt;/p&gt;
+&lt;p&gt;"\C-n":history-search-forward
+"\C-p":history-search-backward&lt;/p&gt;
+&lt;p&gt;完成
+リモートからsshログインできるところまでできた。
+efibootmgr周りがなんかドキュメントが間違っている気がするが誰も使っていないのであろうか。
+その他
+追加インストールメモ。
+eix
+USE=sqlite&lt;/p&gt;
+&lt;h2&gt;emerge -av eix&lt;/h2&gt;
+&lt;p&gt;/etc/cron.daily&lt;/p&gt;
+&lt;p&gt;eix-sync&lt;/p&gt;
+&lt;p&gt;cpuflag&lt;/p&gt;
+&lt;h2&gt;emerge -av app-portage/cpuid2cpuflags&lt;/h2&gt;
+&lt;p&gt;$ cpuinfo2cpuflags-x86
+CPU_FLAGS_X86="aes avx fma3 fma4 mmx mmxext pclmul popcnt sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3 xop"&lt;/p&gt;
+&lt;p&gt;ntp&lt;/p&gt;
+&lt;h2&gt;emerge -av ntp&lt;/h2&gt;
+&lt;h2&gt;rc-update add ntpd default&lt;/h2&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2017/gentoo_install/</guid><pubDate>Sun, 03 Sep 2017 15:00:00 GMT</pubDate></item><item><title>Windows Creators UPDATEが来たしWSL環境を整備</title><link>https://ousttrue.github.io/posts/2017/04/wsl/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Windows SubSystem for Linux
+わりとよくなっていそうな感じなので使ってみる。&lt;/p&gt;
+&lt;p&gt;wsltty導入
+minttyにwslビルド(wslbridge同梱)という素敵インストーラが提供されていた。
+インストーラーを実行したらショートカットができる。片方のショートカットの末尾に”–login”を追加して、”~/.profile”が実行されるようにした。
+%LOCALAPPDATA%\wsltty\bin\mintty.exe --wsl -o Locale=C -o Charset=UTF-8 /bin/wslbridge -C~ -t /bin/bash --login&lt;/p&gt;
+&lt;p&gt;https://github.com/mintty/wsltty&lt;/p&gt;
+&lt;p&gt;.profile
+コメントイン
+umask 022&lt;/p&gt;
+&lt;p&gt;inputrc
+"\C-n":history-search-forward
+"\C-p":history-search-backward
+set bell-style none&lt;/p&gt;
+&lt;p&gt;.tmux.conf
+set -g prefix C-l
+bind C-l send-prefix
+unbind C-b
+set -sg escape-time 1
+bind r source-file ~/.tmux.conf \; display "Reloaded!"&lt;/p&gt;
+&lt;p&gt;set-option -g default-terminal screen-256color
+set -g terminal-overrides 'xterm:colors=256'&lt;/p&gt;
+&lt;p&gt;setw -g mode-keys vi&lt;/p&gt;
+&lt;p&gt;vim&lt;/p&gt;
+&lt;p&gt;dein.vimによるプラグイン管理のマイベストプラクティス&lt;/p&gt;
+&lt;p&gt;dein
+$ curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &amp;gt; installer.sh
+$ sh installer.sh ~/.cache/dein
+$ mkdir -p ~/.config/nvim&lt;/p&gt;
+&lt;p&gt;~/.config/nvim/dein.toml
+[[plugins]]
+repo = 'Shougo/dein.vim'&lt;/p&gt;
+&lt;p&gt;[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
+repo = 'osyo-manga/vim-precious'
+depends = ['context_filetype.vim']&lt;/p&gt;
+&lt;p&gt;[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
+repo = 'Shougo/context_filetype.vim'&lt;/p&gt;
+&lt;p&gt;[[plugins]] # toml syntax
+repo = 'cespare/vim-toml'
+on_ft = 'toml'&lt;/p&gt;
+&lt;p&gt;[[plugins]] # カラースキーマ
+repo = 'w0ng/vim-hybrid'
+hook_add = '''
+set background=dark
+" colorscheme 設定は source 後に行う必要があるので VimEnter で行う。
+" 但し Colorscheme イベントの発生が抑制されないよう nented を付ける。
+au MyAutoCmd VimEnter * nested colorscheme hybrid
+'''&lt;/p&gt;
+&lt;p&gt;[[plugins]]
+repo = 'itchyny/lightline.vim'&lt;/p&gt;
+&lt;p&gt;[[plugins]]
+repo = 'scrooloose/nerdtree'&lt;/p&gt;
+&lt;p&gt;.vimrc
+if !&amp;amp;compatible
+  set nocompatible
+endif&lt;/p&gt;
+&lt;p&gt;" reset augroup
+augroup MyAutoCmd
+  autocmd!
+augroup END&lt;/p&gt;
+&lt;p&gt;" dein settings {{{
+" dein自体の自動インストール
+let s:cache_home = empty($XDG_CACHE_HOME) ? expand('~/.cache') : $XDG_CACHE_HOME
+let s:dein_dir = s:cache_home . '/dein'
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
+if !isdirectory(s:dein_repo_dir)
+  call system('git clone https://github.com/Shougo/dein.vim ' . shellescape(s:dein_repo_dir))
+endif
+let &amp;amp;runtimepath = s:dein_repo_dir .",". &amp;amp;runtimepath
+" プラグイン読み込み＆キャッシュ作成
+"let s:toml_file = fnamemodify(expand('&lt;sfile&gt;'), ':h').'/dein.toml'
+let s:toml_file = '~/.config/nvim'.'/dein.toml'
+if dein#load_state(s:dein_dir)
+  call dein#begin(s:dein_dir)
+  call dein#load_toml(s:toml_file)
+  call dein#end()
+  call dein#save_state()
+endif
+" 不足プラグインの自動インストール
+if has('vim_starting') &amp;amp;&amp;amp; dein#check_install()
+  call dein#install()
+endif
+" }}}&lt;/sfile&gt;&lt;/p&gt;
+&lt;p&gt;"ビープ音すべてを無効にする
+syntax on
+filetype on
+set visualbell t_vb=
+set noerrorbells "エラーメッセージの表示時にビープを鳴らさない
+set laststatus=2
+set noswapfile nobackup noundofile
+set hidden&lt;/p&gt;
+&lt;p&gt;golang
+binaryをdownloadして/usr/local/goに展開
+nvm&lt;/p&gt;
+&lt;p&gt;https://github.com/creationix/nvm&lt;/p&gt;</description><category>linux</category><category>wsl</category><guid>https://ousttrue.github.io/posts/2017/04/wsl/</guid><pubDate>Thu, 13 Apr 2017 15:00:00 GMT</pubDate></item><item><title>GentooでBluetooth</title><link>https://ousttrue.github.io/posts/2013/05/27/gentoo-bluetooth/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;GentooでBluetooth
+Gentooでbluetoothを使う。&lt;/p&gt;
+&lt;p&gt;http://wiki.gentoo.org/wiki/Bluetooth&lt;/p&gt;
+&lt;p&gt;dmesg
+[22782.149236] Bluetooth: Core ver 2.16
+[22782.149244] NET: Registered protocol family 31
+[22782.149245] Bluetooth: HCI device and connection manager initialized
+[22782.149252] Bluetooth: HCI socket layer initialized
+[22782.149254] Bluetooth: L2CAP socket layer initialized
+[22782.149255] Bluetooth: SCO socket layer initialized
+[22782.151467] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[22782.151469] Bluetooth: BNEP filters: protocol multicast
+[22782.151475] Bluetooth: BNEP socket layer initialized&lt;/p&gt;
+&lt;p&gt;kernel
+HCI USB driver (btusb) を有効にする。
+USE設定とツール
+/etc/portage/make.conf
+USEにbluetoothを追加&lt;/p&gt;
+&lt;p&gt;/etc/portage/package.use
+net-wireless/bluez test-programs # simple-agentに必要&lt;/p&gt;
+&lt;p&gt;インストール&lt;/p&gt;
+&lt;h2&gt;emerge --ask --changed-use --deep @world&lt;/h2&gt;
+&lt;h2&gt;/etc/init.d/bluetooth start&lt;/h2&gt;
+&lt;h2&gt;rc-update add bluetooth default&lt;/h2&gt;
+&lt;p&gt;Pairing
+$ hcitools scan
+        XX:XX:XX:XX:XX:XX       M-NV1BR Series&lt;/p&gt;
+&lt;p&gt;$ simple-agent XX:XX:XX:XX:XX:XX
+Traceback (most recent call last):
+  File "/usr/bin/simple-agent", line 115, in &lt;module&gt;
+    path = manager.FindAdapter(args[0])
+  File "/usr/lib64/python2.7/site-packages/dbus/proxies.py", line 70, in &lt;strong&gt;call&lt;/strong&gt;
+    return self._proxy_method(&lt;em&gt;args, &lt;/em&gt;&lt;em&gt;keywords)
+  File "/usr/lib64/python2.7/site-packages/dbus/proxies.py", line 145, in &lt;strong&gt;call&lt;/strong&gt;
+    &lt;/em&gt;*keywords)
+  File "/usr/lib64/python2.7/site-packages/dbus/connection.py", line 651, in call_blocking
+    message, timeout)
+dbus.exceptions.DBusException: org.bluez.Error.NoSuchAdapter: No such adapter&lt;/module&gt;&lt;/p&gt;
+&lt;p&gt;ここで頓挫。どうも埒が明かぬ。
+と思ったらsimple-agentの引数が足りなかった。
+bluetooth deviceのコネクトボタンを押す&lt;/p&gt;
+&lt;p&gt;$ simple-agent hci0 XX:XX:XX:XX:XX:XX
+$ bluez-test-device trusted XX:XX:XX:XX:XX:XX yes
+$ bluez-test-input connect XX:XX:XX:XX:XX:XX&lt;/p&gt;
+&lt;p&gt;とりあえず接続はできた。
+複数接続登録タイプのキーボードとマウスを買ってきたのでそれを有効にしたいのだが、
+今のところ切り替え時に毎回コネクトボタンを押さされている。
+一瞬だけコネクトボタンなしでの切り替えができた時期があったのでなんか方法があるはずなのだが。
+utility&lt;/p&gt;
+&lt;h2&gt;emerge -av blueman&lt;/h2&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2013/05/27/gentoo-bluetooth/</guid><pubDate>Sun, 26 May 2013 15:00:00 GMT</pubDate></item><item><title>Gentooでネットワークインターフェースがeth0にならない件</title><link>https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Gentooでネットワークインターフェースがeth0にならない件
+最近インストールしたAMDのオンボードEtherと、MacBookAirのUsb
+Etherが共にeth0にならなかった。
+AMD機では、/etc/init.d/net.eth0 startが失敗するのでなんでかと思ったら違う名前になっていた。&lt;/p&gt;
+&lt;h2&gt;ifconfig -a&lt;/h2&gt;
+&lt;p&gt;enp3s0: flags=4163&lt;up&gt;  mtu 1500&lt;/up&gt;&lt;/p&gt;
+&lt;p&gt;eth0ではないので/etc/init.d/net.eth0ではなく/etc/init.d/net.enp3s0とする必要があった。
+/etc/conf.d/netも書き換え。
+MacBookAirでも違う名前になっていた。&lt;/p&gt;
+&lt;h2&gt;ifconfig -a&lt;/h2&gt;
+&lt;p&gt;enp0s29f7u1u1: flags=4163&lt;up&gt;  mtu 1500&lt;/up&gt;&lt;/p&gt;
+&lt;p&gt;とりあえずシンボリックリンク/etc/init.d/net.enp0s29f7u1u1を作って接続することはできたがちょっと調べてみることにした。
+udevinfo
+なんかudevinfoが見つからぬ。
+http://www.gossamer-threads.com/lists/gentoo/user/174113
+によるとudevadmになったらしい。&lt;/p&gt;
+&lt;h2&gt;udevadm info -a /sys/class/net/enp3s0&lt;/h2&gt;
+&lt;p&gt;で情報をとれた。
+参考:http://www.ice.is.kit.ac.jp/~umehara/misc/comp/20060408.html
+gentooのudev設定
+http://www.gentoo.gr.jp/transdocs/udevrules/udevrules.html#example-iface
+/etc/udev/rules.d/myether
+SUBSYTEM="net", ATTR{address}=="XX:XX:XX:XX:XX:XX", NAME="eth0"&lt;/p&gt;
+&lt;p&gt;書いてみた。最近のudevではSYSFSはATTRになったぽい。
+test&lt;/p&gt;
+&lt;h2&gt;udevadm test /sys/class/net/enp3s0&lt;/h2&gt;
+&lt;p&gt;うまくいかぬ・・・&lt;/p&gt;
+&lt;h2&gt;cd /etc/udev/rules.d&lt;/h2&gt;
+&lt;h2&gt;mv myether 50-ether.rules&lt;/h2&gt;
+&lt;p&gt;有効なファイル名が決まっていた。
+test&lt;/p&gt;
+&lt;h2&gt;udevadm test /sys/class/net/enp3s0&lt;/h2&gt;
+&lt;p&gt;unknown key 'SUBSYTEM' in /etc/udev/rules.d/50-ether.rules:1
+invalid rule '/etc/udev/rules.d/50-ether.rules:1'&lt;/p&gt;
+&lt;p&gt;書き方がよろしくないらしい
+SUBSYSTEM=="net", ATTR{address}=="XX:XX:XX:XX:XX:XX", NAME="eth0"&lt;/p&gt;
+&lt;p&gt;タイポを修正
+changing net interface name from 'enp3s0' to 'eth0'&lt;/p&gt;
+&lt;p&gt;うまくいった。
+反映&lt;/p&gt;
+&lt;h2&gt;cd /etc/int.d&lt;/h2&gt;
+&lt;h2&gt;rc-update delete net.enp3s0&lt;/h2&gt;
+&lt;h2&gt;mv net.enp3s0 net.eth0&lt;/h2&gt;
+&lt;h2&gt;rc-update add net.eth0 defalt&lt;/h2&gt;
+&lt;h2&gt;vim /etc/conf.d/net&lt;/h2&gt;
+&lt;h2&gt;reboot&lt;/h2&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2013/05/26/gentoo-eth0/</guid><pubDate>Sat, 25 May 2013 15:00:00 GMT</pubDate></item><item><title>alsaとかpulseaudio設定</title><link>https://ousttrue.github.io/posts/2013/05/22/alsa/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;alsaとかpulseaudio設定
+gentooの音周り
+http://www.gentoo.org/doc/ja/alsa-guide.xml
+alsa&lt;/p&gt;
+&lt;h2&gt;lspci | grep -i audio&lt;/h2&gt;
+&lt;p&gt;00:01.1 Audio device: Advanced Micro Devices [AMD] nee ATI Trinity HDMI Audio Controller&lt;/p&gt;
+&lt;p&gt;デジタル出力から鳴らす。 カーネル的には’Intel HD
+Audio’になるがgenkernelで組み込み済みの様子。&lt;/p&gt;
+&lt;h2&gt;emerge -av alsa-utils&lt;/h2&gt;
+&lt;h2&gt;rc-update add alsasaound default&lt;/h2&gt;
+&lt;p&gt;userをaudio gorupに入れて再ログイン。
+$ alsamixer
+[F6]
+HD-AUDIO genericを選択して[m]でミュートを解除&lt;/p&gt;
+&lt;p&gt;音の出るアプリで動作確認
+pulseaudio
+一度に音の出るアプリがひとつだと不便なのでpulseaudioを導入してみる。&lt;/p&gt;
+&lt;p&gt;http://wiki.gentoo.org/wiki/PulseAudio&lt;/p&gt;
+&lt;p&gt;USEにpulseaudio追加&lt;/p&gt;
+&lt;h2&gt;emerge --ask --changed-use --deep @world&lt;/h2&gt;
+&lt;h2&gt;emerge -av pavuconrol pavumeter&lt;/h2&gt;
+&lt;p&gt;userをpulse gorupに入れて再ログイン。&lt;/p&gt;
+&lt;p&gt;pavuconrolで出力のミュート解除&lt;/p&gt;
+&lt;p&gt;リモートのpulseaudioで音を鳴らす
+USEにavahi追加&lt;/p&gt;
+&lt;h2&gt;emerge --ask --changed-use --deep @world&lt;/h2&gt;
+&lt;h2&gt;rc-update add avahi default&lt;/h2&gt;
+&lt;h2&gt;emerge -av paman paprefs padevchooser&lt;/h2&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2013/05/22/alsa/</guid><pubDate>Tue, 21 May 2013 15:00:00 GMT</pubDate></item><item><title>xorgインストール</title><link>https://ousttrue.github.io/posts/2013/05/21/xorg/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;xorgインストール&lt;/h2&gt;
+&lt;p&gt;gentooにxorgをインストールする&lt;/p&gt;
+&lt;p&gt;The X Server Configuration HOWTO
+&lt;a href="http://www.gentoo.org/doc/en/xorg-config.xml"&gt;http://www.gentoo.org/doc/en/xorg-config.xml&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;/etc/portage/make.conf&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;INPUT_DEVICES="evdev"
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;# echo "x11-base/xorg-server udev" &amp;gt;&amp;gt; /etc/portage/package.use
+# emerge -av xorg-server
+# env-update
+# source /etc/profile
+&lt;/pre&gt;
+&lt;h3&gt;fglrx&lt;/h3&gt;
+&lt;p&gt;http://wiki.gentoo.org/wiki/Fglrx
+AMD A10 向けにfglrxドライバ&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;proc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cpuinfo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;AMD&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;A10&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;5700&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;APU&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Radeon&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tm&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HD&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Graphics&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lspci&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;vga&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="mi"&gt;00&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;01.0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;VGA&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;compatible&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;controller&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Advanced&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Micro&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Devices&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;AMD&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nee&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ATI&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Trinity&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Radeon HD 7660D&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;kernel作り直し [Direct Rendering Manager]を無効にする。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# genkernel --lvm2 --menuconfig --no-clean all
+
+VIDEO_CARDS="fglrx"
+
+# emerge xorg-drivers
+# aticonfig --initial
+# eselect opengl set ati
+&lt;/pre&gt;
+&lt;h3&gt;intel&lt;/h3&gt;
+&lt;p&gt;VIDEO_CARDS="intel"&lt;/p&gt;
+&lt;h2&gt;Desktop&lt;/h2&gt;
+&lt;p&gt;gnomeとかをいれずにopenboxを素で使う。lxdeぽい感じ。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# emerge -av xterm xmodmap
+&lt;/pre&gt;
+&lt;p&gt;Window Manager&lt;/p&gt;
+&lt;h2&gt;emerge -av openbox openbox-menu&lt;/h2&gt;
+&lt;p&gt;メニュー設定
+./config/openbox/menu.xml&lt;/p&gt;
+&lt;p&gt;Display Manager&lt;/p&gt;
+&lt;h2&gt;emerge -av lxdm&lt;/h2&gt;
+&lt;h2&gt;vim /etc/conf.d/xdm&lt;/h2&gt;
+&lt;h2&gt;/etc/init.d/xdm start&lt;/h2&gt;
+&lt;h2&gt;rc-update add xdm default&lt;/h2&gt;
+&lt;p&gt;IME&lt;/p&gt;
+&lt;h2&gt;emerge -av scim-anthy&lt;/h2&gt;
+&lt;p&gt;Font&lt;/p&gt;
+&lt;h2&gt;emerge -av ricty&lt;/h2&gt;
+&lt;p&gt;Term&lt;/p&gt;
+&lt;h2&gt;emerge -av xfce4-terminal&lt;/h2&gt;
+&lt;p&gt;Taskbar&lt;/p&gt;
+&lt;h2&gt;emerge -av tint2&lt;/h2&gt;
+&lt;p&gt;Filer&lt;/p&gt;
+&lt;h2&gt;pcmanfm -av pcmanfm&lt;/h2&gt;
+&lt;p&gt;Desktop関連のデーモン
+USEにconsolekit, dbus追加&lt;/p&gt;
+&lt;h2&gt;emerge --ask --changed-use --deep @world&lt;/h2&gt;
+&lt;h2&gt;rc-update add consolekit default&lt;/h2&gt;
+&lt;h2&gt;rc-update add dbus default&lt;/h2&gt;
+&lt;p&gt;CapsキーをControlに変更。
+.Xmodmap
+!!
+!! Caps_Lock to Control
+!!
+remove Lock = Caps_Lock
+add Control = Caps_Lock
+keysym Caps_Lock = Control_L&lt;/p&gt;
+&lt;p&gt;セッション
+~/.xsession
+xmodmap .Xmodmap&lt;/p&gt;
+&lt;p&gt;export LANG=ja_JP.UTF-8&lt;/p&gt;
+&lt;h2&gt;日本語入力周り&lt;/h2&gt;
+&lt;p&gt;export XMODIFIERS="@im=SCIM"
+export GTK_IM_MODULE="scim-bridge"
+export QT_IM_MODULE="scim-bridge"
+scim -d &amp;amp;&lt;/p&gt;
+&lt;p&gt;exec ck-launch-session openbox-session&lt;/p&gt;
+&lt;p&gt;TouchPad
+http://wiki.gentoo.org/wiki/Synaptics
+/etc/portage/make.conf
+INPUT_DEVICES="synaptics"&lt;/p&gt;
+&lt;p&gt;emerge --ask --changed-use --deep world&lt;/p&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2013/05/21/xorg/</guid><pubDate>Mon, 20 May 2013 15:00:00 GMT</pubDate></item><item><title>Gentoo再構築</title><link>https://ousttrue.github.io/posts/2013/05/20/gentoo/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;Gentoo再構築&lt;/h2&gt;
+&lt;p&gt;gentooのルートファイルシステムに10Gを割り当てていたのだがいつのまにかディスクフルになってしまった。
+portageとhomeをmountしていたので大丈夫かと思っていたのだが意外と容量を使ってしまっていた様子。
+いろいろインストールしすぎなのかもしれぬ。
+とりあえず/var/logの大きいファイルをxzして急場を凌いだが、
+パーティションの割り方の都合で拡大できないので新しく作り直すことにした。&lt;/p&gt;
+&lt;h3&gt;作業記録。&lt;/h3&gt;
+&lt;h4&gt;ファイルシステム準備&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;# lvcreate -L 100G -n gentoo_root mygroup
+# mkfs.ext4 /dev/mygroup/gentoo_root
+# cd /mnt
+# mkdir gentoo
+# mount /dev/mygroup/gentoo_root
+&lt;/pre&gt;
+&lt;h4&gt;Installing the Gentoo Installation Files&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=5"&gt;http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=5&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;stage3ファイルの取得と展開&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# cd /mnt/gentoo
+# wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2
+# tar xvjpf stage3-*.tar.bz2
+&lt;/pre&gt;
+&lt;p&gt;portageは旧パーティションを流用&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# mkdir usr/portage
+# mount /dev/mygroup/portage usr/portage
+
+/etc/portage/make.conf
+# These settings were set by the catalyst build script that automatically
+# built this stage.
+# Please consult /usr/share/portage/config/make.conf.example for a more
+# detailed example.
+CFLAGS="-march=native -O2 -pipe"
+#CFLAGS="-march=bdver2 -O2 -pipe"
+CXXFLAGS="&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;CFLAGS&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;"
+# WARNING: Changing your CHOST is not something that should be done lightly.
+# Please consult http://www.gentoo.org/doc/en/change-chost.xml before changing.
+CHOST="x86_64-pc-linux-gnu"
+# These are the USE flags that were used in addition to what is provided by the
+# profile used for building.
+USE=""
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; -ldap"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; mmx sse sse2 sse3 ssse3"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; openal alsa gstreamer phonon pulseaudio xft xnest"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; gtk gnome xfce imlib gconf"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; qt4 kde"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; gd imlib eigen"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; sqlite apache2"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; ffmpeg theora lame mms"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; samba fuse udisks"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; icu"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; consolekit dbus pam policykit udev"
+USE="&lt;span class="nv"&gt;$USE&lt;/span&gt; c++0x"
+
+INPUT_DEVICES="evdev"
+#VIDEO_CARDS="radeon"
+VIDEO_CARDS="fglrx"
+LINGUAS="ja"
+
+MAKEOPTS="-j5"
+GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
+&lt;/pre&gt;
+&lt;p&gt;CFLAGSに-march=nativeを使えるようになった&lt;/p&gt;
+&lt;h4&gt;Installing the Gentoo Base System&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=6"&gt;http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=6&lt;/a&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# cp -L /etc/resolv.conf /mnt/gentoo/etc/&lt;/span&gt;
+&lt;span class="c1"&gt;# mount -t proc none /mnt/gentoo/proc&lt;/span&gt;
+&lt;span class="c1"&gt;# mount --rbind /sys /mnt/gentoo/sys&lt;/span&gt;
+&lt;span class="c1"&gt;# mount --rbind /dev /mnt/gentoo/dev&lt;/span&gt;
+
+&lt;span class="c1"&gt;# chroot /mnt/gentoo /bin/bash&lt;/span&gt;
+&lt;span class="c1"&gt;# source /etc/profile&lt;/span&gt;
+&lt;span class="c1"&gt;# export PS1="(chroot) $PS1"&lt;/span&gt;
+
+&lt;span class="c1"&gt;# emerge --sync&lt;/span&gt;
+&lt;span class="c1"&gt;# cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime&lt;/span&gt;
+&lt;span class="c1"&gt;# echo "Asia/Tokyo" &amp;gt; /etc/timezone&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Configuring the Kernel&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=7"&gt;http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=7&lt;/a&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# emerge gentoo-sources
+&lt;/pre&gt;
+&lt;p&gt;LVMからブートするのでgenkernelを使う&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;# emerge genkernel
+# genkernel --lvm --install all
+&lt;/pre&gt;
+&lt;h4&gt;Configuring your System&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=8"&gt;http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=8&lt;/a&gt;&lt;/p&gt;
+&lt;h4&gt;Installing Necessary System Tools&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=9"&gt;http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=9&lt;/a&gt;&lt;/p&gt;
+&lt;h4&gt;Configuring the Bootloader&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=10"&gt;http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;amp;chap=10&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;/boot/grub/menu.lst&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;title genkernel 3.8.13
+root (hd0,0)
+kernel /boot/kernel-genkernel-x86_64-3.8.13-gentoo real_root=/dev/mygroup/gentoo_root rootfstype=ext4 dolvm
+initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo
+&lt;/pre&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2013/05/20/gentoo/</guid><pubDate>Sun, 19 May 2013 15:00:00 GMT</pubDate></item><item><title>octopress調整中</title><link>https://ousttrue.github.io/posts/2013/03/01/customize_octopress/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;octopress調整中
+とりあえずタイトルとか入れてみた。 あと、syntax highlightを試してみた。
+syntax highlight
+http://octopress.org/docs/plugins/codeblock/
+python3の方が参照されるとエラーになってしまう。 gentooなので、&lt;/p&gt;
+&lt;h2&gt;eselect python list&lt;/h2&gt;
+&lt;p&gt;Available Python interpreters:
+[1]   python2.7
+[2]   python3.2 *&lt;/p&gt;
+&lt;h2&gt;eselect python set 1&lt;/h2&gt;
+&lt;p&gt;としてpython2に切り替えたらうまくいった。
+常用するのはpython3にしたいので後で手を考えよう。
+markdown
+markdownも練習中。 http://blog.2310.net/archives/6
+octopressさんは、 プレビューしながらvimで記述出きるので実に快適だな。&lt;/p&gt;</description><category>linux</category><guid>https://ousttrue.github.io/posts/2013/03/01/customize_octopress/</guid><pubDate>Thu, 28 Feb 2013 15:00:00 GMT</pubDate></item></channel></rss>

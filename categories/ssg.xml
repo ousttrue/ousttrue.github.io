@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (ssgについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/ssg.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Nikola復活</title><link>https://ousttrue.github.io/posts/0514-nikola_revival/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;Nikola復活&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/"&gt;nikola&lt;/a&gt; 復活。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/dotfiles/blob/master/dodo.py"&gt;https://github.com/ousttrue/dotfiles/blob/master/dodo.py&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;を作りながら &lt;a href="https://pydoit.org/"&gt;doit&lt;/a&gt; を学んだし、 &lt;a href="https://jinja.palletsprojects.com/en/3.1.x/"&gt;jinja&lt;/a&gt;
+も少しやったので、前よりは読めそう。
+使いながら、 nikola のコードを読んで、 doit のカスタムタスクの使い方を眺めてみたい。&lt;/p&gt;
+&lt;h3&gt;sphinx + ablog + myst との違い&lt;/h3&gt;
+&lt;p&gt;nikola は &lt;code&gt;frontmatter&lt;/code&gt; で title を決めるが、 sphinx は 本文の先頭の見出しで決めるという違いがある。
+nikola の方も title と 先頭の見出しを同じにする運用にすれば、だいたい同じになると思う。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;conf.py # nikola の設定
+docs
+  + conf.py # sphinx の設定
+  + posts # content. nikola と sphinx の ablog 両用
+    + post.md
+&lt;/pre&gt;
+&lt;p&gt;みたいな感じにしてもだいたい動く。
+細かく違うところはあると思うが。&lt;/p&gt;
+&lt;h3&gt;動作&lt;/h3&gt;
+&lt;h4&gt;DoitNikola(DoitMain)&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L301"&gt;https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L301&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;ここから入っていく。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;from doit.cmd_base import TaskLoader2&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://pydoit.org/extending.html?highlight=taskloader#doit.cmd_base.TaskLoader2"&gt;https://pydoit.org/extending.html?highlight=taskloader#doit.cmd_base.TaskLoader2&lt;/a&gt;&lt;/p&gt;
+&lt;h4&gt;NikolaTaskLoader(TaskLoader2)&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L257"&gt;https://github.com/getnikola/nikola/blob/398d5722d78a27ac5233849e3057f9d787345561/nikola/__main__.py#L257&lt;/a&gt;&lt;/p&gt;</description><category>python</category><category>ssg</category><guid>https://ousttrue.github.io/posts/0514-nikola_revival/</guid><pubDate>Fri, 13 May 2022 15:00:00 GMT</pubDate></item><item><title>SSGをABlogに変更</title><link>https://ousttrue.github.io/posts/2021/winter/ablog/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;ABlog にシステムを変更&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/"&gt;nikola&lt;/a&gt; は使いこなせなくて短命に終わってしまった。
+&lt;a href="https://pydoit.org/"&gt;doit&lt;/a&gt; は面白いと思うのだが。&lt;/p&gt;
+&lt;p&gt;ということで、 &lt;code&gt;sphinx&lt;/code&gt; プラグインの &lt;a href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; です。&lt;/p&gt;
+&lt;h3&gt;はまり1: Sphinx のキャッシュ&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;python -m sphinx content build&lt;/code&gt; にデバッガをアタッチして試行錯誤するのだけど、
+キャッシュされて処理されなかった。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;python -m sphinx content build -E -v&lt;/code&gt; とする。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;-E: 全処理(キャッシュを使わない)&lt;/li&gt;
+&lt;li&gt;-v: 詳細メッセージ&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;はまり2: ablog が timezone の有無で日付の比較に失敗する&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;can't compare offset-naive and offset-aware datetimes
+&lt;/pre&gt;
+&lt;p&gt;これは、既存記事の &lt;code&gt;frontmatter&lt;/code&gt; の日付に &lt;code&gt;timezone&lt;/code&gt; が付いていると
+日付の比較に失敗する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# site-packages/ablog/blog.py:382&lt;/span&gt;
+&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;date&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;date&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"date"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tzinfo&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;と対処した。&lt;/p&gt;
+&lt;h3&gt;はまり3: myst-parser の toml frontmatter 対応&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;myst-parser&lt;/code&gt; が &lt;code&gt;---&lt;/code&gt; による &lt;code&gt;yaml&lt;/code&gt; 形式の &lt;code&gt;frontmatter&lt;/code&gt; にしか対応していない様子。
+&lt;a href="https://gohugo.io/content-management/front-matter/"&gt;hugo の frontmatter&lt;/a&gt; にある &lt;code&gt;toml&lt;/code&gt; 様式に対応するべく改造したい。&lt;/p&gt;
+&lt;h4&gt;切り出し&lt;/h4&gt;
+&lt;p&gt;どこで処理しているのか探索が難航した。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;site-packages/mdit_py_plugins/front_matter/index.py&lt;/code&gt;
+で処理している。&lt;/p&gt;
+&lt;h4&gt;Parse&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;site-packages/myst_parser/docutils_renderer.py&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;render_front_matter&lt;/code&gt; で切り出した文字列を &lt;code&gt;yaml&lt;/code&gt; でパースしている。
+&lt;code&gt;except&lt;/code&gt; 節で &lt;code&gt;toml&lt;/code&gt; にリトライさせたら動いた。&lt;/p&gt;
+&lt;h3&gt;モンキーパッチ&lt;/h3&gt;
+&lt;p&gt;とりあえず &lt;code&gt;conf.py&lt;/code&gt; にて直接修正する。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/ousttrue.github.io/blob/ablog/content/patch.py"&gt;https://github.com/ousttrue/ousttrue.github.io/blob/ablog/content/patch.py&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;後で PR 送ったりできるかな。&lt;/p&gt;
+&lt;h3&gt;ABlog は何をしているのか&lt;/h3&gt;
+&lt;h4&gt;toctree無しのpost記事&lt;/h4&gt;
+&lt;p&gt;特定の条件で、記事をブログ記事と見做して &lt;code&gt;toctree&lt;/code&gt; 無しで辿れるようにする。
+記事は、日付やタグでグループ化してくれる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter"&gt;https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;パス指定。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;blog_post_pattern&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"posts/**/*.md"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;条件。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# .venv/lib/python3.9/site-packages/ablog/post.py&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;"blogpost"&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;metadata&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;docname&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;matched_blog_posts&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;frontmatter&lt;/code&gt; 等から最低限、日付の情報がとれないとトップページから辿る方法が無い状態になる。&lt;/p&gt;
+&lt;p&gt;あと &lt;code&gt;sphinx&lt;/code&gt; なのでトップレベルの表題が本文側に必要かも。
+&lt;code&gt;frontmatter&lt;/code&gt; の &lt;code&gt;title&lt;/code&gt; を反映できると便利そう。&lt;/p&gt;
+&lt;h4&gt;event: 'doctree-read'&lt;/h4&gt;
+&lt;p&gt;doctree から &lt;code&gt;PostNode&lt;/code&gt; を集める。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;alog/post#process_posts(app, doctree)&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;process_posts&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;doctree&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;post_nodes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;doctree&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;traverse&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PostNode&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;post_nodes&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c1"&gt;# PostNode が必要&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# 省略&lt;/span&gt;
+
+    &lt;span class="n"&gt;postinfo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"docname"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;docname&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"section"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;section_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"order"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"date"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"update"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;max&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;update_dates&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="p"&gt;]),&lt;/span&gt;
+        &lt;span class="s2"&gt;"title"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"excerpt"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;excerpt&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"tags"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"tags"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"author"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"author"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"category"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"category"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"location"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"location"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"language"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"language"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"redirect"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"redirect"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"nocomments"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"nocomments"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"image"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"image"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"exclude"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"exclude"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="s2"&gt;"doctree"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;section_copy&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;docname&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ablog_posts&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ablog_posts&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;docname&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ablog_posts&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;docname&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;postinfo&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;CheckFrontMatter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SphinxTransform&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;apply&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;pass&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CheckFrontMatter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;    
+&lt;/pre&gt;
+&lt;h4&gt;追加のページ生成&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;ablog/templates&lt;/code&gt; に格納されている。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# -- ABlog Sidebars -------------------------------------------------------&lt;/span&gt;
+
+&lt;span class="c1"&gt;# There are seven sidebars you can include in your HTML output.&lt;/span&gt;
+&lt;span class="c1"&gt;# postcard.html provides information regarding the current post.&lt;/span&gt;
+&lt;span class="c1"&gt;# recentposts.html lists most recent five posts. Others provide&lt;/span&gt;
+&lt;span class="c1"&gt;# a link to a archive pages generated for each tag, category, and year.&lt;/span&gt;
+&lt;span class="c1"&gt;# In addition, there are authors.html, languages.html, and locations.html&lt;/span&gt;
+&lt;span class="c1"&gt;# sidebars that link to author and location archive pages.&lt;/span&gt;
+&lt;span class="n"&gt;html_sidebars&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="s1"&gt;'**'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="s1"&gt;'about.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'postcard.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'navigation.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'recentposts.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'tagcloud.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'categories.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'archives.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s1"&gt;'searchbox.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;これらに対して追加のページ生成を行っている。
+&lt;code&gt;genindex.html&lt;/code&gt; などのように。&lt;/p&gt;
+&lt;h3&gt;ToDo&lt;/h3&gt;
+&lt;h4&gt;✅ タグが変&lt;/h4&gt;
+&lt;p&gt;toml 由来の tag の処理に失敗している。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;["python", "ssg", "sphinx"]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;が、&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;["python"&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;"ssg"&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;"sphinx"]&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;になっちゃってる。&lt;/p&gt;
+&lt;p&gt;https://github.com/sunpy/ablog/pull/119&lt;/p&gt;
+&lt;p&gt;送ってみた。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;v0.10.22&lt;/code&gt; で修正。👍&lt;/p&gt;
+&lt;h4&gt;✅ 日付のフォーマット&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;conf.py&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;post_date_format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'%Y/%m/&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;
+&lt;span class="n"&gt;post_date_format_short&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'%Y/%m'&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;✅ 記事のURL&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://zenn.dev/attakei/articles/sphinx-make-dirhtml"&gt;https://zenn.dev/attakei/articles/sphinx-make-dirhtml&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;✅ 記事タイトルは最初の見出しではなく、frontmatter の title にしたい&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;MystParser&lt;/code&gt; を改造した。
+わりと Sphinx わかってきた。
+&lt;code&gt;python&lt;/code&gt; でデバッガがアタッチできるとなんでもできる(慣れ)。&lt;/p&gt;
+&lt;h4&gt;[ ] tagの表記振れ&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;c++&lt;/code&gt; と &lt;code&gt;C++&lt;/code&gt;、&lt;code&gt;c#&lt;/code&gt; と &lt;code&gt;csharp&lt;/code&gt; などをたばねる。&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://water2litter.net/pisco/doc/ablog.html"&gt;Sphinxでブログをしてみよう&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description><category>python</category><category>sphinx</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/winter/ablog/</guid><pubDate>Sun, 19 Dec 2021 15:00:00 GMT</pubDate></item><item><title>サイトジェネレーターを nikola にしてみる</title><link>https://ousttrue.github.io/posts/2021/fall/nikola/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;また生成システムを変えてみる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/"&gt;https://getnikola.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;init&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;"Nikola[extras]"&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nikola&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;a href="https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore"&gt;https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore&lt;/a&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# nikola&lt;/span&gt;
+&lt;span class="na"&gt;.doit.db&lt;/span&gt;&lt;span class="p"&gt;*&lt;/span&gt;
+&lt;span class="err"&gt;*&lt;/span&gt;&lt;span class="na"&gt;.pyc&lt;/span&gt;
+&lt;span class="err"&gt;/&lt;/span&gt;&lt;span class="nf"&gt;cache&lt;/span&gt;&lt;span class="err"&gt;/&lt;/span&gt;
+&lt;span class="err"&gt;/&lt;/span&gt;&lt;span class="nf"&gt;output&lt;/span&gt;&lt;span class="err"&gt;/&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;conf.py&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# とりあえず &lt;/span&gt;
+&lt;span class="n"&gt;POSTS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.rst"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.txt"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"content/*.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"posts"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"post.tmpl"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;&amp;gt; nikola auto --browser
+&lt;/pre&gt;
+&lt;p&gt;なんとなくプレビューできた。
+ええやん。&lt;/p&gt;
+&lt;h2&gt;zola から記事移植&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;POSTS&lt;/code&gt; のパス調整でもうできているのだけど、 &lt;code&gt;frontmatter&lt;/code&gt; の非互換がある。
+それを調べる。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/handbook.html#metadata-fields"&gt;https://getnikola.com/handbook.html#metadata-fields&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;taxonomies.tags&lt;/code&gt; を &lt;code&gt;tags&lt;/code&gt; に書き換える&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;小文字強制&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;METADATA_VALUE_MAPPING&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="s2"&gt;"toml"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"tags"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ls&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+     &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h2&gt;github action で gh-pages&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;.github/workflows/nikola.yml&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;こんなもんかな。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nl"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Nikola&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nl"&gt;push&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nl"&gt;branches&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nikola&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="nl"&gt;jobs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nl"&gt;build&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;runs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;latest&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nl"&gt;env&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="nl"&gt;ACTIONS_ALLOW_UNSECURE_COMMANDS&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;true&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nl"&gt;steps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;checkout&lt;/span&gt;&lt;span class="nv"&gt;@v1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;"Nikola[extras]"&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nl"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nikola&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Deploy&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nl"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="nv"&gt;@v3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nl"&gt;github_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;${{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;secrets&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GITHUB_TOKEN&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;}}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nl"&gt;publish_dir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;output&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;動作&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/internals.html"&gt;https://getnikola.com/internals.html&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;yapsy&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://getnikola.com/extending.html"&gt;https://getnikola.com/extending.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;nikola/plugin_categories.py&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://yapsy.sourceforge.net/"&gt;http://yapsy.sourceforge.net/&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;build&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://pydoit.org/"&gt;DoIt&lt;/a&gt; で駆動されるらしい。&lt;/p&gt;
+&lt;p&gt;nikola は DoIt の task を生成する。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/"&gt;https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/iisaka51/items/052ffbd9ab3b12504228"&gt;タスクランナー Doit を使ってみよう&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Theme&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://getnikola.com/creating-a-theme.html"&gt;https://getnikola.com/creating-a-theme.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://getnikola.com/theming.html"&gt;https://getnikola.com/theming.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://iuk.hateblo.jp/entry/2016/10/28/040908"&gt;Nikola を windows でやるぞ 2&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;themes/custom&lt;/code&gt; フォルダを作る&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;conf.py&lt;/code&gt; の &lt;code&gt;THEME = "custom"&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最低限&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;path&lt;/th&gt;
+&lt;th&gt;url&lt;/th&gt;
+&lt;th&gt;必須&lt;/th&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;bundles&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;空ファイルでもOk。copy from nikola/data/themes/base/bundles&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;assets&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;option&lt;/td&gt;
+&lt;td&gt;copy from nikola/data/themes/base/assets&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/index.tmpl&lt;/td&gt;
+&lt;td&gt;/&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;top page&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/post.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;各記事&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/page.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;各記事&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/list.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;archive.html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/archive.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;{YEARE}/ archive.html から 年別 リンクをたどったところ&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/tags.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;categories/index.html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/tag.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;categories/{TAG_NAME}/index.html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/gallery.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/listing.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;必須&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;THEME_NAME.theme&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;option&lt;/td&gt;
+&lt;td&gt;Theme meta files&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;templates/base.tmpl&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;option&lt;/td&gt;
+&lt;td&gt;すべての tmpl が継承することで一貫した見た目にする&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4&gt;bundles and assets&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;lib/python3.9/site-packages/nikola/data/themes/base&lt;/code&gt; からコピーするとよさそう。&lt;/p&gt;
+&lt;h4&gt;base.tmpl&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"brand"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ _link('root', None, lang) }}"&lt;/span&gt; &lt;span class="na"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ blog_title|e }}"&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"home"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;span&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"blog-title"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;{{ blog_title|e }}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;span&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;main&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"content"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+        {% block content %}{% endblock %}
+    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;main&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;index.tmpl&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;{% extends 'base.tmpl' %}
+
+{% block content %}
+{% if prevlink %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ prevlink }}"&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"prev"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;prev&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{% endif %}
+
+{% for post in posts %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"p-name entry-title"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ post.permalink() }}"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"u-url"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;{{ post.title()|e }}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{% endfor %}
+
+{% if nextlink %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ nextlink }}"&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"next"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;next&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{% endif %}
+{% endblock %}
+&lt;/pre&gt;
+&lt;h4&gt;post.tmpl&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;{% extends 'base.tmpl' %}
+
+{% block content %}
+&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"p-name entry-title"&lt;/span&gt; &lt;span class="na"&gt;itemprop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"headline name"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ post.permalink() }}"&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"u-url"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;{{ post.title()|e}}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+{{ post.text() }}
+{% endblock %}
+&lt;/pre&gt;
+&lt;h4&gt;THEME_NAME.theme&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[Theme]&lt;/span&gt;
+&lt;span class="na"&gt;engine&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;jinja&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;vscode&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;settings.json&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;    &lt;span class="nt"&gt;"files.associations"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nt"&gt;"*.tmpl"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;ToDo&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Theme 調整&lt;/li&gt;
+&lt;li&gt;TOC&lt;/li&gt;
+&lt;li&gt;syntax highlight&lt;/li&gt;
+&lt;/ul&gt;</description><category>python</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/fall/nikola/</guid><pubDate>Fri, 15 Oct 2021 15:00:00 GMT</pubDate></item><item><title>sphinx + MyST よいのでは</title><link>https://ousttrue.github.io/posts/2021/fall/sphinx_myst/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Gizmo を作る過程で GeometryShader からやりなおしていたら、記憶が飛んでいたので
+忘れてもいいように記録しておくことにした。&lt;/p&gt;
+&lt;p&gt;旧 &lt;code&gt;MinTriangle&lt;/code&gt; リポジトリを作り直し。&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://ousttrue.github.io/d3d11_samples/"&gt;http://ousttrue.github.io/d3d11_samples/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;MyST なかなかよい&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;reStructuredText&lt;/code&gt; わりと苦手なので &lt;code&gt;sphinx&lt;/code&gt; でも Markdown を使いたい派なのだが、
+&lt;a href="https://myst-parser.readthedocs.io/en/latest/index.html"&gt;MyST&lt;/a&gt; なる Sphinx 向け markdown 拡張ができていた。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/Tachy_Pochy/items/53866eea43d0ad93ea1d"&gt;Sphinx で使える Markdown 方言 'MyST'&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;sphinx directive の指定の仕方がシンプルで下のような感じ。markdown のシンタックスハイライトやフォーマッターに乗れるのでよい。&lt;/p&gt;
+&lt;pre&gt;
+```{image} ./basic_pipeline.jpg
+:width: 320px
+:height: 320px
+
+&lt;pre class="code literal-block"&gt;```{toctree}
+basic/create_window
+basic/create_device
+basic/create_swapchain
+basic/render_target
+basic/compile_shader
+basic/basic_pipeline
+&lt;/pre&gt;
+
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;sphinx-autobuild&lt;/code&gt; と github-actions による &lt;code&gt;gh-pages&lt;/code&gt; デプロイを仕込んだらかなりよくなった。&lt;/p&gt;
+&lt;h2&gt;memo&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/wpilibsuite/sphinxext-remoteliteralinclude"&gt;https://github.com/wpilibsuite/sphinxext-remoteliteralinclude&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;git の revision と path 指定して include できないかしら。
+サンプルコードにちょこちょこっと解説を書きたいのだが、サンプルコードが進化する場合に &lt;code&gt;literalinclude&lt;/code&gt; だと場所がずれるのだ。&lt;/p&gt;</description><category>sphinx</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/fall/sphinx_myst/</guid><pubDate>Fri, 10 Sep 2021 15:00:00 GMT</pubDate></item><item><title>mdBook もやってみる</title><link>https://ousttrue.github.io/posts/2021/mdbook/</link><dc:creator>ousttrue</dc:creator><description>&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://rust-lang.github.io/mdBook/"&gt;https://rust-lang.github.io/mdBook/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/rust-lang/mdBook"&gt;https://github.com/rust-lang/mdBook&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;作ってみた&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/cmake_book"&gt;https://github.com/ousttrue/cmake_book&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;gh-pages&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/cmake_book/"&gt;https://ousttrue.github.io/cmake_book/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;config.toml&lt;/h2&gt;
+&lt;h3&gt;base_url の設定にはまる&lt;/h3&gt;
+&lt;p&gt;base_url の設定だけ探し回った。
+gh-pages の url が &lt;code&gt;https://ousttrue.github.io/cmake_book/&lt;/code&gt; と root フォルダでは無いので必用。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;book.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[output.html]&lt;/span&gt;
+&lt;span class="n"&gt;site-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://ousttrue.github.io/cmake_book/"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;github&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;book.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[output.html]&lt;/span&gt;
+&lt;span class="n"&gt;git-repository-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/rust-lang/mdBook/tree/master/guide"&lt;/span&gt;
+&lt;span class="n"&gt;edit-url-template&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/rust-lang/mdBook/edit/master/guide/{path}"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h2&gt;github actions&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/marketplace/actions/mdbook-action"&gt;https://github.com/marketplace/actions/mdbook-action&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;を参考にしたのだけど、
+ちょっとはまった。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nl"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;push&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;書き方変わってた&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pushしてもjobが起動しない&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="nl"&gt;jobs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Explore&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;GitHub&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nl"&gt;Actions&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;書き方変わってた&lt;/span&gt;&lt;span class="err"&gt;？&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;アクションとして認識されない&lt;/span&gt;&lt;span class="err"&gt;？&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;runs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;18.04&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nl"&gt;steps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;checkout&lt;/span&gt;&lt;span class="nv"&gt;@v2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Setup&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mdBook&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nl"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mdbook&lt;/span&gt;&lt;span class="nv"&gt;@v1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;mdbook&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nl"&gt;version&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;"latest"&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mdbook&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Deploy&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nl"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;peaceiris&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;actions&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="nv"&gt;@v3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;ref&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'refs/heads/main'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;あると動かない&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nl"&gt;github_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;${{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;secrets&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;GITHUB_TOKEN&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;}}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nl"&gt;publish_dir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;動かないとき、特に action として認識されていないときは全く手掛かりが無くて難儀した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://docs.github.com/ja/actions/quickstart"&gt;https://docs.github.com/ja/actions/quickstart&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;は動いたので、これと違うところを見比べて勘でなおした。
+よくわかっていない。&lt;/p&gt;
+&lt;h2&gt;mdbook の SUMMARY.md&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;SUMMARY.md&lt;/code&gt; にページ構成を先に記述して章立てを作ってから中身を記述していくのが面白い。
+この仕組みが合うものは、 &lt;code&gt;zola&lt;/code&gt; より &lt;code&gt;mdbook&lt;/code&gt; の方がサクサク作れそう。
+&lt;code&gt;hugo&lt;/code&gt; とかと違って各ページに &lt;code&gt;frontmatter&lt;/code&gt; が不要なので、
+ページを足したり引いたりするする場合はこちらの方が使いやすい。&lt;/p&gt;
+&lt;p&gt;Scrapbox 上にあるメモを整理するかもしれない。&lt;/p&gt;
+&lt;p&gt;作った。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/cmake_book/"&gt;cmake_book&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/rust_exercise_book/"&gt;rust練習帳&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;あと、 &lt;code&gt;blender の addon 作成メモ&lt;/code&gt; とか &lt;code&gt;Unity のカスタムエディターメモ&lt;/code&gt; とか作るかも。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/bldner_book/"&gt;blender_book&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/unity_book/"&gt;unity memo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;mdbook を gh-pages で初期化する手順&lt;/h2&gt;
+&lt;p&gt;github に repository を作って gh-pages に公開するところまで&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;new repository &lt;code&gt;https://github.com/GITHUB_USER_NAME/MDBOOK_REPOSITORY_NAME&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;git clone GIT_REPOSITORY&lt;/li&gt;
+&lt;li&gt;cd GIT_REPOSITORY&lt;/li&gt;
+&lt;li&gt;mdbook init&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;book.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[output.html]&lt;/span&gt;
+&lt;span class="n"&gt;site-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://${USER_NAME}.github.io/${REPO_NAME}/"&lt;/span&gt;
+&lt;span class="n"&gt;git-repository-url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/${USER_NAME}/${REPO_NAME}/tree/master"&lt;/span&gt;
+&lt;span class="n"&gt;edit-url-template&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;"https://github.com/${USER_NAME}/${REPO_NAME}/edit/master/{path}"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;.github/workflows/gh-pages.yml&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;github pages&lt;/span&gt;
+&lt;span class="nt"&gt;on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p p-Indicator"&gt;[&lt;/span&gt;&lt;span class="nv"&gt;push&lt;/span&gt;&lt;span class="p p-Indicator"&gt;]&lt;/span&gt;
+&lt;span class="nt"&gt;jobs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="nt"&gt;Explore-GitHub-Actions&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="nt"&gt;runs-on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;ubuntu-18.04&lt;/span&gt;
+    &lt;span class="nt"&gt;steps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;actions/checkout@v2&lt;/span&gt;
+
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Setup mdBook&lt;/span&gt;
+        &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;peaceiris/actions-mdbook@v1&lt;/span&gt;
+        &lt;span class="nt"&gt;with&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+          &lt;span class="nt"&gt;mdbook-version&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;"latest"&lt;/span&gt;
+
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mdbook build&lt;/span&gt;
+
+      &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Deploy&lt;/span&gt;
+        &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;peaceiris/actions-gh-pages@v3&lt;/span&gt;
+        &lt;span class="nt"&gt;with&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+          &lt;span class="nt"&gt;github_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;${{ secrets.GITHUB_TOKEN }}&lt;/span&gt;
+          &lt;span class="nt"&gt;publish_dir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;./book&lt;/span&gt;
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;git add .&lt;/li&gt;
+&lt;li&gt;git commit -m init&lt;/li&gt;
+&lt;li&gt;git push&lt;ul&gt;
+&lt;li&gt;action が発動し、mdbook がビルドした book フォルダが gh-pages ブランチに push される&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;github の settings - pages から gh-pages branch を選んで root を設定する&lt;ul&gt;
+&lt;li&gt;しばらくすると &lt;code&gt;https://GITHUB_USER_NAME.github.io/MDBOOK_REPOSITORY_NAME/&lt;/code&gt; が有効になる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;初回にページが表示されるまで何回か push が要るかも。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;repo 作る&lt;/li&gt;
+&lt;li&gt;gh-pages branch に push する&lt;/li&gt;
+&lt;li&gt;設定で gh-pages を有効にする&lt;/li&gt;
+&lt;li&gt;再度 push し action を発動させる。この辺でサイトが見れることを確認する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://o296.com/e/mdbook_as_blog.html"&gt;https://o296.com/e/mdbook_as_blog.html&lt;/a&gt;&lt;/p&gt;</description><category>mdbook</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2021/mdbook/</guid><pubDate>Sun, 13 Jun 2021 15:00:00 GMT</pubDate></item><item><title>zola のテンプレートを整備する</title><link>https://ousttrue.github.io/posts/2021/zola_template/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;サイト整備のメモ。共通化して部品を少なくした。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;zola 設定&lt;/li&gt;
+&lt;li&gt;template 構築&lt;/li&gt;
+&lt;li&gt;場合によっては zola の改造&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;共通&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] title&lt;/li&gt;
+&lt;li&gt;[x] 日付&lt;/li&gt;
+&lt;li&gt;[x] 見出しの見た目&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Markdown&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] url 文字列を自動でリンクにしたい。markdownで &lt;code&gt;&amp;lt;url&amp;gt;&lt;/code&gt; と記述するべし&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210716: masonry 入れてみた&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://masonry.desandro.com/"&gt;https://masonry.desandro.com/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;20210717: TOC&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] 目次
+だいたいできた。
+github が増えすぎてカオスなので不要なものを整理せねば・・・&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;20210725: 色&lt;/h2&gt;
+&lt;p&gt;作業用に区域ごとに色分けしていたのをやめて、地味な色に変更。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;@mixin&lt;/span&gt;&lt;span class="nf"&gt; MAIN_COLOR&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nt"&gt;color&lt;/span&gt;&lt;span class="nd"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;black&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+    &lt;span class="nt"&gt;background-color&lt;/span&gt; &lt;span class="nt"&gt;white&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;のような方法を試してみた。&lt;/p&gt;
+&lt;h2&gt;20210725: TOC 固定&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;position&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;fixed&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h2&gt;20210725: 画像を入れれるようにしてみた&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;page.assets&lt;/code&gt; や &lt;code&gt;section.assets&lt;/code&gt; に想定した形で入ってこないので、
+無理やりパスを操作したのだが、さすがにこれはちょっと・・・&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;  {% if page.extra.image %}
+  {% set s = page.relative_path | split(pat="/") %}
+  {% set len = s | length %}
+  {% set sl = s | slice(start=0, end=len-1) %}
+  {% set j = sl | join(sep="/") %}
+  {% set image_url = resize_image(path=j ~ "/" ~ page.extra.image, width=600, op="fit_width") %}
+  &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;img&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"{{ image_url }}"&lt;/span&gt;&lt;span class="err"&gt;"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+  {% endif %}
+&lt;/pre&gt;
+&lt;p&gt;なんか、 &lt;code&gt;zola&lt;/code&gt; がわりと融通が利かないことが分かってきた。
+&lt;code&gt;resize_image&lt;/code&gt; で明示的に画像を加工するという設計は理解。なるほど。
+当方、 &lt;code&gt;md&lt;/code&gt; ファイルと同じフォルダに &lt;code&gt;png, jpg&lt;/code&gt; を放り込んでそれを記事内で使いたいのです。
+画像を中央の &lt;code&gt;static&lt;/code&gt; フォルダにまとめて入れておくの嫌なので。
+改造して page.assets に放り込んでしまおう。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hugo&lt;/code&gt; ほど多機能複雑でなく、 &lt;code&gt;zola&lt;/code&gt; ほど strict でない、そんなほどほどなツールが望まれる。&lt;/p&gt;
+&lt;h2&gt;20210815: pagination&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/documentation/templates/pagination/"&gt;https://www.getzola.org/documentation/templates/pagination/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;ドキュメントよりもソースを読もう w
+5分もかからぬ。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;      {% if paginator.current_index == 1 %}
+&lt;/pre&gt;
+&lt;h2&gt;20210829: 内部リンク記法&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;.md&lt;/code&gt; の記法。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/documentation/content/linking/#internal-links"&gt;https://www.getzola.org/documentation/content/linking/#internal-links&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[NvimTexture](@/posts/2021/summer/nvimtexture.md)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;@&lt;/code&gt; と &lt;code&gt;.md&lt;/code&gt; が必要。&lt;/p&gt;
+&lt;h2&gt;20210831: search&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/documentation/content/search/"&gt;https://www.getzola.org/documentation/content/search/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;設定は &lt;code&gt;build_search_index = true&lt;/code&gt; するだけなのだが、
+template 作るのは大変。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/aaranxu/adidoks"&gt;https://github.com/aaranxu/adidoks&lt;/a&gt; から部品を頂いてきた。&lt;/p&gt;</description><category>css</category><category>ssg</category><category>zola</category><guid>https://ousttrue.github.io/posts/2021/zola_template/</guid><pubDate>Sun, 13 Jun 2021 15:00:00 GMT</pubDate></item><item><title>サイトジェネレーターを Zola に変更</title><link>https://ousttrue.github.io/posts/2021/init_zola/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;最近、 rust を再開したので、
+&lt;code&gt;Static Site Generator&lt;/code&gt; を go 製の hugo から rust 製の zola に変更してみた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.getzola.org/"&gt;https://www.getzola.org/&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;hugo のからの引っ越し&lt;/h2&gt;
+&lt;h3&gt;zola インストール&lt;/h3&gt;
+&lt;h3&gt;初期化&lt;/h3&gt;
+&lt;h3&gt;config.toml を hugo 版から zola 版に書き換える。&lt;/h3&gt;
+&lt;p&gt;最低限 base_url。&lt;/p&gt;
+&lt;h3&gt;プレビューしてみる&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ zola serve
+&lt;/pre&gt;
+&lt;p&gt;一部の記事でエラーが出る。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;Reason&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;There&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt; &lt;span class="n"&gt;that&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="n"&gt;missing&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;URL&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;どの記事がまずいかはわかるが、何行目とか場所はわからないのかしら。
+適当になおす。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ zola check
+&lt;/pre&gt;
+&lt;p&gt;の方がデバッグ向け。
+いくつかなおしたら、エラーは出なくなった。&lt;/p&gt;
+&lt;h2&gt;テンプレートを用意する&lt;/h2&gt;
+&lt;p&gt;https://www.getzola.org/documentation/getting-started/overview/&lt;/p&gt;
+&lt;p&gt;に従って基本的なテンプレートを作成。
+index.html, section.html, page.html の3種類のテンプレートがサーチされる。
+section.html と page.html は、section のフロントマター、 &lt;code&gt;template&lt;/code&gt;, &lt;code&gt;page_template&lt;/code&gt; で変更できる。&lt;/p&gt;
+&lt;h2&gt;zola の content 構成&lt;/h2&gt;
+&lt;p&gt;section(フォルダ) に page が所属するという構成みたい。
+section とうのは単なるフォルダではなくて、folder/index.md もしくは folder/_index.md をさす。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;root =&amp;gt; index.html&lt;ul&gt;
+&lt;li&gt;section&lt;ul&gt;
+&lt;li&gt;_index.md (セクションになる) =&amp;gt; section.html&lt;/li&gt;
+&lt;li&gt;page1.md =&amp;gt; page.html&lt;/li&gt;
+&lt;li&gt;page2.md =&amp;gt; page.html&lt;/li&gt;
+&lt;li&gt;subsection (_index.md が無いのでセクションでは無い) =&amp;gt; レンダリングされない&lt;ul&gt;
+&lt;li&gt;page3.md (orphan page) =&amp;gt; page.html&lt;/li&gt;
+&lt;li&gt;page4.md (orphan page) =&amp;gt; page.html&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;セクションに所属しない page は orphan page となり、 &lt;code&gt;section.pages&lt;/code&gt; のように列挙することができなくなる。
+すべてのフォルダに &lt;code&gt;_index.md&lt;/code&gt; を配置してセクション化するという設計思想のようだ。&lt;/p&gt;
+&lt;p&gt;セクションが木構造になっていて、page が leaf になる。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;section&lt;ul&gt;
+&lt;li&gt;subsections&lt;/li&gt;
+&lt;li&gt;pages&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;が再帰的に続く。&lt;/p&gt;
+&lt;h3&gt;zola を改造してみた。&lt;/h3&gt;
+&lt;p&gt;orphan page が section.pages に入るようになる。
+https://github.com/ousttrue/zola/commit/7842d0b2d05eb15400dbe20b20791b57af077de1&lt;/p&gt;
+&lt;h2&gt;zola 設定 config.toml&lt;/h2&gt;
+&lt;p&gt;https://www.getzola.org/documentation/getting-started/configuration/&lt;/p&gt;
+&lt;h2&gt;Tera テンプレート&lt;/h2&gt;
+&lt;p&gt;https://tera.netlify.app/docs&lt;/p&gt;
+&lt;h3&gt;extends&lt;/h3&gt;
+&lt;p&gt;別ファイルを部分的に override する
+https://tera.netlify.app/docs/#inheritance&lt;/p&gt;
+&lt;h3&gt;include&lt;/h3&gt;
+&lt;p&gt;別ファイルの部品を読み込む
+https://tera.netlify.app/docs/#include&lt;/p&gt;
+&lt;h3&gt;date format&lt;/h3&gt;
+&lt;p&gt;https://tera.netlify.app/docs/#include&lt;/p&gt;
+&lt;h2&gt;とりあえずメンテナンス中・・・&lt;/h2&gt;
+&lt;p&gt;hugo に比べて template の構成がシンプルでわかりやすいような気がする
+(hugo に慣れているせいかもしれない)。
+そもそも hugo の時点でちゃんと管理してなかったので、
+ぼちぼち続きをやる。&lt;/p&gt;</description><category>rust</category><category>ssg</category><category>zola</category><guid>https://ousttrue.github.io/posts/2021/init_zola/</guid><pubDate>Fri, 11 Jun 2021 15:00:00 GMT</pubDate></item><item><title>Github Pages の種類</title><link>https://ousttrue.github.io/posts/2020/hugo-github-pages/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;https://docs.github.com/ja/github/working-with-github-pages/about-github-pages&lt;/p&gt;
+&lt;h3&gt;プロジェクトサイト (gh-pages)&lt;/h3&gt;
+&lt;p&gt;各プロジェクトに作れる。&lt;/p&gt;
+&lt;p&gt;URLは、&lt;code&gt;http(s)://&amp;lt;user&amp;gt;.github.io/&amp;lt;repository&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;各リポジトリの、 &lt;code&gt;gh-pages&lt;/code&gt; ブランチでサイトをホストする。
+hugo で運用するなら、
+&lt;code&gt;master&lt;/code&gt; ブランチに hugo project を commit する。
+hugo のビルド結果を &lt;code&gt;gh-pages&lt;/code&gt; に commit する。
+手間を省くために &lt;code&gt;master&lt;/code&gt; への push をトリガーに &lt;code&gt;travis-CI&lt;/code&gt; 等で自動でビルドして、結果を gh-pages に push する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# .travis.yml&lt;/span&gt;
+&lt;span class="n"&gt;deploy&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;provider&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;pages&lt;/span&gt;
+  &lt;span class="n"&gt;skip_cleanup&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;true&lt;/span&gt;
+  &lt;span class="n"&gt;github_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="n"&gt;GITHUB_TOKEN&lt;/span&gt;  &lt;span class="c1"&gt;# Set in the settings page of your repository, as a secure variable&lt;/span&gt;
+  &lt;span class="n"&gt;keep_history&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;true&lt;/span&gt;
+  &lt;span class="n"&gt;target_branch&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;gh&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt; &lt;span class="c1"&gt;# default&lt;/span&gt;
+  &lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;public&lt;/span&gt;
+  &lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;branch&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;master&lt;/span&gt; &lt;span class="c1"&gt;# master branch が push されたのをトリガーに public フォルダを gh-pages ブランチに pushする&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;ユーザーサイト&lt;/h3&gt;
+&lt;p&gt;ユーザー毎にひとつだけ作ることのできるリポジトリ。&lt;/p&gt;
+&lt;p&gt;URLは、&lt;code&gt;http(s)://&amp;lt;user&amp;gt;.github.io&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;これ、&lt;code&gt;gh-pages&lt;/code&gt; と URL が重複するときがありそうな。&lt;/p&gt;
+&lt;p&gt;repository &lt;code&gt;${user_name}.github.io&lt;/code&gt; の場合 &lt;code&gt;master&lt;/code&gt; が &lt;code&gt;gh-pages&lt;/code&gt; の役割を果たす。
+この名前にすると、サイトをホストする用の特殊なリポジトリになる様子。&lt;/p&gt;
+&lt;p&gt;hugo で運用するなら &lt;code&gt;gh-pages&lt;/code&gt; ブランチ運用と逆になる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;deploy&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;provider&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;pages&lt;/span&gt;
+  &lt;span class="n"&gt;skip_cleanup&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+  &lt;span class="n"&gt;github_token&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;$GITHUB_TOKEN&lt;/span&gt;  &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;Set&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt; &lt;span class="n"&gt;page&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;your&lt;/span&gt; &lt;span class="n"&gt;repository&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;secure&lt;/span&gt; &lt;span class="n"&gt;variable&lt;/span&gt;
+  &lt;span class="n"&gt;keep_history&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+  &lt;span class="n"&gt;target_branch&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;master&lt;/span&gt;
+  &lt;span class="n"&gt;local_dir&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kd"&gt;public&lt;/span&gt;
+  &lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;branch&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;hugo&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;hugo&lt;/span&gt; &lt;span class="n"&gt;branch&lt;/span&gt; &lt;span class="err"&gt;が&lt;/span&gt; &lt;span class="n"&gt;push&lt;/span&gt; &lt;span class="err"&gt;されたのをトリガーに&lt;/span&gt; &lt;span class="kd"&gt;public&lt;/span&gt; &lt;span class="err"&gt;フォルダを&lt;/span&gt; &lt;span class="n"&gt;master&lt;/span&gt; &lt;span class="err"&gt;ブランチに&lt;/span&gt;&lt;span class="n"&gt;pushする&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;default branch を hugo の方に変えてから、git clone すると作業しやすい。&lt;/p&gt;</description><category>hugo</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2020/hugo-github-pages/</guid><pubDate>Mon, 20 Jul 2020 04:50:17 GMT</pubDate></item><item><title>wyam ことはじめ</title><link>https://ousttrue.github.io/posts/2019/wyam-start/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;ソースの方のリポジトリがハードディスククラッシュで失われて
+更新できなくなっていたので、サイトを作りなおし。
+&lt;a href="https://wyam.io/"&gt;wyam&lt;/a&gt;を使ってみる。&lt;/p&gt;
+&lt;h3&gt;インストール&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ dotnet tool install -g Wyam.Tool
+&lt;/pre&gt;
+&lt;h3&gt;初期化する&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ mkdir site
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; site
+$ wyam new --recipe blog
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;config.wyam(siteの設定)&lt;/li&gt;
+&lt;li&gt;input(記事置き場)&lt;/li&gt;
+&lt;li&gt;about.md&lt;/li&gt;
+&lt;li&gt;posts&lt;ul&gt;
+&lt;li&gt;first-post.md&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;設定ファイル&lt;/h4&gt;
+&lt;p&gt;config.wyam がそれで、C# を Roslyn で処理するらしい。
+おもしろい。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;// config.wyam
+#recipe Blog
+#theme Phantom
+
+// Customize your settings and add new ones here
+Settings[Keys.Host] = "ousttrue.github.io";
+Settings[BlogKeys.Title] = "三次元日誌";
+Settings[BlogKeys.Description] = "programming とか";
+
+// Add any pipeline customizations here
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;#recipe Blog&lt;/code&gt; がパイプライン設定で、 input フォルダの構成と処理を設定している。
+設定ファイルに展開したものを記述することもできるみたい。&lt;/p&gt;
+&lt;h4&gt;gitignore&lt;/h4&gt;
+&lt;p&gt;https://wyam.io/docs/advanced/what_to_exclude_from_source_control&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;#.gitignore&lt;/span&gt;
+&lt;span class="na"&gt;.vs&lt;/span&gt;&lt;span class="err"&gt;/&lt;/span&gt;
+&lt;span class="nf"&gt;output&lt;/span&gt;&lt;span class="err"&gt;/&lt;/span&gt;
+&lt;span class="nf"&gt;config.wyam.hash&lt;/span&gt;
+&lt;span class="nf"&gt;config.wyam.dll&lt;/span&gt;
+&lt;span class="nf"&gt;config.wyam.packages.xml&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;生成する&lt;/h3&gt;
+&lt;pre class="code literal-block"&gt;$ wyam
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;output&lt;/li&gt;
+&lt;li&gt;index.html&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;$ wyam --watch --preview&lt;/code&gt; で更新を監視して livereload できる。&lt;/p&gt;
+&lt;h4&gt;動作&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;input/posts/ 配下の markdown が /posts/ 下にhtml化される&lt;/li&gt;
+&lt;li&gt;input/posts/**/hoge.md が /posts/hoge.html のように階層は無くなる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;テーマを変えてみる&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://wyam.io/recipes/blog/themes/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;コマンドラインに、 &lt;code&gt;--theme THEME_NAME&lt;/code&gt; とするか config.wyam に&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;// config.wyam
+#theme THEME_NAME
+&lt;/pre&gt;
+&lt;p&gt;とすれば OK。&lt;/p&gt;
+&lt;h3&gt;appveyor で GitHub-Pages に展開&lt;/h3&gt;
+&lt;p&gt;https://wyam.io/docs/deployment/appveyor&lt;/p&gt;
+&lt;p&gt;CIよくわかってないので難航したが動くようになった。&lt;/p&gt;
+&lt;p&gt;GitHub-pages のユーザー頁を使ったので、
+ソースのリポジトリと、html置き場のリポジトリを分けた。&lt;/p&gt;
+&lt;p&gt;ソースのリポジトリに AppVeyor を仕掛けて、
+push したときにビルドして、html置き場に push する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;branches&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="nt"&gt;only&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;master&lt;/span&gt;
+
+&lt;span class="nt"&gt;environment&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="nt"&gt;access_token&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;# EDIT the encrypted version of your GitHub access token&lt;/span&gt;
+    &lt;span class="c1"&gt;# https://www.appveyor.com/docs/deployment/github/&lt;/span&gt;
+    &lt;span class="nt"&gt;secure&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;E+wmFkBHvRVLnVcg9mIBXP7iTXKIqJyi/DewA+0SEtkpWmtiNFKKhYzD4bs0nw2L&lt;/span&gt;
+
+&lt;span class="nt"&gt;install&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mkdir ..\Wyam&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;mkdir ..\output&lt;/span&gt;
+  &lt;span class="c1"&gt;# Fetch the latest version of Wyam &lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="s"&gt;"curl&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;-s&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;https://raw.githubusercontent.com/Wyamio/Wyam/master/RELEASE&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;-o&lt;/span&gt;&lt;span class="nv"&gt; &lt;/span&gt;&lt;span class="s"&gt;..\\Wyam\\wyamversion.txt"&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;set /P WYAMVERSION=&amp;lt; ..\Wyam\wyamversion.txt&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;echo %WYAMVERSION%&lt;/span&gt;
+  &lt;span class="c1"&gt;# Get and unzip the latest version of Wyam&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;ps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Start-FileDownload "https://github.com/Wyamio/Wyam/releases/download/$env:WYAMVERSION/Wyam-$env:WYAMVERSION.zip" -FileName "..\Wyam\Wyam.zip"&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;7z x ..\Wyam\Wyam.zip -o..\Wyam -r&lt;/span&gt;
+
+&lt;span class="nt"&gt;build_script&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;dotnet ..\Wyam\Wyam.dll --output ..\output&lt;/span&gt;
+
+&lt;span class="nt"&gt;on_success&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="c1"&gt;# Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push&lt;/span&gt;
+  &lt;span class="c1"&gt;# See http://www.appveyor.com/docs/how-to/git-push for more info&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git config --global credential.helper store&lt;/span&gt;
+  &lt;span class="c1"&gt;# EDIT your Git email and name&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git config --global user.email ousttrue@gmail.com&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git config --global user.name ousttrue&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="nt"&gt;ps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git checkout gh-pages&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git rm -rf .&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;xcopy ..\output . /E&lt;/span&gt;
+  &lt;span class="c1"&gt;# EDIT your domain name or remove if not using a custom domain&lt;/span&gt;
+  &lt;span class="c1"&gt;# - echo wyam.io &amp;gt; CNAME&lt;/span&gt;
+  &lt;span class="c1"&gt;# EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# 送り先(push できるように environment access token をセットしている)&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git remote set-url origin https://github.com/ousttrue/ousttrue.github.io.git&lt;/span&gt;
+  &lt;span class="c1"&gt;# 空の gh-pages ブランチに変更を追加&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git add -A&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git commit -a -m "Commit from AppVeyor"&lt;/span&gt;
+  &lt;span class="c1"&gt;# gh-pages ブランチから origin の master に送る(use の GitHubPages を使っているので master ブランチ運用)&lt;/span&gt;
+  &lt;span class="p p-Indicator"&gt;-&lt;/span&gt; &lt;span class="l l-Scalar l-Scalar-Plain"&gt;git push -f origin gh-pages:master&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;vscode で編集する&lt;/h3&gt;
+&lt;p&gt;watch タスクを作成してバックグランドで &lt;code&gt;input&lt;/code&gt; の変更を監視。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;See&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;go&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;microsoft&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;fwlink&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="vm"&gt;?&lt;/span&gt;&lt;span class="n"&gt;LinkId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;733558&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;documentation&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;about&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;format&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="ss"&gt;"version"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;"2.0.0"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="ss"&gt;"tasks"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;        {&lt;/span&gt;
+&lt;span class="n"&gt;            "label": "watch",&lt;/span&gt;
+&lt;span class="n"&gt;            "type": "shell",&lt;/span&gt;
+&lt;span class="n"&gt;            "command": "wyam",&lt;/span&gt;
+&lt;span class="n"&gt;            "args": [&lt;/span&gt;
+&lt;span class="n"&gt;                "--watch", "--preview",&lt;/span&gt;
+&lt;span class="n"&gt;            &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="ss"&gt;"problemMatcher"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;            &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="ss"&gt;"isBackground"&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;true&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;launch.json を作成して F5 でブラウザを開く。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:5080",
+            "webRoot": "&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;workspaceFolder&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;"
+        }
+    ]
+}
+&lt;/pre&gt;
+&lt;p&gt;自動でリロードがかかるので快適。&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://www.staticgen.com/wyam&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;https://wyam.io/docs/resources/built-with-wyam&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://qiita.com/MeilCli/items/425a5436aced08ba7062"&gt;静的サイトジェネレーターでC#を使いたかったからWyamを試したら最高だった&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;日本語で wyam に言及しているサイトはこれしかなかった。
+マイナーでござる。&lt;/p&gt;</description><category>ssg</category><category>wyam</category><guid>https://ousttrue.github.io/posts/2019/wyam-start/</guid><pubDate>Fri, 16 Aug 2019 15:00:00 GMT</pubDate></item><item><title>Hugoに乗り換え</title><link>https://ousttrue.github.io/posts/2017/02/hugo-memo/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;なんとなくまたサイトシステム更新。&lt;/p&gt;
+&lt;p&gt;前回はgulpで何もかも自前にしすぎて、めんどくささが上がりすぎてしまった。反省してシンプルなhugoにしてみました。前はgulpで何でもありにしてたのでwebglとかunityとかもできたのだけど、そういうのは動かなくなる。しかしまぁ、そんなにwebやらんよねということで。とりあえず、旧サイトのMarkdownのfrontmatterをpythonで少し手直ししてimportしてみた。hugo軽快な動作でよいね。themeを見繕ってsyntax highlightの入ったよさげな感じになった。&lt;/p&gt;</description><category>hugo</category><category>ssg</category><guid>https://ousttrue.github.io/posts/2017/02/hugo-memo/</guid><pubDate>Thu, 16 Feb 2017 15:00:00 GMT</pubDate></item></channel></rss>

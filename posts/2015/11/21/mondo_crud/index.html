@@ -1,389 +1,320 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>mondo_crud</title>
-<link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-<script src="../../../../../_static/jquery.js"></script>
-<script src="../../../../../_static/underscore.js"></script>
-<script src="../../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>MongoDBでCRUD | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">mondo_crud</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="mondo-crud">
-<h1>mondo_crud<a class="headerlink" href="#mondo-crud" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">MongoDBでCRUD
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2015-11-21T00:00:00+09:00" title="2015-11-21">2015-11-21</time>
+</li>
+</ul>
+</h1>
+
 <p>“シングルページWebアプリケーション”に説明されている
 mongodbをバックエンドに、node.js + expressをフロントエンドにする構成のおさらい。
 MongoDB &lt;-&gt; node.js Express &lt;-&gt; Browser</p>
 <p>グローバルなnpmパッケージ</p>
 <blockquote>
-<div><p>npm install -g gulp typescript tsd bower</p>
-</div></blockquote>
-<p>Windowsの場合、</p>
+<p>npm install -g gulp typescript tsd bower</p>
+</blockquote>
+<p>Windowsの場合、
+%USERPROFILE%\AppData\Roaming\npm</p>
 <p>にインストールされるのでパスを通しておく。
 Expressの準備
 app.js</p>
 <blockquote>
-<div><p>mkdir mongocrud
+<p>mkdir mongocrud
 cd mongocrud
 mongocrud&gt; npm init -y
-mongocrud&gt; npm install express –save</p>
-</div></blockquote>
+mongocrud&gt; npm install express --save</p>
+</blockquote>
 <p>// app.js
-var http=require(‘http’);
-var express=require(‘express’);</p>
+var http=require('http');
+var express=require('express');</p>
 <p>var port=process.env.port || 3000;
 var app=express();
 var server=http.createServer(app);</p>
-<p>app.get(‘/’, function(request, response){
-response.send(‘Hello Express’);
+<p>app.get('/', function(request, response){
+    response.send('Hello Express');
 });</p>
 <p>server.listen(port);</p>
 <p>起動</p>
 <blockquote>
-<div><p>node app.js</p>
-</div></blockquote>
+<p>node app.js</p>
+</blockquote>
 <p>http://localhost:3000
 で動作を確認する。
 loggerや静的ファイル提供などのミドルウェアを追加
-mongocrud&gt; npm install body-parser method-override connect-logger errorhandler serve-static –save</p>
+mongocrud&gt; npm install body-parser method-override connect-logger errorhandler serve-static --save</p>
 <p>// app.js
 // app.getの前
-var bodyparser=require(‘body-parser’);
-var methodoverride = require(‘method-override’);
-var logger = require(‘connect-logger’);
-var errorhandler = require(‘errorhandler’);
-var servestatic = require(‘serve-static’);
-var serve_dir=__dirname + “/client”;
-console.log(“serve %s”, serve_dir);
+var bodyparser=require('body-parser');
+var methodoverride = require('method-override');
+var logger = require('connect-logger');
+var errorhandler = require('errorhandler');
+var servestatic = require('serve-static');
+var serve_dir=__dirname + "/client";
+console.log("serve %s", serve_dir);
 app
 .use(bodyparser())
 .use(methodoverride())
 .use(logger())
 .use(errorhandler({
-dumpExceptioons: true,
-showStack: true
+    dumpExceptioons: true,
+    showStack: true
 }));
 .use(servestatic(serve_dir))</p>
 <p>gulpで静的なファイルを’./build/client’下にコピーするタスクを定義する</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="gulpfile-coffee">
-<h1>gulpfile.coffeeにタスクを追加<a class="headerlink" href="#gulpfile-coffee" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="client">
-<h1>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id2">
-<h1><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘client’, -&gt;
-gulp.src config.src_client
-.pipe gulp.dest config.dst_client
-.pipe browserSync.stream()</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="tasks">
-<h1>tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘watch’, -&gt;
-gulp.watch config.src_ts, [‘ts’]
-gulp.watch config.src_client, [‘client’]</p>
+<h2>gulpfile.coffeeにタスクを追加</h2>
+<h2></h2>
+<h2>client</h2>
+<h2></h2>
+<p>gulp.task 'client', -&gt;
+    gulp.src config.src_client
+        .pipe gulp.dest config.dst_client
+        .pipe browserSync.stream()</p>
+<h2>tasks</h2>
+<p>gulp.task 'watch', -&gt;
+    gulp.watch config.src_ts, ['ts']
+    gulp.watch config.src_client, ['client']</p>
 <p>gulpでサーバー起動とブラウザの自動オープンタスクを定義する
 いろいろ入用になるのでgulpを準備する。
 まずは、nodemonとbrowser-syncを導入して
 app.js起動と起動したアプリをブラウザで自動で開くタスクを定義する。
 mongocrud&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D</p>
 <p>// gulpfile.js
-var gulp = require(‘gulp’);
-var $ = require(“gulp-load-plugins”)();
-var browserSync = require(“browser-sync”).create();
+var gulp = require('gulp');
+var $ = require("gulp-load-plugins")();
+var browserSync = require("browser-sync").create();
 var port = 5000;</p>
-<p>gulp.task(‘serve’, function () {
-$.nodemon({
-script: ‘app.js’,
-exp: ‘js’,
-ignore: [],
-env: {
-port: port
-}
-})
-.on(‘restart’, function () { browserSync.reload(); });
+<p>gulp.task('serve', function () {
+    $.nodemon({
+        script: 'app.js',
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: port
+        }
+    })
+    .on('restart', function () { browserSync.reload(); });
 });</p>
-<p>gulp.task(‘browser-sync’, [‘serve’], function () {
-browserSync.init({
-proxy: “localhost:” + port
-});
+<p>gulp.task('browser-sync', ['serve'], function () {
+    browserSync.init({
+        proxy: "localhost:" + port
+    });
 });</p>
-<p>gulp.task(‘default’, [‘browser-sync’]);</p>
+<p>gulp.task('default', ['browser-sync']);</p>
 <p>BrowserSyncのReloadが動くには出力がhtmlである必要がある(bodyタグの中に細工をするため)。
 // app.jsの修正
-app.get(‘/’, function(request, response){
-response.setHeader(‘content-type’, ‘text/html’);
-response.send(’<html><head></head><body>Hello html</body></html>’);
-});</p>
+app.get('/', function(request, response){
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello html');
+});
 <p>mongocrud&gt; gulp</p>
 <p>でnodemonが起動してブラウザが自動で開始される。
 app.jsの内容を変えるとブラウザがリロードされる。
 が、リロードが速すぎて内容が更新されないことが判明。
 リロードを遅延させる策を講じる。
 // app.jsの最後尾に追加
-console.log(‘start %d’, port);</p>
+console.log('start %d', port);</p>
 <p>app.jsからのコンソール出力を監視する。
 // gulpfile.jsの修正</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$.nodemon({
-    script: config.app_entry,
-    exp: &#39;js&#39;,
-    ignore: [],
-    env: {
-        port: config.app_port
-    },
-    stdout: false // &lt;- 必要
-})
-//.on(&#39;restart&#39;, function () { browserSync.reload(); });
-.on(&#39;readable&#39;, function(){
-    this.stdout.on(&#39;data&#39;, function(chunk){
-        if (/^start /.test(chunk)){
-            console.log(&#39;reloading...&#39;);
-            browserSync.reload();
-        }
-        process.stdout.write(chunk);
-    });
-});
-</pre></div>
-</div>
+<pre class="code literal-block"><span class="o">$.</span><span class="n">nodemon</span><span class="p">({</span>
+    <span class="n">script</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">app_entry</span><span class="p">,</span>
+    <span class="nb">exp</span><span class="p">:</span> <span class="s1">'js'</span><span class="p">,</span>
+    <span class="n">ignore</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="n">env</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">app_port</span>
+    <span class="p">},</span>
+    <span class="n">stdout</span><span class="p">:</span> <span class="bp">false</span> <span class="o">//</span> <span class="o">&lt;-</span> <span class="err">必要</span>
+<span class="p">})</span>
+<span class="o">//.</span><span class="n">on</span><span class="p">(</span><span class="s1">'restart'</span><span class="p">,</span> <span class="n">function</span> <span class="p">()</span> <span class="p">{</span> <span class="n">browserSync</span><span class="o">.</span><span class="n">reload</span><span class="p">();</span> <span class="p">});</span>
+<span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'readable'</span><span class="p">,</span> <span class="n">function</span><span class="p">(){</span>
+    <span class="n">this</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">chunk</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">/^</span><span class="n">start</span> <span class="o">/.</span><span class="n">test</span><span class="p">(</span><span class="n">chunk</span><span class="p">)){</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">'reloading...'</span><span class="p">);</span>
+            <span class="n">browserSync</span><span class="o">.</span><span class="n">reload</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre>
 <p>gulpfile.jsをgulpfile.coffeeにする
 gulpcrud&gt; npm install coffee-script -D</p>
 <p>gulpfile.jsを書き換える。gulp-3.9.0では既にcoffee script対応が成されているようで、
 gulpfile.jsの拡張子を変えてgulpfile.coffeeとリネームして中身を書き換えてから
 mongocrud&gt; gulp</p>
 <p>としたら特にオプション等を指定することなくgulpはgulpfile.coffeeを見つけてくれて動いた。</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id3">
-<h1>gulpfile.coffee<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
-<p>gulp = require(‘gulp’);
-$ = require(“gulp-load-plugins”)();
-browserSync = require(“browser-sync”).create();
+<h2>gulpfile.coffee</h2>
+<p>gulp = require('gulp');
+$ = require("gulp-load-plugins")();
+browserSync = require("browser-sync").create();
 port = 5000;</p>
-<p>gulp.task ‘serve’, -&gt;
-$.nodemon({
-script: ‘app.js’,
-exp: ‘js’,
-ignore: [],
-env: {
-port: port
-}
-})
-.on ‘readable’, -&gt;
-this.stdout.on ‘data’, (chunk) -&gt;
-if (/^start /.test(chunk))
-console.log(‘reloading…’)
-browserSync.reload()
-process.stdout.write(chunk);</p>
-<p>gulp.task ‘browser-sync’, [‘serve’], -&gt;
-browserSync.init({
-proxy: “localhost:” + port
-})</p>
-<p>gulp.task(‘default’, [‘browser-sync’]);</p>
+<p>gulp.task 'serve', -&gt;
+    $.nodemon({
+        script: 'app.js',
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: port
+        }
+    })
+    .on 'readable', -&gt;
+        this.stdout.on 'data', (chunk) -&gt;
+            if (/^start /.test(chunk))
+                console.log('reloading...')
+                browserSync.reload()
+            process.stdout.write(chunk);</p>
+<p>gulp.task 'browser-sync', ['serve'], -&gt;
+    browserSync.init({
+        proxy: "localhost:" + port
+    })</p>
+<p>gulp.task('default', ['browser-sync']);</p>
 <p>TypeScriptにする
 app.jsをsrc/app.tsに移動する。
 // src/app.ts
 declare function require(name: string):any;
 declare var process;</p>
-<p>var http=require(‘http’);
-var express=require(‘express’);</p>
+<p>var http=require('http');
+var express=require('express');</p>
 <p>var port=process.env.port || 3000;
 var app=express();
 var server=http.createServer(app);</p>
-<p>app.get(‘/’, function(request, response){
-response.setHeader(‘content-type’, ‘text/html’);
-response.send(’<html><head></head><body>Hello</body></html>’);
-});</p>
+<p>app.get('/', function(request, response){
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello');
+});
 <p>server.listen(port);
-console.log(‘start %d’, port);</p>
+console.log('start %d', port);</p>
 <p>コンパイルが通るようにアンビエント宣言を追加した。
 gulpにコンパイルタスクを定義する。
 serveタスクの前にtsタスクを実行し、
 tsファイルの更新をwatchしてtsタスクを起動するように調整した。</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id4">
-<h1>gulpfile.coffee<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
-<p>gulp = require(‘gulp’);
-$ = require(“gulp-load-plugins”)();
-browserSync = require(“browser-sync”).create();</p>
+<h2>gulpfile.coffee</h2>
+<p>gulp = require('gulp');
+$ = require("gulp-load-plugins")();
+browserSync = require("browser-sync").create();</p>
 <p>config = {
-src_ts: ‘./src/<strong>/*.ts’,<br />
-dst_js_dir: ‘./build/js’,
-dst_watch: ‘./build/</strong>/*.js’,
-app_entry: ‘./build/js/app.js’,
-app_port: 5000
+    src_ts: './src/<strong>/*.ts', <br>
+    dst_js_dir: './build/js',
+    dst_watch: './build/</strong>/*.js',
+    app_entry: './build/js/app.js',
+    app_port: 5000
 }</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id5">
-<h1><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="compile-typescript">
-<h1>compile typescript<a class="headerlink" href="#compile-typescript" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id6">
-<h1><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘ts’, -&gt;
-gulp.src config.src_ts
-.pipe $.typescript({
-target: ‘ES6’
-removeComments: true
-}).js
-.pipe gulp.dest config.dst_js_dir</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id7">
-<h1><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="start-js-app">
-<h1>start js app<a class="headerlink" href="#start-js-app" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id8">
-<h1><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘serve’, [‘ts’], -&gt;
-$.nodemon({
-script: config.app_entry,
-exp: ‘js’,
-ignore: [],
-env: {
-port: config.app_port
-},
-stdout: false
-})
-#.on ‘restart’, -&gt;
-#    browserSync.reload();
-.on ‘readable’, -&gt;
-this.stdout.on ‘data’, (chunk) -&gt;
-if (/^start /.test(chunk))
-console.log(‘reloading…’)
-browserSync.reload()
-process.stdout.write(chunk);</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id9">
-<h1><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="start-browser-sync">
-<h1>start browser-sync<a class="headerlink" href="#start-browser-sync" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id10">
-<h1><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘browser-sync’, [‘serve’], -&gt;
-browserSync.init({
-proxy: “http://localhost:” + config.app_port
-})</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id11">
-<h1>tasks<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘watch’, -&gt;
-gulp.watch config.src_ts, [‘ts’]</p>
-<p>gulp.task(‘default’, [‘watch’, ‘browser-sync’]);</p>
+<h2></h2>
+<h2>compile typescript</h2>
+<h2></h2>
+<p>gulp.task 'ts', -&gt;
+  gulp.src config.src_ts
+    .pipe $.typescript({
+      target: 'ES6'
+      removeComments: true
+    }).js
+    .pipe gulp.dest config.dst_js_dir</p>
+<h2></h2>
+<h2>start js app</h2>
+<h2></h2>
+<p>gulp.task 'serve', ['ts'], -&gt;
+    $.nodemon({
+        script: config.app_entry,
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: config.app_port
+        },
+        stdout: false
+    })
+    #.on 'restart', -&gt;
+    #    browserSync.reload();
+    .on 'readable', -&gt;
+        this.stdout.on 'data', (chunk) -&gt;
+            if (/^start /.test(chunk))
+                console.log('reloading...')
+                browserSync.reload()
+            process.stdout.write(chunk);</p>
+<h2></h2>
+<h2>start browser-sync</h2>
+<h2></h2>
+<p>gulp.task 'browser-sync', ['serve'], -&gt;
+    browserSync.init({
+        proxy: "http://localhost:" + config.app_port
+    })</p>
+<h2>tasks</h2>
+<p>gulp.task 'watch', -&gt;
+    gulp.watch config.src_ts, ['ts']</p>
+<p>gulp.task('default', ['watch', 'browser-sync']);</p>
 <p>typescriptを型安全にする
 コンパイラオプションを定義するtsconfig.jsonを生成する(要tsc-1.6以上)。
-mongocrud&gt; tsc –init</p>
+mongocrud&gt; tsc --init</p>
 <p>手で作ってもよし
 tsconfig.json
 {
-“compilerOptions”: {
-“module”: “commonjs”,
-“target”: “es5”,
-“noImplicitAny”: true,
-“outDir”: “build”,
-“rootDir”: “.”,
-“sourceMap”: false
-},
-“filesGlob”: [
-“./typings/<strong>/*.d.ts”,
-“./src/</strong>/*.ts”
-]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "outDir": "build",
+        "rootDir": ".",
+        "sourceMap": false
+    },
+    "filesGlob": [
+        "./typings/<strong>/*.d.ts",
+        "./src/</strong>/*.ts"
+    ]
 }</p>
 <p>VSCodeの場合、tsconfig.jsonを変えたらVSCodeを再起動するべし。
 filesGlobは必要で、無いとインテリセンスが遅くなる(Loading…)。
 tsタスクがtsconfig.jsonを使うようにする。</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id12">
-<h1>gulpfile.coffee<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h1>
-<p>gulp.task ‘ts’, -&gt;
-tsconfig = require(‘tsconfig.json’)<br />
-gulp.src config.src_ts
-.pipe $.typescript(tsconfig.compilerOptions).js
-.pipe gulp.dest config.dst_js_dir</p>
+<h2>gulpfile.coffee</h2>
+<p>gulp.task 'ts', -&gt;
+  tsconfig = require('tsconfig.json')<br>
+  gulp.src config.src_ts
+    .pipe $.typescript(tsconfig.compilerOptions).js
+    .pipe gulp.dest config.dst_js_dir</p>
 <p>tsdを初期化して、node.jsとexpressのtypescript定義を取得する。
 mongocrud&gt; tsd init
 mongocrud&gt; tsd query node express -rosa install</p>
 <p>src/app.ts
-/// <reference path="../typings/tsd.d.ts" />
-import http = require(‘http’);
-import express=require(‘express’);</p>
+/// <reference path="../typings/tsd.d.ts"></reference>
+import http = require('http');
+import express=require('express');</p>
 <p>var port=process.env.port || 3000;
 var app=express();
 var server=http.createServer(app);</p>
-<p>app.get(‘/’, (request, response) =&gt; {
-response.setHeader(‘content-type’, ‘text/html’);
-response.send(’<html><head></head><body>Hello ts</body></html>’);
-});</p>
+<p>app.get('/', (request, response) =&gt; {
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello ts');
+});
 <p>server.listen(port);
-console.log(‘start %d’, port);</p>
+console.log('start %d', port);</p>
 <p>MongoDBのCRUDを定義する
 mongodbをインストールする。
 Windowsの場合、MongoDBがデフォルトの”Program Files”にインストールされるとパスにスペースが入って
@@ -392,1077 +323,335 @@ C:\MongoDB</p>
 <p>にインストールした。
 gulpでmongodbを起動する
 mongocrud&gt; npm i sprintf-js -D</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id13">
-<h1>gulpfile.coffee<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h1>
-<p>MONGO_EXE = ‘C:/MongoDB/bin/mongod.exe’;</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id14">
-<h1><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="running-mongo">
-<h1>Running mongo<a class="headerlink" href="#running-mongo" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id15">
-<h1><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h1>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="http-stackoverflow-com-a-28048696-46810">
-<h1>http://stackoverflow.com/a/28048696/46810<a class="headerlink" href="#http-stackoverflow-com-a-28048696-46810" title="Permalink to this headline">¶</a></h1>
-<p>sprintf = require(‘sprintf-js’).sprintf;
-fs = require(‘fs’);
-exec = require(‘child_process’).exec;
-gulp.task ‘mongodb:start’, (cb)-&gt;
-command=sprintf(‘%s –dbpath %s’
-, MONGO_EXE, config.mongo_data);
-if(!fs.existsSync(config.mongo_data))
-fs.mkdirSync(config.mongo_data);
-exec command, (err, stdout, stderr) -&gt;
-console.log(stdout);
-console.log(stderr);
-cb();</p>
+<h2>gulpfile.coffee</h2>
+<p>MONGO_EXE = 'C:/MongoDB/bin/mongod.exe';</p>
+<h2></h2>
+<h2>Running mongo</h2>
+<h2></h2>
+<h2>http://stackoverflow.com/a/28048696/46810</h2>
+<p>sprintf = require('sprintf-js').sprintf;
+fs = require('fs');
+exec = require('child_process').exec;
+gulp.task 'mongodb:start', (cb)-&gt;
+    command=sprintf('%s --dbpath %s'
+        , MONGO_EXE, config.mongo_data);
+    if(!fs.existsSync(config.mongo_data))
+        fs.mkdirSync(config.mongo_data);
+    exec command, (err, stdout, stderr) -&gt;
+        console.log(stdout);
+        console.log(stderr);
+    cb();</p>
 <p>app.tsからmongodbにアクセスする
-mongocrud&gt; npm install mongodb –save
+mongocrud&gt; npm install mongodb --save
 mongocrud&gt; tsd query mongodb -rosa install</p>
 <p>src/app.ts
-/// <reference path="../typings/tsd.d.ts" /></p>
+/// <reference path="../typings/tsd.d.ts"></reference></p>
 <p>// mongodb
-import mongodb = require(‘mongodb’);
+import mongodb = require('mongodb');
 let mongoServer = new mongodb.Server(
-‘localhost’, 27017
+    'localhost', 27017
 );
 let dbHandle = new mongodb.Db(
-‘crud’, mongoServer, {w: 1}
+    'crud', mongoServer, {w: 1}
 );
 dbHandle.open(()=&gt;{
-console.log(“connected to mongoDB”);
+   console.log("connected to mongoDB"); 
 });</p>
 <p>// http
-import http = require(‘http’);
-import express = require(‘express’);
+import http = require('http');
+import express = require('express');
 let port = process.env.port || 3000;
 let app = express();
 let server = http.createServer(app);
-app.get(‘/’, (request, response) =&gt; {
-response.setHeader(‘content-type’, ‘text/html’);
-response.send(’<html><head></head><body>Hello ts</body></html>’);
-});</p>
+app.get('/', (request, response) =&gt; {
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello ts');
+});
 <p>server.listen(port);
-console.log(‘start %d’, port);</p>
+console.log('start %d', port);</p>
 <p>CRUDを定義する
 Creating a REST API using Node.js, Express, and MongoDB
 を参考に実装。
 src/app.tsのデータにアクセスする部分をsrc/mongodb.tsに分離した。
 src/app.ts
-/// <reference path="../typings/tsd.d.ts" />
-import mongocrud = require(‘./mongocrud’);</p>
+/// <reference path="../typings/tsd.d.ts"></reference>
+import mongocrud = require('./mongocrud');</p>
 <p>//
 // Express
 //
-import http = require(‘http’);
-import express = require(‘express’);</p>
+import http = require('http');
+import express = require('express');</p>
 <p>let port = process.env.port || 3000;
 let app = express();
 let server = http.createServer(app);</p>
-<p>let bodyparser=require(‘body-parser’);
-let methodoverride = require(‘method-override’);
-let logger = require(‘connect-logger’);
-let errorhandler = require(‘errorhandler’);
+<p>let bodyparser=require('body-parser');
+let methodoverride = require('method-override');
+let logger = require('connect-logger');
+let errorhandler = require('errorhandler');
 app
 .use(bodyparser())
 .use(methodoverride())
 .use(logger())
 .use(errorhandler({
-dumpExceptioons: true,
-showStack: true
+    dumpExceptioons: true,
+    showStack: true
 }));</p>
-<p>app.get(‘/’, (request, response) =&gt; {
-response.setHeader(‘content-type’, ‘text/html’);
-response.send(’<html><head></head><body>Hello ts</body></html>’);
+<p>app.get('/', (request, response) =&gt; {
+    response.setHeader('content-type', 'text/html');
+    response.send('</p>Hello ts');
 });
-server.listen(port);</p>
+server.listen(port);
 <p>// restful
-app.all(‘/api/:obj_type/*’, (req, res, next)=&gt;{
-res.contentType(‘json’);
-next();
+app.all('/api/:obj_type/*', (req, res, next)=&gt;{
+   res.contentType('json');
+   next(); 
 });
-app.get(‘/api/:obj_type’, mongocrud.findAll);
-app.get(‘/api/:obj_type/:id’, mongocrud.findById);
-app.post(‘/api/:obj_type’, mongocrud.add);
-app.put(‘/api/:obj_type/:id’, mongocrud.update);
-app.delete(‘/api/:obj_type/:id’, mongocrud.del);</p>
+app.get('/api/:obj_type', mongocrud.findAll);
+app.get('/api/:obj_type/:id', mongocrud.findById);
+app.post('/api/:obj_type', mongocrud.add);
+app.put('/api/:obj_type/:id', mongocrud.update);
+app.delete('/api/:obj_type/:id', mongocrud.del);</p>
 <p>// launchded
-console.log(‘start %d’, port);</p>
+console.log('start %d', port);</p>
 <p>src/mongocrud.ts
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/tsd.d.ts"></reference>
 //
 // MongoDB
 //
-import mongodb = require(‘mongodb’);
+import mongodb = require('mongodb');
 let mongoServer = new mongodb.Server(
-‘localhost’, 27017
+    'localhost', 27017
 );
 let db = new mongodb.Db(
-‘crud’, mongoServer, { w: 1 }
+    'crud', mongoServer, { w: 1 }
 );
 db.open(() =&gt; {
-console.log(“connected to mongoDB”);
-populateDB();<br />
+    console.log("connected to mongoDB");
+    populateDB();  <br>
 });</p>
 <p>//
 // CRUD
 //
-import express = require(‘express’);
+import express = require('express');
 export var findById = (req: express.Request, res: express.Response) =&gt; {
-let obj_type = req.params.obj_type;
-let id = req.params.id;
-console.log(‘Retrieving %s: %s’, obj_type, id);
-db.collection(obj_type, (err, collection) =&gt; {
-collection.findOne({ ‘_id’: new mongodb.ObjectID(id) }, (err, item) =&gt; {
-res.send(item);
-});
-});
+    let obj_type = req.params.obj_type;
+    let id = req.params.id;
+    console.log('Retrieving %s: %s', obj_type, id);
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.findOne({ '_id': new mongodb.ObjectID(id) }, (err, item) =&gt; {
+            res.send(item);
+        });
+    });
 };</p>
 <p>export var findAll = (req: express.Request, res: express.Response) =&gt; {
-let obj_type = req.params.obj_type;
-db.collection(obj_type, (err, collection) =&gt; {
-collection.find().toArray((err, items) =&gt; {
-res.send(items);
-});
-});
+    let obj_type = req.params.obj_type;
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.find().toArray((err, items) =&gt; {
+            res.send(items);
+        });
+    });
 };</p>
 <p>export var add = (req: express.Request, res: express.Response) =&gt; {
-let obj_type = req.params.obj_type;
-let body = req.body;
-console.log(‘Adding %s: %s’, obj_type, JSON.stringify(body));
-db.collection(obj_type, (err, collection) =&gt; {
-collection.insert(body, { safe: true }, (err, result) =&gt; {
-if (err) {
-res.send({ ‘error’: ‘An error has occurred’ });
-} else {
-console.log(‘Success: ‘ + JSON.stringify(result[0]));
-res.send(result[0]);
-}
-});
-});
+    let obj_type = req.params.obj_type;
+    let body = req.body;
+    console.log('Adding %s: %s', obj_type, JSON.stringify(body));
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.insert(body, { safe: true }, (err, result) =&gt; {
+            if (err) {
+                res.send({ 'error': 'An error has occurred' });
+            } else {
+                console.log('Success: ' + JSON.stringify(result[0]));
+                res.send(result[0]);
+            }
+        });
+    });
 }</p>
 <p>export var update = (req: express.Request, res: express.Response) =&gt; {
-let obj_type = req.params.obj_type;
-let id = req.params.id;
-let body = req.body;
-console.log(‘Updating %s: %s’, obj_type, id);
-console.log(JSON.stringify(body));
-db.collection(‘wines’, (err, collection) =&gt; {
-collection.update({ ‘_id’: new mongodb.ObjectID(id) },
-body, { safe: true }, (err, result) =&gt; {
-if (err) {
-console.log(‘Error updating wine: ‘ + err);
-res.send({ ‘error’: ‘An error has occurred’ });
-} else {
-console.log(‘%s document(s) updated’, result);
-res.send(body);
-}
-});
-});
+    let obj_type = req.params.obj_type;
+    let id = req.params.id;
+    let body = req.body;
+    console.log('Updating %s: %s', obj_type, id);
+    console.log(JSON.stringify(body));
+    db.collection('wines', (err, collection) =&gt; {
+        collection.update({ '_id': new mongodb.ObjectID(id) },
+            body, { safe: true }, (err, result) =&gt; {
+                if (err) {
+                    console.log('Error updating wine: ' + err);
+                    res.send({ 'error': 'An error has occurred' });
+                } else {
+                    console.log('%s document(s) updated', result);
+                    res.send(body);
+                }
+            });
+    });
 }</p>
 <p>export function del(req: express.Request, res: express.Response){
-let obj_type = req.params.obj_type;
-var id = req.params.id;
-console.log(‘Deleting %s: %s’, obj_type, id);
-db.collection(obj_type, (err, collection) =&gt; {
-collection.remove({ ‘_id’: new mongodb.ObjectID(id) },
-{ safe: true }, (err, result) =&gt; {
-if (err) {
-res.send({ ‘error’: ‘An error has occurred - ‘ + err });
-} else {
-console.log(‘%s document(s) deleted’, result);
-res.send(req.body);
-}
-});
-});
-}</p>
-<p>// Populate database with sample data – Only used once: the first time the application is started.
-// You’d typically not find this code in a real-life app, since the database would already exist.
-function populateDB() {
-console.log(‘populateDB…’);</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>var wines = [
-    {
-        name: &quot;CHATEAU DE SAINT COSME&quot;,
-        year: &quot;2009&quot;,
-        grapes: &quot;Grenache / Syrah&quot;,
-        country: &quot;France&quot;,
-        region: &quot;Southern Rhone&quot;,
-        description: &quot;The aromas of fruit and spice...&quot;,
-        picture: &quot;saint_cosme.jpg&quot;
-    },
-    {
-        name: &quot;LAN RIOJA CRIANZA&quot;,
-        year: &quot;2006&quot;,
-        grapes: &quot;Tempranillo&quot;,
-        country: &quot;Spain&quot;,
-        region: &quot;Rioja&quot;,
-        description: &quot;A resurgence of interest in boutique vineyards...&quot;,
-        picture: &quot;lan_rioja.jpg&quot;
-    }];
-
-db.collection(&#39;wines&#39;, (err, collection) =&gt; {
-    collection.find().toArray((err, items) =&gt; {
-        if(items.length==0){
-            // if empty
-            console.log(&#39;insert wines: &#39; + JSON.stringify(wines));
-            db.collection(&#39;wines&#39;, function(err, collection) {
-                collection.insert(wines, { safe: true }, function(err, result) { });
+    let obj_type = req.params.obj_type;
+    var id = req.params.id;
+    console.log('Deleting %s: %s', obj_type, id);
+    db.collection(obj_type, (err, collection) =&gt; {
+        collection.remove({ '_id': new mongodb.ObjectID(id) },
+            { safe: true }, (err, result) =&gt; {
+                if (err) {
+                    res.send({ 'error': 'An error has occurred - ' + err });
+                } else {
+                    console.log('%s document(s) deleted', result);
+                    res.send(req.body);
+                }
             });
-        }
     });
-});
-</pre></div>
-</div>
+}</p>
+<p>// Populate database with sample data -- Only used once: the first time the application is started.
+// You'd typically not find this code in a real-life app, since the database would already exist.
+function populateDB() {
+    console.log('populateDB...');</p>
+<pre class="code literal-block"><span class="k">var</span> <span class="n">wines</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="s2">"CHATEAU DE SAINT COSME"</span><span class="p">,</span>
+        <span class="n">year</span><span class="p">:</span> <span class="s2">"2009"</span><span class="p">,</span>
+        <span class="n">grapes</span><span class="p">:</span> <span class="s2">"Grenache / Syrah"</span><span class="p">,</span>
+        <span class="n">country</span><span class="p">:</span> <span class="s2">"France"</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="s2">"Southern Rhone"</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="s2">"The aromas of fruit and spice..."</span><span class="p">,</span>
+        <span class="n">picture</span><span class="p">:</span> <span class="s2">"saint_cosme.jpg"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="s2">"LAN RIOJA CRIANZA"</span><span class="p">,</span>
+        <span class="n">year</span><span class="p">:</span> <span class="s2">"2006"</span><span class="p">,</span>
+        <span class="n">grapes</span><span class="p">:</span> <span class="s2">"Tempranillo"</span><span class="p">,</span>
+        <span class="n">country</span><span class="p">:</span> <span class="s2">"Spain"</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="s2">"Rioja"</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="s2">"A resurgence of interest in boutique vineyards..."</span><span class="p">,</span>
+        <span class="n">picture</span><span class="p">:</span> <span class="s2">"lan_rioja.jpg"</span>
+    <span class="p">}];</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">'wines'</span><span class="p">,</span> <span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">toArray</span><span class="p">((</span><span class="n">err</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">items</span><span class="o">.</span><span class="n">length</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
+            <span class="o">//</span> <span class="k">if</span> <span class="n">empty</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">'insert wines: '</span> <span class="o">+</span> <span class="n">JSON</span><span class="o">.</span><span class="n">stringify</span><span class="p">(</span><span class="n">wines</span><span class="p">));</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">'wines'</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">wines</span><span class="p">,</span> <span class="p">{</span> <span class="n">safe</span><span class="p">:</span> <span class="bp">true</span> <span class="p">},</span> <span class="n">function</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span> <span class="p">});</span>
+            <span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre>
 <p>};</p>
 <p>ブラウザ向けのGUIを作る
 ざっくりレイアウト</p>
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
+<p>
+</p>
     <meta charset="UTF-8">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/client.js"></script>
-</head>
-<body>
-<div class="header">
+<title>Document</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/client.js"></script><div class="header">
     <form action="select">
         <span class="label">collection name</span>
-        <input type="text">
-        <button>Select</button>
+        <input type="text"><button>Select</button>
     </form>
 </div>
 <div class="body">
     <div class="left">
         <div class="list">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    &lt;/div&gt;
-    &lt;form action=&quot;add&quot;&gt;
-        &lt;button&gt;Add&lt;/button&gt;
-    &lt;/form&gt;
-&lt;/div&gt;
-&lt;div class=&quot;right&quot;&gt;
-    &lt;form&gt;
-        &lt;textarea name=&quot;detail&quot;&gt;
-        &lt;/textarea&gt;
-        &lt;button&gt;Load&lt;/button&gt;
-        &lt;button&gt;Save&lt;/button&gt;
-    &lt;/form&gt;
-&lt;/div&gt;
-</pre></div>
-</div>
+
+        </div>
+        <form action="add">
+            <button>Add</button>
+        </form>
+    </div>
+    <div class="right">
+        <form>
+            <textarea name="detail"></textarea><button>Load</button>
+            <button>Save</button>
+        </form>
+    </div>
 </div>
 <div class="footer">
-    <ul class="log">
-    </ul>
+    <ul class="log"></ul>
 </div>
-</body>
-</html>
-<ul class="simple">
-<li><p>{
+
+<p></p>
+<ul>
+<li>{
 margin: 0;
 padding: 0;
-}</p></li>
+}</li>
 </ul>
 <p>html{
-font-size: 62.5%;
+    font-size: 62.5%;
 }</p>
-<p>*, *::before, *::after {
-box-sizing: border-box;
+<p><em>, </em>::before, *::after {
+    box-sizing: border-box;
 }</p>
 <p>.header{
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-height: 64px;
-background-color: #faa;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background-color: #faa;
 }
 .body{
-position: absolute;
-top: 64px;
-left: 0;
-right: 0;
-bottom: 128px;
-background-color: #afa;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 128px;
+    background-color: #afa;
 }
 .body .left {
-position: absolute;
-left: 0;
-width: 200px;
-top: 0;
-bottom: 0;
-background-color: #282;
+    position: absolute;
+    left: 0;
+    width: 200px;
+    top: 0;
+    bottom: 0;
+    background-color: #282;
 }
 .body .right {
-position: absolute;
-left: 200px;
-right: 0;
-top: 0;
-bottom: 0;
-background-color: #828;<br />
+    position: absolute;
+    left: 200px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #828; <br>
 }
 .footer{
-position: absolute;
-left: 0;
-right: 0;
-bottom: 0;
-height: 128px;
-background-color: #aaf;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 128px;
+    background-color: #aaf;
 }</p>
-<p>alert(‘hello’);</p>
+<p>alert('hello');</p>
 <p>jqueryを追加
 mongocrud&gt; cd client
 mongocrud/client&gt; bower init
-mongocrud/client&gt; bower install jquery –save</p>
+mongocrud/client&gt; bower install jquery --save</p>
 <p>まとまりが無くなってきた。
 別のページに整理しなおそう。
 あとから、coffee-scriptやtypescritpを導入すると手順としては冗長になりすぎるな。
 最初から、NoDemon, Express, BrowserSyync, gulpfile.coffee, typescript, scssの構成にしよう。</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../20/starting_jade/">
-      <i class="fa fa-arrow-circle-left"></i> Jadeを入れてみる
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../../../../qiita/TypeScript環境の分かりにくいところ/">
-      TypeScript環境の分かりにくいところ <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2015/11/21 
-</h2>
-
-<ul>
-        
-</ul>
-
-<h3>
-  <a href="../../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">mondo_crud</a></li>
-<li><a class="reference internal" href="#gulpfile-coffee">gulpfile.coffeeにタスクを追加</a></li>
-<li><a class="reference internal" href="#id1"></a></li>
-<li><a class="reference internal" href="#client">client</a></li>
-<li><a class="reference internal" href="#id2"></a></li>
-<li><a class="reference internal" href="#tasks">tasks</a></li>
-<li><a class="reference internal" href="#id3">gulpfile.coffee</a></li>
-<li><a class="reference internal" href="#id4">gulpfile.coffee</a></li>
-<li><a class="reference internal" href="#id5"></a></li>
-<li><a class="reference internal" href="#compile-typescript">compile typescript</a></li>
-<li><a class="reference internal" href="#id6"></a></li>
-<li><a class="reference internal" href="#id7"></a></li>
-<li><a class="reference internal" href="#start-js-app">start js app</a></li>
-<li><a class="reference internal" href="#id8"></a></li>
-<li><a class="reference internal" href="#id9"></a></li>
-<li><a class="reference internal" href="#start-browser-sync">start browser-sync</a></li>
-<li><a class="reference internal" href="#id10"></a></li>
-<li><a class="reference internal" href="#id11">tasks</a></li>
-<li><a class="reference internal" href="#id12">gulpfile.coffee</a></li>
-<li><a class="reference internal" href="#id13">gulpfile.coffee</a></li>
-<li><a class="reference internal" href="#id14"></a></li>
-<li><a class="reference internal" href="#running-mongo">Running mongo</a></li>
-<li><a class="reference internal" href="#id15"></a></li>
-<li><a class="reference internal" href="#http-stackoverflow-com-a-28048696-46810">http://stackoverflow.com/a/28048696/46810</a></li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../20/starting_jade/" rel="prev" title="Jadeを入れてみる">
+            Jadeを入れてみる 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../../../../qiita/typescripthuan-jing-nofen-karinikuitokoro/" rel="next" title="TypeScript環境の分かりにくいところ">
+            👉 TypeScript環境の分かりにくいところ
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

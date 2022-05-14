@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (uwpについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/uwp.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:07 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>C++WinRTではじめるUWP</title><link>https://ousttrue.github.io/posts/2017/cppwinrt_uwp/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;C++/CXを置き換えるよさげなライブラリC++WinRTを発見した。&lt;/p&gt;
+&lt;p&gt;C++/CXの機能を純粋なC++(C++17とか新しめの)で実装したものらしく、WinRTのC++バインディングのような位置。
+C++/CXで&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;UI&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;CoreWindow&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;のようなものを&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;winrt/Windows.UI.Core.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;UI&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;のように置き換える。&lt;code&gt;-&amp;gt;&lt;/code&gt;じゃなくて &lt;code&gt;.&lt;/code&gt; を使うスマートポインタで実装されている。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Migrating C++/CX source code to C++/WinRT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;C++/CXでasync, awaitな非同期を実装する道具だったPPLもうまく置き換えているようだ。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Using C++ co-routines with C++/WinRT asynchronous methods&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;やってみる
+clone
+https://github.com/Microsoft/cppwinrtをcloneしてincludeできるようにしておく。
+C++WinRTはヘッダオンリーライブラリである。
+ビルド確認&lt;/p&gt;
+&lt;p&gt;https://github.com/Microsoft/cppwinrt/tree/master/10.0.15063.0/Samples/CL&lt;/p&gt;
+&lt;p&gt;をベース。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// main.cpp&lt;/span&gt;
+&lt;span class="cp"&gt;#pragma comment(lib, "windowsapp") &lt;/span&gt;
+
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;winrt/base.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kr"&gt;__stdcall&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;wWinMain&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HINSTANCE&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HINSTANCE&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;PWSTR&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;init_apartment&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;あえてCMakeで。
+CMakeLists.txt&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;CMAKE_MINIMUM_REQUIRED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;VERSION&lt;/span&gt; &lt;span class="s"&gt;3.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;PROJECT&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RendererToolkit&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c"&gt;# .sln&lt;/span&gt;
+
+&lt;span class="nb"&gt;ADD_DEFINITIONS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;-DWIN32=1&lt;/span&gt;
+    &lt;span class="s"&gt;-DUNICODE=1&lt;/span&gt;
+    &lt;span class="s"&gt;-D_UNICODE=1&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;SET&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CMAKE_C_FLAGS&lt;/span&gt; &lt;span class="s2"&gt;"/ZW /EHsc /await /std:c++latest"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;SET&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CMAKE_CXX_FLAGS&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CMAKE_C_FLAGS&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;INCLUDE_DIRECTORIES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="c"&gt;# 適当にcloneしたパスを参照&lt;/span&gt;
+    &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CMAKE_CURRENT_LIST_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/cppwinrt/10.0.15063.0&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c"&gt;##############################################################################&lt;/span&gt;
+&lt;span class="c"&gt;# project&lt;/span&gt;
+&lt;span class="c"&gt;##############################################################################&lt;/span&gt;
+&lt;span class="nb"&gt;SET&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;PROJECTNAME&lt;/span&gt; &lt;span class="s"&gt;_SampleCoreWindow&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;FILE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt; &lt;span class="s"&gt;SRCS&lt;/span&gt; &lt;span class="s"&gt;*.cpp&lt;/span&gt; &lt;span class="s"&gt;*.h&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;ADD_EXECUTABLE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PROJECTNAME&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt; &lt;span class="s"&gt;WIN32&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SRCS&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;TARGET_INCLUDE_DIRECTORIES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PROJECTNAME&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt; &lt;span class="s"&gt;PUBLIC&lt;/span&gt;
+    &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SUBRENDERER_INCLUDE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;UWPをターゲットにしたプロジェクトを生成する。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&amp;gt; mkdir build
+&amp;gt; cd build
+build&amp;gt; cmake.exe -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 -DCMAKE_C_FLAGS=/ZW /EHsc -G "Visual Studio 15 2017 Win64" ..
+&lt;/pre&gt;
+&lt;p&gt;ビルドすると警告が出る。
+warning C4447: スレッド モデルのない 'main' シグネチャが見つかりました。'int main(Platform::Array&lt;:string&gt;^ args)' の使用を検討してください。&lt;/:string&gt;&lt;/p&gt;
+&lt;p&gt;以下のように属性をつければ外せた。
+[Platform::MTAThread]
+int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)&lt;/p&gt;
+&lt;p&gt;Debug - X64 - ローカルコンピューター でアプリが起動して、即終了することが確認できればよし。
+UWPの作法で空のAppを作ってみる&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#pragma comment(lib, "windowsapp") &lt;/span&gt;
+
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;winrt/Windows.ApplicationModel.Core.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;winrt/Windows.UI.Core.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="c1"&gt;//&lt;/span&gt;
+&lt;span class="c1"&gt;// IFrameworkViewSourceとIFrameworkViewを一体化させるのは必要(ばらすとエラーになった)&lt;/span&gt;
+&lt;span class="c1"&gt;//&lt;/span&gt;
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="nc"&gt;App&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;implements&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;App&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ApplicationModel&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;IFrameworkViewSource&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ApplicationModel&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;IFrameworkView&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ApplicationModel&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;IFrameworkView&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;CreateView&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;Initialize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ApplicationModel&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;CoreApplicationView&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;Load&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;hstring&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;Uninitialize&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;Run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;UI&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;CoreWindow&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;GetForCurrentThread&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Activate&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="c1"&gt;//&lt;/span&gt;
+
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;auto&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dispatcher&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Dispatcher&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;dispatcher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ProcessEvents&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;UI&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;CoreProcessEventsOption&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ProcessUntilQuit&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;SetWindow&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;UI&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;CoreWindow&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kr"&gt;__stdcall&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;wWinMain&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HINSTANCE&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HINSTANCE&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;PWSTR&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;init_apartment&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;winrt&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Windows&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ApplicationModel&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Core&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;CoreApplication&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;App&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;警告とは無関係に、実行に
+[Platform::MTAThread]かwinrt::init_apartment();のどちらかが必要？
+IUnknown*を得る
+winrt::get_abi
+メモ&lt;/p&gt;
+&lt;p&gt;https://github.com/Kitware/CMake/blob/master/Tests/VSWinStorePhone/CMakeLists.txt&lt;/p&gt;
+&lt;p&gt;VisualStudio2017のC++/CX Universal D3D11のテンプレートをC++/WinRTバージョンに改造できた。間違ってもコンパイルが通って実行時エラーになるのに難儀したが、C++/CXよりはだいぶ使い勝手がよさげな感じ。&lt;/p&gt;</description><category>cpp</category><category>uwp</category><guid>https://ousttrue.github.io/posts/2017/cppwinrt_uwp/</guid><pubDate>Wed, 13 Sep 2017 15:00:00 GMT</pubDate></item><item><title>UWPでNativeDllを使う</title><link>https://ousttrue.github.io/posts/2017/05/uwp_dll/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;UWPでNativeのDLLを使うとどんな感じなのか試してみた。&lt;/p&gt;
+&lt;p&gt;https://github.com/ousttrue/UwpNativeDllSample&lt;/p&gt;
+&lt;p&gt;CMakeのCache機構のせいで挙動を勘違いした部分を書き直し。&lt;/p&gt;
+&lt;p&gt;自前でビルドしたlibpng.dllでpngを表示するサンプル。
+デスクトップアプリとの違い&lt;/p&gt;
+&lt;p&gt;dllのロードパスがカレントディレクトリと環境変数PATHに記述された場所ではなく、projectのトップレベルのみ
+デスクトップと公開されているAPIに差異がある
+projectが違う。x86 vxprojとuwp32 vcxprojのdiffの抜粋。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;&amp;lt;ApplicationType&amp;gt;&lt;/span&gt;Windows Store&lt;span class="nt"&gt;&amp;lt;/ApplicationType&amp;gt;&lt;/span&gt;^M
+&lt;span class="nt"&gt;&amp;lt;DefaultLanguage&amp;gt;&lt;/span&gt;en-US&lt;span class="nt"&gt;&amp;lt;/DefaultLanguage&amp;gt;&lt;/span&gt;^M
+&lt;span class="nt"&gt;&amp;lt;ApplicationTypeRevision&amp;gt;&lt;/span&gt;10.0&lt;span class="nt"&gt;&amp;lt;/ApplicationTypeRevision&amp;gt;&lt;/span&gt;^M
+&lt;span class="nt"&gt;&amp;lt;MinimumVisualStudioVersion&amp;gt;&lt;/span&gt;14.0&lt;span class="nt"&gt;&amp;lt;/MinimumVisualStudioVersion&amp;gt;&lt;/span&gt;^M
+&lt;span class="nt"&gt;&amp;lt;AppContainerApplication&amp;gt;&lt;/span&gt;true&lt;span class="nt"&gt;&amp;lt;/AppContainerApplication&amp;gt;&lt;/span&gt;^M
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;zlib-1.2.11を無修正でビルドできた。
+libpng-1.6.29は_ExitProcessにリンクする段階でエラーになった&lt;/p&gt;
+&lt;p&gt;修正方法が書いてあった。&lt;/p&gt;
+&lt;p&gt;https://github.com/Microsoft/vcpkg/blob/master/docs/example-3-patch-libpng.md&lt;/p&gt;
+&lt;p&gt;UWP向けビルドオプション/zw
+無くても動いた。UWP固有のAPIにアクセスするときもしくはC++/CXに必要？&lt;/p&gt;
+&lt;p&gt;https://msdn.microsoft.com/ja-jp/library/hh561383.aspx&lt;/p&gt;
+&lt;p&gt;cmakeでWindowsStore向けのprojectを生成する
+Microsoft版のcmakeなら作れる。
+VS2017にも含まれていて以下のパスにあった。
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe
+本家のcmakeでもできるかもしれないが未確認。
+プロジェクトを生成するときに以下のオプションを指定する。&lt;/p&gt;
+&lt;p&gt;-DCMAKE_SYSTEM_NAME=WindowsStore
+-DCMAKE_SYSTEM_VERSION=10.0&lt;/p&gt;
+&lt;p&gt;これだけだとCMAKE_SYSTEM_PROCESSORが空になってlibpngではエラーになる。追加で下記のオプションも指定した。&lt;/p&gt;
+&lt;p&gt;-DCMAKE_SYSTEM_PROCESSOR=x86&lt;/p&gt;
+&lt;p&gt;ほかに/zwの指定など。&lt;/p&gt;
+&lt;p&gt;-DCMAKE_C_FLAGS=/ZW /EHsc /DWIN32=1
+-DCMAKE_CXX_FLAGS=/ZW /EHsc /DWIN32=1&lt;/p&gt;
+&lt;p&gt;例
+zlib-1.2.11/build&amp;gt; cmake.exe .. -G Visual Studio 15 2017 -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 -DCMAKE_C_FLAGS=/ZW /EHsc /DWIN32=1 -DCMAKE_CXX_FLAGS=/ZW /EHsc /DWIN32=1 &lt;/p&gt;
+&lt;p _dll='"DLL' _hresult="(HRESULT" _libpng16_="'libpng16'"&gt;C#からDllImport
+Desktopの時と記述方法は同じ。dllの配置場所は上記の通りprojectに放り込むだけ。
+デスクトップ向けにビルドしたdllは動くのか
+動いた。
+逆にUWP向けにビルドしたdllはデスクトップで動くのか
+動かなかった。ソース互換はある程度あるがバイナリ互換は無い。&lt;/p&gt;
+&lt;p&gt;このエラーがデスクトップでuwpのdllを呼び出したとき固有のエラーメッセージぽい。
+まとめ
+CMakeの場合はプロジェクト生成オプションさえわかれば、 デスクトップとそれほど使い勝手は変わらない。この煩雑な手順を記録しておくべく自動ビルドツール作成中。&lt;/p&gt;
+&lt;p&gt;https://github.com/ousttrue/bldproc&lt;/p&gt;</description><category>cmake</category><category>uwp</category><guid>https://ousttrue.github.io/posts/2017/05/uwp_dll/</guid><pubDate>Tue, 02 May 2017 15:00:00 GMT</pubDate></item><item><title>UWPでSharpDX</title><link>https://ousttrue.github.io/qiita/uwpdesharpdx/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://qiita.com/ousttrue/items/c2588048563c18ad415f"&gt;https://qiita.com/ousttrue/items/c2588048563c18ad415f&lt;/a&gt;&lt;/p&gt;</description><category>directx</category><category>qiita</category><category>sharpdx</category><category>uwp</category><guid>https://ousttrue.github.io/qiita/uwpdesharpdx/</guid><pubDate>Tue, 21 Jun 2016 22:43:23 GMT</pubDate></item></channel></rss>

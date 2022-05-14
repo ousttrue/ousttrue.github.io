@@ -1,76 +1,43 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>threejs_05</title>
-<link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-<script src="../../../../../_static/jquery.js"></script>
-<script src="../../../../../_static/underscore.js"></script>
-<script src="../../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>Three.jsのBuild | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">threejs_05</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="threejs-05">
-<h1>threejs_05<a class="headerlink" href="#threejs-05" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">Three.jsのBuild
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2015-12-08T00:00:00+09:00" title="2015-12-08">2015-12-08</time>
+</li>
+</ul>
+</h1>
+
 <p>骨入りモデルとかやってみようかと思ったのだけど、その前にThree.jsのソースを見やすい状態で作業したい。
 結合前のThree.jsを自前ビルドしながら運用する方法を調べてみる。
 build.py, or how to generate a compressed three.js file
@@ -79,837 +46,131 @@ build.py, or how to generate a compressed three.js file
 やってみよう。
 とりあえずbowerで導入したthree.js関連を削除。
 threejs.srcフォルダを作ってthree.jsソースのsrcディレクトリの中身を展開した。
-gulp.task(‘bowerjs’, function () {</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>var files = [
-    &#39;./bower_components/jquery/dist/jquery.js&#39;,
-    &#39;./bower_components/highlightjs/highlight.pack.js&#39;,
-    &#39;./bower_components/stats.js/build/stats.min.js&#39;,
-    &#39;./lib/**/*.js&#39;, // &lt;-- 中にthree.jsのsrcをコピーした
-];
-gulp.src(files)
-    .pipe($.plumber({ errorHandler: $.notify.onError(&#39;&lt;%= error.message %&gt;&#39;) }))
-    .pipe($.debug({ title: &#39;bowerjs files:&#39; }))
-    .pipe($.sourcemaps.init())
-    //.pipe($.uglify())
-    .pipe($.concat(&#39;all.min.js&#39;))
-    .pipe($.sourcemaps.write(&#39;./&#39;, {
-        sourceMappingURL: function (file) {
-            return file.relative + &#39;.map&#39;;
-        }
-    }))
-    .pipe(gulp.dest(&#39;build/js&#39;))
-    .pipe(browser.reload({ stream: true }))
-;
-</pre></div>
-</div>
+gulp.task('bowerjs', function () {</p>
+<pre class="code literal-block"><span class="k">var</span> <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'./bower_components/jquery/dist/jquery.js'</span><span class="p">,</span>
+    <span class="s1">'./bower_components/highlightjs/highlight.pack.js'</span><span class="p">,</span>
+    <span class="s1">'./bower_components/stats.js/build/stats.min.js'</span><span class="p">,</span>
+    <span class="s1">'./lib/**/*.js'</span><span class="p">,</span> <span class="o">//</span> <span class="o">&lt;--</span> <span class="err">中に</span><span class="n">three</span><span class="o">.</span><span class="n">jsのsrcをコピーした</span>
+<span class="p">];</span>
+<span class="n">gulp</span><span class="o">.</span><span class="n">src</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="o">$.</span><span class="n">plumber</span><span class="p">({</span> <span class="n">errorHandler</span><span class="p">:</span> <span class="o">$.</span><span class="n">notify</span><span class="o">.</span><span class="n">onError</span><span class="p">(</span><span class="s1">'&lt;%= error.message %&gt;'</span><span class="p">)</span> <span class="p">}))</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="o">$.</span><span class="n">debug</span><span class="p">({</span> <span class="n">title</span><span class="p">:</span> <span class="s1">'bowerjs files:'</span> <span class="p">}))</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="o">$.</span><span class="n">sourcemaps</span><span class="o">.</span><span class="n">init</span><span class="p">())</span>
+    <span class="o">//.</span><span class="n">pipe</span><span class="p">(</span><span class="o">$.</span><span class="n">uglify</span><span class="p">())</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="o">$.</span><span class="n">concat</span><span class="p">(</span><span class="s1">'all.min.js'</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="o">$.</span><span class="n">sourcemaps</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'./'</span><span class="p">,</span> <span class="p">{</span>
+        <span class="n">sourceMappingURL</span><span class="p">:</span> <span class="n">function</span> <span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">relative</span> <span class="o">+</span> <span class="s1">'.map'</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}))</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">gulp</span><span class="o">.</span><span class="n">dest</span><span class="p">(</span><span class="s1">'build/js'</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">browser</span><span class="o">.</span><span class="n">reload</span><span class="p">({</span> <span class="n">stream</span><span class="p">:</span> <span class="bp">true</span> <span class="p">}))</span>
+<span class="p">;</span>
+</pre>
 <p>});</p>
 <p>これで作ったall.min.jsではエラーが出てだめですね。
 単にsrcをconcatするだけではだめだ。本家のドキュメントを読み始める。
 /three.js/utils/build/</p>
 <p>でビルドできるよって書いてあります。python関係ないみたいだ。</p>
 <blockquote>
-<div><p>npm install
-node build.js –include common –include extras</p>
-</div></blockquote>
+<p>npm install
+node build.js --include common --include extras</p>
+</blockquote>
 <p>なるほどbuild.jsを見てみよう。
 includeってなんだろうと調べてみると
 /three.js/utils/build/includes</p>
 <p>にjsonファイルがあり中にjsファイルがリストされている。
 なるほど。src下を全部concatするのではなくここに書いてあるものを、書いてある順でconcatすればいいんでないか。
-//
-gulp.task(‘threejs:build’, function(){
-var common=JSON.parse(fs.readFileSync(‘three.js/includes/common.json’)).map(function(v, i){ return ‘three.js/’+v; });
-gulp.src(common)
-.pipe($.concat(‘three.js’))
-.pipe(gulp.dest(‘./lib’))
-;
+// 
+gulp.task('threejs:build', function(){
+    var common=JSON.parse(fs.readFileSync('three.js/includes/common.json')).map(function(v, i){ return 'three.js/'+v; });
+    gulp.src(common)
+        .pipe($.concat('three.js'))
+        .pipe(gulp.dest('./lib'))
+        ;
 });</p>
-<p>gulp.task(‘bowerjs’, [‘threejs:build’], function () {
-// 前と同じ
-}</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-これで実行するとそれっぽいthree.jsが出てくるが、まだエラーが出る。
-でエラー行に飛ぶとifdefがある。なんだこれは。
-
-```glsl
-#ifdef USE_ALPHAMAP
-
-    diffuseColor.a *= texture2D( alphaMap, vUv ).g;
-
-#endif
-
-glslだ・・・。
+<p>gulp.task('bowerjs', ['threejs:build'], function () {
+    // 前と同じ
+}
+````</p>
+<p>これで実行するとそれっぽいthree.jsが出てくるが、まだエラーが出る。
+でエラー行に飛ぶとifdefがある。なんだこれは。</p>
+<p>```glsl</p>
+<h2>ifdef USE_ALPHAMAP</h2>
+<pre class="code literal-block">diffuseColor.a *= texture2D( alphaMap, vUv ).g;
+</pre>
+<h2>endif</h2>
+<p>glslだ・・・。
 確かに、build.js内で拡張子がglslのファイルだけ別処理になっている。
-if( file.indexOf( &#39;.glsl&#39;) &gt;= 0 ) {
-
-    contents = &#39;THREE.ShaderChunk[ \&#39;&#39; +
-        path.basename( file, &#39;.glsl&#39; ) + &#39;\&#39; ] =&#39; +
-        JSON.stringify( contents ) + &#39;;\n&#39;;
-
-}
-
-ちょっとgulpのフィルタを作りますか。
+if( file.indexOf( '.glsl') &gt;= 0 ) {</p>
+<pre class="code literal-block"><span class="nv">contents</span> <span class="o">=</span> <span class="s1">'</span><span class="s">THREE.ShaderChunk[ \</span><span class="s1">''</span><span class="s"> +</span>
+    <span class="nv">path</span>.<span class="k">basename</span><span class="ss">(</span> <span class="nv">file</span>, <span class="s1">'</span><span class="s">.glsl</span><span class="s1">'</span> <span class="ss">)</span> <span class="o">+</span> <span class="s1">'</span><span class="s">\</span><span class="s1">'</span> ] <span class="o">=</span><span class="s1">'</span><span class="s"> +</span>
+    <span class="nv">JSON</span>.<span class="nv">stringify</span><span class="ss">(</span> <span class="nv">contents</span> <span class="ss">)</span> <span class="o">+</span> <span class="s1">'</span><span class="s">;</span><span class="se">\n</span><span class="s1">'</span><span class="c1">;</span>
+</pre>
+<p>}</p>
+<p>ちょっとgulpのフィルタを作りますか。
 three.shaderchunk.js
-var through = require(&#39;through2&#39;);
-var gutil = require(&#39;gulp-util&#39;);
-var fs = require(&#39;fs&#39;);
-var path = require(&#39;path&#39;);
+var through = require('through2');
+var gutil = require('gulp-util');
+var fs = require('fs');
+var path = require('path');</p>
+<p>module.exports = function () {</p>
+<pre class="code literal-block"><span class="k">return</span> <span class="n">through</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="n">function</span> <span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">enc</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span> <span class="p">{</span>
 
-module.exports = function () {
+    <span class="k">if</span> <span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">isStream</span><span class="p">())</span> <span class="p">{</span>
+        <span class="n">cb</span><span class="p">(</span><span class="n">new</span> <span class="n">gutil</span><span class="o">.</span><span class="n">PluginError</span><span class="p">(</span><span class="s1">'three.shadechunk'</span><span class="p">,</span> <span class="s1">'Streaming not supported'</span><span class="p">));</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    return through.obj(function (file, enc, cb) {
+    <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">extname</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">toLowerCase</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'.glsl'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="n">contents</span> <span class="o">=</span> <span class="s1">'THREE.ShaderChunk[ </span><span class="se">\'</span><span class="s1">'</span> <span class="o">+</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'.glsl'</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\'</span><span class="s1"> ] ='</span> <span class="o">+</span>
+            <span class="n">JSON</span><span class="o">.</span><span class="n">stringify</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">toString</span><span class="p">())</span> <span class="o">+</span> <span class="s1">';</span><span class="se">\n</span><span class="s1">'</span><span class="p">;</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">new</span> <span class="n">Buffer</span><span class="p">(</span><span class="n">contents</span><span class="p">);</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="s2">".js"</span><span class="p">;</span>
+    <span class="p">}</span>
 
-        if (file.isStream()) {
-            cb(new gutil.PluginError(&#39;three.shadechunk&#39;, &#39;Streaming not supported&#39;));
-            return;
-        }
+    <span class="n">this</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
 
-        if (path.extname(file.path).toLowerCase() == &#39;.glsl&#39;) {
-            var contents = &#39;THREE.ShaderChunk[ \&#39;&#39; +
-                path.basename(file.path, &#39;.glsl&#39;) + &#39;\&#39; ] =&#39; +
-                JSON.stringify(file.contents.toString()) + &#39;;\n&#39;;
-            file.contents = new Buffer(contents);
-            file.path = file.path + &quot;.js&quot;;
-        }
-
-        this.push(file);
-
-        cb();
-    });
-}
-
-gulpファイルの呼び出しの方。これでthree.js/srcからthree.jsを作成できた。
+    <span class="n">cb</span><span class="p">();</span>
+<span class="p">});</span>
+</pre>
+<p>}</p>
+<p>gulpファイルの呼び出しの方。これでthree.js/srcからthree.jsを作成できた。
 あとは、sourcemapが付くようにした。
 gulpfile.js
-gulp.task(&#39;threejs:build&#39;, function(){
-    var common=JSON.parse(fs.readFileSync(&#39;three.js/includes/common.json&#39;))
-    .map(function(v, i){ return &#39;three.js/&#39;+v; });
-    var extras=JSON.parse(fs.readFileSync(&#39;three.js/includes/extras.json&#39;))
-    .map(function(v, i){ return &#39;three.js/&#39;+v; });
+gulp.task('threejs:build', function(){
+    var common=JSON.parse(fs.readFileSync('three.js/includes/common.json'))
+    .map(function(v, i){ return 'three.js/'+v; });
+    var extras=JSON.parse(fs.readFileSync('three.js/includes/extras.json'))
+    .map(function(v, i){ return 'three.js/'+v; });
     gulp.src(common.concat(extras))
         .pipe(threeShaderchunk())
-        .pipe($.concat(&#39;three.js&#39;))
-        .pipe(gulp.dest(&#39;./lib&#39;))
+        .pipe($.concat('three.js'))
+        .pipe(gulp.dest('./lib'))
         ;
-});
+});</p>
+<p>FireFoxでブレイクポイントを仕掛けてステップ実行できた。
+これで、Loaderの自作とかが捗るぞ。</p>
 
-FireFoxでブレイクポイントを仕掛けてステップ実行できた。
-これで、Loaderの自作とかが捗るぞ。
-</pre></div>
-</div>
-</section>
-
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../07/threejs_04/">
-      <i class="fa fa-arrow-circle-left"></i> Three.jsのJSONモデルフォーマット
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../09/threejs_editor/">
-      Three.jsのEditor <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2015/12/08 
-</h2>
-
-<ul>
-        
-</ul>
-
-<h3>
-  <a href="../../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../07/threejs_04/" rel="prev" title="Three.jsのJSONモデルフォーマット">
+            Three.jsのJSONモデルフォーマット 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../09/threejs_editor/" rel="next" title="Three.jsのEditor">
+            👉 Three.jsのEditor
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

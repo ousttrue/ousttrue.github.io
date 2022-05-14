@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (libclangについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/libclang.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>imgui の python バインディングをまた作る</title><link>https://ousttrue.github.io/posts/2021/winter/python_imgui/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;名付けて cydeer&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/cydeer"&gt;https://github.com/ousttrue/cydeer&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;python&lt;/code&gt;, &lt;code&gt;cython&lt;/code&gt;, &lt;code&gt;dear imgui&lt;/code&gt; の組み合わせで名前を付けようと思ったのだが、既に先人がいっぱいいて名前が被るので適当に決めた。🦌&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/HankiDesign/awesome-dear-imgui#languages"&gt;https://github.com/HankiDesign/awesome-dear-imgui#languages&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;最初、&lt;code&gt;DearPyGui&lt;/code&gt; のサイトが強そうだったので試そうと思ったのだけど用途が違いそうだった。
+次に、しばらく &lt;code&gt;pyimgui&lt;/code&gt; を使っていい感じだったので、 &lt;code&gt;docking&lt;/code&gt; ブランチ対応を見たら開発ブランチならば動いたので、自前ビルドを改造して使っていた。
+PR も送ってみたのだが、
+どうせなら自分で作ろうという機運が高まったので、作った。
+cydeer は pyOpenGL とともに使う &lt;code&gt;薄い&lt;/code&gt; ImGui ラッパーという路線である。
+&lt;code&gt;ctypes&lt;/code&gt; を併用することでポインタを直接扱う。 &lt;code&gt;camel case&lt;/code&gt; と &lt;code&gt;snake case&lt;/code&gt; の変換を含めて何も変えない。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;lib&lt;/th&gt;
+&lt;th&gt;binder&lt;/th&gt;
+&lt;th&gt;imgui&lt;/th&gt;
+&lt;th&gt;window &amp;amp; graphincs&lt;/th&gt;
+&lt;th&gt;コメント&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;(python)cydeer&lt;/td&gt;
+&lt;td&gt;cython + ctypes(generate using libclang.cindex )&lt;/td&gt;
+&lt;td&gt;imgui docking branch&lt;/td&gt;
+&lt;td&gt;glfw など + pyOpenGL でがんばる&lt;/td&gt;
+&lt;td&gt;可能な限りAPIの改変をしない。ポインタは ctypes で作る&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(python)pyimgui&lt;/td&gt;
+&lt;td&gt;cython&lt;/td&gt;
+&lt;td&gt;imgui&lt;/td&gt;
+&lt;td&gt;glfw など + pyOpenGL でがんばる&lt;/td&gt;
+&lt;td&gt;ポインタ引数(p_openなど)による返り値を、tuple による複値で表現&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(python)DearPyGui&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;DirectX11。python からアクセスできない？&lt;/td&gt;
+&lt;td&gt;imgui をラップして独自 API。python で OpenGL するという目的には使えぬ&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(c)cimgui&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;imgui を &lt;code&gt;extern C&lt;/code&gt; にラップしたもの。他言語バインド向け&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;(rust)imgui-rs&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;未確認&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;builder パターンで Default 引数を代替&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;imgui ラップには、 &lt;code&gt;関数オーバーロード&lt;/code&gt; , &lt;code&gt;デフォルト引数&lt;/code&gt; , &lt;code&gt;メンバー関数&lt;/code&gt; という難所がある。
+要するに &lt;code&gt;c++&lt;/code&gt; 要素なのだけど、&lt;code&gt;c++&lt;/code&gt; 要素含めての imgui の使い勝手なので。各言語バインディングで悩ましいところです。
+たとえば、 &lt;code&gt;rust&lt;/code&gt; は関数オーバーロードやデフォルト引数が無いので API を変えてます。&lt;/p&gt;
+&lt;p&gt;C# とかでも、 &lt;code&gt;const ImVec2 pos&amp;amp; = ImVec2(0, 0)&lt;/code&gt; のような引数を解決するのは手間がかかったりする。
+DLLImport 定義に対するデフォルト引数では解決できないので、 C# 側で一時変数を作ってポインターを取得する必要がある。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;デフォルト引数&lt;/code&gt; は cython で普通に解決した。
+clang.cindex から値を取れれば難しくない。
+&lt;code&gt;メンバー関数&lt;/code&gt; は &lt;code&gt;ctypes&lt;/code&gt; に &lt;code&gt;cython&lt;/code&gt; のメソッドを定義して、 &lt;code&gt;self&lt;/code&gt; を &lt;code&gt;this pointer&lt;/code&gt; に cast して呼び出すコードを作った(ImGuiFontAtlas)。
+&lt;code&gt;関数オーバーロード&lt;/code&gt; は &lt;code&gt;cython&lt;/code&gt; でディスパッチするのはつらいので、&lt;code&gt;MenuItem_2&lt;/code&gt; のような suffix をつけて人間が選ぶようにした。&lt;/p&gt;
+&lt;p&gt;忘れていたが、もっとも問題になるのが &lt;code&gt;構造体の値渡し・返し&lt;/code&gt; だった(C++に限らない？)。
+&lt;code&gt;D言語&lt;/code&gt; , &lt;code&gt;rust&lt;/code&gt; ともにこれができない(vcのコンパイラと互換性がない？)ので注意が必要だった。コンパイルは通るが動作がおかしかったような。
+ImGui の ImVec2 を値返しする関数でヒットする。
+&lt;code&gt;cydeer&lt;/code&gt; は、 &lt;code&gt;cython&lt;/code&gt; を採用したので、&lt;code&gt;cython&lt;/code&gt; 関数の出口で python 型に入れ替えるだけである。&lt;/p&gt;
+&lt;p&gt;あと、 &lt;code&gt;cydeer&lt;/code&gt; は &lt;code&gt;pyi&lt;/code&gt; 標準装備でいい感じである(一部実際のpython型と齟齬があるが・・・)。&lt;/p&gt;
+&lt;h3&gt;実装上の課題&lt;/h3&gt;
+&lt;p&gt;cython の cimport の扱いがやっかいで、&lt;code&gt;imgui&lt;/code&gt;, &lt;code&gt;imgui.internal&lt;/code&gt; に分割しようとするとうまくいかなかった。
+&lt;code&gt;cydeer&lt;/code&gt; に関しては巨大な単一のモジュールで行くのが無難かもしれない。
+&lt;code&gt;internal&lt;/code&gt; やノードエディターとか追加するときに分けたいのだけど。&lt;/p&gt;
+&lt;p&gt;現状、Windows + python-3.10 しか試していない。
+Windows11 の wslg + wayland で動くようにしたい。&lt;/p&gt;</description><category>cython</category><category>imgui</category><category>libclang</category><category>python</category><guid>https://ousttrue.github.io/posts/2021/winter/python_imgui/</guid><pubDate>Sun, 19 Dec 2021 15:00:00 GMT</pubDate></item><item><title>libclang で 言語バインディングを作る</title><link>https://ousttrue.github.io/posts/2021/winter/cindex/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;今まで試作したものたち&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;(2019)&lt;a href="https://github.com/ousttrue/pycpptool"&gt;https://github.com/ousttrue/pycpptool&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pip install clang&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/posts/2019/python_clang/"&gt;pythonモジュール clang で C++ ヘッダーを変換する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;途中でデバッグが困難になった&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2020)&lt;a href="https://github.com/ousttrue/regenerator"&gt;https://github.com/ousttrue/regenerator&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;D&lt;/code&gt; + &lt;code&gt;lua&lt;/code&gt; (text template によるコード生成部)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2020)&lt;a href="https://github.com/ousttrue/ClangCaster"&gt;https://github.com/ousttrue/ClangCaster&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C#&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://qiita.com/ousttrue/items/d878ec97483cb8834793"&gt;libclangでWindowsKitsをDllImportするライブラリを作った(ている)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2020)&lt;a href="https://github.com/ousttrue/clalua"&gt;https://github.com/ousttrue/clalua&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C++&lt;/code&gt; + &lt;code&gt;lua&lt;/code&gt; (text template によるコード生成部)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2021)&lt;a href="https://github.com/ousttrue/frame_factory/tree/master/clanggen"&gt;https://github.com/ousttrue/frame_factory/tree/master/clanggen&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rust&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(2021)&lt;a href="https://github.com/ousttrue/luajitffi/tree/master/clang/cdef"&gt;https://github.com/ousttrue/luajitffi/tree/master/clang/cdef&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://ousttrue.github.io/posts/2019/luajitffi/"&gt;libclang で luajit 向けの FFI を生成する&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;imgui による cindex のパース結果のビューワーを作ってみたが動作が遅かった。&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/luajitffi/tree/master/clangffi"&gt;https://github.com/ousttrue/luajitffi/tree/master/clangffi&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/limgui/blob/master/samples/clang_viewer.lua"&gt;https://github.com/ousttrue/limgui/blob/master/samples/clang_viewer.lua&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ものによるのだけど、 &lt;code&gt;d3d11.h&lt;/code&gt; をパースしたりすると
+要素が数万とかになる巨大なツリーを構築するので練習に良い。
+同じものを作りすぎである。&lt;/p&gt;
+&lt;h3&gt;imgui.h&lt;/h3&gt;
+&lt;p&gt;限定的にだが &lt;code&gt;c++&lt;/code&gt; の機能を使っているので、言語によっては気持ちよくラップできない。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;関数オーバーロードとデフォルト引き数&lt;ul&gt;
+&lt;li&gt;mangling は libclang で対処できる&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rust&lt;/code&gt; などオーバーロードが無いものは厳しい。&lt;/li&gt;
+&lt;li&gt;あってもディスパッチするコードを生成するのが厳しい。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;const ImVec2 &amp;amp;pos = ImVec2(0, 0)&lt;/code&gt; みたいなのが厳しい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;フォント設定とかのメンバー関数&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C&lt;/code&gt; の呼び出し関数を用意する必要があるかもしれない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;d3d11.h&lt;/h3&gt;
+&lt;p&gt;COM の仮想関数テーブルを工夫すれば行ける。
+GC言語だとデストラクターの呼びだしが制御できないかも。&lt;/p&gt;
+&lt;h2&gt;cython&lt;/h2&gt;
+&lt;p&gt;最近、 &lt;code&gt;C&lt;/code&gt; のライブラリーを &lt;code&gt;cython&lt;/code&gt; でラップするのに着目している。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/seung-lab/DracoPy"&gt;https://github.com/seung-lab/DracoPy&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/pyimgui/pyimgui"&gt;https://github.com/pyimgui/pyimgui&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;練習に作ってみた。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/pymikktspace"&gt;https://github.com/ousttrue/pymikktspace&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;予定&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;cindex&lt;/code&gt; で &lt;code&gt;cython&lt;/code&gt; 部分の自動生成をやってみる。
+更に、 &lt;code&gt;.pyi&lt;/code&gt; を同時に生成すればコード補完の効くネイティブモジュールが作れるのでは。
+あと、 &lt;code&gt;cindex&lt;/code&gt; の使いかたについてのメモをまとめたい。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/cywrap"&gt;https://github.com/ousttrue/cywrap&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;imgui&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ousttrue/cydeer"&gt;https://github.com/ousttrue/cydeer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;サブモジュールだけ cython にする&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/AshleySetter/HowToPackageCythonAndCppFuncs"&gt;https://github.com/AshleySetter/HowToPackageCythonAndCppFuncs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.py4u.net/discuss/175142"&gt;https://www.py4u.net/discuss/175142&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description><category>cython</category><category>libclang</category><category>python</category><guid>https://ousttrue.github.io/posts/2021/winter/cindex/</guid><pubDate>Fri, 03 Dec 2021 15:00:00 GMT</pubDate></item><item><title>imgui の FFI が luajit で動くところまで作った</title><link>https://ousttrue.github.io/posts/2021/example_glfw_openg/</link><dc:creator>ousttrue</dc:creator><description>&lt;figure&gt;&lt;img src="https://ousttrue.github.io/posts/2021/imgui_from_luajit.jpg"&gt;&lt;/figure&gt; &lt;p&gt;&lt;a href="https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua"&gt;https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Window System は &lt;code&gt;GLFW&lt;/code&gt;、3D API は &lt;code&gt;OpenGL3&lt;/code&gt; を選択。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SDL2 は、 &lt;code&gt;HWND&lt;/code&gt; を取得周りが FFI では面倒なことが分かっていたのと、&lt;code&gt;SDL-Image&lt;/code&gt; などの関連ライブラリ無しで行くつもりだった&lt;/li&gt;
+&lt;li&gt;D3D11 のバインディングを作っているとまた時間がかかる。&lt;code&gt;COM&lt;/code&gt; は C の範囲で実装できるので後でやりたい&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ということから、楽そうなものを選択したらそうなった。&lt;/p&gt;
+&lt;h2&gt;メンバー関数呼び出し&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;ImFont&lt;/code&gt;, &lt;code&gt;ImFontAtlas&lt;/code&gt; のみ何故か &lt;code&gt;c++&lt;/code&gt; 色が強く、メンバ関数呼び出しがあったりするのでなんとかしたい。
+cdecl で FFI 記述できるんだっけ？&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;//io.Fonts-&amp;gt;AddFontDefault();&lt;/span&gt;
+&lt;span class="c1"&gt;//io.Fonts-&amp;gt;AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);&lt;/span&gt;
+&lt;span class="c1"&gt;//io.Fonts-&amp;gt;AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);&lt;/span&gt;
+&lt;span class="c1"&gt;//io.Fonts-&amp;gt;AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);&lt;/span&gt;
+&lt;span class="c1"&gt;//io.Fonts-&amp;gt;AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);&lt;/span&gt;
+&lt;span class="c1"&gt;//ImFont* font = io.Fonts-&amp;gt;AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts-&amp;gt;GetGlyphRangesJapanese());&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;第1引数に this に相当する引数を追加してやればいけた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ffi&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cdef&lt;/span&gt;&lt;span class="s"&gt;[[&lt;/span&gt;
+&lt;span class="s"&gt;// 適当に名前を付け替える&lt;/span&gt;
+&lt;span class="s"&gt;struct ImFont* ImFontAtlas_AddFontFromFileTTF(&lt;/span&gt;
+&lt;span class="s"&gt;    struct ImFontAtlas* this,&lt;/span&gt;
+&lt;span class="s"&gt;    const char* filename,&lt;/span&gt;
+&lt;span class="s"&gt;    float size_pixels,&lt;/span&gt;
+&lt;span class="s"&gt;    const struct ImFontConfig* font_cfg,&lt;/span&gt;
+&lt;span class="s"&gt;    ImWchar* glyph_ranges&lt;/span&gt;
+&lt;span class="s"&gt;) asm("?AddFontFromFileTTF@ImFontAtlas@@QEAAPEAUImFont@@PEBDMPEBUImFontConfig@@PEBG@Z");&lt;/span&gt;
+&lt;span class="s"&gt;]]&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h2&gt;C++ デフォルト引数&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;ImGui&lt;/code&gt; の &lt;code&gt;API&lt;/code&gt; は基本的にほぼ C になるように配慮されていて、C++ の機能は限定的にしか使っていない。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;関数オーバーロード&lt;/li&gt;
+&lt;li&gt;デフォルト引数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;である。
+で、このデフォルト引数がないと &lt;code&gt;imgui&lt;/code&gt; の使い勝手が著しく下がる。
+リファレンスを確認して、デフォルト値を当ててやる必要が出るので。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// 例&lt;/span&gt;
+&lt;span class="n"&gt;IMGUI_API&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;bool&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Begin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;bool&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;p_open&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ImGuiWindowFlags&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;NULL&lt;/code&gt; は &lt;code&gt;nil&lt;/code&gt; だし、 &lt;code&gt;0&lt;/code&gt; はそのまま &lt;code&gt;0&lt;/code&gt; なので、簡単なところだけでも対応する。
+最悪、インテリセンスに出るようにすることで調べる手間は回避できるのだけど
+&lt;code&gt;const &amp;amp;ImVec2 v = ImVec2(0, 0)&lt;/code&gt; とかはめんどくさいです。
+FFI 境界の &lt;code&gt;struct の value 渡し&lt;/code&gt;, &lt;code&gt;デフォルト引数&lt;/code&gt; は解決できない場合が多いが、コード生成側で努力する価値はある。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;rust&lt;/code&gt; はここができなくて、故にラッパー側で API を builder パターンに変更していたりするのだけど、
+&lt;code&gt;rust&lt;/code&gt; の &lt;code&gt;imgui&lt;/code&gt; ラッパーの API を使いたいのではなくて、生の &lt;code&gt;imgui&lt;/code&gt; が使いたいのだ。
+&lt;code&gt;luajit&lt;/code&gt; の FFI はちょっとラップすることで簡単に解決できる(遅くなるかもしれないが)。&lt;/p&gt;
+&lt;p&gt;ラッパーを自動で生成するようにできた。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;    &lt;span class="c1"&gt;-- lua では nil と false のみが 偽 である&lt;/span&gt;
+
+    &lt;span class="c1"&gt;-- wrapper&lt;/span&gt;
+    &lt;span class="n"&gt;Begin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p_open&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="c1"&gt;-- p_open が供給されない場合、デフォルト nil になり、NULL として解釈される&lt;/span&gt;
+        &lt;span class="n"&gt;flags&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+        &lt;span class="c1"&gt;-- ffi 呼び出し&lt;/span&gt;
+        &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;imgui&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Begin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p_open&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+
+    &lt;span class="c1"&gt;-- wrapper&lt;/span&gt;
+    &lt;span class="n"&gt;Button&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="c1"&gt;-- 引数なしの `ffi.new` は zero 詰めする。 `ImVec2(0, 0)` になる。&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;ffi&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'struct ImVec2'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="c1"&gt;-- ffi 呼び出し&lt;/span&gt;
+        &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;imgui&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Button&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h2&gt;可変長引数&lt;/h2&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;IMGUI_API&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Text&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;...)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;luajit ffi ではそのまま &lt;code&gt;...&lt;/code&gt; を扱うことができた。&lt;/p&gt;
+&lt;p&gt;ただし、&lt;code&gt;%d&lt;/code&gt; のときは、
+&lt;code&gt;LL&lt;/code&gt; をつけて &lt;code&gt;integer&lt;/code&gt; を渡す。
+&lt;code&gt;number&lt;/code&gt; だとうまくいかない。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="n"&gt;LL&lt;/span&gt; &lt;span class="c1"&gt;-- 64bit int. UL もある&lt;/span&gt;
+&lt;span class="n"&gt;imgui&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Text&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"counter = %d"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;counter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;LL&lt;/code&gt; と &lt;code&gt;UL&lt;/code&gt; は luajit の拡張らしい。
+&lt;a href="https://luajit.org/ext_ffi_api.html"&gt;https://luajit.org/ext_ffi_api.html&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Extensions to the Lua Parser&lt;/p&gt;
+&lt;p&gt;numeric literals with the suffixes LL or ULL as signed or unsigned 64 bit integers&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;だがしかし、この記法使うと &lt;code&gt;stylua&lt;/code&gt; がエラーになる。そりゃ、そうだ。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ffi&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'long long[1]'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;-- 32bit だとうまくいかない&lt;/span&gt;
+&lt;span class="n"&gt;imgui&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Text&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"counter = %d"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;counter&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;を使うのがよさそう。&lt;/p&gt;
+&lt;h2&gt;template class のごまかし&lt;/h2&gt;
+&lt;p&gt;T を pointer としてしか使わない場合は、
+&lt;code&gt;T*&lt;/code&gt; を除去して &lt;code&gt;void*&lt;/code&gt; にすれば動く。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="nc"&gt;T&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="nc"&gt;ImVector&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Capacity&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Data&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ffi&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cdef&lt;/span&gt;&lt;span class="s"&gt;[[&lt;/span&gt;
+&lt;span class="s"&gt;struct ImVector{&lt;/span&gt;
+&lt;span class="s"&gt;    int Size;&lt;/span&gt;
+&lt;span class="s"&gt;    int Capacity;&lt;/span&gt;
+&lt;span class="s"&gt;    void* Data;&lt;/span&gt;
+&lt;span class="s"&gt;};    &lt;/span&gt;
+&lt;span class="s"&gt;]]&lt;/span&gt;
+&lt;/pre&gt;</description><category>ffi</category><category>imgui</category><category>libclang</category><category>luajit</category><guid>https://ousttrue.github.io/posts/2021/example_glfw_openg/</guid><pubDate>Sat, 24 Jul 2021 15:00:00 GMT</pubDate></item><item><title>libclang で luajit 向けの FFI を生成する</title><link>https://ousttrue.github.io/posts/2021/luajitffi/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;lua による imgui 計画の準備として、 &lt;code&gt;libclang&lt;/code&gt; によるバインディング生成器を &lt;code&gt;luajit&lt;/code&gt; に移植してみた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/luajitffi"&gt;https://github.com/ousttrue/luajitffi&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;libclang&lt;/code&gt; に対してはだいだい動くようになって、自身で生成した &lt;code&gt;FFI&lt;/code&gt; で動作するところまでできた。
+また、 &lt;code&gt;EmmyLua Annotation&lt;/code&gt; もある程度付与できた。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua"&gt;https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;こいつで、 &lt;code&gt;imgui.h&lt;/code&gt; から luajit FFI を生成する。&lt;/p&gt;
+&lt;h3&gt;libclang&lt;/h3&gt;
+&lt;p&gt;c(c++)ヘッダーを &lt;code&gt;clang_visitChildren&lt;/code&gt; により、カーソルのTree としてパースする。
+今回は、 &lt;code&gt;CXChildVisit_Recurse&lt;/code&gt; で全部のカーソルをパースすることにした。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;同じカーソルが複数個所に現れうる&lt;/li&gt;
+&lt;li&gt;循環しうる(Link List ？)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;がありうることを考慮しておく。
+&lt;code&gt;clang-c/Index.h&lt;/code&gt; は 6000 カーソルくらいなので問題ないが、 &lt;code&gt;Windows.h&lt;/code&gt; とかは 150000 カーソルとか爆発する。&lt;/p&gt;
+&lt;h3&gt;わりと色んなところで型がネストしていてつらい&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;struct の中は namespace なので何でもあり&lt;/li&gt;
+&lt;li&gt;anonymous な union や struct のその場定義&lt;/li&gt;
+&lt;li&gt;typedef struct などのその場定義&lt;/li&gt;
+&lt;li&gt;関数ポインタのその場定義&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;要するに、Cのコードの書き方によってどのようなカーソル構造になるかのパターンを知っている必要があって、
+パターン毎に分岐して情報を収集する必要がある。
+ある型のメンバーの情報を集めていると、ネストした別の型情報が現れる場合があるので切り分ける。&lt;/p&gt;
+&lt;h3&gt;基本的なパターン&lt;/h3&gt;
+&lt;p&gt;FFI では、対象となる関数を起点にその関数が使用するすべての型の定義を取り込む。
+カーソルはCのTranslationUnitの木構造をあらわしていて、型をあらわしていない。
+カーソルから頑張って型を得る。
+型を得られるカーソルは決まっていて、&lt;code&gt;CXCursorType&lt;/code&gt; が宣言Declの系列となる。&lt;/p&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h4&gt;カーソル FunctionDecl&lt;/h4&gt;
+&lt;h4&gt;カーソル EnumDecl&lt;/h4&gt;
+&lt;h4&gt;カーソル TypedefDecl&lt;/h4&gt;
+&lt;h4&gt;カーソル StructDecl&lt;/h4&gt;
+&lt;h4&gt;Type Pointer&lt;/h4&gt;
+&lt;h4&gt;Type Array&lt;/h4&gt;
+&lt;h4&gt;Type Elaborated&lt;/h4&gt;
+&lt;h4&gt;Type Record&lt;/h4&gt;
+&lt;h4&gt;Type FunctionProto 関数ポインタ pointer =&amp;gt; functionproto&lt;/h4&gt;
+&lt;h4&gt;union&lt;/h4&gt;
+&lt;h4&gt;typedef struct&lt;/h4&gt;
+&lt;h4&gt;c++ name mangling&lt;/h4&gt;
+&lt;h4&gt;マクロとの戦い&lt;/h4&gt;
+&lt;h3&gt;luajit ffi&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ffi.cdef&lt;/code&gt; に素直に定義すればいいので、他の言語の FFI に比べて簡単。&lt;/p&gt;
+&lt;p&gt;はまり。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ffi.load&lt;/code&gt; の返り値が GC されると関数ポインタが死ぬ&lt;/li&gt;
+&lt;li&gt;pointer は &lt;code&gt;ffi.new('TYPE[1]')&lt;/code&gt; のようにサイズ１の array で運用する&lt;/li&gt;
+&lt;li&gt;tostring と ffi.string は違う&lt;/li&gt;
+&lt;li&gt;nullptr は nil ?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;だいたいよきに計らってくれるので、 &lt;code&gt;rust&lt;/code&gt; の FFI に比べて簡単なのであった。&lt;/p&gt;
+&lt;p&gt;ひとつだけはまりがあって、 &lt;code&gt;struct&lt;/code&gt; の値渡しができない場合がある。&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs"&gt;http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;そういえば、 &lt;code&gt;rust&lt;/code&gt; でも &lt;code&gt;struct&lt;/code&gt; の値渡しではまった記憶が。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org"&gt;https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;rust の場合は、 &lt;code&gt;struct&lt;/code&gt; の値返しが動かなかった。
+これ、C の方で pointer 経由で値を返すラッパーを定義する必要があって回避方法はなかった。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ImVec2 ImGui::GetContentRegionAvail()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;luajit ffi でもできるか注意が必要だな。&lt;/p&gt;
+&lt;h3&gt;lfs への依存を FFI した Windows API で置き換える&lt;/h3&gt;
+&lt;p&gt;現状、ファイル操作 &lt;code&gt;isExists&lt;/code&gt;, &lt;code&gt;mkDir&lt;/code&gt; のために lfs を使っているのだけど、
+FFI で Windows API にアクセスできるようにしたら lfs 無しにできそう。
+となれば luarocks も無しにできるので、 必要なのは luajit.exe だけになる。&lt;/p&gt;</description><category>libclang</category><category>lua</category><guid>https://ousttrue.github.io/posts/2021/luajitffi/</guid><pubDate>Thu, 22 Jul 2021 15:00:00 GMT</pubDate></item><item><title>rust の ffi</title><link>https://ousttrue.github.io/posts/2021/rust_ffi/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;rust の FFI に取り組んでいた。
+結局、 sdl binding と imgui binding を自作した。&lt;/p&gt;
+&lt;p&gt;両方とも、既存の crate があるのに何故わざわざ自作するのかと言えば、
+ラップされて使い方が変わったところを学ぶのが面倒くさかったからじゃ。
+&lt;a href="https://crates.io/crates/sdl2"&gt;SDL&lt;/a&gt; は　&lt;code&gt;HWND&lt;/code&gt; を取得する方法がわかりにくくて &lt;code&gt;SDL_Event&lt;/code&gt; を &lt;code&gt;imgui&lt;/code&gt; に渡す方法はわからなかった。
+&lt;a href="https://crates.io/crates/imgui"&gt;imgui&lt;/a&gt; は最新版の &lt;code&gt;docking&lt;/code&gt; ブランチが使いたかった。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://crates.io/crates/clang-sys"&gt;clang-sys&lt;/a&gt; を使って rust の FFI コードを生成し、
+&lt;a href="https://crates.io/crates/cc"&gt;cc&lt;/a&gt; を使って &lt;code&gt;build.rs&lt;/code&gt; でライブラリをビルドした。
+これで、 &lt;code&gt;c&lt;/code&gt; &lt;code&gt;c++&lt;/code&gt; のライブラリをソースビルドしてスタティックリンクし、 &lt;code&gt;FFI&lt;/code&gt; で関数を呼び出し放題。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;imgui&lt;/code&gt; の FFI 生成の方が簡単で、 &lt;code&gt;SDL&lt;/code&gt; の方は C のマクロに苦しんだ(雑に対応)。
+とはいえ、わりと素直に記述できるので快適であった。&lt;/p&gt;
+&lt;p&gt;おかげで、 rust の FFI 周りに対する習熟度がだいぶ上がった。&lt;/p&gt;
+&lt;h3&gt;できないこと&lt;/h3&gt;
+&lt;p&gt;POD の struct を return する関数を呼び出すとクラッシュした。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ImVec2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;ImGui::GetContentRegionAvail&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;D言語だけど&lt;/p&gt;
+&lt;p&gt;https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org&lt;/p&gt;
+&lt;p&gt;の件らしく、C++ 側でラップした。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;pGetContentRegionAvail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ImVec2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pOut&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pOut&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pOut&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;GetContentRegionAvail&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h3&gt;自由に static link できる&lt;/h3&gt;
+&lt;p&gt;build.rs を駆使して自由にリンクできるので、スタティックリンクとダイナミックリンクを制御できるので便利。
+特に Windows の場合、システムに共通のライブラリがインストールされていることが期待できないので、
+DLLを作ってコピーした入りパスを通すよりは、スタティックリンクする方が気楽。
+今回は &lt;code&gt;cc&lt;/code&gt; でコンパイルしたけど、&lt;code&gt;c++/c&lt;/code&gt; は CMake でビルドする方が管理しやすいかもしれない。&lt;/p&gt;</description><category>ffi</category><category>libclang</category><category>rust</category><guid>https://ousttrue.github.io/posts/2021/rust_ffi/</guid><pubDate>Sat, 19 Jun 2021 15:00:00 GMT</pubDate></item><item><title>libclangでWindowsKitsをDllImportするライブラリを作った(ている)</title><link>https://ousttrue.github.io/qiita/libclangdewindowskitswodllimportsururaiburariwozuo-tsutateiru/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://qiita.com/ousttrue/items/d878ec97483cb8834793"&gt;https://qiita.com/ousttrue/items/d878ec97483cb8834793&lt;/a&gt;&lt;/p&gt;</description><category>.netcore</category><category>libclang</category><category>qiita</category><guid>https://ousttrue.github.io/qiita/libclangdewindowskitswodllimportsururaiburariwozuo-tsutateiru/</guid><pubDate>Sat, 27 Jun 2020 14:30:28 GMT</pubDate></item></channel></rss>

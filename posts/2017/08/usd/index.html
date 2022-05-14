@@ -1,292 +1,241 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>PixarのUniversal Scene Descriptionをビルドしてみる</title>
-<link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-<script src="../../../../_static/jquery.js"></script>
-<script src="../../../../_static/underscore.js"></script>
-<script src="../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../assets/js/all-nocdn.js"></script><title>usd | 三次元日誌</title>
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">PixarのUniversal Scene Descriptionをビルドしてみる</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="pixaruniversal-scene-description">
-<h1>PixarのUniversal Scene Descriptionをビルドしてみる<a class="headerlink" href="#pixaruniversal-scene-description" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../archive.html">Archives</a></li>
+<li><a href="../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../about">About</a></li>
+<li><a href="../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">usd
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2017-08-14T00:00:00+09:00" title="2017-08-14">2017-08-14</time>
+</li>
+    <li><a class="tag p-category" href="../../../../categories/usd/" rel="tag">usd</a></li>
+</ul>
+</h1>
+
+<h2>PixarのUniversal Scene Descriptionをビルドしてみる</h2>
 <p>20170902。実はビルドスクリプトがあって、簡単になっていた。</p>
 <p>動画でCEDEC2017のセッションを聞いてよさげな気がしたので再度やってみた(ちょっと前に途中までやって放置していた)。
 usdviewが使えるようにするとよいらしい。</p>
-<section id="pixar-usd-windows-2017-9">
-<h2>Pixar USD の Windows ビルド方法（2017/9 版）<a class="headerlink" href="#pixar-usd-windows-2017-9" title="Permalink to this headline">¶</a></h2>
+<h3>Pixar USD の Windows ビルド方法（2017/9 版）</h3>
 <p>自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
-環境は、<code class="docutils literal notranslate"><span class="pre">Windows10(64bit)</span></code> + <code class="docutils literal notranslate"><span class="pre">VisualStudio2017</span></code> + <code class="docutils literal notranslate"><span class="pre">VisualStudio2015</span> <span class="pre">のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)</span></code>
+環境は、<code>Windows10(64bit)</code> + <code>VisualStudio2017</code> + <code>VisualStudio2015 のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)</code>
 visualstudio補足
 VisualStudioは、最近のバージョンに限ってもいろいろある。</p>
-<ul class="simple">
-<li><p>VisualStudio2017(MSVC14.1)のみ</p></li>
-<li><p>VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)</p></li>
-<li><p>VisualStudio2015(MSVC14.0)のみ</p></li>
-<li><p>Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</p></li>
+<ul>
+<li>VisualStudio2017(MSVC14.1)のみ</li>
+<li>VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)</li>
+<li>VisualStudio2015(MSVC14.0)のみ</li>
+<li>Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</li>
 </ul>
-<p>ものによって <code class="docutils literal notranslate"><span class="pre">vcvars.bat</span></code> の場所が違って、<code class="docutils literal notranslate"><span class="pre">bjam</span></code> とか <code class="docutils literal notranslate"><span class="pre">distutils</span></code> がコンパイラの発見に失敗したりする場合があるようだ。
-<code class="docutils literal notranslate"><span class="pre">cl.exe</span></code> が見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
+<p>ものによって <code>vcvars.bat</code> の場所が違って、<code>bjam</code> とか <code>distutils</code> がコンパイラの発見に失敗したりする場合があるようだ。
+<code>cl.exe</code> が見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
 一応、
-<code class="docutils literal notranslate"><span class="pre">VisualStudio2017</span> <span class="pre">-</span> <span class="pre">x64</span> <span class="pre">native</span> <span class="pre">tools</span> <span class="pre">command</span> <span class="pre">prompt</span></code> からはじめる。
+<code>VisualStudio2017 - x64 native tools command prompt</code> からはじめる。
 CMakeはVisualStudioの検出にあまり失敗しないので、おもにBoostのビルド対策。
 効果があったかは不明。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">cl</span>
-<span class="n">Microsoft</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">C</span><span class="o">/</span><span class="n">C</span><span class="o">++</span> <span class="n">Optimizing</span> <span class="n">Compiler</span> <span class="n">Version</span> <span class="mf">19.10.25019</span> <span class="k">for</span> <span class="n">x64</span>
-<span class="n">Copyright</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">Microsoft</span> <span class="n">Corporation</span><span class="o">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="o">.</span>
+<pre class="code literal-block"><span class="nv">D</span>:\<span class="nv">work</span><span class="o">&gt;</span> <span class="nv">cl</span>
+<span class="nv">Microsoft</span><span class="ss">(</span><span class="nv">R</span><span class="ss">)</span> <span class="nv">C</span><span class="o">/</span><span class="nv">C</span><span class="o">++</span> <span class="nv">Optimizing</span> <span class="nv">Compiler</span> <span class="nv">Version</span> <span class="mi">19</span>.<span class="mi">10</span>.<span class="mi">25019</span> <span class="k">for</span> <span class="nv">x64</span>
+<span class="nv">Copyright</span> <span class="ss">(</span><span class="nv">C</span><span class="ss">)</span> <span class="nv">Microsoft</span> <span class="nv">Corporation</span>.  <span class="nv">All</span> <span class="nv">rights</span> <span class="nv">reserved</span>.
 
-<span class="n">使い方</span><span class="p">:</span> <span class="n">cl</span> <span class="p">[</span> <span class="n">オプション</span><span class="o">...</span> <span class="p">]</span> <span class="n">ファイル名</span><span class="o">...</span> <span class="p">[</span> <span class="o">/</span><span class="n">link</span> <span class="n">リンク</span> <span class="n">オプション</span><span class="o">...</span> <span class="p">]</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">VS2017</span></code> しか入っていないとき
-build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラは <code class="docutils literal notranslate"><span class="pre">VS2008(MSVC9.0)</span></code> らしい。</p>
-<p><a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=44266">https://www.microsoft.com/en-us/download/details.aspx?id=44266</a></p>
-</section>
-<section id="python">
-<h2>python補足<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+使い方: <span class="nv">cl</span> [ オプション... ] ファイル名... [ <span class="o">/</span><span class="nv">link</span> リンク オプション... ]
+</pre>
+<p><code>VS2017</code> しか入っていないとき
+build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラは <code>VS2008(MSVC9.0)</code> らしい。</p>
+<p><a href="https://www.microsoft.com/en-us/download/details.aspx?id=44266">https://www.microsoft.com/en-us/download/details.aspx?id=44266</a></p>
+<h3>python補足</h3>
 <p>Python27以外のPythonが入っているとはまる率が上がる。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>D:\work&gt; python -V
-Python 3.6.0 :: Anaconda 4.3.0 (64-bit)
+<pre class="code literal-block"><span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">-</span><span class="n">V</span>
+<span class="n">Python</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">0</span> <span class="p">::</span> <span class="n">Anaconda</span> <span class="mf">4.3</span><span class="o">.</span><span class="mi">0</span> <span class="p">(</span><span class="mi">64</span><span class="o">-</span><span class="n">bit</span><span class="p">)</span>
 
-違うPythonだー。
-D:\work&gt; set PATH=D:\Python27;D:\Python27\Scripts;%PATH%
-D:\work&gt; python -V
-Python 2.7.14rc1
-D:\work&gt; pip install pyside
-Collecting pyside
-  Downloading PySide-1.2.4-cp27-none-win_amd64.whl (45.0MB)
-    100% |################################| 45.0MB 36kB/s
-Installing collected packages: pyside
-Successfully installed pyside-1.2.4
-</pre></div>
-</div>
+<span class="err">違う</span><span class="n">Pythonだー</span><span class="err">。</span>
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">set</span> <span class="n">PATH</span><span class="o">=</span><span class="n">D</span><span class="p">:</span>\<span class="n">Python27</span><span class="p">;</span><span class="n">D</span><span class="p">:</span>\<span class="n">Python27</span>\<span class="n">Scripts</span><span class="p">;</span><span class="o">%</span><span class="n">PATH</span><span class="o">%</span>
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">-</span><span class="n">V</span>
+<span class="n">Python</span> <span class="mf">2.7</span><span class="o">.</span><span class="mi">14</span><span class="n">rc1</span>
+<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">pyside</span>
+<span class="n">Collecting</span> <span class="n">pyside</span>
+  <span class="n">Downloading</span> <span class="n">PySide</span><span class="o">-</span><span class="mf">1.2</span><span class="o">.</span><span class="mi">4</span><span class="o">-</span><span class="n">cp27</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span> <span class="p">(</span><span class="mf">45.0</span><span class="n">MB</span><span class="p">)</span>
+    <span class="mi">100</span><span class="o">%</span> <span class="o">|</span><span class="c1">################################| 45.0MB 36kB/s</span>
+<span class="n">Installing</span> <span class="n">collected</span> <span class="n">packages</span><span class="p">:</span> <span class="n">pyside</span>
+<span class="n">Successfully</span> <span class="n">installed</span> <span class="n">pyside</span><span class="o">-</span><span class="mf">1.2</span><span class="o">.</span><span class="mi">4</span>
+</pre>
 <p>python使いたるもの２系、３系両方入っていたりするものである。
 cloneしてビルドスクリプトを実行</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PixarAnimationStudios</span><span class="o">/</span><span class="n">USD</span>
+<pre class="code literal-block">D:\work&gt; git clone https://github.com/PixarAnimationStudios/USD
 
-<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">mkdir</span> <span class="n">USD_build</span>
-<span class="n">D</span><span class="p">:</span>\<span class="n">work</span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">USD_build</span>
-<span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span>
+D:\work&gt; mkdir USD_build
+D:\work&gt; cd USD_build
+D:\work\USD_build&gt;
 
-<span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span>
-<span class="n">usage</span><span class="p">:</span> <span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="o">|</span> <span class="o">-</span><span class="n">q</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">build</span> <span class="n">BUILD</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">generator</span> <span class="n">GENERATOR</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">shared</span> <span class="o">|</span> <span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">monolithic</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">src</span> <span class="n">SRC</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">inst</span> <span class="n">INST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span> <span class="n">FORCE_BUILD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="nb">all</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docs</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">docs</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">imaging</span> <span class="o">|</span> <span class="o">--</span><span class="n">usd</span><span class="o">-</span><span class="n">imaging</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">imaging</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">ptex</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">ptex</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">embree</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">embree</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">embree</span><span class="o">-</span><span class="n">location</span> <span class="n">EMBREE_LOCATION</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">alembic</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">alembic</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">hdf5</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">hdf5</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">maya</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">maya</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maya</span><span class="o">-</span><span class="n">location</span> <span class="n">MAYA_LOCATION</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">katana</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">katana</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">katana</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">location</span> <span class="n">KATANA_API_LOCATION</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">houdini</span> <span class="o">|</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">houdini</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">houdini</span><span class="o">-</span><span class="n">location</span> <span class="n">HOUDINI_LOCATION</span><span class="p">]</span>
-                    <span class="n">install_dir</span>
-<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">too</span> <span class="n">few</span> <span class="n">arguments</span>
+D:\work\USD_build&gt; python ..\USD\build_scripts\build_usd.py
+usage: build_usd.py [-h] [-n] [-v | -q] [--build BUILD]
+                    [--generator GENERATOR]
+                    [--build-shared | --build-monolithic] [--src SRC]
+                    [--inst INST] [--force FORCE_BUILD] [--force-all]
+                    [--tests | --no-tests] [--docs | --no-docs]
+                    [--imaging | --usd-imaging | --no-imaging]
+                    [--ptex | --no-ptex] [--embree | --no-embree]
+                    [--embree-location EMBREE_LOCATION]
+                    [--alembic | --no-alembic] [--hdf5 | --no-hdf5]
+                    [--maya | --no-maya] [--maya-location MAYA_LOCATION]
+                    [--katana | --no-katana]
+                    [--katana-api-location KATANA_API_LOCATION]
+                    [--houdini | --no-houdini]
+                    [--houdini-location HOUDINI_LOCATION]
+                    install_dir
+build_usd.py: error: too few arguments
 
-<span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="o">.</span>
-<span class="n">ERROR</span><span class="p">:</span> <span class="n">CMake</span> <span class="ow">not</span> <span class="n">found</span> <span class="o">--</span> <span class="n">please</span> <span class="n">install</span> <span class="n">it</span> <span class="ow">and</span> <span class="n">adjust</span> <span class="n">your</span> <span class="n">PATH</span>
-</pre></div>
-</div>
+D:\work\USD_build&gt; python ..\USD\build_scripts\build_usd.py .
+ERROR: CMake not found -- please install it and adjust your PATH
+</pre>
 <p>こんな風に足りないツールのメッセージが出るのでせっせとインストールしてパスを設定する。</p>
 <blockquote>
-<div><p>set PATH=D:\Program Files\CMake\bin;%PATH%
+<p>set PATH=D:\Program Files\CMake\bin;%PATH%
 set PATH=D:\Program Files\NASM;%PATH%</p>
-</div></blockquote>
+</blockquote>
 <p>build…</p>
-</section>
-<section id="alembic">
-<h2>Alembicとか無しの最小ビルド。<a class="headerlink" href="#alembic" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="o">.</span>
+<h3>Alembicとか無しの最小ビルド。</h3>
+<pre class="code literal-block">D:\work\USD_build&gt; python ..\USD\build_scripts\build_usd.py .
 
-<span class="n">Building</span> <span class="k">with</span> <span class="n">settings</span><span class="p">:</span>
-  <span class="n">USD</span> <span class="n">source</span> <span class="n">directory</span>          <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD</span>
-  <span class="n">USD</span> <span class="n">install</span> <span class="n">directory</span>         <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>
-  <span class="mi">3</span><span class="n">rd</span><span class="o">-</span><span class="n">party</span> <span class="n">source</span> <span class="n">directory</span>    <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>\<span class="n">src</span>
-  <span class="mi">3</span><span class="n">rd</span><span class="o">-</span><span class="n">party</span> <span class="n">install</span> <span class="n">directory</span>   <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>
-  <span class="n">Build</span> <span class="n">directory</span>               <span class="n">D</span><span class="p">:</span>\<span class="n">work</span>\<span class="n">USD_build</span>\<span class="n">build</span>
+Building with settings:
+  USD source directory          D:\work\USD
+  USD install directory         D:\work\USD_build
+  3rd-party source directory    D:\work\USD_build\src
+  3rd-party install directory   D:\work\USD_build
+  Build directory               D:\work\USD_build\build
 
-  <span class="n">Building</span>                      <span class="n">Shared</span> <span class="n">libraries</span>
-    <span class="n">Imaging</span>                     <span class="n">On</span>
-      <span class="n">Ptex</span> <span class="n">support</span><span class="p">:</span>             <span class="n">Off</span>
-    <span class="n">UsdImaging</span>                  <span class="n">On</span>
-    <span class="n">Documentation</span>               <span class="n">Off</span>
-    <span class="n">Tests</span>                       <span class="n">Off</span>
-    <span class="n">Alembic</span> <span class="n">Plugin</span>              <span class="n">Off</span>
-      <span class="n">HDF5</span> <span class="n">support</span><span class="p">:</span>             <span class="n">Off</span>
-    <span class="n">Maya</span> <span class="n">Plugin</span>                 <span class="n">Off</span>
-    <span class="n">Katana</span> <span class="n">Plugin</span>               <span class="n">Off</span>
-    <span class="n">Houdini</span> <span class="n">Plugin</span>              <span class="n">Off</span>
+  Building                      Shared libraries
+    Imaging                     On
+      Ptex support:             Off
+    UsdImaging                  On
+    Documentation               Off
+    Tests                       Off
+    Alembic Plugin              Off
+      HDF5 support:             Off
+    Maya Plugin                 Off
+    Katana Plugin               Off
+    Houdini Plugin              Off
 
-    <span class="n">Dependencies</span>                <span class="n">zlib</span><span class="p">,</span> <span class="n">boost</span><span class="p">,</span> <span class="n">TBB</span><span class="p">,</span> <span class="n">JPEG</span><span class="p">,</span> <span class="n">TIFF</span><span class="p">,</span> <span class="n">PNG</span><span class="p">,</span> <span class="n">OpenEXR</span><span class="p">,</span> <span class="n">GLEW</span><span class="p">,</span> <span class="n">OpenImageIO</span><span class="p">,</span> <span class="n">OpenSubdiv</span><span class="p">,</span> <span class="n">PyOpenGL</span>
+    Dependencies                zlib, boost, TBB, JPEG, TIFF, PNG, OpenEXR, GLEW, OpenImageIO, OpenSubdiv, PyOpenGL
 
-<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">zlib</span><span class="o">...</span>
-<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">boost</span><span class="o">...</span>
-<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">TBB</span><span class="o">...</span>
-<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">JPEG</span><span class="o">...</span>
-<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">TIFF</span><span class="o">...</span>
-<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">PNG</span><span class="o">...</span>
-</pre></div>
-</div>
+STATUS: Installing zlib...
+STATUS: Installing boost...
+STATUS: Installing TBB...
+STATUS: Installing JPEG...
+STATUS: Installing TIFF...
+STATUS: Installing PNG...
+</pre>
 <p>こんな感じに順番にビルドが進んでいく。</p>
-</section>
-<section id="png">
-<h2>pngのビルドでこけた<a class="headerlink" href="#png" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。
-</pre></div>
-</div>
+<h3>pngのビルドでこけた</h3>
+<pre class="code literal-block">pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。
+</pre>
 <p>何故か、zlibへのリンクがうまくいっていない？
 CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
 pythonをフルパスで指定したらなんか治った。違うPythonが意図せず使われていたか。
 dos窓は、whichコマンドが無いしよくわからん。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>work\USD_build&gt; D:\python27\python ..\USD\build_scripts\build_usd.py . --force png
+<pre class="code literal-block"><span class="n">work</span>\<span class="n">USD_build</span><span class="o">&gt;</span> <span class="n">D</span><span class="p">:</span>\<span class="n">python27</span>\<span class="n">python</span> <span class="o">..</span>\<span class="n">USD</span>\<span class="n">build_scripts</span>\<span class="n">build_usd</span><span class="o">.</span><span class="n">py</span> <span class="o">.</span> <span class="o">--</span><span class="n">force</span> <span class="n">png</span>
 
-STATUS: Installing PNG...
-STATUS: Installing OpenEXR...
-STATUS: Installing GLEW...
-STATUS: Installing OpenImageIO...
-STATUS: Installing OpenSubdiv...
-STATUS: Installing PyOpenGL...
-STATUS: Installing PyOpenGL...
-STATUS: Installing USD...
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">PNG</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">OpenEXR</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">GLEW</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">OpenImageIO</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">OpenSubdiv</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">PyOpenGL</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">PyOpenGL</span><span class="o">...</span>
+<span class="n">STATUS</span><span class="p">:</span> <span class="n">Installing</span> <span class="n">USD</span><span class="o">...</span>
 
-Success! To use USD, please ensure that you have:
-  The following in your PYTHONPATH environment variable:
-    D:\dev\_alembic\USD_build\lib\python
+<span class="n">Success</span><span class="o">!</span> <span class="n">To</span> <span class="n">use</span> <span class="n">USD</span><span class="p">,</span> <span class="n">please</span> <span class="n">ensure</span> <span class="n">that</span> <span class="n">you</span> <span class="n">have</span><span class="p">:</span>
+  <span class="n">The</span> <span class="n">following</span> <span class="ow">in</span> <span class="n">your</span> <span class="n">PYTHONPATH</span> <span class="n">environment</span> <span class="n">variable</span><span class="p">:</span>
+    <span class="n">D</span><span class="p">:</span>\<span class="n">dev</span>\<span class="n">_alembic</span>\<span class="n">USD_build</span>\<span class="n">lib</span>\<span class="n">python</span>
 
-  The following in your PATH environment variable:
-    D:\dev\_alembic\USD_build\bin
-    D:\dev\_alembic\USD_build\lib
-</pre></div>
-</div>
+  <span class="n">The</span> <span class="n">following</span> <span class="ow">in</span> <span class="n">your</span> <span class="n">PATH</span> <span class="n">environment</span> <span class="n">variable</span><span class="p">:</span>
+    <span class="n">D</span><span class="p">:</span>\<span class="n">dev</span>\<span class="n">_alembic</span>\<span class="n">USD_build</span>\<span class="n">bin</span>
+    <span class="n">D</span><span class="p">:</span>\<span class="n">dev</span>\<span class="n">_alembic</span>\<span class="n">USD_build</span>\<span class="n">lib</span>
+</pre>
 <p>ビルドできた。</p>
-</section>
-<section id="boost-python">
-<h2>Boost.Pythonメモ<a class="headerlink" href="#boost-python" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">boost_python-vc140-mt-1_61.dll</span></code> が <code class="docutils literal notranslate"><span class="pre">python36.dll</span></code> とか違うのにリンクしてしまう場合。
+<h3>Boost.Pythonメモ</h3>
+<p><code>boost_python-vc140-mt-1_61.dll</code> が <code>python36.dll</code> とか違うのにリンクしてしまう場合。
 最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USD_BUILD</span><span class="o">/</span><span class="n">user</span><span class="o">-</span><span class="n">conifg</span><span class="o">.</span><span class="n">jam</span>
-<span class="n">using</span> <span class="n">python</span>
-    <span class="p">:</span> <span class="mf">2.7</span>                   <span class="c1"># Version</span>
-    <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">Python27</span>\\<span class="n">python</span><span class="o">.</span><span class="n">exe</span>      <span class="c1"># Python Path</span>
-    <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">Python27</span>\\<span class="n">include</span>         <span class="c1"># include path</span>
-    <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">Python27</span>\\<span class="n">libs</span>            <span class="c1"># lib path(s)</span>
-    <span class="p">;</span>
-</pre></div>
-</div>
-<p>を作って環境変数 <code class="docutils literal notranslate"><span class="pre">BOOST_BUILD_PATH</span></code> を <code class="docutils literal notranslate"><span class="pre">user-config.jam</span></code> のあるディレクトリに指定する。
-<code class="docutils literal notranslate"><span class="pre">%USERROFILE%\user-config.jam</span></code> に作って <code class="docutils literal notranslate"><span class="pre">BOOST_BUILD_PATH</span></code> 無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。</p>
-<p><a class="reference external" href="http://www.boost.org/build/doc/html/bbv2/overview/configuration.html">http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</a></p>
+<pre class="code literal-block"><span class="nt">USD_BUILD</span><span class="o">/</span><span class="nt">user-conifg</span><span class="p">.</span><span class="nc">jam</span>
+<span class="nt">using</span> <span class="nt">python</span>
+    <span class="o">:</span> <span class="nt">2</span><span class="p">.</span><span class="nc">7</span>                   <span class="err">#</span> <span class="nt">Version</span>
+    <span class="o">:</span> <span class="nt">C</span><span class="o">:</span><span class="err">\\</span><span class="nt">Python27</span><span class="err">\\</span><span class="nt">python</span><span class="p">.</span><span class="nc">exe</span>      <span class="err">#</span> <span class="nt">Python</span> <span class="nt">Path</span>
+    <span class="o">:</span> <span class="nt">C</span><span class="o">:</span><span class="err">\\</span><span class="nt">Python27</span><span class="err">\\</span><span class="nt">include</span>         <span class="err">#</span> <span class="nt">include</span> <span class="nt">path</span>
+    <span class="o">:</span> <span class="nt">C</span><span class="o">:</span><span class="err">\\</span><span class="nt">Python27</span><span class="err">\\</span><span class="nt">libs</span>            <span class="err">#</span> <span class="nt">lib</span> <span class="nt">path</span><span class="o">(</span><span class="nt">s</span><span class="o">)</span>
+    <span class="o">;</span>
+</pre>
+<p>を作って環境変数 <code>BOOST_BUILD_PATH</code> を <code>user-config.jam</code> のあるディレクトリに指定する。
+<code>%USERROFILE%\user-config.jam</code> に作って <code>BOOST_BUILD_PATH</code> 無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。</p>
+<p><a href="http://www.boost.org/build/doc/html/bbv2/overview/configuration.html">http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</a></p>
 <p>WindowsのBoost.Pythonは作るときも使うときもリンクではまる。</p>
-</section>
-<section id="usdview">
-<h2>usdviewを使ってみる<a class="headerlink" href="#usdview" title="Permalink to this headline">¶</a></h2>
+<h3>usdviewを使ってみる</h3>
 <p>USD_BUILD/bin/usdviewがある。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>USD_BUILD\bin&gt; D:\python27\python usdview
+<pre class="code literal-block"><span class="n">USD_BUILD</span>\<span class="nb">bin</span><span class="o">&gt;</span> <span class="n">D</span><span class="p">:</span>\<span class="n">python27</span>\<span class="n">python</span> <span class="n">usdview</span>
 
-sys.path
-Traceback (most recent call last):
-  File &quot;usdview&quot;, line 25, in &lt;module&gt;
-    import pxr.Usdviewq as Usdviewq
-ImportError: No module named pxr.Usdviewq
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">"usdview"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">25</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">import</span> <span class="nn">pxr.Usdviewq</span> <span class="k">as</span> <span class="nn">Usdviewq</span>
+<span class="ne">ImportError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="n">pxr</span><span class="o">.</span><span class="n">Usdviewq</span>
 
-environ[‘PATH’]
-Traceback (most recent call last):
-  File &quot;usdview&quot;, line 37, in &lt;module&gt;
-    Usdviewq.Launcher().Run()
-  File &quot;D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py&quot;, line 54, in Run
-    valid = self.ValidateOptions(arg_parse_result)
-  File &quot;D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py&quot;, line 167, in ValidateOptions
-    from pxr import Sdf
-  File &quot;D:\dev\_alembic\USD_build\lib\python\pxr\Sdf\__init__.py&quot;, line 24, in &lt;module&gt;
-    import _sdf
-ImportError: DLL load failed: 指定されたモジュールが見つかりません。
-</pre></div>
-</div>
+<span class="n">environ</span><span class="p">[</span><span class="err">‘</span><span class="n">PATH</span><span class="err">’</span><span class="p">]</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">"usdview"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">37</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">Usdviewq</span><span class="o">.</span><span class="n">Launcher</span><span class="p">()</span><span class="o">.</span><span class="n">Run</span><span class="p">()</span>
+  <span class="n">File</span> <span class="s2">"D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">54</span><span class="p">,</span> <span class="ow">in</span> <span class="n">Run</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ValidateOptions</span><span class="p">(</span><span class="n">arg_parse_result</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">"D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">167</span><span class="p">,</span> <span class="ow">in</span> <span class="n">ValidateOptions</span>
+    <span class="kn">from</span> <span class="nn">pxr</span> <span class="kn">import</span> <span class="n">Sdf</span>
+  <span class="n">File</span> <span class="s2">"D:\dev\_alembic\USD_build\lib\python\pxr\Sdf\__init__.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">24</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">import</span> <span class="nn">_sdf</span>
+<span class="ne">ImportError</span><span class="p">:</span> <span class="n">DLL</span> <span class="n">load</span> <span class="n">failed</span><span class="p">:</span> <span class="n">指定されたモジュールが見つかりません</span><span class="err">。</span>
+</pre>
 <p>usdviewを改造してしまおう。
 環境変数PATHとPYTHONPATHを追加。
 usdview.cmd改造でもよいがpythonの方が書きやすいので。
 usdviewの冒頭のimport前に下記を追加。</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="n">basepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
-<span class="n">bin_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="s1">&#39;bin&#39;</span><span class="p">)</span>
-<span class="n">lib_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span>
-<span class="n">libpython_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">&#39;python&#39;</span><span class="p">)</span>
+<span class="n">bin_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="s1">'bin'</span><span class="p">)</span>
+<span class="n">lib_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basepath</span><span class="p">,</span> <span class="s1">'lib'</span><span class="p">)</span>
+<span class="n">libpython_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">'python'</span><span class="p">)</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">libpython_dir</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">;</span><span class="si">%s</span><span class="s2">;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bin_dir</span><span class="p">,</span> <span class="n">lib_dir</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'PATH'</span><span class="p">]</span><span class="o">=</span><span class="s2">"</span><span class="si">%s</span><span class="s2">;</span><span class="si">%s</span><span class="s2">;"</span> <span class="o">%</span> <span class="p">(</span><span class="n">bin_dir</span><span class="p">,</span> <span class="n">lib_dir</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'PATH'</span><span class="p">]</span>
 
 
 <span class="kn">import</span> <span class="nn">pxr.Usdviewq</span> <span class="k">as</span> <span class="nn">Usdviewq</span>
-</pre></div>
-</div>
+</pre>
 <p>実行。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USD_BUILD</span>\<span class="nb">bin</span><span class="o">&gt;</span> <span class="n">D</span><span class="p">:</span>\<span class="n">python27</span>\<span class="n">python</span> <span class="n">usdview</span>
+<pre class="code literal-block"><span class="n">USD_BUILD</span>\<span class="n">bin</span><span class="o">&gt;</span> <span class="n">D</span><span class="p">:</span>\<span class="n">python27</span>\<span class="n">python</span> <span class="n">usdview</span>
 <span class="n">usage</span><span class="p">:</span> <span class="n">usdview</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">renderer</span> <span class="p">{</span><span class="n">opt</span><span class="p">,</span><span class="n">simple</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">select</span> <span class="n">PRIMPATH</span><span class="p">]</span>
                <span class="p">[</span><span class="o">--</span><span class="n">camera</span> <span class="n">CAMERA</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mask</span> <span class="n">PRIMPATH</span><span class="p">[,</span><span class="n">PRIMPATH</span><span class="o">...</span><span class="p">]]</span>
                <span class="p">[</span><span class="o">--</span><span class="n">clearsettings</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">norender</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">unloaded</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timing</span><span class="p">]</span>
@@ -295,768 +244,45 @@ usdviewの冒頭のimport前に下記を追加。</p>
                <span class="p">[</span><span class="o">--</span><span class="n">complexity</span> <span class="n">COMPLEXITY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quitAfterStartup</span><span class="p">]</span>
                <span class="n">usdFile</span>
 <span class="n">usdview</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">too</span> <span class="n">few</span> <span class="n">arguments</span>
-</pre></div>
-</div>
+</pre>
 <p>引数が必要と。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cube</span><span class="o">.</span><span class="n">usd</span>
-<span class="c1">#usda 1.0</span>
+<pre class="code literal-block">cube.usd
+#usda 1.0
 
-<span class="k">def</span> <span class="nf">Cube</span> <span class="s2">&quot;Cube&quot;</span>
-<span class="p">{</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+def Cube "Cube"
+{
+}
+</pre>
 <p>実行。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">Warning</span><span class="p">:</span> <span class="ow">in</span> <span class="n">Link</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">180</span> <span class="n">of</span> <span class="n">D</span><span class="p">:</span>\<span class="n">dev</span>\<span class="n">_alembic</span>\<span class="n">USD</span>\<span class="n">pxr</span>\<span class="n">imaging</span>\<span class="n">lib</span>\<span class="n">hd</span>\<span class="n">glslProgram</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">link</span> <span class="n">shader</span><span class="p">:</span>
-<span class="n">Geometry</span> <span class="n">shader</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">failed</span> <span class="n">to</span> <span class="n">link</span><span class="o">.</span>
-<span class="n">Geometry</span> <span class="n">link</span> <span class="n">error</span><span class="p">:</span> <span class="n">HW_UNSUPPORTED</span><span class="o">.</span>
-<span class="n">ERROR</span><span class="p">:</span> <span class="n">Internal</span> <span class="nb">compile</span> <span class="n">error</span><span class="p">,</span> <span class="n">error</span> <span class="n">code</span><span class="p">:</span> <span class="n">E_SC_LITERAL_NOT_DEFINED</span>
-<span class="n">Shader</span> <span class="ow">not</span> <span class="n">supported</span> <span class="n">by</span> <span class="n">HW</span>
-</pre></div>
-</div>
+<pre class="code literal-block"><span class="n">Warning</span><span class="o">:</span> <span class="k">in</span> <span class="n">Link</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">180</span> <span class="n">of</span> <span class="n">D</span><span class="o">:\</span><span class="n">dev</span><span class="o">\</span><span class="n">_alembic</span><span class="o">\</span><span class="n">USD</span><span class="o">\</span><span class="n">pxr</span><span class="o">\</span><span class="n">imaging</span><span class="o">\</span><span class="n">lib</span><span class="o">\</span><span class="n">hd</span><span class="o">\</span><span class="n">glslProgram</span><span class="o">.</span><span class="na">cpp</span> <span class="o">--</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">link</span> <span class="n">shader</span><span class="o">:</span>
+<span class="n">Geometry</span> <span class="n">shader</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="n">failed</span> <span class="n">to</span> <span class="n">link</span><span class="o">.</span>
+<span class="n">Geometry</span> <span class="n">link</span> <span class="n">error</span><span class="o">:</span> <span class="n">HW_UNSUPPORTED</span><span class="o">.</span>
+<span class="n">ERROR</span><span class="o">:</span> <span class="n">Internal</span> <span class="n">compile</span> <span class="n">error</span><span class="o">,</span> <span class="n">error</span> <span class="n">code</span><span class="o">:</span> <span class="n">E_SC_LITERAL_NOT_DEFINED</span>
+<span class="n">Shader</span> <span class="n">not</span> <span class="n">supported</span> <span class="n">by</span> <span class="n">HW</span>
+</pre>
 <p>Windowは出た。しかしglslのエラーで3DViewの描画ができぬ。
 Rx480がだめなのだろうか。
 GTX買わねば・・・</p>
 <p>Alembic追加する
 ToDo</p>
-</section>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../boost_python3/">
-      <i class="fa fa-arrow-circle-left"></i> Boost.PythonのPython3でのstd::string、std::wstringのふるまい
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../pybullet/">
-      PyBulletを使ってみる <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2017/08/14 
-</h2>
-
-<ul>
-       
-<li id="tags">
-  <span
-    ><i
-      class="fa-fw fa fa-tag"
-    ></i
-    ></span
-  >
-   
-  <a href="../../../../blog/tag/usd/">usd</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-  <h3><a href="../../../../">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">PixarのUniversal Scene Descriptionをビルドしてみる</a><ul>
-<li><a class="reference internal" href="#pixar-usd-windows-2017-9">Pixar USD の Windows ビルド方法（2017/9 版）</a></li>
-<li><a class="reference internal" href="#python">python補足</a></li>
-<li><a class="reference internal" href="#alembic">Alembicとか無しの最小ビルド。</a></li>
-<li><a class="reference internal" href="#png">pngのビルドでこけた</a></li>
-<li><a class="reference internal" href="#boost-python">Boost.Pythonメモ</a></li>
-<li><a class="reference internal" href="#usdview">usdviewを使ってみる</a></li>
-</ul>
-</li>
-</ul>
-
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../boost_python3/" rel="prev" title="Boost.PythonのPython3でのstd::string、std::wstringのふるまい">
+            Boost.PythonのPython3でのstd::string、std::wstringのふるまい 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../pybullet/" rel="next" title="PyBulletを使ってみる">
+            👉 PyBulletを使ってみる
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

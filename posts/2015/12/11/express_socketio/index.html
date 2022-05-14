@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>Socket.IOな実験環境 | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">Socket.IOな実験環境
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2015-12-11T00:00:00+09:00" title="2015-12-11">2015-12-11</time>
+</li>
+</ul>
+</h1>
+
+<p>Socket.IOを実験する環境のメモ。</p>
+<p>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
+coffee-scriptは無しでES6要素をなるべく入れる
+Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</p>
+<p>https://github.com/ousttrue/sio_sample
+Project生成</p>
+<blockquote>
+<p>mkdir sio_sample
+cd sio_sample
+sio_sample&gt; npm init -y
+sio_sample&gt; npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D
+sio_sample&gt; npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</p>
+</blockquote>
+<p>vscodeでes6を使えるように
+jsconifg.json
+{
+    "compilerOptions": {
+        "target": "ES6"
+    }
+}</p>
+<p>後で拡張できるように以下のようなディレクトリ構成にする。
+build &lt;- srcから(加工して)コピーされる</p>
+<p>src &lt;- 加工前のファイル置き場
+  + server
+    + app.js
+  + client
+    + index.html
+    + index.js</p>
+<p>src/server/app.js
+"use strict";</p>
+<p>const http = require('http');
+const express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+    .use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+const socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    console.log('a client connected %s', socket);
+    socket.on('disconnect', () =&gt; {
+        console.log('a client disconnected');
+    });
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.html</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<script src="index.js"></script><div id="target"></div>
+
+<p></p>
+<p>src/client/index.js
+"use strict";</p>
+<p>function setup(target) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('onLoad'));
+    target.appendChild(div);
+}</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block">setup(document.getElementById('target'));
+</pre>
+<p>};</p>
+<p>srcからbuildに展開するgulp
+gulpfile.js
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();</p>
+<p>const config = {
+    server_src: './src/server/<strong>/*',
+    server_dst: './build',
+    client_src: './src/client/</strong>/*',
+    client_dst: './build/public'
+};</p>
+<p>gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe(gulp.dest(config.server_dst));
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe(gulp.dest(config.client_dst));
+});</p>
+<p>gulp.task('default', ['server', 'client']);</p>
+<p>build
+sio_sample&gt; gulp</p>
+<p>ブラウザで動いた。
+browserSync導入
+gulpfile.js。browserSync
+const config = { // 追加分
+    app_entry: './build/app.js',
+    app_port: 5000,  <br>
+};</p>
+<p>const browserSync = require('browser-sync').create();
+gulp.task('serve', ()=&gt;{
+    $.nodemon({
+        script: config.app_entry,
+        exp: 'js',
+        ignore: [],
+        env: {
+            port: config.app_port
+        }
+    })
+    .on('readable', ()=&gt;{
+        this.stdout.on('data', (chunk)=&gt;{
+            if (/^start /.test(chunk)){
+                console.log('reloading...');
+                browserSync.reload();
+            }
+            process.stdout.write(chunk)
+        });
+    });
+});</p>
+<p>gulp.task('browser-sync', ['serve'], ()=&gt;{
+    browserSync.init({
+        proxy: 'localhost:' + config.app_port,
+        port: 3000,
+        ws: true
+    })
+});</p>
+<p>gulpfile.js。watchタスク追加
+gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe(gulp.dest(config.server_dst))
+        .pipe(browserSync.stream())
+        ;
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe(gulp.dest(config.client_dst))
+        .pipe(browserSync.stream())
+        ;
+});</p>
+<p>gulp.task('build', ['server', 'client']);</p>
+<p>gulp.task('watch', ['build', 'browser-sync'], ()=&gt;{
+    gulp.watch(config.server_src, ['server']);
+    gulp.watch(config.client_src, ['client']);
+});</p>
+<p>gulp.task('default', ['watch']);</p>
+<p>git
+いったんgitに登録しよう。
+.gitignore
+/node_modules/
+/build/</p>
+<p>Socket.IOの疎通</p>
+
+<p>
+</p>
+    <meta charset="UTF-8">
+<title>Document</title>
+<script type="text/javascript" src="../../../../../socket.io/socket.io.js"></script><br><script src="index.js"></script><div id="target"></div>
+
+<p></p>
+<p>"use strict";</p>
+<p>function setup(target) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello'));
+    target.appendChild(div);</p>
+<pre class="code literal-block"><span class="nv">this</span>.<span class="nv">socket</span> <span class="o">=</span> <span class="nv">io</span>.<span class="k">connect</span><span class="ss">()</span><span class="c1">;</span>
+</pre>
+<p>}</p>
+<p>window.onload = () =&gt; {
+    setup(document.getElementById('target'));
+};</p>
+<p>typescript導入
+sio_sample&gt; tsc --init</p>
+<p>tsconfig.json
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "outDir": ".",
+        "rootDir": ".",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}</p>
+<p>sio_sample&gt; npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D
+sio_sample&gt; cd src
+sio_sample/src&gt; tsd init
+sio_sample/src&gt; tsd query node express socket.io -rosa install</p>
+<p>gulpfile.js。typescriptのコンパイルを追加
+const path = require('path');
+const tsconfig = require('./tsconfig.json');
+const isTypescript = (file) =&gt; {
+    const ext = path.extname(file.path).toLowerCase();
+    return ext === '.ts';
+}</p>
+<p>gulp.task('server', () =&gt; {
+    gulp.src(config.server_src)
+        .pipe($.plumber())
+        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+        .pipe($.debug('server'))
+        .pipe(gulp.dest(config.server_dst))
+        .pipe(browserSync.stream())
+    ;
+});</p>
+<p>gulp.task('client', () =&gt; {
+    gulp.src(config.client_src)
+        .pipe($.plumber())
+        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))
+        .pipe($.debug('client'))
+        .pipe(gulp.dest(config.client_dst))
+        .pipe(browserSync.stream())
+    ;
+});</p>
+<p>src/server/app.jsをapp.tsにリネーム
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>import http = require('http');
+import express = require('express');
+const port = process.env.port || 3000;
+const app = express();
+const server = http.createServer(app);
+const servestatic = require('serve-static');
+const serve_dir = __dirname + '/public';
+console.log('serve %s', serve_dir);
+app
+    .use(servestatic(serve_dir))
+;</p>
+<p>// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    var clientAddress=socket.client.conn.remoteAddress;
+    console.log('connected: %s', clientAddress);
+    socket.on('disconnect', () =&gt; {
+        console.log('disconnected: %s', clientAddress);
+    });
+});</p>
+<p>// start
+server.listen(port);
+console.log('start port: %d...', port);</p>
+<p>src/client/index.jsをindex.tsにリネーム
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>declare module io {
+    export function connect(): SocketIO.Socket;
+}</p>
+<p>function setup(target: Element) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode('hello socket.io'));
+    target.appendChild(div);</p>
+<pre class="code literal-block"><span class="nv">this</span>.<span class="nv">socket</span> <span class="o">=</span> <span class="nv">io</span>.<span class="k">connect</span><span class="ss">()</span><span class="c1">;</span>
+</pre>
+<p>}</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block">setup(document.getElementById('target'));
+</pre>
+<p>};</p>
+<p>メッセージをやり取り
+src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行
+// socket.io
+import socketio = require('socket.io');
+const io = socketio(server);
+io.on('connection', (socket) =&gt; {
+    var clientAddress = socket.client.conn.remoteAddress;
+    console.log('connected: %s', clientAddress);
+    socket.on('disconnect', () =&gt; {
+        console.log('disconnected: %s', clientAddress);
+    });</p>
+<pre class="code literal-block"><span class="nt">socket</span><span class="p">.</span><span class="nc">on</span><span class="o">(</span><span class="s1">'client-message'</span><span class="o">,</span> <span class="o">(</span><span class="nt">data</span><span class="o">:</span> <span class="nt">any</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="err">socket.emit('server-message',</span> <span class="err">'server</span> <span class="err">clicked</span> <span class="err">message')</span><span class="p">;</span>
+<span class="p">}</span><span class="o">);</span>
+</pre>
+<p>});</p>
+<p>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画
+/// <reference path="../typings/tsd.d.ts"></reference>
+"use strict";</p>
+<p>declare module io {
+    export function connect(): SocketIO.Socket;
+}</p>
+<p>class Client {
+    socket: SocketIO.Socket;</p>
+<pre class="code literal-block"><span class="n">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">this</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">connect</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">setup</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="n">div</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">'div'</span><span class="p">);</span>
+    <span class="n">div</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">createTextNode</span><span class="p">(</span><span class="s1">'hello socket.io'</span><span class="p">));</span>
+    <span class="n">target</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">div</span><span class="p">);</span>
+
+    <span class="n">this</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'server-message'</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">any</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
+        <span class="k">const</span> <span class="n">div</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">'div'</span><span class="p">);</span>
+        <span class="n">div</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">createTextNode</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">toString</span><span class="p">()));</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">div</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="k">const</span> <span class="n">button</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">'button'</span><span class="p">);</span>
+    <span class="n">button</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">createTextNode</span><span class="p">(</span><span class="s1">'send'</span><span class="p">));</span>
+    <span class="n">button</span><span class="o">.</span><span class="n">onclick</span><span class="o">=</span><span class="p">(</span><span class="n">ev</span><span class="p">:</span> <span class="n">MouseEvent</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">'client-message'</span><span class="p">,</span> <span class="s1">'clicked'</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="n">target</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">button</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+<p>}
+var client=new Client();</p>
+<p>window.onload = () =&gt; {</p>
+<pre class="code literal-block">client.setup(document.getElementById('target'));
+</pre>
+<p>};</p>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../fontawesome/" rel="prev" title="FontAwesomeを取り入れる">
+            FontAwesomeを取り入れる 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../../../../github/sio_sample/" rel="next" title="sio_sample">
+            👉 sio_sample
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

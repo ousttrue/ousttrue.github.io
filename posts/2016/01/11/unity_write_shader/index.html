@@ -1,76 +1,44 @@
-
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>unity_write_shader</title>
-<link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
-<link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
-<link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../../../../../_static/pygments_dark.css" />
-<script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-<script src="../../../../../_static/jquery.js"></script>
-<script src="../../../../../_static/underscore.js"></script>
-<script src="../../../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../../../genindex/" />
-    <link rel="search" title="Search" href="../../../../../search/" />   
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="../../../../../blog/atom.xml"
-  title="三次元日誌(ablog)"
-/>
- 
-<link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
-
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
-
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../../../assets/js/all-nocdn.js"></script><title>UnityのShaderを書いてみる | 三次元日誌</title>
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="header">
-        
-<div class="related" role="navigation" aria-label="related navigation">
-    <!-- <h3>Navigation</h3> -->
-    <ul>
-        <li class="right" style="margin-right: 10px" >
-            <a href="../../../../../genindex/" title="General Index" accesskey="I">index</a>
-        </li>
-        <li class="nav-item nav-item-0"><a href="../../../../../">三次元日誌  documentation</a></li>
-        <li class="nav-item nav-item-this"><a href="">unity_write_shader</a></li> 
-    </ul>
-</div>
-    </div>
-    <div id="document"> <section class="tex2jax_ignore mathjax_ignore" id="unity-write-shader">
-<h1>unity_write_shader<a class="headerlink" href="#unity-write-shader" title="Permalink to this headline">¶</a></h1>
+    <h1 id="brand">
+        <a href="../../../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../../../archive.html">Archives</a></li>
+<li><a href="../../../../../categories/index.html">Tags</a></li>
+<li><a href="../../../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../../../about">About</a></li>
+<li><a href="../../../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">UnityのShaderを書いてみる
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2016-01-11T00:00:00+09:00" title="2016-01-11">2016-01-11</time>
+</li>
+    <li><a class="tag p-category" href="../../../../../categories/unity/" rel="tag">unity</a></li>
+</ul>
+</h1>
+
 <p>アルファブレンディング
 シャドウキャスター
 シャドウレシーバー</p>
@@ -79,264 +47,257 @@
 新規作成
 Create -&gt; Shader -&gt; UnLitShader
 CustomShader</p>
-<p>Shader “CustomShader”
+<p>Shader "CustomShader"
 {
-Properties
-{
-_MainTex (“Texture”, 2D) = “white” {}
-}
-SubShader
-{
-Tags { “RenderType”=”Opaque” }
-LOD 100</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    Pass
+    Properties
     {
-        CGPROGRAM
-        #pragma vertex vert
-        #pragma fragment frag
-        // make fog work
-        #pragma multi_compile_fog
-        
-        #include &quot;UnityCG.cginc&quot;
-
-        struct appdata
-        {
-            float4 vertex : POSITION;
-            float2 uv : TEXCOORD0;
-        };
-
-        struct v2f
-        {
-            float2 uv : TEXCOORD0;
-            UNITY_FOG_COORDS(1)
-            float4 vertex : SV_POSITION;
-        };
-
-        sampler2D _MainTex;
-        float4 _MainTex_ST;
-        
-        v2f vert (appdata v)
-        {
-            v2f o;
-            o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-            o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-            UNITY_TRANSFER_FOG(o,o.vertex);
-            return o;
-        }
-        
-        fixed4 frag (v2f i) : SV_Target
-        {
-            // sample the texture
-            fixed4 col = tex2D(_MainTex, i.uv);
-            // apply fog
-            UNITY_APPLY_FOG(i.fogCoord, col);
-            return col;
-        }
-        ENDCG
+        _MainTex ("Texture", 2D) = "white" {}
     }
-}
-</pre></div>
-</div>
+    SubShader
+    {
+        Tags { "RenderType"="Opaque" }
+        LOD 100</p>
+<pre class="code literal-block"><span class="w">    </span><span class="n">Pass</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">CGPROGRAM</span><span class="w"></span>
+<span class="w">        </span><span class="cp">#pragma vertex vert</span>
+<span class="w">        </span><span class="cp">#pragma fragment frag</span>
+<span class="w">        </span><span class="c1">// make fog work</span>
+<span class="w">        </span><span class="cp">#pragma multi_compile_fog</span>
+
+<span class="w">        </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityCG.cginc"</span><span class="cp"></span>
+
+<span class="w">        </span><span class="k">struct</span> <span class="nc">appdata</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">float4</span><span class="w"> </span><span class="nl">vertex</span> <span class="p">:</span><span class="w"> </span><span class="n">POSITION</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="n">float2</span><span class="w"> </span><span class="nl">uv</span> <span class="p">:</span><span class="w"> </span><span class="n">TEXCOORD0</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">};</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">struct</span> <span class="nc">v2f</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">float2</span><span class="w"> </span><span class="nl">uv</span> <span class="p">:</span><span class="w"> </span><span class="n">TEXCOORD0</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="n">UNITY_FOG_COORDS</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">float4</span><span class="w"> </span><span class="nl">vertex</span> <span class="p">:</span><span class="w"> </span><span class="n">SV_POSITION</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">};</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">sampler2D</span><span class="w"> </span><span class="n">_MainTex</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">float4</span><span class="w"> </span><span class="n">_MainTex_ST</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">v2f</span><span class="w"> </span><span class="nf">vert</span><span class="w"> </span><span class="p">(</span><span class="n">appdata</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">v2f</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="n">o</span><span class="p">.</span><span class="n">uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">uv</span><span class="p">,</span><span class="w"> </span><span class="n">_MainTex</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="n">UNITY_TRANSFER_FOG</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">fixed4</span><span class="w"> </span><span class="nf">frag</span><span class="w"> </span><span class="p">(</span><span class="n">v2f</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// sample the texture</span>
+<span class="w">            </span><span class="n">fixed4</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// apply fog</span>
+<span class="w">            </span><span class="n">UNITY_APPLY_FOG</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">fogCoord</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">col</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="n">ENDCG</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre>
 <p>}</p>
 <p>この時点でテクスチャが表示できるけど一度無にしよう
-Shader “CustomShader”
+Shader "CustomShader"
 {
-SubShader
-{
-Tags { “RenderType”=”Opaque” }
-LOD 100
-Pass
-{
-CGPROGRAM
-#pragma vertex vert
-#pragma fragment frag
-float4 vert(float4 v:POSITION) : SV_POSITION{
-return mul(UNITY_MATRIX_MVP, v);
-}
-fixed4 frag() : COLOR{
-return fixed4(1.0,0.0,0.0,1.0);
-}
-ENDCG
-}
-}
+    SubShader
+    {
+        Tags { "RenderType"="Opaque" }
+        LOD 100
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            float4 vert(float4 v:POSITION) : SV_POSITION{
+                return mul(UNITY_MATRIX_MVP, v);
+            }
+            fixed4 frag() : COLOR{
+                return fixed4(1.0,0.0,0.0,1.0);
+            }
+            ENDCG
+        }
+    }
 }</p>
 <p>頂点変形だけを適用して赤一色。
 Color
 べたにマテリアル色が出る。
-Shader “CustomShader”
+Shader "CustomShader"
 {
-Properties
-{
-_Color(“Color”, Color) = (1,1,1,1)
-}
-SubShader
-{
-Tags{ “RenderType” = “Opaque” }
-LOD 100</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+    Properties
+    {
+        _Color("Color", Color) = (1,1,1,1)
+    }
+    SubShader
+    {
+    Tags{ "RenderType" = "Opaque" }
+    LOD 100</p>
+<pre class="code literal-block">Pass
 {
     CGPROGRAM
-</pre></div>
-</div>
-<p>#pragma target 3.0
-#pragma vertex vert
-#pragma fragment frag</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    uniform float4 _Color;
+</pre>
+<h2>pragma target 3.0</h2>
+<h2>pragma vertex vert</h2>
+<h2>pragma fragment frag</h2>
+<pre class="code literal-block">    <span class="nt">uniform</span> <span class="nt">float4</span> <span class="nt">_Color</span><span class="o">;</span>
 
-    float4 vert(float4 v:POSITION) : SV_POSITION{
-        return mul(UNITY_MATRIX_MVP, v);
-    }
-    fixed4 frag() : COLOR{
-        return _Color;
-    }
-    ENDCG
-}
+    <span class="nt">float4</span> <span class="nt">vert</span><span class="o">(</span><span class="nt">float4</span> <span class="nt">v</span><span class="p">:</span><span class="nd">POSITION</span><span class="o">)</span> <span class="o">:</span> <span class="nt">SV_POSITION</span><span class="p">{</span>
+        <span class="err">return</span> <span class="err">mul(UNITY_MATRIX_MVP,</span> <span class="err">v)</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">fixed4</span> <span class="nt">frag</span><span class="o">()</span> <span class="o">:</span> <span class="nt">COLOR</span><span class="p">{</span>
+        <span class="err">return</span> <span class="err">_Color</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nt">ENDCG</span>
+<span class="err">}</span>
 
-} // SurShader
-</pre></div>
-</div>
+<span class="err">}</span> <span class="o">//</span> <span class="nt">SurShader</span>
+</pre>
 <p>}</p>
 <p>_Colorプロパティを定義して、uniform変数_Colorを宣言し使う。
 Texture
 テクスチャ色を乗算
-Shader “CustomShader”
+Shader "CustomShader"
 {
-Properties
-{
-_Color(“Color”, Color) = (1,1,1,1)
-_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
-}
-SubShader
-{
-Tags{ “RenderType” = “Opaque” }
-LOD 100</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+    Properties
+    {
+        _Color("Color", Color) = (1,1,1,1)
+        _MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
+    }
+    SubShader
+    {
+    Tags{ "RenderType" = "Opaque" }
+    LOD 100</p>
+<pre class="code literal-block">Pass
 {
     CGPROGRAM
-</pre></div>
-</div>
-<p>#pragma target 3.0
-#pragma vertex vert
-#pragma fragment frag</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    struct appdata
-    {
-        float4 vertex : POSITION;
-        float2 uv : TEXCOORD0;
-    };
-    struct v2f
-    {
-        float2 uv : TEXCOORD0;
-        float4 vertex : SV_POSITION;
-    };
+</pre>
+<h2>pragma target 3.0</h2>
+<h2>pragma vertex vert</h2>
+<h2>pragma fragment frag</h2>
+<pre class="code literal-block">    <span class="n">struct</span> <span class="n">appdata</span>
+    <span class="p">{</span>
+        <span class="n">float4</span> <span class="n">vertex</span> <span class="p">:</span> <span class="n">POSITION</span><span class="p">;</span>
+        <span class="n">float2</span> <span class="n">uv</span> <span class="p">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="n">struct</span> <span class="n">v2f</span>
+    <span class="p">{</span>
+        <span class="n">float2</span> <span class="n">uv</span> <span class="p">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+        <span class="n">float4</span> <span class="n">vertex</span> <span class="p">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+    <span class="p">};</span>
 
-    uniform float4 _Color;
-    uniform sampler2D _MainTex;
+    <span class="n">uniform</span> <span class="n">float4</span> <span class="n">_Color</span><span class="p">;</span>
+    <span class="n">uniform</span> <span class="n">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
 
-    v2f vert(appdata v){
-        v2f o;
-        o.vertex= mul(UNITY_MATRIX_MVP, v.vertex);
-        o.uv = v.uv;
-        return o;
-    }
-    fixed4 frag(v2f i) : COLOR{
-        fixed4 tex = tex2D(_MainTex, i.uv);
-        return _Color * tex;
-    }
-    ENDCG
-}
+    <span class="n">v2f</span> <span class="n">vert</span><span class="p">(</span><span class="n">appdata</span> <span class="n">v</span><span class="p">){</span>
+        <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+        <span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="o">=</span> <span class="n">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+        <span class="n">o</span><span class="p">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">uv</span><span class="p">;</span>
+        <span class="n">return</span> <span class="n">o</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">fixed4</span> <span class="n">frag</span><span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="p">:</span> <span class="n">COLOR</span><span class="p">{</span>
+        <span class="n">fixed4</span> <span class="n">tex</span> <span class="o">=</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span>
+        <span class="n">return</span> <span class="n">_Color</span> <span class="o">*</span> <span class="n">tex</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">ENDCG</span>
+<span class="p">}</span>
 
-} // SurShader
-</pre></div>
-</div>
+<span class="p">}</span> <span class="o">//</span> <span class="n">SurShader</span>
+</pre>
 <p>}</p>
 <p>シェーダーの入力に位置とUV、出力に変換済みの位置とUVが必要になったので構造体appdataとv2fを導入
 _MainTexプロパティを導入し、サンプラー_MainTexを宣言してtex2D関数で使う</p>
 <p>AlphaBlending
 追加分
-Shader “CustomShader”
+Shader "CustomShader"
 {
-SubShader
-{
-// 背景を含む不透明なものの後で描画する
-Tags{ “Queue” = “Transparent” }</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
+    SubShader
+    {
+    // 背景を含む不透明なものの後で描画する
+    Tags{ "Queue" = "Transparent" }</p>
+<pre class="code literal-block">Pass
 {
     Blend SrcAlpha OneMinusSrcAlpha
 }
 
 } // SurShader
-</pre></div>
-</div>
+</pre>
 <p>}</p>
 <p>ここまでで照明の無い基本的なシェーダーができる。
 UnityCG.cgincを使う
 最初に新規作成したShaderにAplhaBlendingを追加した感じ。
 uniform変数のuniformは省略できる。
-Shader “CustomShader”
+Shader "CustomShader"
 {
-Properties
-{
-_Color(“Color”, Color) = (1,1,1,1)
-_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
-}
-SubShader
-{
-Tags{ “Queue” = “Transparent” }
-LOD 100</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
-{
-    Blend SrcAlpha OneMinusSrcAlpha
-
-    CGPROGRAM
-    #pragma target 3.0
-    #pragma vertex vert
-    #pragma fragment frag
-
-    // make fog work
-    #pragma multi_compile_fog
-
-    #include &quot;UnityCG.cginc&quot;
-
-    struct appdata
+    Properties
     {
-        float4 vertex : POSITION;
-        float2 uv : TEXCOORD0;
-    };
-
-    struct v2f
-    {
-        float2 uv : TEXCOORD0;
-        UNITY_FOG_COORDS(1)
-        float4 vertex : SV_POSITION;
-    };
-
-    float4 _Color;
-    sampler2D _MainTex;
-    float4 _MainTex_ST;
-
-    v2f vert(appdata v)
-    {
-        v2f o;
-        o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-        o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-        UNITY_TRANSFER_FOG(o,o.vertex);
-        return o;
+        _Color("Color", Color) = (1,1,1,1)
+        _MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
     }
-
-    fixed4 frag(v2f i) : SV_Target
+    SubShader
     {
-        // sample the texture
-        fixed4 col = tex2D(_MainTex, i.uv);
-        // apply fog
-        UNITY_APPLY_FOG(i.fogCoord, col);
-        return col * _Color;
-    }
-    ENDCG
-}
+        Tags{ "Queue" = "Transparent" }
+        LOD 100</p>
+<pre class="code literal-block"><span class="n">Pass</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Blend</span><span class="w"> </span><span class="n">SrcAlpha</span><span class="w"> </span><span class="n">OneMinusSrcAlpha</span><span class="w"></span>
 
-} // SurShader
-</pre></div>
-</div>
+<span class="w">    </span><span class="n">CGPROGRAM</span><span class="w"></span>
+<span class="w">    </span><span class="cp">#pragma target 3.0</span>
+<span class="w">    </span><span class="cp">#pragma vertex vert</span>
+<span class="w">    </span><span class="cp">#pragma fragment frag</span>
+
+<span class="w">    </span><span class="c1">// make fog work</span>
+<span class="w">    </span><span class="cp">#pragma multi_compile_fog</span>
+
+<span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityCG.cginc"</span><span class="cp"></span>
+
+<span class="w">    </span><span class="k">struct</span> <span class="nc">appdata</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">float4</span><span class="w"> </span><span class="nl">vertex</span> <span class="p">:</span><span class="w"> </span><span class="n">POSITION</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">float2</span><span class="w"> </span><span class="nl">uv</span> <span class="p">:</span><span class="w"> </span><span class="n">TEXCOORD0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">struct</span> <span class="nc">v2f</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">float2</span><span class="w"> </span><span class="nl">uv</span> <span class="p">:</span><span class="w"> </span><span class="n">TEXCOORD0</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">UNITY_FOG_COORDS</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">float4</span><span class="w"> </span><span class="nl">vertex</span> <span class="p">:</span><span class="w"> </span><span class="n">SV_POSITION</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="n">_Color</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">sampler2D</span><span class="w"> </span><span class="n">_MainTex</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="n">_MainTex_ST</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">v2f</span><span class="w"> </span><span class="nf">vert</span><span class="p">(</span><span class="n">appdata</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">v2f</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">o</span><span class="p">.</span><span class="n">uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">uv</span><span class="p">,</span><span class="w"> </span><span class="n">_MainTex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">UNITY_TRANSFER_FOG</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">fixed4</span><span class="w"> </span><span class="nf">frag</span><span class="p">(</span><span class="n">v2f</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// sample the texture</span>
+<span class="w">        </span><span class="n">fixed4</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// apply fog</span>
+<span class="w">        </span><span class="n">UNITY_APPLY_FOG</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">fogCoord</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_Color</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">ENDCG</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// SurShader</span>
+</pre>
 <p>}</p>
 <p>Lighting導入
 Vertex and Fragment Shader Examplesの後半Calculating Lighting
@@ -347,989 +308,280 @@ ambient
 lightmap
 reflections</p>
 <p>を扱える。
-Tags {“LightMode”=”ForwardBase”}</p>
+Tags {"LightMode"="ForwardBase"}</p>
 <p>を定義することでUnityの組み込み変数を通じて上記のシーンのライティング情報を得ることができるようになる。
 頂点ライティングによるDiffuse &amp; Ambient</p>
 <p>DirectionalLightによるDiffuse計算
 appdata_base導入(UnityCG.cgincで定義)
 v2fにdiffuse追加
 vertでdiffuse計算</p>
-<p>Shader “CustomShader”
+<p>Shader "CustomShader"
 {
-Properties
-{
-_Color(“Color”, Color) = (1,1,1,1)
-_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
-}
-SubShader
-{
-Tags{ “Queue” = “Transparent” }
-LOD 100</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
-{
-    Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; }
-
-    Blend SrcAlpha OneMinusSrcAlpha
-
-    CGPROGRAM
-    #pragma target 3.0
-    #pragma vertex vert
-    #pragma fragment frag
-
-    // make fog work
-    #pragma multi_compile_fog
-
-    #include &quot;UnityCG.cginc&quot;
-    #include &quot;UnityLightingCommon.cginc&quot; // for _LightColor0
-
-    struct v2f
+    Properties
     {
-        float2 uv : TEXCOORD0;
-        fixed4 diffuse : COLOR0; // diffuse lighting color
-        float4 vertex : SV_POSITION;
-        UNITY_FOG_COORDS(1)
-    };
-
-    uniform float4 _Color;
-    uniform sampler2D _MainTex;
-    float4 _MainTex_ST;
-
-    v2f vert(appdata_base v)
-    {
-        v2f o;
-        o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-        o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
-
-        // get vertex normal in world space
-        half3 worldNormal = UnityObjectToWorldNormal(v.normal);
-        // dot product between normal and light direction for
-        // standard diffuse (Lambert) lighting
-        half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-        // factor in the light color
-        o.diffuse = nl * _LightColor0;
-        
-        // the only difference from previous shader:
-        // in addition to the diffuse lighting from the main light,
-        // add illumination from ambient or light probes
-        // ShadeSH9 function from UnityCG.cginc evaluates it,
-        // using world space normal
-        o.diffuse.rgb += ShadeSH9(half4(worldNormal,1));            
-
-        UNITY_TRANSFER_FOG(o,o.vertex);
-        return o;
+        _Color("Color", Color) = (1,1,1,1)
+        _MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
     }
-
-    fixed4 frag(v2f i) : SV_Target
+    SubShader
     {
-        // sample the texture
-        fixed4 col = tex2D(_MainTex, i.uv) * _Color;
-        // apply fog
-        UNITY_APPLY_FOG(i.fogCoord, col);
-        col.rgb *= i.diffuse;
-        return col;
-    }
-    ENDCG
-}
+        Tags{ "Queue" = "Transparent" }
+        LOD 100</p>
+<pre class="code literal-block"><span class="n">Pass</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Tags</span><span class="p">{</span><span class="w"> </span><span class="s">"LightMode"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"ForwardBase"</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 
-} // SurShader
-</pre></div>
-</div>
+<span class="w">    </span><span class="n">Blend</span><span class="w"> </span><span class="n">SrcAlpha</span><span class="w"> </span><span class="n">OneMinusSrcAlpha</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">CGPROGRAM</span><span class="w"></span>
+<span class="w">    </span><span class="cp">#pragma target 3.0</span>
+<span class="w">    </span><span class="cp">#pragma vertex vert</span>
+<span class="w">    </span><span class="cp">#pragma fragment frag</span>
+
+<span class="w">    </span><span class="c1">// make fog work</span>
+<span class="w">    </span><span class="cp">#pragma multi_compile_fog</span>
+
+<span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityCG.cginc"</span><span class="cp"></span>
+<span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityLightingCommon.cginc"</span><span class="c1"> // for _LightColor0</span><span class="cp"></span>
+
+<span class="w">    </span><span class="k">struct</span> <span class="nc">v2f</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">float2</span><span class="w"> </span><span class="nl">uv</span> <span class="p">:</span><span class="w"> </span><span class="n">TEXCOORD0</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">fixed4</span><span class="w"> </span><span class="nl">diffuse</span> <span class="p">:</span><span class="w"> </span><span class="n">COLOR0</span><span class="p">;</span><span class="w"> </span><span class="c1">// diffuse lighting color</span>
+<span class="w">        </span><span class="n">float4</span><span class="w"> </span><span class="nl">vertex</span> <span class="p">:</span><span class="w"> </span><span class="n">SV_POSITION</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">UNITY_FOG_COORDS</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">float4</span><span class="w"> </span><span class="n">_Color</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">sampler2D</span><span class="w"> </span><span class="n">_MainTex</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="n">_MainTex_ST</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">v2f</span><span class="w"> </span><span class="nf">vert</span><span class="p">(</span><span class="n">appdata_base</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">v2f</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">o</span><span class="p">.</span><span class="n">uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">texcoord</span><span class="p">,</span><span class="w"> </span><span class="n">_MainTex</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">        </span><span class="c1">// get vertex normal in world space</span>
+<span class="w">        </span><span class="n">half3</span><span class="w"> </span><span class="n">worldNormal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// dot product between normal and light direction for</span>
+<span class="w">        </span><span class="c1">// standard diffuse (Lambert) lighting</span>
+<span class="w">        </span><span class="n">half</span><span class="w"> </span><span class="n">nl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">worldNormal</span><span class="p">,</span><span class="w"> </span><span class="n">_WorldSpaceLightPos0</span><span class="p">.</span><span class="n">xyz</span><span class="p">));</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// factor in the light color</span>
+<span class="w">        </span><span class="n">o</span><span class="p">.</span><span class="n">diffuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nl</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_LightColor0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">        </span><span class="c1">// the only difference from previous shader:</span>
+<span class="w">        </span><span class="c1">// in addition to the diffuse lighting from the main light,</span>
+<span class="w">        </span><span class="c1">// add illumination from ambient or light probes</span>
+<span class="w">        </span><span class="c1">// ShadeSH9 function from UnityCG.cginc evaluates it,</span>
+<span class="w">        </span><span class="c1">// using world space normal</span>
+<span class="w">        </span><span class="n">o</span><span class="p">.</span><span class="n">diffuse</span><span class="p">.</span><span class="n">rgb</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">ShadeSH9</span><span class="p">(</span><span class="n">half4</span><span class="p">(</span><span class="n">worldNormal</span><span class="p">,</span><span class="mi">1</span><span class="p">));</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">UNITY_TRANSFER_FOG</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">fixed4</span><span class="w"> </span><span class="nf">frag</span><span class="p">(</span><span class="n">v2f</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// sample the texture</span>
+<span class="w">        </span><span class="n">fixed4</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_Color</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// apply fog</span>
+<span class="w">        </span><span class="n">UNITY_APPLY_FOG</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">fogCoord</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">col</span><span class="p">.</span><span class="n">rgb</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">diffuse</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">col</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">ENDCG</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// SurShader</span>
+</pre>
 <p>}</p>
 <p>Shadowキャスティング
 ShadowMapに深度を描画するPassを追加する。
 簡単なのは下記。
 // pull in shadow caster from VertexLit built-in shader
-UsePass “Legacy Shaders/VertexLit/SHADOWCASTER”</p>
+UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"</p>
 <p>手作りもできる。</p>
 <p>pragma multi_compile_shadowcasterがポイント</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// shadow caster rendering pass, implemented manually
-// using macros from UnityCG.cginc
-Pass
-{
-    Tags{ &quot;LightMode&quot; = &quot;ShadowCaster&quot; }
+<pre class="code literal-block"><span class="c1">// shadow caster rendering pass, implemented manually</span>
+<span class="c1">// using macros from UnityCG.cginc</span>
+<span class="n">Pass</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Tags</span><span class="p">{</span><span class="w"> </span><span class="s">"LightMode"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"ShadowCaster"</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 
-    CGPROGRAM
-    #pragma vertex vert
-    #pragma fragment frag
-    #pragma multi_compile_shadowcaster
-    #include &quot;UnityCG.cginc&quot;
+<span class="w">    </span><span class="n">CGPROGRAM</span><span class="w"></span>
+<span class="w">    </span><span class="cp">#pragma vertex vert</span>
+<span class="w">    </span><span class="cp">#pragma fragment frag</span>
+<span class="w">    </span><span class="cp">#pragma multi_compile_shadowcaster</span>
+<span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"UnityCG.cginc"</span><span class="cp"></span>
 
-    struct v2f {
-        V2F_SHADOW_CASTER;
-    };
+<span class="w">    </span><span class="k">struct</span> <span class="nc">v2f</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">V2F_SHADOW_CASTER</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
 
-    v2f vert(appdata_base v)
-    {
-        v2f o;
-        TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-            return o;
-    }
+<span class="w">    </span><span class="n">v2f</span><span class="w"> </span><span class="nf">vert</span><span class="p">(</span><span class="n">appdata_base</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">v2f</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">TRANSFER_SHADOW_CASTER_NORMALOFFSET</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    float4 frag(v2f i) : SV_Target
-    {
-        SHADOW_CASTER_FRAGMENT(i)
-    }
-    ENDCG
-}
-</pre></div>
-</div>
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="nf">frag</span><span class="p">(</span><span class="n">v2f</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SV_Target</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">SHADOW_CASTER_FRAGMENT</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">ENDCG</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre>
 <p>ShadowReceiveing</p>
 <p>pragma multi_compile_fwdbaseがポイント</p>
-<p>Shader “CustomShader”
+<p>Shader "CustomShader"
 {
-Properties
-{
-_Color(“Color”, Color) = (1,1,1,1)
-_MainTex(“Base (RGB) Trans (A)”, 2D) = “white” {}
-}
-SubShader
-{
-Tags{ “Queue” = “Geometry” }
-LOD 100</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pass
-{
-    Tags{ &quot;LightMode&quot; = &quot;ForwardBase&quot; &quot;IgnoreProjector&quot; = &quot;True&quot; &quot;PerformanceChecks&quot; = &quot;False&quot; }
-    ZWrite On
-    Blend SrcAlpha OneMinusSrcAlpha
-
-    CGPROGRAM
-    #pragma target 3.0
-    #pragma vertex vert
-    #pragma fragment frag
-
-    // make fog work
-    #pragma multi_compile_fog
-
-    #include &quot;UnityCG.cginc&quot;
-    #include &quot;UnityLightingCommon.cginc&quot; // for _LightColor0
-
-    // compile shader into multiple variants, with and without shadows
-    // (we don&#39;t care about any lightmaps yet, so skip these variants)
-    #pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
-    // shadow helper functions and macros
-    #include &quot;AutoLight.cginc&quot;
-
-    struct v2f
+    Properties
     {
-        float2 uv : TEXCOORD0;
-        float4 pos : SV_POSITION;
-        fixed4 diff : COLOR0; // diffuse lighting color
-        fixed3 ambient : COLOR1;
-        SHADOW_COORDS(1) // put shadows data into TEXCOORD1
-        UNITY_FOG_COORDS(1)
-    };
-
-    uniform float4 _Color;
-    uniform sampler2D _MainTex;
-    float4 _MainTex_ST;
-
-    v2f vert(appdata_base v)
-    {
-        v2f o;
-        o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
-        o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
-
-        // get vertex normal in world space
-        half3 worldNormal = UnityObjectToWorldNormal(v.normal);
-        // dot product between normal and light direction for
-        // standard diffuse (Lambert) lighting
-        half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-        // factor in the light color
-        o.diff = nl * _LightColor0;
-
-        // the only difference from previous shader:
-        // in addition to the diffuse lighting from the main light,
-        // add illumination from ambient or light probes
-        // ShadeSH9 function from UnityCG.cginc evaluates it,
-        // using world space normal
-        o.ambient = ShadeSH9(half4(worldNormal, 1));
-
-        // compute shadows data
-        TRANSFER_SHADOW(o)
-
-        UNITY_TRANSFER_FOG(o,o.vertex);
-        return o;
+        _Color("Color", Color) = (1,1,1,1)
+        _MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
     }
-
-    fixed4 frag(v2f i) : SV_Target
+    SubShader
     {
-        // sample the texture
-        fixed4 col = tex2D(_MainTex, i.uv) * _Color;
+    Tags{ "Queue" = "Geometry" }
+    LOD 100</p>
+<pre class="code literal-block"><span class="n">Pass</span>
+<span class="p">{</span>
+    <span class="n">Tags</span><span class="p">{</span> <span class="s2">"LightMode"</span> <span class="o">=</span> <span class="s2">"ForwardBase"</span> <span class="s2">"IgnoreProjector"</span> <span class="o">=</span> <span class="s2">"True"</span> <span class="s2">"PerformanceChecks"</span> <span class="o">=</span> <span class="s2">"False"</span> <span class="p">}</span>
+    <span class="n">ZWrite</span> <span class="n">On</span>
+    <span class="n">Blend</span> <span class="n">SrcAlpha</span> <span class="n">OneMinusSrcAlpha</span>
 
-        fixed shadow = SHADOW_ATTENUATION(i);
+    <span class="n">CGPROGRAM</span>
+    <span class="c1">#pragma target 3.0</span>
+    <span class="c1">#pragma vertex vert</span>
+    <span class="c1">#pragma fragment frag</span>
 
-        // darken light&#39;s illumination with shadow, keep ambient intact
-        fixed3 lighting = i.diff * shadow + i.ambient;
-        col.rgb *= lighting;
+    <span class="o">//</span> <span class="n">make</span> <span class="n">fog</span> <span class="n">work</span>
+    <span class="c1">#pragma multi_compile_fog</span>
 
-        // apply fog
-        UNITY_APPLY_FOG(i.fogCoord, col);
+    <span class="c1">#include "UnityCG.cginc"</span>
+    <span class="c1">#include "UnityLightingCommon.cginc" // for _LightColor0</span>
 
-        return col;
-    }
-    ENDCG
-}
+    <span class="o">//</span> <span class="n">compile</span> <span class="n">shader</span> <span class="n">into</span> <span class="n">multiple</span> <span class="n">variants</span><span class="p">,</span> <span class="n">with</span> <span class="ow">and</span> <span class="n">without</span> <span class="n">shadows</span>
+    <span class="o">//</span> <span class="p">(</span><span class="n">we</span> <span class="n">don</span><span class="s1">'t care about any lightmaps yet, so skip these variants)</span>
+    <span class="c1">#pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight</span>
+    <span class="o">//</span> <span class="n">shadow</span> <span class="n">helper</span> <span class="n">functions</span> <span class="ow">and</span> <span class="n">macros</span>
+    <span class="c1">#include "AutoLight.cginc"</span>
 
-// shadow caster rendering pass, implemented manually
-// using macros from UnityCG.cginc
-Pass
-{
-    Tags{ &quot;LightMode&quot; = &quot;ShadowCaster&quot; }
+    <span class="n">struct</span> <span class="n">v2f</span>
+    <span class="p">{</span>
+        <span class="n">float2</span> <span class="n">uv</span> <span class="p">:</span> <span class="n">TEXCOORD0</span><span class="p">;</span>
+        <span class="n">float4</span> <span class="n">pos</span> <span class="p">:</span> <span class="n">SV_POSITION</span><span class="p">;</span>
+        <span class="n">fixed4</span> <span class="n">diff</span> <span class="p">:</span> <span class="n">COLOR0</span><span class="p">;</span> <span class="o">//</span> <span class="n">diffuse</span> <span class="n">lighting</span> <span class="n">color</span>
+        <span class="n">fixed3</span> <span class="n">ambient</span> <span class="p">:</span> <span class="n">COLOR1</span><span class="p">;</span>
+        <span class="n">SHADOW_COORDS</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">put</span> <span class="n">shadows</span> <span class="n">data</span> <span class="n">into</span> <span class="n">TEXCOORD1</span>
+        <span class="n">UNITY_FOG_COORDS</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">};</span>
 
-    CGPROGRAM
-    #pragma vertex vert
-    #pragma fragment frag
-    #pragma multi_compile_shadowcaster
-    #include &quot;UnityCG.cginc&quot;
+    <span class="n">uniform</span> <span class="n">float4</span> <span class="n">_Color</span><span class="p">;</span>
+    <span class="n">uniform</span> <span class="n">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+    <span class="n">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
 
-    struct v2f {
-        V2F_SHADOW_CASTER;
-    };
+    <span class="n">v2f</span> <span class="n">vert</span><span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+        <span class="n">o</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">vertex</span><span class="p">);</span>
+        <span class="n">o</span><span class="o">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">texcoord</span><span class="p">,</span> <span class="n">_MainTex</span><span class="p">);</span>
 
-    v2f vert(appdata_base v)
-    {
-        v2f o;
-        TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-            return o;
-    }
+        <span class="o">//</span> <span class="n">get</span> <span class="n">vertex</span> <span class="n">normal</span> <span class="ow">in</span> <span class="n">world</span> <span class="n">space</span>
+        <span class="n">half3</span> <span class="n">worldNormal</span> <span class="o">=</span> <span class="n">UnityObjectToWorldNormal</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">normal</span><span class="p">);</span>
+        <span class="o">//</span> <span class="n">dot</span> <span class="n">product</span> <span class="n">between</span> <span class="n">normal</span> <span class="ow">and</span> <span class="n">light</span> <span class="n">direction</span> <span class="k">for</span>
+        <span class="o">//</span> <span class="n">standard</span> <span class="n">diffuse</span> <span class="p">(</span><span class="n">Lambert</span><span class="p">)</span> <span class="n">lighting</span>
+        <span class="n">half</span> <span class="n">nl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dot</span><span class="p">(</span><span class="n">worldNormal</span><span class="p">,</span> <span class="n">_WorldSpaceLightPos0</span><span class="o">.</span><span class="n">xyz</span><span class="p">));</span>
+        <span class="o">//</span> <span class="n">factor</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">light</span> <span class="n">color</span>
+        <span class="n">o</span><span class="o">.</span><span class="n">diff</span> <span class="o">=</span> <span class="n">nl</span> <span class="o">*</span> <span class="n">_LightColor0</span><span class="p">;</span>
 
-    float4 frag(v2f i) : SV_Target
-    {
-        SHADOW_CASTER_FRAGMENT(i)
-    }
-    ENDCG
-}
+        <span class="o">//</span> <span class="n">the</span> <span class="n">only</span> <span class="n">difference</span> <span class="n">from</span> <span class="n">previous</span> <span class="n">shader</span><span class="p">:</span>
+        <span class="o">//</span> <span class="ow">in</span> <span class="n">addition</span> <span class="n">to</span> <span class="n">the</span> <span class="n">diffuse</span> <span class="n">lighting</span> <span class="n">from</span> <span class="n">the</span> <span class="n">main</span> <span class="n">light</span><span class="p">,</span>
+        <span class="o">//</span> <span class="n">add</span> <span class="n">illumination</span> <span class="n">from</span> <span class="n">ambient</span> <span class="ow">or</span> <span class="n">light</span> <span class="n">probes</span>
+        <span class="o">//</span> <span class="n">ShadeSH9</span> <span class="n">function</span> <span class="n">from</span> <span class="n">UnityCG</span><span class="o">.</span><span class="n">cginc</span> <span class="n">evaluates</span> <span class="n">it</span><span class="p">,</span>
+        <span class="o">//</span> <span class="n">using</span> <span class="n">world</span> <span class="n">space</span> <span class="n">normal</span>
+        <span class="n">o</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="n">ShadeSH9</span><span class="p">(</span><span class="n">half4</span><span class="p">(</span><span class="n">worldNormal</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
 
-} // SurShader
+        <span class="o">//</span> <span class="n">compute</span> <span class="n">shadows</span> <span class="n">data</span>
+        <span class="n">TRANSFER_SHADOW</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 
-Fallback &quot;Transparent/VertexLit&quot;
-</pre></div>
-</div>
+        <span class="n">UNITY_TRANSFER_FOG</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="o">.</span><span class="n">vertex</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">fixed4</span> <span class="n">frag</span><span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="p">:</span> <span class="n">SV_Target</span>
+    <span class="p">{</span>
+        <span class="o">//</span> <span class="n">sample</span> <span class="n">the</span> <span class="n">texture</span>
+        <span class="n">fixed4</span> <span class="n">col</span> <span class="o">=</span> <span class="n">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">uv</span><span class="p">)</span> <span class="o">*</span> <span class="n">_Color</span><span class="p">;</span>
+
+        <span class="n">fixed</span> <span class="n">shadow</span> <span class="o">=</span> <span class="n">SHADOW_ATTENUATION</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+        <span class="o">//</span> <span class="n">darken</span> <span class="n">light</span><span class="s1">'s illumination with shadow, keep ambient intact</span>
+        <span class="n">fixed3</span> <span class="n">lighting</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">diff</span> <span class="o">*</span> <span class="n">shadow</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">ambient</span><span class="p">;</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">rgb</span> <span class="o">*=</span> <span class="n">lighting</span><span class="p">;</span>
+
+        <span class="o">//</span> <span class="n">apply</span> <span class="n">fog</span>
+        <span class="n">UNITY_APPLY_FOG</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">fogCoord</span><span class="p">,</span> <span class="n">col</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="n">col</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">ENDCG</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">shadow</span> <span class="n">caster</span> <span class="n">rendering</span> <span class="k">pass</span><span class="p">,</span> <span class="n">implemented</span> <span class="n">manually</span>
+<span class="o">//</span> <span class="n">using</span> <span class="n">macros</span> <span class="n">from</span> <span class="n">UnityCG</span><span class="o">.</span><span class="n">cginc</span>
+<span class="n">Pass</span>
+<span class="p">{</span>
+    <span class="n">Tags</span><span class="p">{</span> <span class="s2">"LightMode"</span> <span class="o">=</span> <span class="s2">"ShadowCaster"</span> <span class="p">}</span>
+
+    <span class="n">CGPROGRAM</span>
+    <span class="c1">#pragma vertex vert</span>
+    <span class="c1">#pragma fragment frag</span>
+    <span class="c1">#pragma multi_compile_shadowcaster</span>
+    <span class="c1">#include "UnityCG.cginc"</span>
+
+    <span class="n">struct</span> <span class="n">v2f</span> <span class="p">{</span>
+        <span class="n">V2F_SHADOW_CASTER</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="n">v2f</span> <span class="n">vert</span><span class="p">(</span><span class="n">appdata_base</span> <span class="n">v</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+        <span class="n">TRANSFER_SHADOW_CASTER_NORMALOFFSET</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">float4</span> <span class="n">frag</span><span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="p">:</span> <span class="n">SV_Target</span>
+    <span class="p">{</span>
+        <span class="n">SHADOW_CASTER_FRAGMENT</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">ENDCG</span>
+<span class="p">}</span>
+
+<span class="p">}</span> <span class="o">//</span> <span class="n">SurShader</span>
+
+<span class="n">Fallback</span> <span class="s2">"Transparent/VertexLit"</span>
+</pre>
 <p>}</p>
-</section>
 
-<div class="section">
-     
-<div class="section">
-  <span style="float: left">
-     
-    <a href="../../10/unity_shader/">
-      <i class="fa fa-arrow-circle-left"></i> UnityのUsePassを追う
-    </a>
-    
-  </span>
-  <span>&nbsp;</span>
-  <span style="float: right">
-     
-    <a href="../../12/unity_toon/">
-      UnityでToon <i
-        class="fa fa-arrow-circle-right"
-      ></i
-      >
-    </a>
-    
-  </span>
-</div>
-  
-</div>
-
-    </div>
-    <div id="global">
-        
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><div id="toc" class="sidebarRow">
-    <h3><a href="../../../../../">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/about/">About Me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../pages/books/">Books</a></li>
-</ul>
-
-</div>  
-<h2>
-   <i class="fa fa-calendar"></i>
-  2016/01/11 
-</h2>
-
-<ul>
-       
-<li id="tags">
-  <span
-    ><i
-      class="fa-fw fa fa-tag"
-    ></i
-    ></span
-  >
-   
-  <a href="../../../../../blog/tag/unity/">unity</a>  
-</li>
- 
-</ul>
-
-<h3>
-  <a href="../../../../../blog/">Recent Posts</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../2022/0507-bdist_wheel/"
-      >2022/05 - bdist_wheel + pep517 ではまる</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0428-zig2/"
-      >2022/04 - zig その2</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0419-gentoo/"
-      >2022/04 - Gentoo 構築</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0404-prompt-toolkit/"
-      >2022/04 - prompt-toolkit の fullscreen アプリケーション</a
-    >
-  </li>
-  
-  <li>
-    <a href="../../../../2022/0331-term/"
-      >2022/03 - term周りの更新</a
-    >
-  </li>
-  
-</ul>
-
-<h3><a href="../../../../../blog/tag/">Tags</a></h3>
-<style type="text/css">
-  ul.ablog-cloud {
-    list-style: none;
-    overflow: auto;
-  }
-  ul.ablog-cloud li {
-    float: left;
-    height: 20pt;
-    line-height: 18pt;
-    margin-right: 5px;
-  }
-  ul.ablog-cloud a {
-    text-decoration: none;
-    vertical-align: middle;
-  }
-  li.ablog-cloud-1 {
-    font-size: 80%;
-  }
-  li.ablog-cloud-2 {
-    font-size: 95%;
-  }
-  li.ablog-cloud-3 {
-    font-size: 110%;
-  }
-  li.ablog-cloud-4 {
-    font-size: 125%;
-  }
-  li.ablog-cloud-5 {
-    font-size: 140%;
-  }
-</style>
-<ul class="ablog-cloud">
-   
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/netcore/">.NETCore</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/3d/">3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/azurekinect/">AzureKinect</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">Blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender28/">Blender2.8</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/build/">Build</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">C</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C#</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/c/">C++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c-cli/">C++-CLI</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c17/">C++17</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">CMake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d/">D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx/">DirectX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/directx11/">DirectX11</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/html/">HTML</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">HoloLens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/java/">Java</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/javascript/">JavaScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/jupyter-notebook/">Jupyter Notebook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linq/">LINQ</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/livet/">Livet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">Lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mef/">MEF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mvvm/">MVVM</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nodejs/">Node.js</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">OpenCV</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">OpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">OpenVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pixarusd/">PixarUSD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/plugin/">Plugin</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python/">Python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/python3/">Python3</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/reactiveextensions/">ReactiveExtensions</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ruby/">Ruby</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">Rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sdl2/">SDL2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/scala/">Scala</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sharpdx/">SharpDX</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sprache/">Sprache</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/steamvr/">SteamVR</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/typescript/">TypeScript</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">USD</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">UWP</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uni/">Uni</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">Unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity3d/">Unity3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">VSCode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">Vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim-script/">Vim script</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/viml/">VimL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio/">VisualStudio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/visualstudio2015/">VisualStudio2015</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vulkan/">Vulkan</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf/">WPF</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wpf3d/">WPF3D</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/windows/">Windows</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/asio/">asio</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/blender/">blender</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/boost/">boost</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/bullet/">bullet</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/c/">c++</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cerbero/">cerbero</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cg/">cg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clang/">clang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/clangd/">clangd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cmake/">cmake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/com/">com</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cpp/">cpp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/csharp/">csharp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/css/">css</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/cython/">cython</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/d3d/">d3d</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dap/">dap</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/dlang/">dlang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ffi/">ffi</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/grpc/">gRPC</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gis/">gis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gltf/">gltf</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gstreamer/">gstreamer</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gulp/">gulp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/gyp/">gyp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hololens/">hololens</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/hugo/">hugo</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/imgui/">imgui</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/libclang/">libclang</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/linux/">linux</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lsp/">lsp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/lua/">lua</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/luajit/">luajit</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mdbook/">mdbook</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/mediafoundation/">mediafoundation</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msgpack/">msgpack</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/msys2/">msys2</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/natvis/">natvis</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/nvim/">nvim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/octpress/">octpress</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opencv/">opencv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/opengl/">opengl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/openvr/">openvr</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/premake/">premake</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ptk/">ptk</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/pyopengl/">pyOpenGL</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/python/">python</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-2">
-    <a href="../../../../../blog/tag/qiita/">qiita</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/qt/">qt</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-5">
-    <a href="../../../../../blog/tag/repository/">repository</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/rust/">rust</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sphinx/">sphinx</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/sq/">sq</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/ssg/">ssg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/term/">term</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/threejs/">threejs</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/unity/">unity</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/usd/">usd</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/uwp/">uwp</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vcpkg/">vcpkg</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vim/">vim</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vscode/">vscode</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/vvvv/">vvvv</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/w3m/">w3m</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wayland/">wayland</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wsl/">wsl</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/wyam/">wyam</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/xonsh/">xonsh</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zig/">zig</a>
-  </li>
-    
-  <li class="ablog-cloud ablog-cloud-1">
-    <a href="../../../../../blog/tag/zola/">zola</a>
-  </li>
-   
-</ul>
-
-<h3>
-  <a href="../../../../../blog/archive/">Archives</a>
-</h3>
-<ul>
-   
-  <li>
-    <a href="../../../../../blog/2022/">2022 (11)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2021/">2021 (53)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2020/">2020 (38)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2019/">2019 (67)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2018/">2018 (28)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2017/">2017 (87)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2016/">2016 (31)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2015/">2015 (58)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2014/">2014 (19)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2013/">2013 (52)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2012/">2012 (10)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2011/">2011 (6)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2010/">2010 (2)</a>
-  </li>
-    
-  <li>
-    <a href="../../../../../blog/2009/">2009 (1)</a>
-  </li>
-   
-</ul>
-
-    </div>
-    <div id="local">
-        
-    </div>
-    <div id="footer">
-        
-&#169; Copyright 2021, ousttrue.
-Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
-    </div>
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../../10/unity_shader/" rel="prev" title="UnityのUsePassを追う">
+            UnityのUsePassを追う 👈
+        </a>
+    </li>
+    <li style="flex-grow: 1">
+    <li class="next">
+        <a href="../../12/unity_toon/" rel="next" title="UnityでToon">
+            👉 UnityでToon
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
 </body>
-
 </html>

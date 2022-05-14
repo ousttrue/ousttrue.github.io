@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (opencvについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/opencv.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>AzureKinect の opencv-kinfu-samples をビルドする</title><link>https://ousttrue.github.io/qiita/azurekinect-no-opencv-kinfu-samples-wobirudosuru/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://qiita.com/ousttrue/items/daea793638850965b43f"&gt;https://qiita.com/ousttrue/items/daea793638850965b43f&lt;/a&gt;&lt;/p&gt;</description><category>azurekinect</category><category>opencv</category><category>qiita</category><category>vcpkg</category><guid>https://ousttrue.github.io/qiita/azurekinect-no-opencv-kinfu-samples-wobirudosuru/</guid><pubDate>Tue, 28 Apr 2020 00:37:45 GMT</pubDate></item><item><title>vcpkgでopencvの開発環境を作る</title><link>https://ousttrue.github.io/posts/2017/07/cmake_2017/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Windowsでcmakeを使う場合に外部ライブラリの解決がわりと困難。&lt;/p&gt;
+&lt;p&gt;cmakeのfind_packageがうまくうごかないのである。Unix系であれば &lt;code&gt;CMAKE_INSTALL_PREFIX(/usr/local)&lt;/code&gt; にインストールされた依存プロジェクトを発見できるし、足りなければインストールすることもできる。それに、&lt;code&gt;apt-get&lt;/code&gt; とか &lt;code&gt;pacman&lt;/code&gt; とかあるので、自分で全部ビルドするということはあまり必要なかったりする今日この頃です。Windowsにはそういうのがなかった(CMAKE_INSTALL_PREFIXはどこなのか)のだけど、最近出てきたvcpkgがそれをやってくれる。&lt;/p&gt;
+&lt;p&gt;ArUcoをvcpkgとcmakeでビルドする
+ということでvcpkgで外部ライブラリを構築し、一部をソースごとプロジェクトにコピーする方法でArUco(OpenCV)のビルドをやってみる。ArUcoのデバッグ版にアタッチしたり改造したりするつもりなので、opencvのモジュール版ArUcoではなく単体の方を使う。環境は、Windows10(64bit)にVisualStudio2017(C++)。
+vcpkgを準備&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;https://github.com/Microsoft/vcpkg&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&amp;gt; git clone https://github.com/Microsoft/vcpkg.git
+&amp;gt; &lt;span class="nb"&gt;cd&lt;/span&gt; vcpkg
+vcpkg&amp;gt; .&lt;span class="se"&gt;\b&lt;/span&gt;ootstrap-vcpkg.bat
+
+vcpkgで64bit版のopencvをインストール
+vcpkg&amp;gt; .&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe install opencv:x64-windows
+
+vcpkg/installed/x64-windowsにinclude, lib, bin等がインストールされる。
+vcpkgで64bit版のfreeglutをインストール
+vcpkg&amp;gt; .&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe install freeglut:x64-windows
+&lt;/pre&gt;
+&lt;p&gt;arucoのソースを入手
+OpenCVのモジュール&lt;/p&gt;
+&lt;p&gt;http://docs.opencv.org/trunk/d9/d6d/tutorial_table_of_content_aruco.html&lt;/p&gt;
+&lt;p&gt;ではなくてこっち。&lt;/p&gt;
+&lt;p&gt;http://www.uco.es/investiga/grupos/ava/node/26
+https://sourceforge.net/projects/aruco/files/&lt;/p&gt;
+&lt;p&gt;aruco-2.0.19.zipを手に入れた。
+とりあえずビルドしてみる
+vcpkgはd:/vcpkgにインストールされている。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;aruco-2.0.19&amp;gt; mkdir build
+aruco-2.0.19/build&amp;gt; cmake -D &lt;span class="nv"&gt;CMAKE_INSTALL_PREFIX&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;d:/vcpkg/installed/x64-windows -D &lt;span class="nv"&gt;OpenCVDir&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;d:/vcpkg/installed/x64-windows/share/opencv -D &lt;span class="nv"&gt;BUILD_GLSAMPLES&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; -G &lt;span class="s2"&gt;"Visual Studio 15 2017 Win64"&lt;/span&gt; ..
+&lt;/pre&gt;
+&lt;p&gt;aruco_test_glとaruco_test_markermap_glのビルドでエラーが出るのでちょっとコードを修正する。
+gl.hより先にWindows.hをincludeしてあげる。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#ifdef __APPLE__&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;GLUT/glut.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="cp"&gt;#elif defined(_MSC_VER)&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;GL/glut.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="cp"&gt;#else&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;GL/gl.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="cpf"&gt;&amp;lt;GL/glut.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#endif&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;あとfreeglutのリンクををdebug, release振り分けのために、
+CMakeLists.txtをちょっと改造。だいたいこういう感じ。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;IF&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLUT_FOUND&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;STRING&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REPLACE&lt;/span&gt; &lt;span class="s"&gt;lib/freeglut.lib&lt;/span&gt; &lt;span class="s"&gt;debug/lib/freeglutd.lib&lt;/span&gt; &lt;span class="s"&gt;GLUT_glut_DEBUG_LIBRARY&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GLUT_glut_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;MESSAGE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;STATUS&lt;/span&gt; &lt;span class="s2"&gt;"GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;OPENGL_LIBS&lt;/span&gt;  &lt;span class="s"&gt;general&lt;/span&gt;
+        &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OPENGL_gl_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OPENGL_glu_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="s"&gt;optimized&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GLUT_glut_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="s"&gt;debug&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GLUT_glut_DEBUG_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;ENDIF&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;この部分と連携する。
+TARGET_LINK_LIBRARIES(aruco_test_gl ${OPENGL_LIBS})&lt;/p&gt;
+&lt;p&gt;これで、CMAKE_INSTALL_PREFIX/binにパスを通せばプログラムは動作する。
+arucoのテストデータを入手してwebcamで動作確認
+テストデータを入手する。&lt;/p&gt;
+&lt;p&gt;https://sourceforge.net/projects/aruco/files/&lt;/p&gt;
+&lt;p&gt;aruco-test-data-2.0.zipを手に入れた。
+この中のintrinsics.ymlを引数にして実行する(本来は、カメラキャリブレーションをしてintrinsics.ymlを自分のカメラ用に作成する必要がある)。
+aruco_test_gl.exe "live" "path_to_intrinsics.yml" 0.05
+aruco_test_glとarucoの入った小さいプロジェクト
+ArUcoを改造する予定。&lt;/p&gt;
+&lt;p&gt;intrinsics.ymlを省略したり簡略化したい(fovyとaspectratioだけにするなど)
+左手系(DirectXやUnity)に対応&lt;/p&gt;
+&lt;p&gt;ということで、arucoのソースを含めている。&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;aruco_test
+
+  + CMakeLists.txt
+
+  + aruco_test_gl
+    + CMakeLists.txt
+    + aruco_test_gl.cpp&lt;span class="o"&gt;(&lt;/span&gt;aruco-2.0.19/utils_gl/aruco_test_gl.cppをコピー&lt;span class="o"&gt;)&lt;/span&gt;
+
+  + src&lt;span class="o"&gt;(&lt;/span&gt;aruco-2.0.19/srcをコピー&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;CMAKE_MINIMUM_REQUIRED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;VERSION&lt;/span&gt; &lt;span class="s"&gt;2.8&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;PROJECT&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;aruco&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;FIND_PACKAGE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;OpenCV&lt;/span&gt; &lt;span class="s"&gt;REQUIRED&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;SET&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;ARUCO_REQUIRED_LIBRARIES&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OpenCV_LIBS&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;INCLUDE_DIRECTORIES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OpenCV_INCLUDE_DIRS&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;FIND_PACKAGE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;OpenGL&lt;/span&gt; &lt;span class="s"&gt;REQUIRED&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;FIND_PACKAGE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLUT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;MESSAGE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;STATUS&lt;/span&gt; &lt;span class="s2"&gt;"GLUT_glut_LIBRARY=${GLUT_glut_LIBRARY}"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;STRING&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REPLACE&lt;/span&gt; &lt;span class="s"&gt;lib/freeglut.lib&lt;/span&gt; &lt;span class="s"&gt;debug/lib/freeglutd.lib&lt;/span&gt; &lt;span class="s"&gt;GLUT_glut_DEBUG_LIBRARY&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GLUT_glut_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;MESSAGE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;STATUS&lt;/span&gt; &lt;span class="s2"&gt;"GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;IF&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLUT_FOUND&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;OPENGL_LIBS&lt;/span&gt;  &lt;span class="s"&gt;general&lt;/span&gt;
+        &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OPENGL_gl_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OPENGL_glu_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="s"&gt;optimized&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GLUT_glut_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="s"&gt;debug&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GLUT_glut_DEBUG_LIBRARY&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;ENDIF&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="nb"&gt;ADD_DEFINITIONS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;-D_SCL_SECURE_NO_WARNINGS&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;SET&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CMAKE_CXX_FLAGS&lt;/span&gt; &lt;span class="s2"&gt;"/wd4819 /EHsc"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;ADD_SUBDIRECTORY&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;src&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;ADD_SUBDIRECTORY&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;utils_gl&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="err"&gt;aruco_test_gl/CMakeLists.txt&lt;/span&gt;
+&lt;span class="nb"&gt;INCLUDE_DIRECTORIES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PROJECT_SOURCE_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;GNULIBS_INCLUDE_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;LINK_LIBRARIES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PROJECT_NAME&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;REQUIRED_LIBRARIES&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;IF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;OPENGL_LIBS&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;ADD_EXECUTABLE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;aruco_test_gl&lt;/span&gt;
+        &lt;span class="s"&gt;aruco_test_gl.cpp&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nb"&gt;TARGET_LINK_LIBRARIES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;aruco_test_gl&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;OPENGL_LIBS&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;以上で、arucoを例にvcpkgでopencvとfreeglutdを外部管理してcmakeでプロジェクトを取り廻す例を作った。
+作業例。&lt;/p&gt;
+&lt;p&gt;https://github.com/ousttrue/aruco_test&lt;/p&gt;</description><category>opencv</category><category>vcpkg</category><guid>https://ousttrue.github.io/posts/2017/07/cmake_2017/</guid><pubDate>Fri, 30 Jun 2017 15:00:00 GMT</pubDate></item></channel></rss>

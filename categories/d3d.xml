@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (d3dについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/d3d.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:17:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>nvim-dx</title><link>https://ousttrue.github.io/github/nvim-dx/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/ousttrue/nvim-dx"&gt;https://github.com/ousttrue/nvim-dx&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;nvim frontend by D2D&lt;/p&gt;</description><category>c++</category><category>cpp</category><category>d3d</category><category>nvim</category><category>repository</category><guid>https://ousttrue.github.io/github/nvim-dx/</guid><pubDate>Thu, 09 Aug 2018 01:48:37 GMT</pubDate></item><item><title>MediaSinkを実装する</title><link>https://ousttrue.github.io/posts/2017/08/create_mediasink/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;DX11VideoRendererを解読して、VideoRenderer要件を探る。&lt;/p&gt;
+&lt;p&gt;Microsoftのサンプルがあり参考になる。&lt;/p&gt;
+&lt;p&gt;https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer&lt;/p&gt;
+&lt;p&gt;これは結構がっつり作ってあるので、削って最低限必要な要素を探る。
+IMFMediaSinkを作る
+手抜きしてIMFActivate抜きで。
+https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h
+を参考に最低限を実装してみる。
+guidgen.exeでguidを決めた。
+CustomVideoRenderer.h&lt;/p&gt;
+&lt;h2&gt;pragma once&lt;/h2&gt;
+&lt;h2&gt;include &lt;windows.h&gt;&lt;/windows.h&gt;&lt;/h2&gt;
+&lt;p&gt;// {8C5C51AD-F400-4B2A-BD36-4990D07420B4}
+DEFINE_GUID(CLSID_CustomVideoRenderer, 
+0x8c5c51ad, 0xf400, 0x4b2a, 0xbd, 0x36, 0x49, 0x90, 0xd0, 0x74, 0x20, 0xb4);&lt;/p&gt;
+&lt;p&gt;STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject);&lt;/p&gt;
+&lt;p&gt;DX11VideoRendererから必要な部分をコピペしてくるだけである。
+CustomVideoRenderer.c++&lt;/p&gt;
+&lt;h2&gt;include "CustomVideoRenderer.h"&lt;/h2&gt;
+&lt;h2&gt;include &lt;mfidl.h&gt;&lt;/mfidl.h&gt;&lt;/h2&gt;
+&lt;p&gt;class CustomVideoRenderer: public IMFMediaSink
+{
+    ULONG m_nRefCount = 1;&lt;/p&gt;
+&lt;p&gt;public:
+    // IUnknown
+    STDMETHODIMP_(ULONG) AddRef(void)override
+    {
+        return InterlockedIncrement(&amp;amp;m_nRefCount);
+    }&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;QueryInterface&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;REFIID&lt;/span&gt; &lt;span class="n"&gt;iid&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__deref_out&lt;/span&gt; &lt;span class="n"&gt;_Result_nullonfailure_&lt;/span&gt; &lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;ppv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;E_POINTER&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;iid&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;IID_IUnknown&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;ppv&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;static_cast&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IUnknown&lt;/span&gt;&lt;span class="o"&gt;*&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;static_cast&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IMFMediaSink&lt;/span&gt;&lt;span class="o"&gt;*&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;this&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;iid&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;__uuidof&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;IMFMediaSink&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;ppv&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;static_cast&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IMFMediaSink&lt;/span&gt;&lt;span class="o"&gt;*&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;this&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;ppv&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;E_NOINTERFACE&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="n"&gt;AddRef&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;S_OK&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="n"&gt;STDMETHODIMP_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ULONG&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;Release&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;ULONG&lt;/span&gt; &lt;span class="n"&gt;uCount&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;InterlockedDecrement&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;m_nRefCount&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;uCount&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;this&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;For&lt;/span&gt; &lt;span class="n"&gt;thread&lt;/span&gt; &lt;span class="n"&gt;safety&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;temporary&lt;/span&gt; &lt;span class="n"&gt;variable&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;uCount&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;IMFMediaSink&lt;/span&gt; &lt;span class="n"&gt;methods&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;AddStreamSink&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DWORD&lt;/span&gt; &lt;span class="n"&gt;dwStreamSinkIdentifier&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__in_opt&lt;/span&gt; &lt;span class="n"&gt;IMFMediaType&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pMediaType&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFStreamSink&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppStreamSink&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetCharacteristics&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__out&lt;/span&gt; &lt;span class="n"&gt;DWORD&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pdwCharacteristics&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetPresentationClock&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFPresentationClock&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppPresentationClock&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetStreamSinkById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DWORD&lt;/span&gt; &lt;span class="n"&gt;dwIdentifier&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFStreamSink&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppStreamSink&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetStreamSinkByIndex&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DWORD&lt;/span&gt; &lt;span class="n"&gt;dwIndex&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFStreamSink&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppStreamSink&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetStreamSinkCount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__out&lt;/span&gt; &lt;span class="n"&gt;DWORD&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pcStreamSinkCount&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;RemoveStreamSink&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DWORD&lt;/span&gt; &lt;span class="n"&gt;dwStreamSinkIdentifier&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;SetPresentationClock&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__in_opt&lt;/span&gt; &lt;span class="n"&gt;IMFPresentationClock&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pPresentationClock&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;Shutdown&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;};&lt;/p&gt;
+&lt;p&gt;STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject)
+{
+    if(!ppvObject){
+        return E_FAIL;
+    }&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;auto&lt;/span&gt; &lt;span class="nv"&gt;sink&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;new&lt;/span&gt; &lt;span class="nv"&gt;CustomVideoRenderer&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nv"&gt;ppvObject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;sink&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;S_OK&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;使う
+IMFStreamSinkからIMFTopologyNodeを作る。&lt;/p&gt;
+&lt;p&gt;Creating Output Nodes&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nt"&gt;Microsoft&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;WRL&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;ComPtr&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;IMFTopologyNode&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nt"&gt;pOutputNode&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;FAILED&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nt"&gt;MFCreateTopologyNode&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;MF_TOPOLOGY_OUTPUT_NODE&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nt"&gt;pOutputNode&lt;/span&gt;&lt;span class="o"&gt;)))&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="err"&gt;return&lt;/span&gt; &lt;span class="err"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="nt"&gt;Microsoft&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;WRL&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;ComPtr&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;IMFMediaSink&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nt"&gt;pSink&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="nt"&gt;自前のIMFMediaSinkを作る&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;FAILED&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;hr&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;CreateCustomVideoRenderer&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;IID_PPV_ARGS&lt;/span&gt;&lt;span class="o"&gt;(&amp;amp;&lt;/span&gt;&lt;span class="nt"&gt;pSink&lt;/span&gt;&lt;span class="o"&gt;))))&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="err"&gt;return&lt;/span&gt; &lt;span class="err"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="nt"&gt;Microsoft&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;WRL&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="nd"&gt;ComPtr&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;IMFStreamSink&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nt"&gt;pSSink&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;FAILED&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;hr&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;pSink-&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="nt"&gt;GetStreamSinkByIndex&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;0&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nt"&gt;pSSink&lt;/span&gt;&lt;span class="o"&gt;)))&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="err"&gt;//&lt;/span&gt; &lt;span class="err"&gt;まだ作っていないのでここでエラーになる&lt;/span&gt;
+    &lt;span class="err"&gt;return&lt;/span&gt; &lt;span class="err"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="nt"&gt;if&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;FAILED&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nt"&gt;pOutputNode-&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="nt"&gt;SetObject&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;pSSink&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;Get&lt;/span&gt;&lt;span class="o"&gt;())))&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="err"&gt;return&lt;/span&gt; &lt;span class="err"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;IMFStreamSinkがひとつは必要
+作る。
+class CustomVideoStreamSink: public IMFStreamSink
+{
+    ULONG m_nRefCount = 1;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;DWORD&lt;/span&gt;                 &lt;span class="n"&gt;STREAM_ID&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;CCritSec&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;                   &lt;span class="n"&gt;m_critSec&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;                      &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;critical&lt;/span&gt; &lt;span class="n"&gt;section&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;thread&lt;/span&gt; &lt;span class="n"&gt;safety&lt;/span&gt;
+&lt;span class="n"&gt;Microsoft&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="n"&gt;WRL&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ComPtr&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;IMFMediaSink&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;               &lt;span class="n"&gt;m_pSink&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;public:
+    CustomVideoStreamSink(DWORD dwStreamId, CCritSec&amp;amp; critSec
+            , IMFMediaSink *parent)
+        : STREAM_ID(dwStreamId)
+          , m_critSec(critSec)
+          , m_pSink(parent)
+    {
+    }&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;IUnknown&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ULONG&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;AddRef&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;QueryInterface&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;REFIID&lt;/span&gt; &lt;span class="n"&gt;iid&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__deref_out&lt;/span&gt; &lt;span class="n"&gt;_Result_nullonfailure_&lt;/span&gt; &lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ULONG&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;Release&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;IMFStreamSink&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;Flush&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetIdentifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__out&lt;/span&gt; &lt;span class="n"&gt;DWORD&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pdwIdentifier&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetMediaSink&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFMediaSink&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppMediaSink&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetMediaTypeHandler&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFMediaTypeHandler&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppHandler&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;PlaceMarker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;MFSTREAMSINK_MARKER_TYPE&lt;/span&gt; &lt;span class="n"&gt;eMarkerType&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__in&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;PROPVARIANT&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pvarMarkerValue&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__in&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;PROPVARIANT&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pvarContextValue&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;ProcessSample&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__RPC__in_opt&lt;/span&gt; &lt;span class="n"&gt;IMFSample&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pSample&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;IMFMediaEventGenerator&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;IMFStreamSink&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;BeginGetEvent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;IMFAsyncCallback&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pCallback&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;IUnknown&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;punkState&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;EndGetEvent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;IMFAsyncResult&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pResult&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;_Out_&lt;/span&gt; &lt;span class="n"&gt;IMFMediaEvent&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppEvent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;GetEvent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DWORD&lt;/span&gt; &lt;span class="n"&gt;dwFlags&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__deref_out_opt&lt;/span&gt; &lt;span class="n"&gt;IMFMediaEvent&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;ppEvent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;STDMETHODIMP&lt;/span&gt; &lt;span class="n"&gt;QueueEvent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;MediaEventType&lt;/span&gt; &lt;span class="n"&gt;met&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__in&lt;/span&gt; &lt;span class="n"&gt;REFGUID&lt;/span&gt; &lt;span class="n"&gt;guidExtendedType&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;HRESULT&lt;/span&gt; &lt;span class="n"&gt;hrStatus&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;__RPC__in_opt&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;PROPVARIANT&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pvValue&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;override&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;};&lt;/p&gt;
+&lt;p&gt;メソッドの中身は
+return E_FAIL;&lt;/p&gt;
+&lt;p&gt;でお茶を濁した。
+IMFMediaSink::AddStreamSink実装
+IMFMediaSink::GetStreamSinkById実装
+IMFMediaSink::GetStreamSinkByIndex実装
+IMFMediaSink::GetStreamSinkCount実装
+IMFMediaSink::RemoveStreamSink実装
+実行してみる。
+// Handler for Media Session events.
+void OnPlayerEvent(HWND hwnd, WPARAM pUnkPtr)
+{
+    HRESULT hr = g_pPlayer-&amp;gt;HandleEvent(pUnkPtr);
+    if (FAILED(hr))
+    {
+        // ここに来る
+        NotifyError(hwnd, L"An error occurred.", hr);
+    }
+    UpdateUI(hwnd, g_pPlayer-&amp;gt;GetState());
+}&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;// Get the event status. If the operation that triggered the event &lt;/span&gt;
+&lt;span class="c1"&gt;// did not succeed, the status is a failure code.&lt;/span&gt;
+&lt;span class="n"&gt;HRESULT&lt;/span&gt; &lt;span class="n"&gt;hrStatus&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;S_OK&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pEvent&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;GetStatus&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;hrStatus&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="c1"&gt;// Check if the async operation succeeded.&lt;/span&gt;
+&lt;span class="nf"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SUCCEEDED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;FAILED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hrStatus&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; 
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;// ここに来る&lt;/span&gt;
+    &lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;hrStatus&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;デバッガで調べたらIMFStreamSink::GetMediaSinkの直後にエラーになることがわかった。
+IMFStreamSink::GetMediaSink実装
+たんたんとエラーを直していく。
+IMFStreamSink::GetMediaTypeHandler実装
+HRESULT DX11VideoRenderer::CStreamSink::GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)
+{
+    CAutoLock lock(&amp;amp;m_critSec);&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nf"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ppHandler&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;E_POINTER&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="n"&gt;HRESULT&lt;/span&gt; &lt;span class="n"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CheckShutdown&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+
+&lt;span class="c1"&gt;// This stream object acts as its own type handler, so we QI ourselves.&lt;/span&gt;
+&lt;span class="nf"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SUCCEEDED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;this&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;QueryInterface&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;IID_IMFMediaTypeHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;ppHandler&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;IMFMediaTypeHandlerが必要。
+StreamSinkにIMFMediaTypeHandlerを実装
+このインタフェースはStreamSinkが処理できるMediaTypeを示すので必要。
+サポートするフォーマットを決める。
+// IMFMediaTypeHandler
+STDMETHODIMP GetCurrentMediaType(&lt;em&gt;Outptr&lt;/em&gt; IMFMediaType&lt;strong&gt; ppMediaType);
+STDMETHODIMP GetMajorType(__RPC__out GUID* pguidMajorType);
+STDMETHODIMP GetMediaTypeByIndex(DWORD dwIndex, &lt;em&gt;Outptr&lt;/em&gt; IMFMediaType&lt;/strong&gt; ppType);
+STDMETHODIMP GetMediaTypeCount(__RPC__out DWORD&lt;em&gt; pdwTypeCount);
+STDMETHODIMP IsMediaTypeSupported(IMFMediaType&lt;/em&gt; pMediaType, &lt;em&gt;Outptr_opt_result_maybenull&lt;/em&gt; IMFMediaType*&lt;em&gt; ppMediaType);
+STDMETHODIMP SetCurrentMediaType(IMFMediaType&lt;/em&gt; pMediaType);&lt;/p&gt;
+&lt;p&gt;PresentationClockが必要&lt;/p&gt;
+&lt;p&gt;Presentation Clock&lt;/p&gt;
+&lt;p&gt;IMFMediaSink::GetPresentationClock実装
+IMFMediaSink::SetPresentationClock実装
+MediaSinkにIMFClockStateSinkを実装
+// IMFClockStateSink methods
+STDMETHODIMP OnClockPause(MFTIME hnsSystemTime);
+STDMETHODIMP OnClockRestart(MFTIME hnsSystemTime);
+STDMETHODIMP OnClockSetRate(MFTIME hnsSystemTime, float flRate);
+STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset);
+STDMETHODIMP OnClockStop(MFTIME hnsSystemTime);&lt;/p&gt;
+&lt;p&gt;Data Flow
+ここまでの実装でIMFSession::Startの呼び出しに応じてIMFClockStateSink::OnClockStartが呼ばれるようになった。
+Data Flow&lt;/p&gt;
+&lt;p&gt;Media sinks use a pull model&lt;/p&gt;
+&lt;p&gt;MesiaSink側からサンプルを取りに行かないといけない。&lt;/p&gt;
+&lt;p&gt;[1] The client sets the media types and the presentation clock. The media sink registers itself with the presentation clock to receive notifications about clock state changes.
+[2][3][4] はPreroll。ミニマムを目指す今回は省略。
+[5] The client calls IMFPresentationClock::Start to start the presentation clock.
+[6] The presentation clock notifies the media sink that the clock is starting, by calling IMFClockStateSink::OnClockStart.
+[7] To get more data, each stream sink sends MEStreamSinkRequestSample events. In response to each of these events, the client gets the next sample and calls ProcessSample. This step is repeated until the presentation ends.&lt;/p&gt;
+&lt;p&gt;State Changes
+IMFClockStateSinkの実装について。&lt;/p&gt;
+&lt;p&gt;In addition, stream sinks must send the following events when they have completed the state transitions:&lt;/p&gt;
+&lt;p&gt;OnClockStart, OnClockRestart: MEStreamSinkStarted event
+OnClockPause: MEStreamSinkPaused event
+OnClockStop: MEStreamSinkStopped event&lt;/p&gt;
+&lt;p&gt;なるほど。
+STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset)override
+{
+    CAutoLock lock(&amp;amp;m_csMediaSink);&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;HRESULT&lt;/span&gt; &lt;span class="n"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CheckShutdown&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="nf"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SUCCEEDED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;//&lt;/span&gt;
+    &lt;span class="c1"&gt;// これが必要。このあとMEStreamSinkRequestSampleを受け付ける&lt;/span&gt;
+    &lt;span class="c1"&gt;//&lt;/span&gt;
+    &lt;span class="n"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;m_pStream&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;QueueEvent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;MEStreamSinkStarted&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;GUID_NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="nf"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SUCCEEDED&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;m_pStream&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;QueueEvent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;MEStreamSinkRequestSample&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;GUID_NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;hr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;ついにIMFStreamSink::ProcessSampleがコールされた。
+試しに下記のような実装にしてみたがこれではClock無視で最速でフレームを消化してしまうのでだめ。
+int m_count = 0;
+STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
+{
+    ++m_count;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;auto&lt;/span&gt; &lt;span class="nv"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;S_OK&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;span class="nv"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;QueueEvent&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;MEStreamSinkRequestSample&lt;/span&gt;, &lt;span class="nv"&gt;GUID_NULL&lt;/span&gt;, &lt;span class="nv"&gt;hr&lt;/span&gt;, &lt;span class="nv"&gt;NULL&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+
+&lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;hr&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;MEStreamSinkRequestSampleをスケジューリングする&lt;/p&gt;
+&lt;p&gt;Scheduled Work Items&lt;/p&gt;
+&lt;p&gt;これを使ってみる。
+BOOL NeedMoreSamples(void)
+{
+    const DWORD cSamplesInFlight = /&lt;em&gt;m_SamplesToProcess.GetCount() +&lt;/em&gt;/ m_cOutstandingSampleRequests;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;cSamplesInFlight&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nv"&gt;SAMPLE_QUEUE_HIWATER_THRESHOLD&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;HRESULT RequestSamples(IMFAsyncResult* pAsyncResult)
+{
+    HRESULT hr = S_OK;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;NeedMoreSamples&lt;/span&gt;&lt;span class="ss"&gt;())&lt;/span&gt;
+{
+    &lt;span class="nv"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CheckShutdown&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;FAILED&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;hr&lt;/span&gt;&lt;span class="ss"&gt;))&lt;/span&gt;
+    {
+        &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    }
+
+    &lt;span class="nv"&gt;m_cOutstandingSampleRequests&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+
+    &lt;span class="nv"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;QueueEvent&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;MEStreamSinkRequestSample&lt;/span&gt;, &lt;span class="nv"&gt;GUID_NULL&lt;/span&gt;, &lt;span class="nv"&gt;S_OK&lt;/span&gt;, &lt;span class="nv"&gt;NULL&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+}
+
+&lt;span class="o"&gt;//&lt;/span&gt; 再突入
+&lt;span class="nv"&gt;hr&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;QueueRequest&lt;/span&gt;&lt;span class="ss"&gt;()&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+
+&lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;hr&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;// 正しいRateにする必要がある
+const INT64 interval = 1000 / 30;&lt;/p&gt;
+&lt;p&gt;HRESULT QueueRequest()
+{
+    HRESULT hr = S_OK;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;SUCCEEDED&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;hr&lt;/span&gt;&lt;span class="ss"&gt;))&lt;/span&gt;
+{
+    &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="nv"&gt;Enqueue&lt;/span&gt;
+    &lt;span class="nv"&gt;MFWORKITEM_KEY&lt;/span&gt; &lt;span class="nv"&gt;cancelKey&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+    &lt;span class="nv"&gt;hr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;MFScheduleWorkItem&lt;/span&gt;&lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nv"&gt;m_WorkQueueCB&lt;/span&gt;, &lt;span class="nv"&gt;nullptr&lt;/span&gt;, &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;interval&lt;/span&gt;, &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nv"&gt;cancelKey&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+}
+
+&lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nv"&gt;hr&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;int m_count = 0;
+STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
+{
+    ++m_count;&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;m_cOutstandingSampleRequests&lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="nv"&gt;something&lt;/span&gt;
+
+&lt;span class="k"&gt;return&lt;/span&gt;  &lt;span class="nv"&gt;S_OK&lt;/span&gt;&lt;span class="c1"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;DX11VideoRenderer::CSchedulerを使えばよいと思う。
+だいたい仕組みがわかった。
+DX11VideoRendererから引き算して最小限の構成にする(ProcessSampleが何もしない)場合、
+以下の部品を残す必要がありそう。&lt;/p&gt;
+&lt;p&gt;Scheduler
+StreamSink: IMFStreamSink, IMFMediaTypeHandler
+MesiaSink: IMFMediaSink, IMFClockStateSink&lt;/p&gt;</description><category>d3d</category><category>mediafoundation</category><guid>https://ousttrue.github.io/posts/2017/08/create_mediasink/</guid><pubDate>Sat, 26 Aug 2017 15:00:00 GMT</pubDate></item><item><title>SharpDXでHololens</title><link>https://ousttrue.github.io/posts/2017/07/hololens_sharpdx/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;SharpDXでHololensできないかやってみる。&lt;/p&gt;
+&lt;p&gt;頓挫した。
+VisualStudioのHolographicAppテンプレートをSharpDXに移植できないかやってみる。
+C# Universal 空白のテンプレートで始める
+以前書いたUWPでSharpDXを見てSharpDXの最低限を作成。
+C++ Universal D3D11のテンプレートを移植する
+とりあえず練習に素の”uwp directx11 template”を移植してみた。
+これは、D2DのFPSテキストが何も描画されないことを除いて動いた。
+C++ HolographicApp DirectXのテンプレートを移植する
+途中まで移植したのだが以下の部分でクラッシュして、 エラーコード0xc0000409が解決できなくなってしまった。
+// Starts the holographic frame and updates the content.
+public Windows.Graphics.Holographic.HolographicFrame Update()
+{
+    // Before doing the timer update, there is some work to do per-frame
+    // to maintain holographic rendering. First, we will get information
+    // about the current frame.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;The&lt;/span&gt; &lt;span class="n"&gt;HolographicFrame&lt;/span&gt; &lt;span class="n"&gt;has&lt;/span&gt; &lt;span class="n"&gt;information&lt;/span&gt; &lt;span class="n"&gt;that&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="n"&gt;needs&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;order&lt;/span&gt;
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;update&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;render&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;current&lt;/span&gt; &lt;span class="n"&gt;frame&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;The&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="n"&gt;begins&lt;/span&gt; &lt;span class="n"&gt;each&lt;/span&gt; &lt;span class="n"&gt;new&lt;/span&gt;
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="n"&gt;frame&lt;/span&gt; &lt;span class="n"&gt;by&lt;/span&gt; &lt;span class="n"&gt;calling&lt;/span&gt; &lt;span class="n"&gt;CreateNextFrame&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+&lt;span class="k"&gt;var&lt;/span&gt; &lt;span class="n"&gt;holographicFrame&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;m_holographicSpace&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CreateNextFrame&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt; &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;--&lt;/span&gt; &lt;span class="err"&gt;クラッシュする&lt;/span&gt;
+
+&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="err"&gt;省略&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;作業は頓挫した。&lt;/p&gt;</description><category>csharp</category><category>d3d</category><category>hololens</category><guid>https://ousttrue.github.io/posts/2017/07/hololens_sharpdx/</guid><pubDate>Tue, 04 Jul 2017 15:00:00 GMT</pubDate></item></channel></rss>
