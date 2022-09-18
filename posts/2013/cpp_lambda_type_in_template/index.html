@@ -41,7 +41,7 @@
 
 <p>(記事復旧のついでに少し修正)</p>
 <p>msgpack-rpcの関数登録の都合上、 lambda関数から引数の型を得たい。 下記のような書き方をしたい。</p>
-<pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">register_func</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">(</span><span class="o">*</span><span class="n">handler</span><span class="p">)(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">))</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// 関数登録</span>
@@ -61,28 +61,31 @@
 <span class="w">    </span><span class="n">register_func</span><span class="p">(</span><span class="err">“</span><span class="n">add</span><span class="err">”</span><span class="p">,</span><span class="w"> </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>上記の書き方では普通の関数ポインタを受けることはできるのだが、 std::functionやlambdaは受けられない。</p>
 <p>std::functionを受けるには下記のようにすることでできた。</p>
-<pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">register_func</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="w"> </span><span class="n">handler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">//</span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>残り、lambdaを受けられる記述方法を知りたいのだがどうしたらよいものか。 下記のような手はうまくいかなかった・・・</p>
-<pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">add_handler</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">handler</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="c1">//add_handler</span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><a href="http://d.hatena.ne.jp/osyo-manga/20121205/1354674180">lambda expression を 関数ポインタ型へと変換する</a> こちらのサイトから decltypeを使ったらなんかできそうな感じがしたので粘っていたのだが、</p>
 <p>目的そのものの記事を発見した。 http://stackoverflow.com/questions/6512019/can-we-get-the-type-of-a-lambda-argument</p>
-<pre class="code literal-block"><span class="c1">// 2019/08 元記事のコードがよくわからなかったので書き直し。</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// 2019/08 元記事のコードがよくわからなかったので書き直し。</span>
 
 <span class="c1">// decltypeから得たメンバ関数へのポインタを触媒にして型を得る</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">_register_func</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="n">m</span><span class="p">)(</span><span class="n">A1</span><span class="w"> </span><span class="n">a1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="w"> </span><span class="n">a2</span><span class="p">)</span><span class="k">const</span><span class="p">)</span><span class="w"> </span><span class="c1">// constに注意</span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// R: 返り値の型</span>
@@ -91,12 +94,13 @@
 <span class="p">}</span><span class="w"></span>
 
 <span class="c1">// まずあらゆる引数を受け付けられるtemplateでlambdaオブジェクトを受ける(functor)</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">register_func</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">_register_func</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">func_name</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">::</span><span class="k">operator</span><span class="p">());</span><span class="w"></span>
 <span class="p">)</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>F で関数ポインタ、lambda、std::function等を受けられるようになった。 decltypeなんかすごいな。</p>
 <p>関連して、<a href="https://qiita.com/ousttrue/items/6b207e1d431cf20e04d9">C++でメンバー関数を、thisを第１引数にとる関数ポインタに変換する</a>。
 メンバ関数へのポインタは意外と使い道がある。</p>

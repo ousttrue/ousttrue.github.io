@@ -43,8 +43,9 @@
 <p><code>cython</code> から <code>pybind11</code> に乗り換えを試みたのだが、
 一歩目で躓いた。</p>
 <p>不完全型のポインタをそのまま返す方法がわからん。</p>
-<pre class="code literal-block"><span class="n">ImGuiContext</span><span class="o">*</span><span class="w"> </span><span class="nf">CreateContext</span><span class="p">(</span><span class="n">ImFontAtlas</span><span class="o">*</span><span class="w"> </span><span class="n">shared_font_atlas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">ImGuiContext</span><span class="o">*</span><span class="w"> </span><span class="nf">CreateContext</span><span class="p">(</span><span class="n">ImFontAtlas</span><span class="o">*</span><span class="w"> </span><span class="n">shared_font_atlas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
 <p><code>ImGuiContext</code> は前方宣言なのです。</p>
 <p>自分でやろうと思った。
 <code>ctypes</code> と併用することを前提にした省機能のバインダー、名付けて <code>rawtypes</code> を作ってみよう。
@@ -52,8 +53,9 @@
 基本的に <code>ctypes.c_void_p</code> で済ます。
 型の宣言が必要なところは、 <code>ctypes.Structure</code> により <code>python</code> 側で宣言。
 <code>c++</code> から返す時には、キャストする。</p>
-<pre class="code literal-block"><span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">CTYPES_TYPE</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">CTYPES_TYPE</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
 <p>object の所有権 はまじめに探求しない。</p>
 <ul>
 <li>python で作って、python で開放する(cypte.Struct object)</li>

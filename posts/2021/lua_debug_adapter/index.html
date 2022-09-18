@@ -48,11 +48,12 @@
 <code>event</code> のうち <code>initialized</code>, <code>exited</code>, <code>stopped(breakpoint, step)</code> を実装した。</p>
 <p>これで最低限の breakpoint を設定して止める、ステップ実行、変数表示までできた。</p>
 <p>ログレベルを設定して</p>
-<pre class="code literal-block"><span class="nb">require</span><span class="p">(</span><span class="s1">'dap'</span><span class="p">).</span><span class="n">set_log_level</span><span class="p">(</span><span class="s1">'trace'</span><span class="p">)</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nb">require</span><span class="p">(</span><span class="s1">'dap'</span><span class="p">).</span><span class="n">set_log_level</span><span class="p">(</span><span class="s1">'trace'</span><span class="p">)</span>
+</pre></div>
+
 <p>nvim の <code>:lua print(vim.fn.stdpath "cache")</code> に配置される <code>dap.log</code> を観察したらだいたいできた。</p>
 <p>nvim-dap の設定は以下。</p>
-<pre class="code literal-block"><span class="kd">local</span> <span class="n">dap</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"dap"</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kd">local</span> <span class="n">dap</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"dap"</span><span class="p">)</span>
 
 <span class="kd">local</span> <span class="n">luada</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">nvim_get_var</span><span class="p">(</span><span class="s2">"my_nvim_root"</span><span class="p">)</span> <span class="o">..</span> <span class="s2">"/luada.lua"</span>
 
@@ -73,23 +74,27 @@
         <span class="n">args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span> <span class="p">},</span>
     <span class="p">},</span>
 <span class="p">}</span>
-</pre>
-<pre class="code literal-block"><span class="nb">+---------+</span><span class="c">    DAP       </span><span class="nb">+--------------------+</span><span class="c"></span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="nb">+---------+</span><span class="c">    DAP       </span><span class="nb">+--------------------+</span><span class="c"></span>
 <span class="c">| nvim dap|</span><span class="nb">-------</span><span class="nv">&gt;</span><span class="c">stdin |luajit</span><span class="nt">.</span><span class="c">exe luada</span><span class="nt">.</span><span class="c">lua|</span>
 <span class="c">|         |</span><span class="nv">&lt;</span><span class="nb">-------</span><span class="c">stdout|                    |</span>
 <span class="nb">+---------+</span><span class="c">              </span><span class="nb">+--------------------+</span><span class="c"></span>
 <span class="c">                                              </span><span class="nb">+</span><span class="c">==</span><span class="nv">&gt;</span><span class="c"> loadscript(target_lua_script)</span>
-</pre>
+</pre></div>
+
 <p>入出力を DAP で占有してしまうので、それでも大丈夫なスクリプトしかデバッグできない。
 (print 関数は、stderr に出力するように退避したので、<code>dap.log</code> には出る)</p>
 <p>素の standalone の lua interpreter で簡単にできる範囲で実装する方針。</p>
 <h3>はまりポイント</h3>
 <h4>Windows 版 は、<code>io.stdout</code> で <code>CR</code> が <code>CRLF</code> に変換されるのを回避できない。</h4>
-<pre class="code literal-block"><span class="n">setmode</span><span class="p">(</span><span class="n">_fileno</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="n">_O_BINARY</span><span class="p">);</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">setmode</span><span class="p">(</span><span class="n">_fileno</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="n">_O_BINARY</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
 <p>を lua で呼び出す手段が無い。</p>
-<pre class="code literal-block">Content-Leght: 123\n\n
-</pre>
+<div class="code"><pre class="code literal-block">Content-Leght: 123\n\n
+</pre></div>
+
 <p>と出力して変換されるのに任せることにした。</p>
 <h4>debug.sethook 内で coroutine.yield できない</h4>
 <p><a href="https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working">https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working</a></p>
@@ -100,8 +105,9 @@
 <h4>launch で開始すると早すぎる</h4>
 <p>これは、 <code>nvim-dap</code> の実装の問題のような気がするが、
 capabilities に以下を設定して、 <code>configurationDone</code> リクエストで自開始する。</p>
-<pre class="code literal-block"><span class="n">supportsConfigurationDoneRequest</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">supportsConfigurationDoneRequest</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</pre></div>
+
 <h3>ToDo</h3>
 <p>luada リポジトリを作って vscode 拡張としてリリースする。</p>
 

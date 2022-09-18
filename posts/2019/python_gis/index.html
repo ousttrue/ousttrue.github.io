@@ -41,8 +41,9 @@
 
 <p>Windows10。</p>
 <h3>vcpkgでCの関連ライブラリをインストール</h3>
-<pre class="code literal-block">$ vcpkg install --triplet x64-windows geos gdal
-</pre>
+<div class="code"><pre class="code literal-block">$ vcpkg install --triplet x64-windows geos gdal
+</pre></div>
+
 <p>30分くらいかかった。</p>
 <p>環境変数、 <code>GDAL_DATA</code> に <code>%VCPKG_DIR%\installed\x64-windows\share\gdal</code> ビルド先のフォルダを指定する。</p>
 <h3>GDAL</h3>
@@ -53,24 +54,28 @@
 <ul>
 <li>https://pypi.org/project/GDAL/</li>
 </ul>
-<pre class="code literal-block">$ pip install gdal
+<div class="code"><pre class="code literal-block">$ pip install gdal
 fatal error C1083: Cannot open include file: <span class="s1">'cpl_port.h'</span>: No such file or directory
-</pre>
+</pre></div>
+
 <p>事前にVCPKGでビルドしてある。 <code>INLUCDE</code> を指し示す。</p>
-<pre class="code literal-block">$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> gdal
+<div class="code"><pre class="code literal-block">$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> gdal
 <span class="s1">'GDALGetSpatialRef'</span>: identifier not found
-</pre>
+</pre></div>
+
 <p>バージョンをCのGDALに合わせる。vcpkg でインストールしたのは <code>2.4.1</code> だった。
 gdalの <code>2.4.1</code> は欠番みたいなので、 <code>2.4.2</code> にしてみた。</p>
-<pre class="code literal-block">$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> --global-option<span class="o">=</span><span class="s2">"-LC:\vcpkg\installed\x64-windows\lib"</span> <span class="s1">'gdal==2.4.2'</span>
+<div class="code"><pre class="code literal-block">$ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> --global-option<span class="o">=</span><span class="s2">"-LC:\vcpkg\installed\x64-windows\lib"</span> <span class="s1">'gdal==2.4.2'</span>
 LINK : fatal error LNK1181: cannot open input file <span class="s1">'gdal_i.lib'</span>
-</pre>
+</pre></div>
+
 <p><code>gdal_i.lib</code> inline の static library かな？
 探したら、 <code>vcpkg</code> のビルドフォルダにあったので lib にコピーする。</p>
-<pre class="code literal-block">$ copy C:<span class="se">\v</span>cpkg<span class="se">\b</span>uildtrees<span class="se">\g</span>dal<span class="se">\s</span>rc-x64-windows-release<span class="se">\g</span>dal-2.4.1<span class="se">\g</span>dal_i.lib C:<span class="se">\v</span>cpkg<span class="se">\i</span>nstalled<span class="se">\x</span><span class="m">64</span>-windows<span class="se">\l</span>ib<span class="se">\</span>
+<div class="code"><pre class="code literal-block">$ copy C:<span class="se">\v</span>cpkg<span class="se">\b</span>uildtrees<span class="se">\g</span>dal<span class="se">\s</span>rc-x64-windows-release<span class="se">\g</span>dal-2.4.1<span class="se">\g</span>dal_i.lib C:<span class="se">\v</span>cpkg<span class="se">\i</span>nstalled<span class="se">\x</span><span class="m">64</span>-windows<span class="se">\l</span>ib<span class="se">\</span>
 $ pip install --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s2">"-IC:\vcpkg\installed\x64-windows\include"</span> --global-option<span class="o">=</span><span class="s2">"-LC:\vcpkg\installed\x64-windows\lib"</span> <span class="s1">'gdal==2.4.2'</span>
 Successfully installed gdal-2.4.2
-</pre>
+</pre></div>
+
 <p>OK</p>
 <ul>
 <li>https://www.gis-py.com/entry/py-gdal</li>

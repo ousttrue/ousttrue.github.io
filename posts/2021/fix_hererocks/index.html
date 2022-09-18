@@ -53,11 +53,12 @@
 Windows 版の luarocks 呼び出しに改造が必要なのだが、
 先に hererocks が動いている必要があるという順番。</p>
 <p>とりあえず単体で試すことができて</p>
-<pre class="code literal-block"># C:/Python38/Scripts/pip.exe
+<div class="code"><pre class="code literal-block"># C:/Python38/Scripts/pip.exe
 $ pip install https://github.com/ousttrue/hererocks/archive/add_vswhere.zip
-</pre>
+</pre></div>
+
 <p>とする。</p>
-<pre class="code literal-block"># C:/Python38/Scripts/hererocks.exe
+<div class="code"><pre class="code literal-block"># C:/Python38/Scripts/hererocks.exe
 $ hererocks.exe --target vs -j 2.1.0-beta3 -r latest build_dir
 Using cl.exe found in PATH.
 Fetching LuaJIT 2.1.0-beta3 (target: vs) (cached)
@@ -67,7 +68,8 @@ Installing LuaJIT 2.1.0-beta3 (target: vs)
 Fetching LuaRocks 3.7.0 (cached)
 Verifying SHA256 checksum
 Building and installing LuaRocks 3.7.0
-</pre>
+</pre></div>
+
 <p>lua はシステムにインストールして全体でライブラリを共有するというよりは、
 プロジェクト単位でインストールしてローカルに必要なライブラリだけを追加するという運用になりそう。
 なので、 hererocks でプロジェクトローカルに lua をサクッとビルドできるのはなかなかよい。
@@ -82,7 +84,7 @@ standalone の lua インタプリタを使う場合は <code>hererocks</code> �
 <p><code>cl.exe</code>, <code>msbuild.exe</code> などの探索に使う。
 <code>vs2017 version 15.2</code> 以降に入っているらしい。</p>
 <p>こんな感じに使う。</p>
-<pre class="code literal-block"><span class="err">#</span><span class="w"> </span><span class="o">%</span><span class="n">ProgramFiles</span><span class="p">(</span><span class="n">x86</span><span class="p">)</span><span class="o">%</span><span class="err">\</span><span class="n">Microsoft</span><span class="w"> </span><span class="n">Visual</span><span class="w"> </span><span class="n">Studio</span><span class="err">\</span><span class="n">Installer</span><span class="err">\</span><span class="n">vswhere</span><span class="p">.</span><span class="n">exe</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="err">#</span><span class="w"> </span><span class="o">%</span><span class="n">ProgramFiles</span><span class="p">(</span><span class="n">x86</span><span class="p">)</span><span class="o">%</span><span class="err">\</span><span class="n">Microsoft</span><span class="w"> </span><span class="n">Visual</span><span class="w"> </span><span class="n">Studio</span><span class="err">\</span><span class="n">Installer</span><span class="err">\</span><span class="n">vswhere</span><span class="p">.</span><span class="n">exe</span><span class="w"></span>
 <span class="o">&gt;</span><span class="w"> </span><span class="n">vswhere</span><span class="w"> </span><span class="o">-</span><span class="n">nologo</span><span class="w"> </span><span class="o">-</span><span class="n">products</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
 <span class="nl">instanceId</span><span class="p">:</span><span class="w"> </span><span class="mi">6762</span><span class="n">dfe1</span><span class="w"></span>
 <span class="nl">installDate</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">21</span><span class="w"> </span><span class="mi">9</span><span class="err">:</span><span class="mi">26</span><span class="err">:</span><span class="mi">34</span><span class="w"></span>
@@ -124,12 +126,14 @@ standalone の lua インタプリタを使う場合は <code>hererocks</code> �
 <span class="nl">properties_channelManifestId</span><span class="p">:</span><span class="w"> </span><span class="n">VisualStudio</span><span class="mf">.16</span><span class="p">.</span><span class="k">Release</span><span class="o">/</span><span class="mf">16.7.3</span><span class="o">+</span><span class="mf">30503.244</span><span class="w"></span>
 <span class="nl">properties_nickname</span><span class="p">:</span><span class="w"></span>
 <span class="nl">properties_setupEngineFilePath</span><span class="p">:</span><span class="w"> </span><span class="nl">C</span><span class="p">:</span><span class="err">\</span><span class="n">Program</span><span class="w"> </span><span class="n">Files</span><span class="w"> </span><span class="p">(</span><span class="n">x86</span><span class="p">)</span><span class="err">\</span><span class="n">Microsoft</span><span class="w"> </span><span class="n">Visual</span><span class="w"> </span><span class="n">Studio</span><span class="err">\</span><span class="n">Installer</span><span class="err">\</span><span class="n">vs_installershell</span><span class="p">.</span><span class="n">exe</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><a href="https://github.com/microsoft/vswhere/wiki/Find-VC">https://github.com/microsoft/vswhere/wiki/Find-VC</a></p>
 <p>フィルタをかけられる。</p>
-<pre class="code literal-block">&gt; vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+<div class="code"><pre class="code literal-block">&gt; vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
-</pre>
+</pre></div>
+
 <p>見つかったパスから先は固定であるとみなして、 <code>vcvars64.bat</code> などを見つける。</p>
 
 <hr>

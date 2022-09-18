@@ -58,58 +58,67 @@ w3m はわりと好きなテキストブラウザなのだが、 2011 年くら�
 <h3>msys2 でとりあえずビルド</h3>
 <p>WSL Ubuntu だとビルドできなかった。
 しかし、msys2 ならわりと簡単にビルドできることを発見。</p>
-<pre class="code literal-block">$ pacman -S make gcc libgc-devel openssl-devel ncurses-devel
+<div class="code"><pre class="code literal-block">$ pacman -S make gcc libgc-devel openssl-devel ncurses-devel
 $ x86_64-pc-msys-gcc --version
 x86_64-pc-msys-gcc <span class="o">(</span>GCC<span class="o">)</span> <span class="m">9</span>.3.0
 Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2019</span> Free Software Foundation, Inc.
 This is free software<span class="p">;</span> see the <span class="nb">source</span> <span class="k">for</span> copying conditions.  There is NO
 warranty<span class="p">;</span> not even <span class="k">for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 $ ./configure
-</pre>
+</pre></div>
+
 <p>コンパイル環境の方が昔と変わってしまってビルドでエラーになる。</p>
 <p>修正方法👇</p>
 <p><a href="https://qiita.com/imkitchen/items/02a9df7baaaf434fee66">[CentOS7] emacs24にemacs-w3mインストール</a></p>
 <p><code>#ifdef</code> の調整</p>
-<pre class="code literal-block">// config.h
+<div class="code"><pre class="code literal-block">// config.h
 //#define USE_BINMODE_STREAM 1
 //#define USE_EGD
-</pre>
-<pre class="code literal-block">$ make
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$ make
 $ ./w3m www.google.com // 動いた
-</pre>
+</pre></div>
+
 <h3>WSL で GC がクラッシュする問題</h3>
 <p><code>boehm-GC</code> がランタイムにエラーになることで、 <code>make</code> 中のコード生成 <code>mktable</code> がクラッシュするのが原因でビルドステップが途中で止まるのが原因だった。なので、たとえビルド済みの <code>w3m</code> を <code>apt get</code> しても、ランタイムも同じ原因でクラッシュする。</p>
 <p>エラー。</p>
-<pre class="code literal-block"><span class="n">Wrong</span> <span class="n">__data_start</span><span class="o">/</span><span class="n">_end</span> <span class="n">pair</span>
-<span class="n">fish</span><span class="p">:</span> <span class="s1">'./build/w3m'</span> <span class="n">terminated</span> <span class="n">by</span> <span class="k">signal</span> <span class="n">SIGABRT</span> <span class="p">(</span><span class="n">Abort</span><span class="p">)</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">Wrong</span><span class="w"> </span><span class="n">__data_start</span><span class="o">/</span><span class="n">_end</span><span class="w"> </span><span class="n">pair</span><span class="w"></span>
+<span class="n">fish</span><span class="p">:</span><span class="w"> </span><span class="s1">'./build/w3m'</span><span class="w"> </span><span class="n">terminated</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">signal</span><span class="w"> </span><span class="n">SIGABRT</span><span class="w"> </span><span class="p">(</span><span class="n">Abort</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+
 <p>https://hitkey.nekokan.dyndns.info/diary2004.php#D200424</p>
 <p>によると、stack size の制限が原因らしい。</p>
-<pre class="code literal-block">$ <span class="nb">ulimit</span> -s
+<div class="code"><pre class="code literal-block">$ <span class="nb">ulimit</span> -s
 <span class="m">8192</span>
-</pre>
+</pre></div>
+
 <p>WSL でこれを変えるには・・・。</p>
 <p>https://github.com/microsoft/WSL/issues/633</p>
 <p>無理。</p>
 <p><code>WSL2</code> ならできる？</p>
-<pre class="code literal-block">&gt; wsl -l -v
+<div class="code"><pre class="code literal-block">&gt; wsl -l -v
   NAME            STATE           VERSION
 * Ubuntu-20.04    Running         2
-</pre>
+</pre></div>
+
 <p>やってみる。</p>
-<pre class="code literal-block">$ <span class="nb">ulimit</span> -s unlimited
+<div class="code"><pre class="code literal-block">$ <span class="nb">ulimit</span> -s unlimited
 &gt; <span class="nb">ulimit</span> -s
 unlimited
-</pre>
+</pre></div>
+
 <p>できた。</p>
-<pre class="code literal-block">$ w3m
+<div class="code"><pre class="code literal-block">$ w3m
 Wrong __data_start/_end pair
-</pre>
+</pre></div>
+
 <p>うーむ。</p>
-<pre class="code literal-block">$ <span class="nb">ulimit</span> -s <span class="m">81920</span>
+<div class="code"><pre class="code literal-block">$ <span class="nb">ulimit</span> -s <span class="m">81920</span>
 &gt; <span class="nb">ulimit</span> -s
 <span class="m">81920</span>
-</pre>
+</pre></div>
+
 <p>動いた。
 8192KB では足りなく、 unlimited では多すぎるらしい。これは、難しいな。</p>
 <p>ちなみに、 <code>gdb</code> 上ならスタック問題を解決しなくても動いた。
@@ -184,10 +193,11 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 <h3>警告からエラーに引き上げ</h3>
 <p>改造していくのに <code>C</code> の緩い型制限が危険(コンパイルが通るのに型が不一致になりやすい)なので、
 以下のオプションを追加。</p>
-<pre class="code literal-block">-Werror=implicit-function-declaration
+<div class="code"><pre class="code literal-block">-Werror=implicit-function-declaration
 -Werror=int-conversion
 -Werror=conversion-null
-</pre>
+</pre></div>
+
 <p>これで、型宣言を補強しながら進める。</p>
 <h2>第1段階</h2>
 <ul>
@@ -204,28 +214,31 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 <p>手法としては、各ソースの拡張子を <code>.c</code> から <code>.cpp</code> に変更する。
 <code>CMakeLists.txt</code> を修正。
 <code>#include</code> を <code>extern "C"</code> で囲む、で <code>c++</code> 化することができる。</p>
-<pre class="code literal-block"><span class="k">extern</span><span class="w"> </span><span class="s">"C"</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">extern</span><span class="w"> </span><span class="s">"C"</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">"xxx.h"</span><span class="cp"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>ただ、 <code>cpp</code> で定義する関数の宣言が <code>extern "C"</code> の中に入らないとリンクエラーになるので、
 そうなるようにソースごとにヘッダを分配してやる。
 <code>w3m</code> は関数宣言が少数のファイル <code>proto.h</code>, <code>fm.h</code> とかに集中しているのだが、いっぱいあるので雑にやる。
 コンパイルが通ればよい。</p>
 <p>分配するときに未定義の型を前方宣言ですませたいのだけど、 <code>c</code> の <code>struct</code> 定義が、<code>struct tag</code> と <code>typedef</code> に分かれているのがやっかいだった。</p>
-<pre class="code literal-block"><span class="c1">// C</span>
-<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span> <span class="nc">hogeTag</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="c1">// C</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">hogeTag</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 
 <span class="p">}</span><span class="w"> </span><span class="n">Hoge</span><span class="p">;</span><span class="w"></span>
-</pre>
-<pre class="code literal-block"><span class="kt">void</span><span class="w"> </span><span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="kt">void</span><span class="w"> </span><span class="nf">DoHoge</span><span class="p">(</span><span class="n">Hoge</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// に対する前方宣言は、</span>
 
-<span class="k">struct</span> <span class="nc">hogeTag</span><span class="p">;</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">hogeTag</span><span class="p">;</span><span class="w"></span>
 <span class="k">typedef</span><span class="w"> </span><span class="n">hogeTag</span><span class="w"> </span><span class="n">Hoge</span><span class="p">;</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>C</code> の状態で、前方宣言を導入できずヘッダの分割が難航。
 型ごとに別のヘッダに分割することは断念して、
 ほとんど全部の <code>struct</code> 定義の入ったヘッダを <code>fm.h</code> から分離して作るのに留めた。</p>
@@ -233,7 +246,7 @@ libwc が static ライブラリにわかれているのも、ひとまとめに
 <p><code>w3m</code> は <code>DEFUN</code> でキーアサインできる関数を定義している。</p>
 <p><a href="../../../w3m/doc-jp/readme.func/">readme.func</a></p>
 <p>以下のように、キーボードなどのイベントをトリガーにアクションを実行するというイメージ。</p>
-<pre class="code literal-block">Key
+<div class="code"><pre class="code literal-block">Key
     KeyMap
         DEFUN
     Menu
@@ -245,13 +258,15 @@ MouseAction
         DEFUN
 Alarm
     DEFUN
-</pre>
+</pre></div>
+
 <p>ソースは、<code>main.c</code> と <code>menu.c</code> に <code>DEFUN</code> とそれの使う補助関数がまとめて定義されていて、
 ヘッダは <code>proto.h</code> に全部入れとなっている。</p>
 <p>c++ で下記のようなディスパッチャを作った。</p>
-<pre class="code literal-block"><span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">Command</span><span class="p">)();</span><span class="w"></span>
 <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">Command</span><span class="o">&gt;</span><span class="w"> </span><span class="n">g_commandMap</span><span class="p">;</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>使い捨ての python で関数に登録するコードを生成した。</p>
 <h2>第２段階</h2>
 <ul>
@@ -306,18 +321,20 @@ goto とか longjmp があってよくわからなかったのだが、慣れて
 <p>ここを <code>HttpClient</code>, <code>LocalFile</code>, <code>PipeReader</code> あたりに整理したい。</p>
 <h2>第３段階</h2>
 <p>Tab, Buffer, Line のリンクリストを STL のコレクションに置き換えた。</p>
-<pre class="code literal-block"><span class="k">auto</span><span class="w"> </span><span class="n">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">auto</span><span class="w"> </span><span class="n">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load</span><span class="p">(</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
 <span class="n">tab</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>という形を目指す。</p>
 <p><code>loadGeneralFile</code> を解きほぐして、 <code>HTTP</code> 機能を抽出、リダイレクトまで動くようにできた。
 <code>loadGeneralFile</code> は、</p>
-<pre class="code literal-block"><span class="o">*</span> <span class="nv">OpenStream</span><span class="o">/</span><span class="k">Send</span> <span class="nv">HTTP</span> <span class="nv">Request</span>
-<span class="o">*</span> <span class="nv">HTTP</span> <span class="nv">Response</span>
-    <span class="o">*</span> <span class="mi">3</span><span class="nv">xx</span> <span class="o">=&gt;</span> <span class="nv">Redirect</span>
-<span class="o">*</span> <span class="nv">content</span><span class="o">-</span><span class="nv">type</span> で分岐
-    <span class="o">*</span> <span class="nv">BufferLoader</span> <span class="o">=&gt;</span> <span class="nv">Buffer</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">*</span><span class="w"> </span><span class="nv">OpenStream</span><span class="o">/</span><span class="k">Send</span><span class="w"> </span><span class="nv">HTTP</span><span class="w"> </span><span class="nv">Request</span><span class="w"></span>
+<span class="o">*</span><span class="w"> </span><span class="nv">HTTP</span><span class="w"> </span><span class="nv">Response</span><span class="w"></span>
+<span class="w">    </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="nv">xx</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nv">Redirect</span><span class="w"></span>
+<span class="o">*</span><span class="w"> </span><span class="nv">content</span><span class="o">-</span><span class="nv">type</span><span class="w"> </span>で分岐<span class="w"></span>
+<span class="w">    </span><span class="o">*</span><span class="w"> </span><span class="nv">BufferLoader</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nv">Buffer</span><span class="w"></span>
+</pre></div>
+
 <p>という感じに整理できそう。
 HttpとBufferローダーを副作用の無い関数に整理できれば再入可能が見えてくる。
 早めに分岐させて、分岐したら合流しない。同じ処理は関数で共有するという方向性で整理。</p>

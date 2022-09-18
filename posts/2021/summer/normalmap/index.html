@@ -45,11 +45,12 @@
 <p><a href="https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet">https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet</a> をサンプルモデルとした。</p>
 <p><code>glActiveTexture</code> がうまくいかず難航する。
 以下のようにして、無理やり解決。</p>
-<pre class="code literal-block"><span class="cp">#version 400</span>
-<span class="cp">#extension GL_ARB_shading_language_420pack : enable</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">binding</span> <span class="o">=</span> <span class="mo">0</span><span class="p">)</span> <span class="k">uniform</span> <span class="kt">sampler2D</span> <span class="n">Tex0</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">binding</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">uniform</span> <span class="kt">sampler2D</span> <span class="n">Tex1</span><span class="p">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="cp">#version 400</span><span class="w"></span>
+<span class="cp">#extension GL_ARB_shading_language_420pack : enable</span><span class="w"></span>
+<span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">Tex0</span><span class="p">;</span><span class="w"></span>
+<span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">Tex1</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+
 <p>すべての sampler2D が 0 にバインディングされる挙動だった。
 <code>#version 420</code> はうまくいかなかったので断念。
 エラーは出ないが、何もレンダリングされなくなった。</p>
@@ -71,59 +72,61 @@
 <h2>Shader</h2>
 <p><code>OpenGL 4.0 Shading Language Cookbook</code> の phong shading を省略して法線だけ確認。
 <code>2倍して1引く</code> を補った。</p>
-<pre class="code literal-block"><span class="cp">#version 400</span>
-<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">MVP</span><span class="p">;</span>
-<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">ModelViewMatrix</span><span class="p">;</span>
-<span class="k">uniform</span> <span class="kt">mat3</span> <span class="n">NormalMatrix</span><span class="p">;</span>
-<span class="k">uniform</span> <span class="kt">vec3</span> <span class="n">LightDirection</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="cp">#version 400</span><span class="w"></span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">mat4</span><span class="w"> </span><span class="n">MVP</span><span class="p">;</span><span class="w"></span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">mat4</span><span class="w"> </span><span class="n">ModelViewMatrix</span><span class="p">;</span><span class="w"></span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">mat3</span><span class="w"> </span><span class="n">NormalMatrix</span><span class="p">;</span><span class="w"></span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">LightDirection</span><span class="p">;</span><span class="w"></span>
 
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mo">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">VertexPosition</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">VertexNormal</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec2</span> <span class="n">VertexTexCoord</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec4</span> <span class="n">VertexTangent</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec3</span> <span class="n">LightDir</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec3</span> <span class="n">ViewDir</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec2</span> <span class="n">TexCoord</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec3</span> <span class="n">Debug</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">VertexPosition</span><span class="p">;</span><span class="w"></span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">VertexNormal</span><span class="p">;</span><span class="w"></span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">VertexTexCoord</span><span class="p">;</span><span class="w"></span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">VertexTangent</span><span class="p">;</span><span class="w"></span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">LightDir</span><span class="p">;</span><span class="w"></span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">ViewDir</span><span class="p">;</span><span class="w"></span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">TexCoord</span><span class="p">;</span><span class="w"></span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">Debug</span><span class="p">;</span><span class="w"></span>
 
-<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">vec3</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">NormalMatrix</span> <span class="o">*</span> <span class="n">VertexNormal</span><span class="p">);</span>
-  <span class="kt">vec3</span> <span class="n">tangent</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">NormalMatrix</span> <span class="o">*</span> <span class="kt">vec3</span><span class="p">(</span><span class="n">VertexTangent</span><span class="p">));</span>
-  <span class="kt">vec3</span> <span class="n">binormal</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span> <span class="n">tangent</span><span class="p">))</span> <span class="o">*</span> <span class="n">VertexTangent</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
-  <span class="kt">mat3</span> <span class="n">toObjectLocal</span> <span class="o">=</span>
-      <span class="kt">mat3</span><span class="p">(</span><span class="n">tangent</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">binormal</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">tangent</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">binormal</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="p">,</span>
-           <span class="n">tangent</span><span class="p">.</span><span class="n">z</span><span class="p">,</span> <span class="n">binormal</span><span class="p">.</span><span class="n">z</span><span class="p">,</span> <span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="p">);</span>
-  <span class="kt">vec3</span> <span class="n">pos</span> <span class="o">=</span> <span class="kt">vec3</span><span class="p">(</span><span class="n">ModelViewMatrix</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">VertexPosition</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">));</span>
-  <span class="n">LightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">toObjectLocal</span> <span class="o">*</span> <span class="n">LightDirection</span><span class="p">);</span>
-  <span class="n">ViewDir</span> <span class="o">=</span> <span class="n">toObjectLocal</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="o">-</span><span class="n">pos</span><span class="p">);</span>
-  <span class="n">TexCoord</span> <span class="o">=</span> <span class="n">VertexTexCoord</span><span class="p">;</span>
-  <span class="n">Debug</span> <span class="o">=</span> <span class="kt">vec3</span><span class="p">(</span><span class="n">VertexTangent</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">NormalMatrix</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">VertexNormal</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">tangent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">NormalMatrix</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">VertexTangent</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">binormal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">VertexTangent</span><span class="p">.</span><span class="n">w</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">mat3</span><span class="w"> </span><span class="n">toObjectLocal</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="kt">mat3</span><span class="p">(</span><span class="n">tangent</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">binormal</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">binormal</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"></span>
+<span class="w">           </span><span class="n">tangent</span><span class="p">.</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">binormal</span><span class="p">.</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">ModelViewMatrix</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">VertexPosition</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="n">LightDir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">toObjectLocal</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">LightDirection</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">ViewDir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">toObjectLocal</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="o">-</span><span class="n">pos</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">TexCoord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VertexTexCoord</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">Debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">VertexTangent</span><span class="p">);</span><span class="w"></span>
 
-  <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">MVP</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">VertexPosition</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
-<span class="p">};</span>
-</pre>
-<pre class="code literal-block"><span class="cp">#version 400</span>
-<span class="cp">#extension GL_ARB_shading_language_420pack : enable</span>
+<span class="w">  </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MVP</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">VertexPosition</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
 
-<span class="k">layout</span><span class="p">(</span><span class="n">binding</span> <span class="o">=</span> <span class="mo">0</span><span class="p">)</span> <span class="k">uniform</span> <span class="kt">sampler2D</span> <span class="n">Tex0</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">binding</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">uniform</span> <span class="kt">sampler2D</span> <span class="n">Tex1</span><span class="p">;</span>
-<span class="k">in</span> <span class="kt">vec3</span> <span class="n">LightDir</span><span class="p">;</span>
-<span class="k">in</span> <span class="kt">vec3</span> <span class="n">ViewDir</span><span class="p">;</span>
-<span class="k">in</span> <span class="kt">vec2</span> <span class="n">TexCoord</span><span class="p">;</span>
-<span class="k">in</span> <span class="kt">vec3</span> <span class="n">Debug</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec4</span> <span class="n">FragColor</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="cp">#version 400</span><span class="w"></span>
+<span class="cp">#extension GL_ARB_shading_language_420pack : enable</span><span class="w"></span>
 
-<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">vec4</span> <span class="n">texColor</span> <span class="o">=</span> <span class="n">texture2D</span><span class="p">(</span><span class="n">Tex0</span><span class="p">,</span> <span class="n">TexCoord</span><span class="p">);</span>
-  <span class="kt">vec4</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">texture2D</span><span class="p">(</span><span class="n">Tex1</span><span class="p">,</span> <span class="n">TexCoord</span><span class="p">);</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">Tex0</span><span class="p">;</span><span class="w"></span>
+<span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">Tex1</span><span class="p">;</span><span class="w"></span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">LightDir</span><span class="p">;</span><span class="w"></span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">ViewDir</span><span class="p">;</span><span class="w"></span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">TexCoord</span><span class="p">;</span><span class="w"></span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">Debug</span><span class="p">;</span><span class="w"></span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">FragColor</span><span class="p">;</span><span class="w"></span>
 
-  <span class="c1">// FragColor = vec4(Debug, 1);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w"> </span><span class="n">texColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">texture2D</span><span class="p">(</span><span class="n">Tex0</span><span class="p">,</span><span class="w"> </span><span class="n">TexCoord</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">texture2D</span><span class="p">(</span><span class="n">Tex1</span><span class="p">,</span><span class="w"> </span><span class="n">TexCoord</span><span class="p">);</span><span class="w"></span>
 
-  <span class="kt">float</span> <span class="n">intensity</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">LightDir</span><span class="p">,</span> <span class="p">(</span><span class="n">normal</span><span class="p">.</span><span class="n">xyz</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span> <span class="mo">0</span><span class="p">);</span>
-  <span class="kt">vec3</span> <span class="n">color</span> <span class="o">=</span> <span class="kt">vec3</span><span class="p">(</span><span class="n">intensity</span><span class="p">);</span>
-  <span class="n">FragColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-<span class="p">};</span>
-</pre>
+<span class="w">  </span><span class="c1">// FragColor = vec4(Debug, 1);</span><span class="w"></span>
+
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">intensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">LightDir</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">normal</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)),</span><span class="w"> </span><span class="mo">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">intensity</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">FragColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">color</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+
 <p>glTF の シェーダー では、 <code>mat3</code> を fragment shader に送りこんでいた。</p>
 <p><a href="https://github.com/bwasty/gltf-viewer/tree/master/src/shaders">https://github.com/bwasty/gltf-viewer/tree/master/src/shaders</a></p>
 <p>tangent space でライティングするという概念は同じらしい。</p>

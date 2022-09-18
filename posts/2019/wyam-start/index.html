@@ -44,13 +44,15 @@
 更新できなくなっていたので、サイトを作りなおし。
 <a href="https://wyam.io/">wyam</a>を使ってみる。</p>
 <h3>インストール</h3>
-<pre class="code literal-block">$ dotnet tool install -g Wyam.Tool
-</pre>
+<div class="code"><pre class="code literal-block">$ dotnet tool install -g Wyam.Tool
+</pre></div>
+
 <h3>初期化する</h3>
-<pre class="code literal-block">$ mkdir site
+<div class="code"><pre class="code literal-block">$ mkdir site
 $ <span class="nb">cd</span> site
 $ wyam new --recipe blog
-</pre>
+</pre></div>
+
 <ul>
 <li>config.wyam(siteの設定)</li>
 <li>input(記事置き場)</li>
@@ -63,7 +65,7 @@ $ wyam new --recipe blog
 <h4>設定ファイル</h4>
 <p>config.wyam がそれで、C# を Roslyn で処理するらしい。
 おもしろい。</p>
-<pre class="code literal-block">// config.wyam
+<div class="code"><pre class="code literal-block">// config.wyam
 #recipe Blog
 #theme Phantom
 
@@ -73,21 +75,24 @@ Settings[BlogKeys.Title] = "三次元日誌";
 Settings[BlogKeys.Description] = "programming とか";
 
 // Add any pipeline customizations here
-</pre>
+</pre></div>
+
 <p><code>#recipe Blog</code> がパイプライン設定で、 input フォルダの構成と処理を設定している。
 設定ファイルに展開したものを記述することもできるみたい。</p>
 <h4>gitignore</h4>
 <p>https://wyam.io/docs/advanced/what_to_exclude_from_source_control</p>
-<pre class="code literal-block"><span class="c1">#.gitignore</span>
-<span class="na">.vs</span><span class="err">/</span>
-<span class="nf">output</span><span class="err">/</span>
-<span class="nf">config.wyam.hash</span>
-<span class="nf">config.wyam.dll</span>
-<span class="nf">config.wyam.packages.xml</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="c1">#.gitignore</span>
+<span class="na">.vs</span><span class="err">/</span><span class="w"></span>
+<span class="nf">output</span><span class="err">/</span><span class="w"></span>
+<span class="nf">config.wyam.hash</span><span class="w"></span>
+<span class="nf">config.wyam.dll</span><span class="w"></span>
+<span class="nf">config.wyam.packages.xml</span><span class="w"></span>
+</pre></div>
+
 <h3>生成する</h3>
-<pre class="code literal-block">$ wyam
-</pre>
+<div class="code"><pre class="code literal-block">$ wyam
+</pre></div>
+
 <ul>
 <li>output</li>
 <li>index.html</li>
@@ -103,9 +108,10 @@ Settings[BlogKeys.Description] = "programming とか";
 <li>https://wyam.io/recipes/blog/themes/</li>
 </ul>
 <p>コマンドラインに、 <code>--theme THEME_NAME</code> とするか config.wyam に</p>
-<pre class="code literal-block">// config.wyam
+<div class="code"><pre class="code literal-block">// config.wyam
 #theme THEME_NAME
-</pre>
+</pre></div>
+
 <p>とすれば OK。</p>
 <h3>appveyor で GitHub-Pages に展開</h3>
 <p>https://wyam.io/docs/deployment/appveyor</p>
@@ -114,56 +120,57 @@ Settings[BlogKeys.Description] = "programming とか";
 ソースのリポジトリと、html置き場のリポジトリを分けた。</p>
 <p>ソースのリポジトリに AppVeyor を仕掛けて、
 push したときにビルドして、html置き場に push する。</p>
-<pre class="code literal-block"><span class="nt">branches</span><span class="p">:</span>
-  <span class="nt">only</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
+<div class="code"><pre class="code literal-block"><span class="nt">branches</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">only</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">master</span><span class="w"></span>
 
-<span class="nt">environment</span><span class="p">:</span>
-  <span class="nt">access_token</span><span class="p">:</span>
-    <span class="c1"># EDIT the encrypted version of your GitHub access token</span>
-    <span class="c1"># https://www.appveyor.com/docs/deployment/github/</span>
-    <span class="nt">secure</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">E+wmFkBHvRVLnVcg9mIBXP7iTXKIqJyi/DewA+0SEtkpWmtiNFKKhYzD4bs0nw2L</span>
+<span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">access_token</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># EDIT the encrypted version of your GitHub access token</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># https://www.appveyor.com/docs/deployment/github/</span><span class="w"></span>
+<span class="w">    </span><span class="nt">secure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">E+wmFkBHvRVLnVcg9mIBXP7iTXKIqJyi/DewA+0SEtkpWmtiNFKKhYzD4bs0nw2L</span><span class="w"></span>
 
-<span class="nt">install</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mkdir ..\Wyam</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mkdir ..\output</span>
-  <span class="c1"># Fetch the latest version of Wyam </span>
-  <span class="p p-Indicator">-</span> <span class="s">"curl</span><span class="nv"> </span><span class="s">-s</span><span class="nv"> </span><span class="s">https://raw.githubusercontent.com/Wyamio/Wyam/master/RELEASE</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">..\\Wyam\\wyamversion.txt"</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">set /P WYAMVERSION=&lt; ..\Wyam\wyamversion.txt</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo %WYAMVERSION%</span>
-  <span class="c1"># Get and unzip the latest version of Wyam</span>
-  <span class="p p-Indicator">-</span> <span class="nt">ps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Start-FileDownload "https://github.com/Wyamio/Wyam/releases/download/$env:WYAMVERSION/Wyam-$env:WYAMVERSION.zip" -FileName "..\Wyam\Wyam.zip"</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">7z x ..\Wyam\Wyam.zip -o..\Wyam -r</span>
+<span class="nt">install</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mkdir ..\Wyam</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mkdir ..\output</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Fetch the latest version of Wyam </span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"curl</span><span class="nv"> </span><span class="s">-s</span><span class="nv"> </span><span class="s">https://raw.githubusercontent.com/Wyamio/Wyam/master/RELEASE</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">..\\Wyam\\wyamversion.txt"</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">set /P WYAMVERSION=&lt; ..\Wyam\wyamversion.txt</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo %WYAMVERSION%</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Get and unzip the latest version of Wyam</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Start-FileDownload "https://github.com/Wyamio/Wyam/releases/download/$env:WYAMVERSION/Wyam-$env:WYAMVERSION.zip" -FileName "..\Wyam\Wyam.zip"</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7z x ..\Wyam\Wyam.zip -o..\Wyam -r</span><span class="w"></span>
 
-<span class="nt">build_script</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dotnet ..\Wyam\Wyam.dll --output ..\output</span>
+<span class="nt">build_script</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dotnet ..\Wyam\Wyam.dll --output ..\output</span><span class="w"></span>
 
-<span class="nt">on_success</span><span class="p">:</span>
-  <span class="c1"># Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push</span>
-  <span class="c1"># See http://www.appveyor.com/docs/how-to/git-push for more info</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.helper store</span>
-  <span class="c1"># EDIT your Git email and name</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global user.email ousttrue@gmail.com</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global user.name ousttrue</span>
-  <span class="p p-Indicator">-</span> <span class="nt">ps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git checkout gh-pages</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git rm -rf .</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">xcopy ..\output . /E</span>
-  <span class="c1"># EDIT your domain name or remove if not using a custom domain</span>
-  <span class="c1"># - echo wyam.io &gt; CNAME</span>
-  <span class="c1"># EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes</span>
+<span class="nt">on_success</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># See http://www.appveyor.com/docs/how-to/git-push for more info</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git config --global credential.helper store</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># EDIT your Git email and name</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git config --global user.email ousttrue@gmail.com</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git config --global user.name ousttrue</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git checkout gh-pages</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git rm -rf .</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xcopy ..\output . /E</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># EDIT your domain name or remove if not using a custom domain</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># - echo wyam.io &gt; CNAME</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes</span><span class="w"></span>
 
-  <span class="c1"># 送り先(push できるように environment access token をセットしている)</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git remote set-url origin https://github.com/ousttrue/ousttrue.github.io.git</span>
-  <span class="c1"># 空の gh-pages ブランチに変更を追加</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git add -A</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git commit -a -m "Commit from AppVeyor"</span>
-  <span class="c1"># gh-pages ブランチから origin の master に送る(use の GitHubPages を使っているので master ブランチ運用)</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git push -f origin gh-pages:master</span>
-</pre>
+<span class="w">  </span><span class="c1"># 送り先(push できるように environment access token をセットしている)</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git remote set-url origin https://github.com/ousttrue/ousttrue.github.io.git</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># 空の gh-pages ブランチに変更を追加</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git add -A</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git commit -a -m "Commit from AppVeyor"</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># gh-pages ブランチから origin の master に送る(use の GitHubPages を使っているので master ブランチ運用)</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git push -f origin gh-pages:master</span><span class="w"></span>
+</pre></div>
+
 <h3>vscode で編集する</h3>
 <p>watch タスクを作成してバックグランドで <code>input</code> の変更を監視。</p>
-<pre class="code literal-block"><span class="err">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="err">{</span><span class="w"></span>
 <span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="k">go</span><span class="p">.</span><span class="n">microsoft</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">fwlink</span><span class="o">/</span><span class="vm">?</span><span class="n">LinkId</span><span class="o">=</span><span class="mi">733558</span><span class="w"></span>
 <span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">documentation</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">tasks</span><span class="p">.</span><span class="n">json</span><span class="w"> </span><span class="nf">format</span><span class="w"></span>
 <span class="w">    </span><span class="ss">"version"</span><span class="err">:</span><span class="w"> </span><span class="ss">"2.0.0"</span><span class="p">,</span><span class="w"></span>
@@ -181,9 +188,10 @@ push したときにビルドして、html置き場に push する。</p>
 <span class="w">        </span><span class="err">}</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="err">]</span><span class="w"></span>
 <span class="err">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>launch.json を作成して F5 でブラウザを開く。</p>
-<pre class="code literal-block">{
+<div class="code"><pre class="code literal-block">{
     // IntelliSense を使用して利用可能な属性を学べます。
     // 既存の属性の説明をホバーして表示します。
     // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
@@ -198,7 +206,8 @@ push したときにビルドして、html置き場に push する。</p>
         }
     ]
 }
-</pre>
+</pre></div>
+
 <p>自動でリロードがかかるので快適。</p>
 <h3>参考</h3>
 <ul>

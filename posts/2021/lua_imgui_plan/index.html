@@ -88,11 +88,12 @@ Windows で luarocks 機能が動かなかった。<a href="https://luarocks.org
 <p>luarocks が無事に Windows で運用できるようになったので、プロジェクトローカルに必要なライブラリをインストールして、
 スタンドアロンの lua インタープリターを起点にしたアプリ開発ができないか探ってみた。
 lua インタプリタがアプリ組み込みだと dap の運用がしづらい(port 開けて attach とかになる)のでスタンドアロンの lua インタープリターを推す。</p>
-<pre class="code literal-block"># フォルダ構成
+<div class="code"><pre class="code literal-block"># フォルダ構成
 project_root
   + lua(.gitignore) # hererocks でローカルビルドする
   + main.lua
-</pre>
+</pre></div>
+
 <p>これで、 <code>lsp</code> と <code>dap</code> が利用できれば快適になるのではないか。</p>
 <h4>lua の LanguageServer</h4>
 <ul>
@@ -101,7 +102,7 @@ project_root
 </ul>
 <p>がしっかり動き、<code>EmmyLua</code> の型ヒントを活用できることが分かった。</p>
 <p><a href="https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua">https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua</a> に例があって、</p>
-<pre class="code literal-block"><span class="nb">require</span><span class="s1">'lspconfig'</span><span class="p">.</span><span class="n">sumneko_lua</span><span class="p">.</span><span class="n">setup</span> <span class="p">{</span>
+<div class="code"><pre class="code literal-block"><span class="nb">require</span><span class="s1">'lspconfig'</span><span class="p">.</span><span class="n">sumneko_lua</span><span class="p">.</span><span class="n">setup</span> <span class="p">{</span>
   <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Lua</span> <span class="o">=</span> <span class="p">{</span>
       <span class="n">workspace</span> <span class="o">=</span> <span class="p">{</span>
@@ -114,7 +115,8 @@ project_root
     <span class="p">},</span>
   <span class="p">},</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>インテリセンスが効くし、組み込み関数の型ヒントも追加できる。</p>
 <h4>lua の DebugAdapter</h4>
 <p>DebugAdapter も問題なく動いた。
@@ -155,10 +157,11 @@ d3d は lua でやっている人があまりいなかった。</p>
 <h3>imgui の ffi</h3>
 <p><code>cimgui</code> ではなく 素の <code>imgui</code> の luajit ffi できるか実験した。</p>
 <p><a href="https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi">https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi</a></p>
-<pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<div class="code"><pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
 <span class="s">void Test1_Method1(void) asm("_ZN5Test17Method1Ev");</span>
 <span class="s">]]</span>
-</pre>
+</pre></div>
+
 <p>のように mangling に対応すればできそう。</p>
 <h3>libclang による コード生成</h3>
 <p>ということで、 <code>luajit</code> + <code>FFI</code> を中心に <code>imgui</code> ラッパーを作ってレンダラーというか 3D ツールのインフラとなる、

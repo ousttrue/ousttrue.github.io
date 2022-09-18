@@ -89,99 +89,103 @@ lua 埋め込み型の exe が作りやすそう。
 <h2>実装してみる</h2>
 <h3>Extension の activate</h3>
 <p>適当にイベントを登録して</p>
-<pre class="code literal-block">    <span class="err">//</span> <span class="err">package.jso</span><span class="kc">n</span>
-    <span class="nt">"activationEvents"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">"onDebug"</span><span class="p">,</span>
-        <span class="s2">"onDebugInitialConfigurations"</span><span class="p">,</span>
-        <span class="s2">"onDebugDynamicConfigurations"</span><span class="p">,</span>
-        <span class="s2">"onDebugResolve:lua"</span><span class="p">,</span>
-        <span class="s2">"onLanguage:lua"</span>
-    <span class="p">],</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="c1">// package.json</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"activationEvents"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="s2">"onDebug"</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">"onDebugInitialConfigurations"</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">"onDebugDynamicConfigurations"</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">"onDebugResolve:lua"</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">"onLanguage:lua"</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+</pre></div>
+
 <p><code>activate</code> されることを確認</p>
-<pre class="code literal-block"><span class="c1">// src/extension.ts</span>
-<span class="k">export</span> <span class="kd">function</span> <span class="nx">activate</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'activate luada'</span><span class="p">);</span>
-<span class="p">}</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="c1">// src/extension.ts</span><span class="w"></span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">activate</span><span class="p">(</span><span class="nx">context</span><span class="o">:</span><span class="w"> </span><span class="kt">vscode.ExtensionContext</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'activate luada'</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+
 <h3>Launch</h3>
-<pre class="code literal-block">    <span class="nt">"contributes"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">"breakpoints"</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="nt">"language"</span><span class="p">:</span> <span class="s2">"lua"</span>
-            <span class="p">}</span>
-        <span class="p">],</span>
-        <span class="nt">"debuggers"</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"luada"</span><span class="p">,</span>
-                <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"LuaDA"</span><span class="p">,</span>
-                <span class="nt">"languages"</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">"lua"</span>
-                <span class="p">],</span>
-                <span class="err">//</span> <span class="err">lau</span><span class="kc">n</span><span class="err">ch.jso</span><span class="kc">n</span> <span class="err">のテンプレート</span>
-                <span class="nt">"initialConfigurations"</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="p">{</span>
-                        <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"luada"</span><span class="p">,</span>
-                        <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"launch luada"</span><span class="p">,</span>
-                        <span class="nt">"request"</span><span class="p">:</span> <span class="s2">"launch"</span><span class="p">,</span>
-                        <span class="nt">"program"</span><span class="p">:</span> <span class="s2">"${workspaceFolder}/main.lua"</span><span class="p">,</span>
-                        <span class="nt">"args"</span><span class="p">:</span> <span class="p">[]</span>
-                    <span class="p">}</span>
-                <span class="p">],</span>
-                <span class="err">//</span> <span class="err">reques</span><span class="kc">t</span><span class="p">:</span> <span class="err">lau</span><span class="kc">n</span><span class="err">ch</span> <span class="err">に対して可能な</span> <span class="err">proper</span><span class="kc">t</span><span class="err">y</span> <span class="err">の定義</span>
-                <span class="nt">"configurationAttributes"</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="nt">"launch"</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="nt">"properties"</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="nt">"program"</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
-                                <span class="nt">"markdownDescription"</span><span class="p">:</span> <span class="s2">"Lua program to debug - set this to the path of the script"</span><span class="p">,</span>
-                                <span class="nt">"default"</span><span class="p">:</span> <span class="s2">"${workspaceFolder}/main.lua"</span>
-                            <span class="p">},</span>                            
-                            <span class="nt">"arg"</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"array"</span><span class="p">,</span>
-                                <span class="nt">"markdownDescription"</span><span class="p">:</span> <span class="s2">"Command line argument, arg[1] ... arg[n]"</span><span class="p">,</span>
-                                <span class="nt">"default"</span><span class="p">:</span> <span class="p">[]</span>
-                            <span class="p">}</span>                            
-                        <span class="p">}</span>
-                    <span class="p">}</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">},</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="nt">"contributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">"breakpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lua"</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">"debuggers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"luada"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LuaDA"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">"languages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">"lua"</span><span class="w"></span>
+<span class="w">                </span><span class="p">],</span><span class="w"></span>
+<span class="w">                </span><span class="c1">// launch.json のテンプレート</span><span class="w"></span>
+<span class="w">                </span><span class="nt">"initialConfigurations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"luada"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch luada"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">"program"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceFolder}/main.lua"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="p">],</span><span class="w"></span>
+<span class="w">                </span><span class="c1">// request: launch に対して可能な property の定義</span><span class="w"></span>
+<span class="w">                </span><span class="nt">"configurationAttributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                    </span><span class="nt">"launch"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                        </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                            </span><span class="nt">"program"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                                </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="nt">"markdownDescription"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Lua program to debug - set this to the path of the script"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceFolder}/main.lua"</span><span class="w"></span>
+<span class="w">                            </span><span class="p">},</span><span class="w">                            </span>
+<span class="w">                            </span><span class="nt">"arg"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                                </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="nt">"markdownDescription"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Command line argument, arg[1] ... arg[n]"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"></span>
+<span class="w">                            </span><span class="p">}</span><span class="w">                            </span>
+<span class="w">                        </span><span class="p">}</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+</pre></div>
+
 <ul>
 <li>activate で DebugAdapterDescriptorFactory を登録</li>
 <li>launch で createDebugAdapterDescriptor を実行する</li>
 </ul>
 <p><code>src/extensions.ts</code></p>
-<pre class="code literal-block"><span class="k">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">vscode</span> <span class="kr">from</span> <span class="s1">'vscode'</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">vscode</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vscode'</span><span class="p">;</span><span class="w"></span>
 
 
-<span class="kd">function</span> <span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span><span class="o">:</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptorFactory</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="nx">createDebugAdapterDescriptor</span><span class="p">(</span>
-            <span class="nx">session</span>: <span class="kt">vscode.DebugSession</span><span class="p">,</span>
-            <span class="nx">executable</span>: <span class="kt">vscode.DebugAdapterExecutable</span> <span class="o">|</span> <span class="kc">undefined</span>
-        <span class="p">)</span><span class="o">:</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">ProviderResult</span><span class="o">&lt;</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptor</span><span class="o">&gt;</span> <span class="p">{</span>
-            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'launch luada'</span><span class="p">);</span>
-            <span class="kd">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">"exe"</span><span class="p">;</span>
-            <span class="kd">const</span> <span class="nx">runtimeArgs</span>: <span class="kt">string</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
-            <span class="c1">//</span>
-            <span class="c1">// デバッグアダプターを起動する</span>
-            <span class="c1">// 起動したアダプターと vscode は、標準入出力で JSON-RPC により DebugAdapterProtocol で通信する。</span>
-            <span class="c1">//</span>
-            <span class="k">return</span> <span class="ow">new</span> <span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterExecutable</span><span class="p">(</span><span class="nx">runtime</span><span class="p">,</span> <span class="nx">runtimeArgs</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
-<span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span><span class="o">:</span><span class="w"> </span><span class="kt">vscode.ExtensionContext</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptorFactory</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nx">createDebugAdapterDescriptor</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="nx">session</span><span class="o">:</span><span class="w"> </span><span class="kt">vscode.DebugSession</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nx">executable</span><span class="o">:</span><span class="w"> </span><span class="kt">vscode.DebugAdapterExecutable</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"></span>
+<span class="w">        </span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">vscode</span><span class="p">.</span><span class="nx">ProviderResult</span><span class="o">&lt;</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterDescriptor</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'launch luada'</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="kd">const</span><span class="w"> </span><span class="nx">runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"exe"</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="kd">const</span><span class="w"> </span><span class="nx">runtimeArgs</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span><span class="w"></span>
+<span class="w">            </span><span class="c1">//</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// デバッグアダプターを起動する</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// 起動したアダプターと vscode は、標準入出力で JSON-RPC により DebugAdapterProtocol で通信する。</span><span class="w"></span>
+<span class="w">            </span><span class="c1">//</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">vscode</span><span class="p">.</span><span class="nx">DebugAdapterExecutable</span><span class="p">(</span><span class="nx">runtime</span><span class="p">,</span><span class="w"> </span><span class="nx">runtimeArgs</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">export</span> <span class="kd">function</span> <span class="nx">activate</span><span class="p">(</span><span class="nx">context</span>: <span class="kt">vscode.ExtensionContext</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'activate luada'</span><span class="p">);</span>
-    <span class="nx">context</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">registerDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="s1">'luada'</span><span class="p">,</span> <span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span><span class="p">)));</span>
-<span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">activate</span><span class="p">(</span><span class="nx">context</span><span class="o">:</span><span class="w"> </span><span class="kt">vscode.ExtensionContext</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'activate luada'</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nx">context</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">vscode</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">registerDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="s1">'luada'</span><span class="p">,</span><span class="w"> </span><span class="nx">createDebugAdapterDescriptorFactory</span><span class="p">(</span><span class="nx">context</span><span class="p">)));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">export</span> <span class="kd">function</span> <span class="nx">deactivate</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
-</pre>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">deactivate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+
 <h3>Debug Adapter の実装</h3>
 <p><a href="https://microsoft.github.io/debug-adapter-protocol/specification">https://microsoft.github.io/debug-adapter-protocol/specification</a></p>
 <p>を見て粛々と実装する。</p>
@@ -197,14 +201,16 @@ lua 埋め込み型の exe が作りやすそう。
 <p><a href="https://code.visualstudio.com/api/working-with-extensions/publishing-extension">https://code.visualstudio.com/api/working-with-extensions/publishing-extension</a></p>
 <p>vsce を使う。</p>
 <p>package.json に追加。</p>
-<pre class="code literal-block">    <span class="nt">"publisher"</span><span class="p">:</span> <span class="s2">"ousttrue"</span><span class="p">,</span>
-    <span class="nt">"repository"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"git"</span><span class="p">,</span>
-        <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://github.com/ousttrue/luada.git"</span>
-    <span class="p">},</span>
-</pre>
-<pre class="code literal-block">$ npx vsce package
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="nt">"publisher"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ousttrue"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"repository"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"git"</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://github.com/ousttrue/luada.git"</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$ npx vsce package
+</pre></div>
+
 <h2>参考</h2>
 <h3><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></h3>
 <ul>

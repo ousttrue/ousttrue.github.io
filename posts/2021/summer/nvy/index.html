@@ -63,7 +63,7 @@
 <li>RPC を <code>c++20</code> 化 (co_await)</li>
 </ul>
 <p>で、最初の nvim 初期化を</p>
-<pre class="code literal-block"><span class="k">auto</span><span class="w"> </span><span class="n">api_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">"nvim_get_api_info"</span><span class="p">);</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">auto</span><span class="w"> </span><span class="n">api_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">"nvim_get_api_info"</span><span class="p">);</span><span class="w"></span>
 <span class="n">rpc</span><span class="p">.</span><span class="n">notity</span><span class="p">(</span><span class="s">"nvim_set_var"</span><span class="p">,</span><span class="w"> </span><span class="s">"nvy"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
 <span class="k">auto</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="s">"nvim_eval"</span><span class="p">,</span><span class="s">"stdpath('config')"</span><span class="p">);</span><span class="w"></span>
 
@@ -72,7 +72,8 @@
 <span class="n">rpc</span><span class="p">.</span><span class="n">notify</span><span class="p">(</span><span class="s">"nvim_ui_attach"</span><span class="p">);</span><span class="w"></span>
 
 <span class="n">rpc</span><span class="p">.</span><span class="n">on_message</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dispatcher</span><span class="p">);</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>のように書けるようにして整理する。</p>
 <h2>20210829</h2>
 <ul>
@@ -85,19 +86,21 @@
 </ul>
 <p>を実装できた。
 特定の VK が来たときに nvim のキーに変換するテーブルがあるので追加した。</p>
-<pre class="code literal-block"><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nl">VK_OEM_2</span><span class="p">:</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="no">VK_OEM_2</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">""</span><span class="p">;</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>[2,"nvim_input",["&lt;C-/&gt;"]]</code> が送信される。</p>
 <h3>修正が必要</h3>
 <p>非control時に</p>
 <p><code>[2,"nvim_input",[""]]</code> が送信される。</p>
-<pre class="code literal-block"><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nl">VK_OEM_2</span><span class="p">:</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="no">VK_OEM_2</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GetKeyState</span><span class="p">(</span><span class="n">VK_CONTROL</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="c1">// C-/</span>
 <span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">"/"</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>なるほど。</p>
 <p><a href="@/posts/2021/summer/nvimtexture.md">NvimTexture</a> へ続く</p>
 <h2>20210829  太字がずれる？</h2>

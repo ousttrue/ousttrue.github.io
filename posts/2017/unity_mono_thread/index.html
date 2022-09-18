@@ -61,40 +61,41 @@ using UnityEngine;</p>
 {
     [DllImport("mono")]
     static extern IntPtr mono_thread_current();</p>
-<pre class="code literal-block"><span class="k">[DllImport("mono")]</span>
-<span class="na">static extern IntPtr mono_thread_detach(IntPtr p);</span>
+<div class="code"><pre class="code literal-block"><span class="k">[DllImport("mono")]</span><span class="w"></span>
+<span class="na">static extern IntPtr mono_thread_detach(IntPtr p);</span><span class="w"></span>
 
-<span class="na">public int m_count;</span>
-<span class="na">public IntPtr m_renderThread;</span>
+<span class="na">public int m_count;</span><span class="w"></span>
+<span class="na">public IntPtr m_renderThread;</span><span class="w"></span>
 
-<span class="na">void OnRender(int eventID)</span>
-<span class="na">{</span>
-    <span class="na">m_count++;</span>
-    <span class="na">m_renderThread</span> <span class="o">=</span> <span class="s">mono_thread_current();</span>
-<span class="na">}</span>
+<span class="na">void OnRender(int eventID)</span><span class="w"></span>
+<span class="na">{</span><span class="w"></span>
+<span class="w">    </span><span class="na">m_count++;</span><span class="w"></span>
+<span class="w">    </span><span class="na">m_renderThread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mono_thread_current();</span><span class="w"></span>
+<span class="na">}</span><span class="w"></span>
 
-<span class="na">private void OnApplicationQuit()</span>
-<span class="na">{</span>
-    <span class="na">Debug.Log(m_count);</span>
+<span class="na">private void OnApplicationQuit()</span><span class="w"></span>
+<span class="na">{</span><span class="w"></span>
+<span class="w">    </span><span class="na">Debug.Log(m_count);</span><span class="w"></span>
 
-    <span class="na">if (m_renderThread !</span><span class="o">=</span> <span class="s">IntPtr.Zero)</span>
-    <span class="na">{</span>
-        <span class="na">Debug.LogFormat("detach thread: {0}", m_renderThread);</span>
-        <span class="na">mono_thread_detach(m_renderThread);</span>
-        <span class="na">m_renderThread</span> <span class="o">=</span> <span class="s">IntPtr.Zero;</span>
-    <span class="na">}</span>
-<span class="na">}</span>
+<span class="w">    </span><span class="na">if (m_renderThread !</span><span class="o">=</span><span class="w"> </span><span class="s">IntPtr.Zero)</span><span class="w"></span>
+<span class="w">    </span><span class="na">{</span><span class="w"></span>
+<span class="w">        </span><span class="na">Debug.LogFormat("detach thread: {0}", m_renderThread);</span><span class="w"></span>
+<span class="w">        </span><span class="na">mono_thread_detach(m_renderThread);</span><span class="w"></span>
+<span class="w">        </span><span class="na">m_renderThread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">IntPtr.Zero;</span><span class="w"></span>
+<span class="w">    </span><span class="na">}</span><span class="w"></span>
+<span class="na">}</span><span class="w"></span>
 
-<span class="na">delegate void OnRenderFunc(int eventID);</span>
-<span class="na">OnRenderFunc m_callback;</span>
+<span class="na">delegate void OnRenderFunc(int eventID);</span><span class="w"></span>
+<span class="na">OnRenderFunc m_callback;</span><span class="w"></span>
 
-<span class="na">void Update()</span>
-<span class="na">{</span>
-    <span class="na">m_callback</span> <span class="o">=</span> <span class="s">new OnRenderFunc(OnRender);</span>
-    <span class="na">var p</span> <span class="o">=</span> <span class="s">Marshal.GetFunctionPointerForDelegate(m_callback);</span>
-    <span class="na">GL.IssuePluginEvent(p, 0);</span>
-<span class="na">}</span>
-</pre>
+<span class="na">void Update()</span><span class="w"></span>
+<span class="na">{</span><span class="w"></span>
+<span class="w">    </span><span class="na">m_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">new OnRenderFunc(OnRender);</span><span class="w"></span>
+<span class="w">    </span><span class="na">var p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Marshal.GetFunctionPointerForDelegate(m_callback);</span><span class="w"></span>
+<span class="w">    </span><span class="na">GL.IssuePluginEvent(p, 0);</span><span class="w"></span>
+<span class="na">}</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>Collecting from unknown threadと怒られる・・・
 ならば、
@@ -102,34 +103,35 @@ public class CallbackOnRenderThread : MonoBehaviour
 {
     [DllImport("mono")]
     static extern IntPtr mono_thread_current();</p>
-<pre class="code literal-block"><span class="k">[DllImport("mono")]</span>
-<span class="na">static extern IntPtr mono_thread_detach(IntPtr p);</span>
+<div class="code"><pre class="code literal-block"><span class="k">[DllImport("mono")]</span><span class="w"></span>
+<span class="na">static extern IntPtr mono_thread_detach(IntPtr p);</span><span class="w"></span>
 
-<span class="na">public int m_count;</span>
-<span class="na">//public IntPtr m_renderThread;</span>
+<span class="na">public int m_count;</span><span class="w"></span>
+<span class="na">//public IntPtr m_renderThread;</span><span class="w"></span>
 
-<span class="na">void OnRender(int eventID)</span>
-<span class="na">{</span>
-    <span class="na">try</span>
-    <span class="na">{</span>
-        <span class="na">m_count++;</span>
-    <span class="na">}</span>
-    <span class="na">finally</span>
-    <span class="na">{</span>
-        <span class="na">mono_thread_detach(mono_thread_current());</span>
-    <span class="na">}</span>
-<span class="na">}</span>
+<span class="na">void OnRender(int eventID)</span><span class="w"></span>
+<span class="na">{</span><span class="w"></span>
+<span class="w">    </span><span class="na">try</span><span class="w"></span>
+<span class="w">    </span><span class="na">{</span><span class="w"></span>
+<span class="w">        </span><span class="na">m_count++;</span><span class="w"></span>
+<span class="w">    </span><span class="na">}</span><span class="w"></span>
+<span class="w">    </span><span class="na">finally</span><span class="w"></span>
+<span class="w">    </span><span class="na">{</span><span class="w"></span>
+<span class="w">        </span><span class="na">mono_thread_detach(mono_thread_current());</span><span class="w"></span>
+<span class="w">    </span><span class="na">}</span><span class="w"></span>
+<span class="na">}</span><span class="w"></span>
 
-<span class="na">delegate void OnRenderFunc(int eventID);</span>
-<span class="na">OnRenderFunc m_callback;</span>
+<span class="na">delegate void OnRenderFunc(int eventID);</span><span class="w"></span>
+<span class="na">OnRenderFunc m_callback;</span><span class="w"></span>
 
-<span class="na">void Update()</span>
-<span class="na">{</span>
-    <span class="na">m_callback</span> <span class="o">=</span> <span class="s">new OnRenderFunc(OnRender);</span>
-    <span class="na">var p</span> <span class="o">=</span> <span class="s">Marshal.GetFunctionPointerForDelegate(m_callback);</span>
-    <span class="na">GL.IssuePluginEvent(p, 0);</span>
-<span class="na">}</span>
-</pre>
+<span class="na">void Update()</span><span class="w"></span>
+<span class="na">{</span><span class="w"></span>
+<span class="w">    </span><span class="na">m_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">new OnRenderFunc(OnRender);</span><span class="w"></span>
+<span class="w">    </span><span class="na">var p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Marshal.GetFunctionPointerForDelegate(m_callback);</span><span class="w"></span>
+<span class="w">    </span><span class="na">GL.IssuePluginEvent(p, 0);</span><span class="w"></span>
+<span class="na">}</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>できちゃった。
 やったぜ。</p>

@@ -45,7 +45,7 @@
 <p>ComPtr
 何はともあれComPtrを取り入れる。
 Before</p>
-<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Msxml6.h&gt;</span><span class="cp"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Msxml6.h&gt;</span><span class="cp"></span>
 <span class="cp">#pragma comment(lib, "msxml6.lib")</span>
 
 <span class="cp">#define SAFERELEASE(p){ if(p){p-&gt;Release(); p=nullptr;}}</span>
@@ -72,17 +72,18 @@ Before</p>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>SAFERELEASEとgoto</h3>
 <p>ComPtrを取り入れてSAFERELEASEとgotoを除去しよう。
 After
 RAIIを取り入れて積極的にEarly Outできる(後始末が自動になったので)。</p>
-<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Msxml6.h&gt;</span><span class="cp"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Msxml6.h&gt;</span><span class="cp"></span>
 <span class="cp">#pragma comment(lib, "msxml6.lib")</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wrl/client.h&gt;</span><span class="cp"></span>
 
 
-<span class="k">class</span> <span class="nc">ComInitializer</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComInitializer</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="k">public</span><span class="o">:</span><span class="w"></span>
 <span class="w">    </span><span class="n">ComInitializer</span><span class="p">()</span><span class="w"></span>
@@ -110,12 +111,13 @@ RAIIを取り入れて積極的にEarly Outできる(後始末が自動になっ
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>IUnknown実装とComPtr初期化</h3>
 <p>Callbackの定義等で自らComオブジェクトを定義する場合がある。
 IXMLHTTPRequest2Callbackを実装する例。
 Before</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">CCallback</span><span class="w"> </span><span class="o">:</span><span class="k">public</span><span class="w"> </span><span class="n">IXMLHTTPRequest2Callback</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">CCallback</span><span class="w"> </span><span class="o">:</span><span class="k">public</span><span class="w"> </span><span class="n">IXMLHTTPRequest2Callback</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">ULONG</span><span class="w"> </span><span class="n">m_cRef</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
 
@@ -209,24 +211,27 @@ Before</p>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">E_NOTIMPL</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>IUnknownの実装(AddRef, Release, QueryInterface)が定型コードである</p>
 <p>newしたときにリファレンスカウントが1であること、AddRef, Releaseを正しく実装する
 QueryInterfaceを正しく実装する(あとでインタフェースを増減させたときに更新を忘れたりする)</p>
 <p>ComPtrの初期化が不穏</p>
-<pre class="code literal-block"><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pCallback</span><span class="p">;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pCallback</span><span class="p">;</span><span class="w"></span>
 <span class="c1">// RefCount=1のインスタンスを内部ポインタ(&amp;演算子)に渡す</span>
 <span class="o">*</span><span class="p">((</span><span class="n">CCallback</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">pCallback</span><span class="p">)</span><span class="o">=</span><span class="k">new</span><span class="w"> </span><span class="n">CCallback</span><span class="p">();</span><span class="w"> </span>
-</pre>
+</pre></div>
+
 <p>または、</p>
-<pre class="code literal-block"><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pCallback</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">CCallback</span><span class="p">);</span><span class="w"> </span><span class="c1">// 1+1はRefCount=2</span>
+<div class="code"><pre class="code literal-block"><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pCallback</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">CCallback</span><span class="p">);</span><span class="w"> </span><span class="c1">// 1+1はRefCount=2</span>
 <span class="n">pCallback</span><span class="p">.</span><span class="n">Get</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Release</span><span class="p">();</span><span class="w"> </span><span class="c1">// 1に減らす</span>
-</pre>
+</pre></div>
+
 <p>のようなあからさまに不穏なコードを書かなければならない。
 間違いの元である。
 After</p>
-<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wrl/implements.h&gt;</span><span class="cp"></span>
-<span class="k">class</span> <span class="nc">CCallback</span><span class="w"> </span><span class="o">:</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wrl/implements.h&gt;</span><span class="cp"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CCallback</span><span class="w"> </span><span class="o">:</span><span class="w"></span>
 <span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">RuntimeClass</span><span class="o">&lt;</span><span class="w"></span>
 <span class="w">    </span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">RuntimeClassFlags</span><span class="o">&lt;</span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ClassicCom</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">IXMLHTTPRequest2Callback</span><span class="o">&gt;</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -242,17 +247,20 @@ After</p>
 <span class="w">    </span><span class="c1">// IXMLHTTPRequest2Callback</span>
 <span class="w">    </span><span class="c1">// 省略</span>
 <span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>とすることでIUnknownの実装をWRL::RuntimeClassに任せることができる。
 また、newによる初期化を禁止されるので、newではなくWRL::Makeを使う。</p>
-<pre class="code literal-block">error C2248: 'Microsoft::WRL::Details::DontUseNewUseMake::operator new': private メンバー (クラス 'Microsoft::WRL::Details::DontUseNewUseMake' で宣言されている) にアクセスできません。
-</pre>
-<pre class="code literal-block"><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pCallback</span><span class="o">=</span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">Make</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block">error C2248: 'Microsoft::WRL::Details::DontUseNewUseMake::operator new': private メンバー (クラス 'Microsoft::WRL::Details::DontUseNewUseMake' で宣言されている) にアクセスできません。
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ComPtr</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pCallback</span><span class="o">=</span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">Make</span><span class="o">&lt;</span><span class="n">CCallback</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+
 <h3>MakeAndInitialize 初期化メソッド</h3>
 <p>Makeよりこっちの方がCom風。
 RuntimeClassInitializeという名前のメンバ関数で初期化する。失敗した場合はS_OK以外を返す。</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">CCallback</span><span class="w"> </span><span class="o">:</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">CCallback</span><span class="w"> </span><span class="o">:</span><span class="w"></span>
 <span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">RuntimeClass</span><span class="o">&lt;</span><span class="w"></span>
 <span class="w">    </span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">RuntimeClassFlags</span><span class="o">&lt;</span><span class="n">Microsoft</span><span class="o">::</span><span class="n">WRL</span><span class="o">::</span><span class="n">ClassicCom</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">IXMLHTTPRequest2Callback</span><span class="o">&gt;</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -270,10 +278,11 @@ RuntimeClassInitializeという名前のメンバ関数で初期化する。失�
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>MakeAndInitialize 初期化メソッド(引数)
 9つまでいける。</p>
-<pre class="code literal-block"><span class="w">    </span><span class="n">STDMETHODIMP</span><span class="w"> </span><span class="nf">RuntimeClassInitialize</span><span class="p">(</span><span class="n">DWORD</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="n">STDMETHODIMP</span><span class="w"> </span><span class="nf">RuntimeClassInitialize</span><span class="p">(</span><span class="n">DWORD</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">S_OK</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
@@ -284,7 +293,7 @@ RuntimeClassInitializeという名前のメンバ関数で初期化する。失�
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
 
 <hr>
 <ul class="pager hidden-print">

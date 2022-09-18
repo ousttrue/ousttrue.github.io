@@ -46,26 +46,31 @@
 </ul>
 <p>わいのやりたいことは実現不可能なのだな。
 packageの内部でちょっとしたテストをするコードを、</p>
-<pre class="code literal-block"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+<div class="code"><pre class="code literal-block"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">sample</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>という風に書いて実行しようとしていたのだが、
 同階層のファイルを、</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">my_module</span>
-</pre>
-<pre class="code literal-block"><span class="ne">ImportError</span><span class="p">:</span> <span class="n">attempted</span> <span class="n">relative</span> <span class="kn">import</span> <span class="nn">with</span> <span class="n">no</span> <span class="n">known</span> <span class="n">parent</span> <span class="n">package</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">my_module</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="ne">ImportError</span><span class="p">:</span> <span class="n">attempted</span> <span class="n">relative</span> <span class="kn">import</span> <span class="nn">with</span> <span class="n">no</span> <span class="n">known</span> <span class="n">parent</span> <span class="n">package</span>
+</pre></div>
+
 <p>で阻まれてしまう。
 エントリポイントが、</p>
-<pre class="code literal-block">__package__ == None
+<div class="code"><pre class="code literal-block">__package__ == None
 __name__ == '__main__'
-</pre>
+</pre></div>
+
 <p>となるので、<code>ImportError</code> となるのである。
 こんちくしょう。</p>
 <h4>無理やり誤魔化すなら・・・</h4>
 <p>もう一つ外のソースから <code>import</code> したかのように偽装する。</p>
-<pre class="code literal-block"><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s1">'import my_package; my_package.sample()'</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s1">'import my_package; my_package.sample()'</span>
+</pre></div>
+
 <p>💩過ぎる。
 ライブラリにユーティリティが付属している場合にめちゃくちゃ作りづらい。
 前からPytnonのもっとも💩なところだと思っていた。
@@ -76,7 +81,7 @@ import したときに <code>__package__</code> が <code>None</code> 以外に�
 <h4>エントリポイントは <code>__package__ = None</code>
 </h4>
 <p>以下のファイル構成で実験してみた。</p>
-<pre class="code literal-block"><span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod</span>
+<div class="code"><pre class="code literal-block"><span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod</span>
 <span class="n">mod</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod2</span>
 <span class="n">mod2</span><span class="o">.</span><span class="n">py</span> <span class="c1"># import mod3</span>
 <span class="n">mod3</span>
@@ -87,7 +92,8 @@ import したときに <code>__package__</code> が <code>None</code> 以外に�
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">" in "</span><span class="si">{</span><span class="n">__package__</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
 
 <span class="n">python</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="n">として実行</span>
-</pre>
+</pre></div>
+
 <p><code>__package__</code> が、</p>
 <ul>
 <li>main.py <strong>packag</strong> = None</li>
@@ -103,8 +109,9 @@ import したときに <code>__package__</code> が <code>None</code> 以外に�
 </ul>
 <p>のみが <code>from . import mod4</code> 等の相対インポートが可能だった。
 他は、</p>
-<pre class="code literal-block"><span class="ne">ImportError</span><span class="p">:</span> <span class="n">attempted</span> <span class="n">relative</span> <span class="kn">import</span> <span class="nn">with</span> <span class="n">no</span> <span class="n">known</span> <span class="n">parent</span> <span class="n">package</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="ne">ImportError</span><span class="p">:</span> <span class="n">attempted</span> <span class="n">relative</span> <span class="kn">import</span> <span class="nn">with</span> <span class="n">no</span> <span class="n">known</span> <span class="n">parent</span> <span class="n">package</span>
+</pre></div>
+
 <p>が出る。
 つまり、<code>__packag__</code> が None(エントリポイント) もしくは ""(エントリポイントと同じ階層) であると相対インポートができない。</p>
 <p><code>python mod3/__init__.py</code> とすると、</p>

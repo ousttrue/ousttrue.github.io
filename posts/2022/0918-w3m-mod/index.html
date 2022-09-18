@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Nikola (getnikola.com)">
+<meta name="viewport" content="width=device-width">
+<script src="../../../assets/js/all-nocdn.js"></script><title>w3m改造に再突入 | 三次元日誌</title>
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1 id="brand">
+        <a href="../../../" title="三次元日誌" rel="home">
+            <span id="blog-title">三次元日誌</span>
+        </a>
+    </h1>
+
+    <nav id="menu"><ul>
+<li><a href="../../../archive.html">Archives</a></li>
+<li><a href="../../../categories/index.html">Tags</a></li>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+<li><a href="../../../about">About</a></li>
+<li><a href="../../../books">MemoBooks</a></li>
+
+            
+            
+            
+        </ul></nav><hr>
+<main id="content"><h1 class="p-name entry-title" itemprop="headline name">
+    <h1 class="p-name entry-title" itemprop="headline name">
+    <a href="." class="u-url">w3m改造に再突入
+    </a>
+</h1>
+<ul itemprop="keywords" class="tags">
+<li>
+        <time datetime="2022-09-18T00:00:00+09:00" title="2022-09-18">2022-09-18</time>
+</li>
+    <li><a class="tag p-category" href="../../../categories/w3m/" rel="tag">w3m</a></li>
+</ul>
+</h1>
+
+<h2>w3m改造に再突入</h2>
+<p>なんとなく最初からやり直し。</p>
+<h3>マクロカッター</h3>
+<p>今回は、 <code>python</code> でマクロカッターを作って前処理してみた。</p>
+<div class="code"><pre class="code literal-block"><span class="cp">#ifdef USE_UNICODE</span>
+<span class="c1">// hogehoge</span>
+<span class="cp">#endif</span>
+</pre></div>
+
+<p>みたいな <code>#ifdef</code> 事前に解決しえカットしていくツールである。
+めんどくさいので <code>if defined(HOGE)</code> などは実装していない。
+<code>true</code>, <code>false</code>, <code>none</code> の3値で判断して true であれば <code>#if</code> を false であれば <code>#if</code> ブロックをコードごと削除し、<code>none</code> であれば保持するというロジック。
+わりとうまくいって、コードがかなり簡単になった。</p>
+<h3>いつも通り C++ 化</h3>
+<p>C++ 化しないとCの暗黙の型変換が緩すぎてコンパイルエラー追うのが難しくなるので、
+次の一手はこれ。</p>
+<p><code>typdef struct Some {} Some;</code> を <code>struct Some;</code> に書き換える。
+これでストレスをかなり低減できる。</p>
+<h3>fm.h の分解</h3>
+<ul>
+<li>
+<code>struct</code> 毎にヘッダを分ける。</li>
+<li>
+<code>global</code> 変数を散らす</li>
+<li>
+<code>const char*</code> との戦い。順次</li>
+</ul>
+<h3>メインループを libuv にしてみる</h3>
+<p>あっさりできてしまった。</p>
+<p><code>tty input</code>, <code>resize signal</code> で <code>idle</code> のときに描画などという方針でよさそう。
+raw モード切り替えなども <code>libuv</code> 移行できそう。
+入力ストリームを <code>libuv</code> に乗せられれば、<code>tab</code> を並行動作できるはず。</p>
+<h3>TODO: vt100 分離</h3>
+<h3>TODO: logger 導入</h3>
+<h3>TODO: lua 導入</h3>
+<p>DEFUN を lua で記述したい。
+rc も？</p>
+<h3>TODO: libgc やめる</h3>
+<h3>TODO: zig に移植</h3>
+<p><code>zig cc</code> でビルドはできた。
+じゃなくて、ソースを <code>zig</code> にしたい。</p>
+<h3>TODO</h3>
+<p>Windows ネイティブで動くようにしたい。
+<code>libuv</code> + <code>conpty</code> できそうな気がするのだけど、まだまだ。</p>
+
+<hr>
+<ul class="pager hidden-print">
+<li class="previous">
+        <a href="../0910-zig3/" rel="prev" title="zig その3">
+            zig その3 👈
+        </a>
+    </li>
+</ul></main><footer id="footer"><p>
+            Powered by
+            <a href="https://getnikola.com" rel="nofollow">Nikola</a>
+        </p>
+    </footer>
+</body>
+</html>

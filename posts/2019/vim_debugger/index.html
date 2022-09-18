@@ -88,10 +88,11 @@ kaoriya 版の Vim を使うなどしてみたがよくわからず。</p>
 <blockquote>
 <p>The "deep understanding of a language" is surfaced by the Language Server Protocol (LSP) and the "debugging support" by the Debug Adapter Protocol (DAP).</p>
 </blockquote>
-<pre class="code literal-block">editor &lt;=&gt; adapter &lt;=&gt; gdb
+<div class="code"><pre class="code literal-block">editor &lt;=&gt; adapter &lt;=&gt; gdb
               ||
               ++=====&gt; pdb
-</pre>
+</pre></div>
+
 <p>adapterでラップして同じに見えるようにする。</p>
 <p>adapterの起動設定は、 <code>.vscode/launch.json</code> にというわけか。</p>
 <blockquote>
@@ -174,25 +175,28 @@ Unity版のMonoにアタッチできるということかしら。</p>
 <p>を実行することで、 <code>VSCode</code> の <code>extension</code> を <code>download</code> する。
 <code>extension</code> に、 <code>DAP</code> が含まれているのでこれを使う。</p>
 <p><code>autoload/vimspector.vim</code></p>
-<pre class="code literal-block"><span class="k">function</span><span class="p">!</span> vimspector#Launch<span class="p">()</span> abort
+<div class="code"><pre class="code literal-block"><span class="k">function</span><span class="p">!</span> vimspector#Launch<span class="p">()</span> abort
   <span class="k">py3</span> _vimspector_session.Start<span class="p">()</span>
 <span class="k">endfunction</span>
-</pre>
+</pre></div>
+
 <p><code>python3/vimspector/debug_session.py</code></p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">DebugSession</span><span class="p">:</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">DebugSession</span><span class="p">:</span>
   <span class="k">def</span> <span class="nf">Start</span><span class="p">():</span>
     <span class="k">pass</span>
-</pre>
+</pre></div>
+
 <p><code>vim.bindeval</code> を使っているので、 <code>vim8</code> 専用。
 <code>nvim</code> では回避する必要がある。</p>
 <p><code>.vimspector.json</code> </p>
-<pre class="code literal-block"><span class="p">{</span>
-    <span class="nt">"adapters"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">},</span>
-    <span class="nt">"configurations"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"adapters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"configurations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+
 <p>の <code>configurations</code> からデバッグセッションの起動方法を取得して、
 デバッグアダプターを <code>vim</code> の <code>job</code> か <code>channel</code> 経由で起動する。
 <code>configurations</code> が <code>.vscode/launch.json</code> に相当するようだ。
@@ -204,9 +208,10 @@ Unity版のMonoにアタッチできるということかしら。</p>
 <p><code>.vimspector.json</code> に書いてあるのとバージョンが違う。
 <code>file not found</code> か。</p>
 <p><code>path</code> をなおしたら動いた😃</p>
-<pre class="code literal-block">-          "$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js"
+<div class="code"><pre class="code literal-block">-          "$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js"
 +          "$HOME/.vscode/extensions/ms-python.python-2019.4.11987/out/client/debugger/debugAdapter/Main.js"
-</pre>
+</pre></div>
+
 <p><code>neovim</code> の <code>rplugin</code> での構成を考えてみようか。</p>
 <h2>python3 で Adapter を起動してみる</h2>
 <p><code>AdapterAdapter</code> というか <code>AdapterBridge</code> という感じになりそうだけど、

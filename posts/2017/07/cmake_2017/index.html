@@ -48,7 +48,7 @@ vcpkgを準備</p>
 <ul>
 <li>https://github.com/Microsoft/vcpkg</li>
 </ul>
-<pre class="code literal-block">&gt; git clone https://github.com/Microsoft/vcpkg.git
+<div class="code"><pre class="code literal-block">&gt; git clone https://github.com/Microsoft/vcpkg.git
 &gt; <span class="nb">cd</span> vcpkg
 vcpkg&gt; .<span class="se">\b</span>ootstrap-vcpkg.bat
 
@@ -58,7 +58,8 @@ vcpkg&gt; .<span class="se">\v</span>cpkg.exe install opencv:x64-windows
 vcpkg/installed/x64-windowsにinclude, lib, bin等がインストールされる。
 vcpkgで64bit版のfreeglutをインストール
 vcpkg&gt; .<span class="se">\v</span>cpkg.exe install freeglut:x64-windows
-</pre>
+</pre></div>
+
 <p>arucoのソースを入手
 OpenCVのモジュール</p>
 <p>http://docs.opencv.org/trunk/d9/d6d/tutorial_table_of_content_aruco.html</p>
@@ -68,12 +69,13 @@ https://sourceforge.net/projects/aruco/files/</p>
 <p>aruco-2.0.19.zipを手に入れた。
 とりあえずビルドしてみる
 vcpkgはd:/vcpkgにインストールされている。</p>
-<pre class="code literal-block">aruco-2.0.19&gt; mkdir build
+<div class="code"><pre class="code literal-block">aruco-2.0.19&gt; mkdir build
 aruco-2.0.19/build&gt; cmake -D <span class="nv">CMAKE_INSTALL_PREFIX</span><span class="o">=</span>d:/vcpkg/installed/x64-windows -D <span class="nv">OpenCVDir</span><span class="o">=</span>d:/vcpkg/installed/x64-windows/share/opencv -D <span class="nv">BUILD_GLSAMPLES</span><span class="o">=</span><span class="m">1</span> -G <span class="s2">"Visual Studio 15 2017 Win64"</span> ..
-</pre>
+</pre></div>
+
 <p>aruco_test_glとaruco_test_markermap_glのビルドでエラーが出るのでちょっとコードを修正する。
 gl.hより先にWindows.hをincludeしてあげる。</p>
-<pre class="code literal-block"><span class="cp">#ifdef __APPLE__</span>
+<div class="code"><pre class="code literal-block"><span class="cp">#ifdef __APPLE__</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;GLUT/glut.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#elif defined(_MSC_VER)</span>
@@ -84,20 +86,22 @@ gl.hより先にWindows.hをincludeしてあげる。</p>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;GL/gl.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;GL/glut.h&gt;</span><span class="cp"></span>
 <span class="cp">#endif</span>
-</pre>
+</pre></div>
+
 <p>あとfreeglutのリンクををdebug, release振り分けのために、
 CMakeLists.txtをちょっと改造。だいたいこういう感じ。</p>
-<pre class="code literal-block"><span class="nb">IF</span> <span class="p">(</span><span class="s">GLUT_FOUND</span><span class="p">)</span>
-    <span class="nb">STRING</span><span class="p">(</span><span class="s">REPLACE</span> <span class="s">lib/freeglut.lib</span> <span class="s">debug/lib/freeglutd.lib</span> <span class="s">GLUT_glut_DEBUG_LIBRARY</span> <span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span><span class="p">)</span>
-    <span class="nb">MESSAGE</span><span class="p">(</span><span class="s">STATUS</span> <span class="s2">"GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}"</span><span class="p">)</span>
-    <span class="nb">set</span> <span class="p">(</span><span class="s">OPENGL_LIBS</span>  <span class="s">general</span>
-        <span class="o">${</span><span class="nv">OPENGL_gl_LIBRARY</span><span class="o">}</span>
-        <span class="o">${</span><span class="nv">OPENGL_glu_LIBRARY</span><span class="o">}</span>
-        <span class="s">optimized</span> <span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span>
-        <span class="s">debug</span> <span class="o">${</span><span class="nv">GLUT_glut_DEBUG_LIBRARY</span><span class="o">}</span>
-        <span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="nb">IF</span> <span class="p">(</span><span class="s">GLUT_FOUND</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">STRING</span><span class="p">(</span><span class="s">REPLACE</span><span class="w"> </span><span class="s">lib/freeglut.lib</span><span class="w"> </span><span class="s">debug/lib/freeglutd.lib</span><span class="w"> </span><span class="s">GLUT_glut_DEBUG_LIBRARY</span><span class="w"> </span><span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">MESSAGE</span><span class="p">(</span><span class="s">STATUS</span><span class="w"> </span><span class="s2">"GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}"</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">set</span> <span class="p">(</span><span class="s">OPENGL_LIBS</span><span class="w">  </span><span class="s">general</span>
+<span class="w">        </span><span class="o">${</span><span class="nv">OPENGL_gl_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="o">${</span><span class="nv">OPENGL_glu_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="s">optimized</span><span class="w"> </span><span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="s">debug</span><span class="w"> </span><span class="o">${</span><span class="nv">GLUT_glut_DEBUG_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="p">)</span>
 <span class="nb">ENDIF</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>この部分と連携する。
 TARGET_LINK_LIBRARIES(aruco_test_gl ${OPENGL_LIBS})</p>
 <p>これで、CMAKE_INSTALL_PREFIX/binにパスを通せばプログラムは動作する。
@@ -112,7 +116,7 @@ ArUcoを改造する予定。</p>
 <p>intrinsics.ymlを省略したり簡略化したい(fovyとaspectratioだけにするなど)
 左手系(DirectXやUnity)に対応</p>
 <p>ということで、arucoのソースを含めている。</p>
-<pre class="code literal-block">aruco_test
+<div class="code"><pre class="code literal-block">aruco_test
 
   + CMakeLists.txt
 
@@ -121,45 +125,47 @@ ArUcoを改造する予定。</p>
     + aruco_test_gl.cpp<span class="o">(</span>aruco-2.0.19/utils_gl/aruco_test_gl.cppをコピー<span class="o">)</span>
 
   + src<span class="o">(</span>aruco-2.0.19/srcをコピー<span class="o">)</span>
-</pre>
-<pre class="code literal-block"><span class="nb">CMAKE_MINIMUM_REQUIRED</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">2.8</span><span class="p">)</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="nb">CMAKE_MINIMUM_REQUIRED</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8</span><span class="p">)</span>
 <span class="nb">PROJECT</span><span class="p">(</span><span class="s">aruco</span><span class="p">)</span>
 
-<span class="nb">FIND_PACKAGE</span><span class="p">(</span><span class="s">OpenCV</span> <span class="s">REQUIRED</span> <span class="p">)</span>
-<span class="nb">SET</span> <span class="p">(</span><span class="s">ARUCO_REQUIRED_LIBRARIES</span> <span class="o">${</span><span class="nv">OpenCV_LIBS</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">FIND_PACKAGE</span><span class="p">(</span><span class="s">OpenCV</span><span class="w"> </span><span class="s">REQUIRED</span><span class="w"> </span><span class="p">)</span>
+<span class="nb">SET</span> <span class="p">(</span><span class="s">ARUCO_REQUIRED_LIBRARIES</span><span class="w"> </span><span class="o">${</span><span class="nv">OpenCV_LIBS</span><span class="o">}</span><span class="p">)</span>
 <span class="nb">INCLUDE_DIRECTORIES</span><span class="p">(</span><span class="o">${</span><span class="nv">OpenCV_INCLUDE_DIRS</span><span class="o">}</span><span class="p">)</span>
 
-<span class="nb">FIND_PACKAGE</span><span class="p">(</span><span class="s">OpenGL</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">FIND_PACKAGE</span><span class="p">(</span><span class="s">OpenGL</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
 
 <span class="nb">FIND_PACKAGE</span><span class="p">(</span><span class="s">GLUT</span><span class="p">)</span>
-<span class="nb">MESSAGE</span><span class="p">(</span><span class="s">STATUS</span> <span class="s2">"GLUT_glut_LIBRARY=${GLUT_glut_LIBRARY}"</span><span class="p">)</span>
-<span class="nb">STRING</span><span class="p">(</span><span class="s">REPLACE</span> <span class="s">lib/freeglut.lib</span> <span class="s">debug/lib/freeglutd.lib</span> <span class="s">GLUT_glut_DEBUG_LIBRARY</span> <span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span><span class="p">)</span>
-<span class="nb">MESSAGE</span><span class="p">(</span><span class="s">STATUS</span> <span class="s2">"GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}"</span><span class="p">)</span>
+<span class="nb">MESSAGE</span><span class="p">(</span><span class="s">STATUS</span><span class="w"> </span><span class="s2">"GLUT_glut_LIBRARY=${GLUT_glut_LIBRARY}"</span><span class="p">)</span>
+<span class="nb">STRING</span><span class="p">(</span><span class="s">REPLACE</span><span class="w"> </span><span class="s">lib/freeglut.lib</span><span class="w"> </span><span class="s">debug/lib/freeglutd.lib</span><span class="w"> </span><span class="s">GLUT_glut_DEBUG_LIBRARY</span><span class="w"> </span><span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">MESSAGE</span><span class="p">(</span><span class="s">STATUS</span><span class="w"> </span><span class="s2">"GLUT_glut_DEBUG_LIBRARY=${GLUT_glut_DEBUG_LIBRARY}"</span><span class="p">)</span>
 <span class="nb">IF</span> <span class="p">(</span><span class="s">GLUT_FOUND</span><span class="p">)</span>
-    <span class="nb">set</span> <span class="p">(</span><span class="s">OPENGL_LIBS</span>  <span class="s">general</span>
-        <span class="o">${</span><span class="nv">OPENGL_gl_LIBRARY</span><span class="o">}</span>
-        <span class="o">${</span><span class="nv">OPENGL_glu_LIBRARY</span><span class="o">}</span>
-        <span class="s">optimized</span> <span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span>
-        <span class="s">debug</span> <span class="o">${</span><span class="nv">GLUT_glut_DEBUG_LIBRARY</span><span class="o">}</span>
-        <span class="p">)</span>
+<span class="w">    </span><span class="nb">set</span> <span class="p">(</span><span class="s">OPENGL_LIBS</span><span class="w">  </span><span class="s">general</span>
+<span class="w">        </span><span class="o">${</span><span class="nv">OPENGL_gl_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="o">${</span><span class="nv">OPENGL_glu_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="s">optimized</span><span class="w"> </span><span class="o">${</span><span class="nv">GLUT_glut_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="s">debug</span><span class="w"> </span><span class="o">${</span><span class="nv">GLUT_glut_DEBUG_LIBRARY</span><span class="o">}</span>
+<span class="w">        </span><span class="p">)</span>
 <span class="nb">ENDIF</span><span class="p">()</span>
 
 <span class="nb">ADD_DEFINITIONS</span><span class="p">(</span><span class="s">-D_SCL_SECURE_NO_WARNINGS</span><span class="p">)</span>
-<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_CXX_FLAGS</span> <span class="s2">"/wd4819 /EHsc"</span><span class="p">)</span>
+<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_CXX_FLAGS</span><span class="w"> </span><span class="s2">"/wd4819 /EHsc"</span><span class="p">)</span>
 
 <span class="nb">ADD_SUBDIRECTORY</span><span class="p">(</span><span class="s">src</span><span class="p">)</span>
 <span class="nb">ADD_SUBDIRECTORY</span><span class="p">(</span><span class="s">utils_gl</span><span class="p">)</span>
 
 <span class="err">aruco_test_gl/CMakeLists.txt</span>
-<span class="nb">INCLUDE_DIRECTORIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/src</span> <span class="o">${</span><span class="nv">GNULIBS_INCLUDE_DIR</span><span class="o">}</span><span class="p">)</span>
-<span class="nb">LINK_LIBRARIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span> <span class="o">${</span><span class="nv">REQUIRED_LIBRARIES</span><span class="o">}</span> <span class="p">)</span>
+<span class="nb">INCLUDE_DIRECTORIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/src</span><span class="w"> </span><span class="o">${</span><span class="nv">GNULIBS_INCLUDE_DIR</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">LINK_LIBRARIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">REQUIRED_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
 
 <span class="nb">IF</span><span class="p">(</span><span class="s">OPENGL_LIBS</span><span class="p">)</span>
-    <span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">aruco_test_gl</span>
-        <span class="s">aruco_test_gl.cpp</span>
-        <span class="p">)</span>
-    <span class="nb">TARGET_LINK_LIBRARIES</span><span class="p">(</span><span class="s">aruco_test_gl</span> <span class="o">${</span><span class="nv">OPENGL_LIBS</span><span class="o">}</span><span class="p">)</span>
-</pre>
+<span class="w">    </span><span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="s">aruco_test_gl</span>
+<span class="w">        </span><span class="s">aruco_test_gl.cpp</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="nb">TARGET_LINK_LIBRARIES</span><span class="p">(</span><span class="s">aruco_test_gl</span><span class="w"> </span><span class="o">${</span><span class="nv">OPENGL_LIBS</span><span class="o">}</span><span class="p">)</span>
+</pre></div>
+
 <p>以上で、arucoを例にvcpkgでopencvとfreeglutdを外部管理してcmakeでプロジェクトを取り廻す例を作った。
 作業例。</p>
 <p>https://github.com/ousttrue/aruco_test</p>

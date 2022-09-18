@@ -55,14 +55,15 @@ Standard Assets/Effects/ToonShadingのshaderを自分のフォルダにコピー
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _Ramp ("Toon Ramp (RGB)", 2D) = "gray" {} 
     }</p>
-<pre class="code literal-block">SubShader {
+<div class="code"><pre class="code literal-block">SubShader {
     Tags { "RenderType"="Opaque" }
     UsePass "Toon/Lit/FORWARD"
     UsePass "Toon/Basic Outline/OUTLINE"
 }
 
 Fallback "Toon/Lit"
-</pre>
+</pre></div>
+
 <p>}</p>
 <p>Toon/Litのinspectorの
 Surface shader: Show generated code</p>
@@ -76,7 +77,7 @@ Shader "MyToon/Custom"
         _Color("Main Color", Color) = (0.5,0.5,0.5,1)
         _MainTex("Base (RGB)", 2D) = "white" {}
         _Ramp("Toon Ramp (RGB)", 2D) = "gray" {}</p>
-<pre class="code literal-block">    _OutlineColor("Outline Color", Color) = (0,0,0,1)
+<div class="code"><pre class="code literal-block">    _OutlineColor("Outline Color", Color) = (0,0,0,1)
     _Outline("Outline width", Range(.002, 0.03)) = .005
 }
 SubShader
@@ -90,14 +91,15 @@ SubShader
         Tags{ "LightMode" = "ForwardBase" }
 
         CGPROGRAM
-</pre>
+</pre></div>
+
 <h2>pragma vertex vert_surf</h2>
 <h2>pragma fragment frag_surf</h2>
 <h2>pragma lighting ToonRamp exclude_path:prepass</h2>
 <h2>pragma multi_compile_fog</h2>
 <h2>pragma multi_compile_fwdbase</h2>
 <h2>include "Custom.cginc"</h2>
-<pre class="code literal-block">        <span class="n">ENDCG</span>
+<div class="code"><pre class="code literal-block">        <span class="n">ENDCG</span>
     <span class="p">}</span>
 
     <span class="o">//</span> <span class="n">outline</span>
@@ -110,19 +112,21 @@ SubShader
         <span class="n">Blend</span> <span class="n">SrcAlpha</span> <span class="n">OneMinusSrcAlpha</span>
 
         <span class="n">CGPROGRAM</span>
-</pre>
+</pre></div>
+
 <h2>pragma vertex vert</h2>
 <h2>pragma fragment frag</h2>
 <h2>pragma multi_compile_fog</h2>
 <h2>pragma multi_compile_fwdbase</h2>
 <h2>include "Custom.cginc"</h2>
-<pre class="code literal-block">        <span class="n">ENDCG</span>
+<div class="code"><pre class="code literal-block">        <span class="n">ENDCG</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="o">//</span> <span class="n">for</span> <span class="n">shadow</span> <span class="n">etc</span><span class="p">...</span>
 <span class="n">Fallback</span> <span class="s">"Diffuse"</span>
-</pre>
+</pre></div>
+
 <p>}</p>
 <p>*.shaderファイルのインデントが扱いずらいのでcgincと分割して手で整形。
 気持ちよくindentできるエディタを見繕う必要があるな・・・
@@ -166,17 +170,19 @@ Custom.cginc</p>
 inline half4 LightingToonRamp(SurfaceOutput s, half3 lightDir, half atten)
 {</p>
 <h2>ifndef USING_DIRECTIONAL_LIGHT</h2>
-<pre class="code literal-block">lightDir = normalize(lightDir);
-</pre>
-<h2>endif</h2>
-<pre class="code literal-block"><span class="nv">half</span> <span class="nv">d</span> <span class="o">=</span> <span class="nv">dot</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">Normal</span>, <span class="nv">lightDir</span><span class="ss">)</span><span class="o">*</span><span class="mi">0</span>.<span class="mi">5</span> <span class="o">+</span> <span class="mi">0</span>.<span class="mi">5</span><span class="c1">;</span>
-<span class="nv">half3</span> <span class="nv">ramp</span> <span class="o">=</span> <span class="nv">tex2D</span><span class="ss">(</span><span class="nv">_Ramp</span>, <span class="nv">float2</span><span class="ss">(</span><span class="nv">d</span>, <span class="nv">d</span><span class="ss">))</span>.<span class="nv">rgb</span><span class="c1">;</span>
+<div class="code"><pre class="code literal-block">lightDir = normalize(lightDir);
+</pre></div>
 
-<span class="nv">half4</span> <span class="nv">c</span><span class="c1">;</span>
-<span class="nv">c</span>.<span class="nv">rgb</span> <span class="o">=</span> <span class="nv">s</span>.<span class="nv">Albedo</span> <span class="o">*</span> <span class="nv">_LightColor0</span>.<span class="nv">rgb</span> <span class="o">*</span> <span class="nv">ramp</span> <span class="o">*</span> <span class="ss">(</span><span class="nv">atten</span> <span class="o">*</span> <span class="mi">2</span><span class="ss">)</span><span class="c1">;</span>
-<span class="nv">c</span>.<span class="nv">a</span> <span class="o">=</span> <span class="mi">0</span><span class="c1">;</span>
-<span class="k">return</span> <span class="nv">c</span><span class="c1">;</span>
-</pre>
+<h2>endif</h2>
+<div class="code"><pre class="code literal-block"><span class="nv">half</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">dot</span><span class="ss">(</span><span class="nv">s</span>.<span class="nv">Normal</span>,<span class="w"> </span><span class="nv">lightDir</span><span class="ss">)</span><span class="o">*</span><span class="mi">0</span>.<span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span>.<span class="mi">5</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">half3</span><span class="w"> </span><span class="nv">ramp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">tex2D</span><span class="ss">(</span><span class="nv">_Ramp</span>,<span class="w"> </span><span class="nv">float2</span><span class="ss">(</span><span class="nv">d</span>,<span class="w"> </span><span class="nv">d</span><span class="ss">))</span>.<span class="nv">rgb</span><span class="c1">;</span><span class="w"></span>
+
+<span class="nv">half4</span><span class="w"> </span><span class="nv">c</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">c</span>.<span class="nv">rgb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span>.<span class="nv">Albedo</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">_LightColor0</span>.<span class="nv">rgb</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">ramp</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="ss">(</span><span class="nv">atten</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">c</span>.<span class="nv">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="c1">;</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="nv">c</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>sampler2D _MainTex;
 float4 _Color;</p>
@@ -199,8 +205,9 @@ float4 _Color;</p>
     SHADOW_COORDS(3)
         UNITY_FOG_COORDS(4)</p>
 <h2>if SHADER_TARGET &gt;= 30</h2>
-<pre class="code literal-block">    float4 lmap : TEXCOORD5;
-</pre>
+<div class="code"><pre class="code literal-block">    float4 lmap : TEXCOORD5;
+</pre></div>
+
 <h2>endif</h2>
 <p>};</p>
 <h2>endif</h2>
@@ -214,10 +221,11 @@ float4 _Color;</p>
     SHADOW_COORDS(3)
         UNITY_FOG_COORDS(4)</p>
 <h2>ifdef DIRLIGHTMAP_COMBINED</h2>
-<pre class="code literal-block">    fixed3 tSpace0 : TEXCOORD5;
+<div class="code"><pre class="code literal-block">    fixed3 tSpace0 : TEXCOORD5;
 fixed3 tSpace1 : TEXCOORD6;
 fixed3 tSpace2 : TEXCOORD7;
-</pre>
+</pre></div>
+
 <h2>endif</h2>
 <p>};</p>
 <h2>endif</h2>
@@ -231,50 +239,60 @@ v2f_surf vert_surf(appdata_full v) {
     float3 worldPos = mul(_Object2World, v.vertex).xyz;
     fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);</p>
 <h2>if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)</h2>
-<pre class="code literal-block">fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+<div class="code"><pre class="code literal-block">fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
 fixed tangentSign = v.tangent.w * unity_WorldTransformParams.w;
 fixed3 worldBinormal = cross(worldNormal, worldTangent) * tangentSign;
-</pre>
+</pre></div>
+
 <h2>endif</h2>
 <h2>if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)</h2>
-<pre class="code literal-block">o.tSpace0 = fixed3(worldTangent.x, worldBinormal.x, worldNormal.x);
+<div class="code"><pre class="code literal-block">o.tSpace0 = fixed3(worldTangent.x, worldBinormal.x, worldNormal.x);
 o.tSpace1 = fixed3(worldTangent.y, worldBinormal.y, worldNormal.y);
 o.tSpace2 = fixed3(worldTangent.z, worldBinormal.z, worldNormal.z);
-</pre>
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">o.worldNormal = worldNormal;
-</pre>
+<div class="code"><pre class="code literal-block">o.worldNormal = worldNormal;
+</pre></div>
+
 <h2>ifndef DYNAMICLIGHTMAP_OFF</h2>
-<pre class="code literal-block">o.lmap.zw = v.texcoord2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
-</pre>
+<div class="code"><pre class="code literal-block">o.lmap.zw = v.texcoord2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+</pre></div>
+
 <h2>endif</h2>
 <h2>ifndef LIGHTMAP_OFF</h2>
-<pre class="code literal-block">o.lmap.xy = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
-</pre>
+<div class="code"><pre class="code literal-block">o.lmap.xy = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">// SH/ambient and vertex lights
-</pre>
+<div class="code"><pre class="code literal-block">// SH/ambient and vertex lights
+</pre></div>
+
 <h2>ifdef LIGHTMAP_OFF</h2>
 <h2>if UNITY_SHOULD_SAMPLE_SH</h2>
-<pre class="code literal-block">float3 shlight = ShadeSH9(float4(worldNormal, 1.0));
+<div class="code"><pre class="code literal-block">float3 shlight = ShadeSH9(float4(worldNormal, 1.0));
 o.vlight = shlight;
-</pre>
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">o.vlight = 0.0;
-</pre>
+<div class="code"><pre class="code literal-block">o.vlight = 0.0;
+</pre></div>
+
 <h2>endif</h2>
 <h2>ifdef VERTEXLIGHT_ON</h2>
-<pre class="code literal-block">o.vlight += Shade4PointLights(
+<div class="code"><pre class="code literal-block">o.vlight += Shade4PointLights(
         unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
         unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
         unity_4LightAtten0, worldPos, worldNormal);
-</pre>
+</pre></div>
+
 <h2>endif // VERTEXLIGHT_ON</h2>
 <h2>endif // LIGHTMAP_OFF</h2>
-<pre class="code literal-block"><span class="nv">TRANSFER_SHADOW</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span><span class="c1">; // pass shadow coordinates to pixel shader</span>
-<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>, <span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">; // pass fog coordinates to pixel shader</span>
-<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nv">TRANSFER_SHADOW</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span><span class="c1">; // pass shadow coordinates to pixel shader</span><span class="w"></span>
+<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>,<span class="w"> </span><span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">; // pass fog coordinates to pixel shader</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="nv">o</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>// fragment shader
 fixed4 frag_surf(v2f_surf IN) : SV_Target{
@@ -285,13 +303,15 @@ fixed4 frag_surf(v2f_surf IN) : SV_Target{
     surfIN.uv_MainTex = IN.pack0.xy;
     float3 lightDir = _WorldSpaceLightPos0.xyz;</p>
 <h2>ifdef UNITY_COMPILER_HLSL</h2>
-<pre class="code literal-block">SurfaceOutput o = (SurfaceOutput)0;
-</pre>
+<div class="code"><pre class="code literal-block">SurfaceOutput o = (SurfaceOutput)0;
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">SurfaceOutput o;
-</pre>
+<div class="code"><pre class="code literal-block">SurfaceOutput o;
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">o.Albedo = 0.0;
+<div class="code"><pre class="code literal-block">o.Albedo = 0.0;
 o.Emission = 0.0;
 o.Specular = 0.0;
 o.Alpha = 0.0;
@@ -306,65 +326,80 @@ surf(surfIN, o);
 // compute lighting &amp; shadowing factor
 UNITY_LIGHT_ATTENUATION(atten, IN, worldPos)
     fixed4 c = 0;
-</pre>
+</pre></div>
+
 <h2>ifdef LIGHTMAP_OFF</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * IN.vlight;
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * IN.vlight;
+</pre></div>
+
 <h2>endif // LIGHTMAP_OFF</h2>
-<pre class="code literal-block">// lightmaps
-</pre>
+<div class="code"><pre class="code literal-block">// lightmaps
+</pre></div>
+
 <h2>ifndef LIGHTMAP_OFF</h2>
 <h2>ifdef DIRLIGHTMAP_OFF</h2>
-<pre class="code literal-block">// single lightmap
+<div class="code"><pre class="code literal-block">// single lightmap
 fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
 fixed3 lm = DecodeLightmap(lmtex);
-</pre>
+</pre></div>
+
 <h2>elif DIRLIGHTMAP_COMBINED</h2>
-<pre class="code literal-block">// directional lightmaps
+<div class="code"><pre class="code literal-block">// directional lightmaps
 fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
 half3 lm = DecodeLightmap(lmtex);
-</pre>
+</pre></div>
+
 <h2>elif DIRLIGHTMAP_SEPARATE</h2>
-<pre class="code literal-block">// directional with specular - no support
+<div class="code"><pre class="code literal-block">// directional with specular - no support
 half4 lmtex = 0;
 half3 lm = 0;
-</pre>
+</pre></div>
+
 <h2>endif // DIRLIGHTMAP_OFF</h2>
 <h2>endif // LIGHTMAP_OFF</h2>
-<pre class="code literal-block">// realtime lighting: call lighting function
-</pre>
+<div class="code"><pre class="code literal-block">// realtime lighting: call lighting function
+</pre></div>
+
 <h2>ifdef LIGHTMAP_OFF</h2>
-<pre class="code literal-block">c += LightingToonRamp(o, lightDir, atten);
-</pre>
+<div class="code"><pre class="code literal-block">c += LightingToonRamp(o, lightDir, atten);
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">c.a = o.Alpha;
-</pre>
+<div class="code"><pre class="code literal-block">c.a = o.Alpha;
+</pre></div>
+
 <h2>endif</h2>
 <h2>ifndef LIGHTMAP_OFF</h2>
-<pre class="code literal-block">// combine lightmaps with realtime shadows
-</pre>
+<div class="code"><pre class="code literal-block">// combine lightmaps with realtime shadows
+</pre></div>
+
 <h2>ifdef SHADOWS_SCREEN</h2>
 <h2>if defined(UNITY_NO_RGBM)</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * min(lm, atten * 2);
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * min(lm, atten * 2);
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * max(min(lm,(atten * 2)*lmtex.rgb), lm*atten);
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * max(min(lm,(atten * 2)*lmtex.rgb), lm*atten);
+</pre></div>
+
 <h2>endif</h2>
 <h2>else // SHADOWS_SCREEN</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * lm;
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * lm;
+</pre></div>
+
 <h2>endif // SHADOWS_SCREEN</h2>
 <h2>endif // LIGHTMAP_OFF</h2>
 <h2>ifndef DYNAMICLIGHTMAP_OFF</h2>
-<pre class="code literal-block">fixed4 dynlmtex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, IN.lmap.zw);
+<div class="code"><pre class="code literal-block">fixed4 dynlmtex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, IN.lmap.zw);
 c.rgb += o.Albedo * DecodeRealtimeLightmap(dynlmtex);
-</pre>
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block"><span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">IN</span>.<span class="nv">fogCoord</span>, <span class="nv">c</span><span class="ss">)</span><span class="c1">; // apply fog</span>
-<span class="nv">UNITY_OPAQUE_ALPHA</span><span class="ss">(</span><span class="nv">c</span>.<span class="nv">a</span><span class="ss">)</span><span class="c1">;</span>
-<span class="k">return</span> <span class="nv">c</span><span class="c1">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">IN</span>.<span class="nv">fogCoord</span>,<span class="w"> </span><span class="nv">c</span><span class="ss">)</span><span class="c1">; // apply fog</span><span class="w"></span>
+<span class="nv">UNITY_OPAQUE_ALPHA</span><span class="ss">(</span><span class="nv">c</span>.<span class="nv">a</span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="nv">c</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>//////////////////////////////////////////////////////////////////////////////
 // outline
@@ -384,14 +419,15 @@ uniform float4 _OutlineColor;</p>
 <p>v2f vert(appdata v) {
     v2f o;
     o.pos = mul(UNITY_MATRIX_MVP, v.vertex);</p>
-<pre class="code literal-block"><span class="nv">float3</span> <span class="nv">norm</span> <span class="o">=</span> <span class="nv">normalize</span><span class="ss">(</span><span class="nv">mul</span><span class="ss">((</span><span class="nv">float3x3</span><span class="ss">)</span><span class="nv">UNITY_MATRIX_IT_MV</span>, <span class="nv">v</span>.<span class="nv">normal</span><span class="ss">))</span><span class="c1">;</span>
-<span class="nv">float2</span> <span class="nv">offset</span> <span class="o">=</span> <span class="nv">TransformViewToProjection</span><span class="ss">(</span><span class="nv">norm</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
+<div class="code"><pre class="code literal-block"><span class="nv">float3</span><span class="w"> </span><span class="nv">norm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">normalize</span><span class="ss">(</span><span class="nv">mul</span><span class="ss">((</span><span class="nv">float3x3</span><span class="ss">)</span><span class="nv">UNITY_MATRIX_IT_MV</span>,<span class="w"> </span><span class="nv">v</span>.<span class="nv">normal</span><span class="ss">))</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">float2</span><span class="w"> </span><span class="nv">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">TransformViewToProjection</span><span class="ss">(</span><span class="nv">norm</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
 
-<span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">xy</span> <span class="o">+=</span> <span class="nv">offset</span> <span class="o">*</span> <span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">z</span> <span class="o">*</span> <span class="nv">_Outline</span><span class="c1">;</span>
-<span class="nv">o</span>.<span class="nv">color</span> <span class="o">=</span> <span class="nv">_OutlineColor</span><span class="c1">;</span>
-<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>, <span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">;</span>
-<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
-</pre>
+<span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">xy</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nv">offset</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">z</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">_Outline</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">o</span>.<span class="nv">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">_OutlineColor</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>,<span class="w"> </span><span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="nv">o</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>fixed4 frag(v2f i) : SV_Target
 {
@@ -468,8 +504,9 @@ float4 _Color;</p>
     SHADOW_COORDS(3)
         UNITY_FOG_COORDS(4)</p>
 <h2>if SHADER_TARGET &gt;= 30</h2>
-<pre class="code literal-block">    float4 lmap : TEXCOORD5;
-</pre>
+<div class="code"><pre class="code literal-block">    float4 lmap : TEXCOORD5;
+</pre></div>
+
 <h2>endif</h2>
 <p>};</p>
 <h2>endif</h2>
@@ -483,10 +520,11 @@ float4 _Color;</p>
     SHADOW_COORDS(3)
         UNITY_FOG_COORDS(4)</p>
 <h2>ifdef DIRLIGHTMAP_COMBINED</h2>
-<pre class="code literal-block">    fixed3 tSpace0 : TEXCOORD5;
+<div class="code"><pre class="code literal-block">    fixed3 tSpace0 : TEXCOORD5;
 fixed3 tSpace1 : TEXCOORD6;
 fixed3 tSpace2 : TEXCOORD7;
-</pre>
+</pre></div>
+
 <h2>endif</h2>
 <p>};</p>
 <h2>endif</h2>
@@ -500,50 +538,60 @@ v2f_surf vert_surf(appdata_full v) {
     float3 worldPos = mul(_Object2World, v.vertex).xyz;
     fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);</p>
 <h2>if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)</h2>
-<pre class="code literal-block">fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+<div class="code"><pre class="code literal-block">fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
 fixed tangentSign = v.tangent.w * unity_WorldTransformParams.w;
 fixed3 worldBinormal = cross(worldNormal, worldTangent) * tangentSign;
-</pre>
+</pre></div>
+
 <h2>endif</h2>
 <h2>if !defined(LIGHTMAP_OFF) &amp;&amp; defined(DIRLIGHTMAP_COMBINED)</h2>
-<pre class="code literal-block">o.tSpace0 = fixed3(worldTangent.x, worldBinormal.x, worldNormal.x);
+<div class="code"><pre class="code literal-block">o.tSpace0 = fixed3(worldTangent.x, worldBinormal.x, worldNormal.x);
 o.tSpace1 = fixed3(worldTangent.y, worldBinormal.y, worldNormal.y);
 o.tSpace2 = fixed3(worldTangent.z, worldBinormal.z, worldNormal.z);
-</pre>
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">o.worldNormal = worldNormal;
-</pre>
+<div class="code"><pre class="code literal-block">o.worldNormal = worldNormal;
+</pre></div>
+
 <h2>ifndef DYNAMICLIGHTMAP_OFF</h2>
-<pre class="code literal-block">o.lmap.zw = v.texcoord2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
-</pre>
+<div class="code"><pre class="code literal-block">o.lmap.zw = v.texcoord2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+</pre></div>
+
 <h2>endif</h2>
 <h2>ifndef LIGHTMAP_OFF</h2>
-<pre class="code literal-block">o.lmap.xy = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
-</pre>
+<div class="code"><pre class="code literal-block">o.lmap.xy = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">// SH/ambient and vertex lights
-</pre>
+<div class="code"><pre class="code literal-block">// SH/ambient and vertex lights
+</pre></div>
+
 <h2>ifdef LIGHTMAP_OFF</h2>
 <h2>if UNITY_SHOULD_SAMPLE_SH</h2>
-<pre class="code literal-block">float3 shlight = ShadeSH9(float4(worldNormal, 1.0));
+<div class="code"><pre class="code literal-block">float3 shlight = ShadeSH9(float4(worldNormal, 1.0));
 o.vlight = shlight;
-</pre>
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">o.vlight = 0.0;
-</pre>
+<div class="code"><pre class="code literal-block">o.vlight = 0.0;
+</pre></div>
+
 <h2>endif</h2>
 <h2>ifdef VERTEXLIGHT_ON</h2>
-<pre class="code literal-block">o.vlight += Shade4PointLights(
+<div class="code"><pre class="code literal-block">o.vlight += Shade4PointLights(
         unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
         unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
         unity_4LightAtten0, worldPos, worldNormal);
-</pre>
+</pre></div>
+
 <h2>endif // VERTEXLIGHT_ON</h2>
 <h2>endif // LIGHTMAP_OFF</h2>
-<pre class="code literal-block"><span class="nv">TRANSFER_SHADOW</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span><span class="c1">; // pass shadow coordinates to pixel shader</span>
-<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>, <span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">; // pass fog coordinates to pixel shader</span>
-<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nv">TRANSFER_SHADOW</span><span class="ss">(</span><span class="nv">o</span><span class="ss">)</span><span class="c1">; // pass shadow coordinates to pixel shader</span><span class="w"></span>
+<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>,<span class="w"> </span><span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">; // pass fog coordinates to pixel shader</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="nv">o</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>// fragment shader
 fixed4 frag_surf(v2f_surf IN) : SV_Target{
@@ -554,13 +602,15 @@ fixed4 frag_surf(v2f_surf IN) : SV_Target{
     surfIN.uv_MainTex = IN.pack0.xy;
     float3 lightDir = _WorldSpaceLightPos0.xyz;</p>
 <h2>ifdef UNITY_COMPILER_HLSL</h2>
-<pre class="code literal-block">SurfaceOutput o = (SurfaceOutput)0;
-</pre>
+<div class="code"><pre class="code literal-block">SurfaceOutput o = (SurfaceOutput)0;
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">SurfaceOutput o;
-</pre>
+<div class="code"><pre class="code literal-block">SurfaceOutput o;
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">o.Albedo = 0.0;
+<div class="code"><pre class="code literal-block">o.Albedo = 0.0;
 o.Emission = 0.0;
 o.Specular = 0.0;
 o.Alpha = 0.0;
@@ -575,67 +625,82 @@ surf(surfIN, o);
 // compute lighting &amp; shadowing factor
 UNITY_LIGHT_ATTENUATION(atten, IN, worldPos)
     fixed4 c = 0;
-</pre>
+</pre></div>
+
 <h2>ifdef LIGHTMAP_OFF</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * IN.vlight;
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * IN.vlight;
+</pre></div>
+
 <h2>endif // LIGHTMAP_OFF</h2>
-<pre class="code literal-block">// lightmaps
-</pre>
+<div class="code"><pre class="code literal-block">// lightmaps
+</pre></div>
+
 <h2>ifndef LIGHTMAP_OFF</h2>
 <h2>ifdef DIRLIGHTMAP_OFF</h2>
-<pre class="code literal-block">// single lightmap
+<div class="code"><pre class="code literal-block">// single lightmap
 fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
 fixed3 lm = DecodeLightmap(lmtex);
-</pre>
+</pre></div>
+
 <h2>elif DIRLIGHTMAP_COMBINED</h2>
-<pre class="code literal-block">// directional lightmaps
+<div class="code"><pre class="code literal-block">// directional lightmaps
 fixed4 lmtex = UNITY_SAMPLE_TEX2D(unity_Lightmap, IN.lmap.xy);
 half3 lm = DecodeLightmap(lmtex);
-</pre>
+</pre></div>
+
 <h2>elif DIRLIGHTMAP_SEPARATE</h2>
-<pre class="code literal-block">// directional with specular - no support
+<div class="code"><pre class="code literal-block">// directional with specular - no support
 half4 lmtex = 0;
 half3 lm = 0;
-</pre>
+</pre></div>
+
 <h2>endif // DIRLIGHTMAP_OFF</h2>
 <h2>endif // LIGHTMAP_OFF</h2>
-<pre class="code literal-block"><span class="o">//</span> <span class="nt">realtime</span> <span class="nt">lighting</span><span class="o">:</span> <span class="nt">call</span> <span class="nt">lighting</span> <span class="nt">function</span>
-<span class="nt">c</span><span class="p">.</span><span class="nc">a</span> <span class="o">=</span> <span class="nt">o</span><span class="p">.</span><span class="nc">Alpha</span><span class="o">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">//</span><span class="w"> </span><span class="nt">realtime</span><span class="w"> </span><span class="nt">lighting</span><span class="o">:</span><span class="w"> </span><span class="nt">call</span><span class="w"> </span><span class="nt">lighting</span><span class="w"> </span><span class="nt">function</span><span class="w"></span>
+<span class="nt">c</span><span class="p">.</span><span class="nc">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nt">o</span><span class="p">.</span><span class="nc">Alpha</span><span class="o">;</span><span class="w"></span>
+</pre></div>
+
 <h2>ifdef LIGHTMAP_OFF</h2>
 <h2>ifndef USING_DIRECTIONAL_LIGHT</h2>
-<pre class="code literal-block">lightDir = normalize(lightDir);
-</pre>
+<div class="code"><pre class="code literal-block">lightDir = normalize(lightDir);
+</pre></div>
+
 <h2>endif</h2>
-<pre class="code literal-block">half diffuse = max(0, dot(o.Normal, lightDir));
+<div class="code"><pre class="code literal-block">half diffuse = max(0, dot(o.Normal, lightDir));
 c.rgb += LightingToonRamp(o.Albedo, diffuse, atten);
-</pre>
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">// combine lightmaps with realtime shadows
-</pre>
+<div class="code"><pre class="code literal-block">// combine lightmaps with realtime shadows
+</pre></div>
+
 <h2>ifdef SHADOWS_SCREEN</h2>
 <h2>if defined(UNITY_NO_RGBM)</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * min(lm, atten * 2);
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * min(lm, atten * 2);
+</pre></div>
+
 <h2>else</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * max(min(lm,(atten * 2)*lmtex.rgb), lm*atten);
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * max(min(lm,(atten * 2)*lmtex.rgb), lm*atten);
+</pre></div>
+
 <h2>endif</h2>
 <h2>else // SHADOWS_SCREEN</h2>
-<pre class="code literal-block">c.rgb += o.Albedo * lm;
-</pre>
+<div class="code"><pre class="code literal-block">c.rgb += o.Albedo * lm;
+</pre></div>
+
 <h2>endif // SHADOWS_SCREEN</h2>
 <h2>endif // LIGHTMAP_OFF</h2>
 <h2>ifndef DYNAMICLIGHTMAP_OFF</h2>
-<pre class="code literal-block">fixed4 dynlmtex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, IN.lmap.zw);
+<div class="code"><pre class="code literal-block">fixed4 dynlmtex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, IN.lmap.zw);
 c.rgb += o.Albedo * DecodeRealtimeLightmap(dynlmtex);
-</pre>
-<h2>endif</h2>
-<pre class="code literal-block"><span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">IN</span>.<span class="nv">fogCoord</span>, <span class="nv">c</span><span class="ss">)</span><span class="c1">; // apply fog</span>
+</pre></div>
 
-<span class="k">return</span> <span class="nv">c</span><span class="c1">;</span>
-</pre>
+<h2>endif</h2>
+<div class="code"><pre class="code literal-block"><span class="nv">UNITY_APPLY_FOG</span><span class="ss">(</span><span class="nv">IN</span>.<span class="nv">fogCoord</span>,<span class="w"> </span><span class="nv">c</span><span class="ss">)</span><span class="c1">; // apply fog</span><span class="w"></span>
+
+<span class="k">return</span><span class="w"> </span><span class="nv">c</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>//////////////////////////////////////////////////////////////////////////////
 // outline
@@ -655,14 +720,15 @@ uniform float4 _OutlineColor;</p>
 <p>v2f vert(appdata v) {
     v2f o;
     o.pos = mul(UNITY_MATRIX_MVP, v.vertex);</p>
-<pre class="code literal-block"><span class="nv">float3</span> <span class="nv">norm</span> <span class="o">=</span> <span class="nv">normalize</span><span class="ss">(</span><span class="nv">mul</span><span class="ss">((</span><span class="nv">float3x3</span><span class="ss">)</span><span class="nv">UNITY_MATRIX_IT_MV</span>, <span class="nv">v</span>.<span class="nv">normal</span><span class="ss">))</span><span class="c1">;</span>
-<span class="nv">float2</span> <span class="nv">offset</span> <span class="o">=</span> <span class="nv">TransformViewToProjection</span><span class="ss">(</span><span class="nv">norm</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span>
+<div class="code"><pre class="code literal-block"><span class="nv">float3</span><span class="w"> </span><span class="nv">norm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">normalize</span><span class="ss">(</span><span class="nv">mul</span><span class="ss">((</span><span class="nv">float3x3</span><span class="ss">)</span><span class="nv">UNITY_MATRIX_IT_MV</span>,<span class="w"> </span><span class="nv">v</span>.<span class="nv">normal</span><span class="ss">))</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">float2</span><span class="w"> </span><span class="nv">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">TransformViewToProjection</span><span class="ss">(</span><span class="nv">norm</span>.<span class="nv">xy</span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
 
-<span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">xy</span> <span class="o">+=</span> <span class="nv">offset</span> <span class="o">*</span> <span class="nv">min</span><span class="ss">(</span><span class="mi">1</span>, <span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">z</span><span class="ss">)</span> <span class="o">*</span> <span class="nv">_Outline</span><span class="c1">; // 太さ調整</span>
-<span class="nv">o</span>.<span class="nv">color</span> <span class="o">=</span> <span class="nv">_OutlineColor</span><span class="c1">;</span>
-<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>, <span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">;</span>
-<span class="k">return</span> <span class="nv">o</span><span class="c1">;</span>
-</pre>
+<span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">xy</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nv">offset</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">min</span><span class="ss">(</span><span class="mi">1</span>,<span class="w"> </span><span class="nv">o</span>.<span class="nv">pos</span>.<span class="nv">z</span><span class="ss">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">_Outline</span><span class="c1">; // 太さ調整</span><span class="w"></span>
+<span class="nv">o</span>.<span class="nv">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">_OutlineColor</span><span class="c1">;</span><span class="w"></span>
+<span class="nv">UNITY_TRANSFER_FOG</span><span class="ss">(</span><span class="nv">o</span>,<span class="w"> </span><span class="nv">o</span>.<span class="nv">pos</span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="nv">o</span><span class="c1">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>fixed4 frag(v2f i) : SV_Target
 {

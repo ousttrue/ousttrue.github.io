@@ -45,9 +45,9 @@
 <p>という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。 
 これをサーバ側で如何に呼び出すかについて。</p>
 <p>単純な実装だと以下のようにメソッド名をキーにして分岐することになる。</p>
-<pre class="code literal-block"><span class="kt">int</span><span class="w"> </span><span class="nf">and</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">);</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="kt">int</span><span class="w"> </span><span class="nf">and</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">);</span><span class="w"></span>
 
-<span class="k">class</span> <span class="nc">dispatcher</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">dispatcher</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">dispatch</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">msgid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">msgpack</span><span class="o">::</span><span class="n">object</span><span class="w"> </span><span class="o">&amp;</span><span class="n">params</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
@@ -75,10 +75,11 @@
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 
 <span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>引数展開、関数呼び出し、結果のパッキングと一連の操作を定型処理として括りだすと下記のように書ける。</p>
-<pre class="code literal-block"><span class="c1">// ２引数展開用</span>
-<span class="k">class</span> <span class="nc">dispatcher</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="c1">// ２引数展開用</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">dispatcher</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// 実行</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">dispatch</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">msgid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">msgpack</span><span class="o">::</span><span class="n">object</span><span class="w"> </span><span class="o">&amp;</span><span class="n">params</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
@@ -116,10 +117,11 @@
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">response</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。</p>
 <p>さらに 関数の登録と実行を分けるべく次のように拡張した。</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">dispatcher</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">dispatcher</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="w"> </span><span class="n">m_map</span><span class="p">;</span><span class="w"></span>
 
 <span class="w">    </span><span class="c1">// 実行</span>
@@ -163,36 +165,41 @@
 <span class="w">        </span><span class="p">};</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>msgpack-&gt;引数展開-&gt;c++関数呼び出し-&gt;msgpack</code> への一連の操作を 同一のシグネチャの<code>std::function</code> に 封じ込めることができる。</p>
 <p>次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。 まず、std::functionから実装。</p>
-<pre class="code literal-block"><span class="c1">// std::function用</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="c1">// std::function用</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A1</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">A2</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">add_handler</span><span class="p">(</span><span class="n">contt</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">R</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// 中身同じ</span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>呼び出し時に <code>std::function</code> を経由するようにすればあらゆる関数呼び出しを登録できる。 例えば、ラムダ関数も以下のように登録できる。</p>
-<pre class="code literal-block"><span class="c1">// ラムダ登録</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// ラムダ登録</span>
 <span class="n">dispatcher</span><span class="w"> </span><span class="n">d</span><span class="p">;</span><span class="w"></span>
 <span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
 <span class="w">    </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 <span class="p">));</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>しかし、どうせなら</p>
-<pre class="code literal-block"><span class="n">dispatcher</span><span class="w"> </span><span class="n">d</span><span class="p">;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">dispatcher</span><span class="w"> </span><span class="n">d</span><span class="p">;</span><span class="w"></span>
 <span class="n">d</span><span class="p">.</span><span class="n">add_handler</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span><span class="w"> </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">int</span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>と書きたい。</p>
 <p>となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。</p>
-<pre class="code literal-block"><span class="c1">// ラムダの登録</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// ラムダの登録</span>
 <span class="k">template</span><span class="o">&lt;</span><span class="n">typname</span><span class="w"> </span><span class="n">F</span><span class="o">&gt;</span><span class="w"></span>
 <span class="kt">void</span><span class="w"> </span><span class="n">add_handler</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// 型がわからぬ</span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。</p>
 <p>```c++
  template

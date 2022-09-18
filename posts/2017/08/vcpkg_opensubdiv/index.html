@@ -43,7 +43,7 @@
 <p>CEDEC2017のセッションを聞いてUSDビルドする気が戻ってきた。部品のひとつ、OpenSubdivのvcpkg版ビルドに取り組んでみる。</p>
 <p>packageを作る
 POWERSHELLを開いてvcpkgディレクトリに移動。</p>
-<pre class="code literal-block">PS&gt; .<span class="se">\v</span>cpkg.exe create opensubdiv https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v3_3_0.tar.gz
+<div class="code"><pre class="code literal-block">PS&gt; .<span class="se">\v</span>cpkg.exe create opensubdiv https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v3_3_0.tar.gz
 -- Generated portfile: vcpkg<span class="se">\p</span>orts<span class="se">\o</span>pensubdiv<span class="se">\p</span>ortfile.cmake
 -- Generated CONTROL: vcpkg<span class="se">\p</span>orts<span class="se">\o</span>pensubdiv<span class="se">\C</span>ONTROL
 -- To launch an editor <span class="k">for</span> these new files, run
@@ -54,7 +54,8 @@ Source: opensubdiv
 Version: <span class="m">3</span>.3.0
 Description: An Open-Source subdivision surface library.
 Build-Depends: tbb, glew, ptex
-</pre>
+</pre></div>
+
 <p><code>ports/opensubdiv/portfile.cmake</code></p>
 <p>最低限、展開するアーカイブのパスを指定。</p>
 <p><code>set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/OpenSubdiv-3_3_0)</code></p>
@@ -70,55 +71,57 @@ NO_CUDAとNO_OPENCLにチェックを入れてみる。
 SolutionをGenerateしてビルドしてみる。
 Debug版だけtbb_debug.libが見つからないエラーが出た。
 DEBUG版のFIND_PACKAGEの修正</p>
-<pre class="code literal-block"><span class="err">OpenSubdiv-3_3_0/cmake/FindTBB.cmake</span>
-    <span class="nb">find_library</span><span class="p">(</span><span class="s">TBB_</span><span class="o">${</span><span class="nv">TBB_LIB</span><span class="o">}</span><span class="s">_LIBRARY</span>
-        <span class="s">NAMES</span>
-            <span class="o">${</span><span class="nv">TBB_LIB</span><span class="o">}</span>
-        <span class="s">HINTS</span>
-            <span class="s2">"${TBB_LOCATION}/lib"</span>
-            <span class="s2">"${TBB_LOCATION}/bin"</span>
-            <span class="s2">"$ENV{TBB_LOCATION}/lib"</span>
-            <span class="s2">"$ENV{TBB_LOCATION}/bin"</span>
-            <span class="s2">"$ENV{PROGRAMFILES}/TBB/lib"</span>
-            <span class="s">/usr/lib</span>
-            <span class="s">/usr/lib/w32api</span>
-            <span class="s">/usr/local/lib</span>
-            <span class="s">/usr/X11R6/lib</span>
-        <span class="s">PATH_SUFFIXES</span>
-            <span class="s2">"${TBB_LIB_ARCH}"</span>
-            <span class="s2">"${TBB_LIB_ARCH}/${TBB_COMPILER}"</span>
-            <span class="s2">"${TBB_LIB_ARCH}/gcc4.4"</span>
-            <span class="s2">"${TBB_LIB_ARCH}/gcc4.1"</span>
-        <span class="s">DOC</span> <span class="s2">"Intel's Threading Building Blocks library"</span><span class="p">)</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="err">OpenSubdiv-3_3_0/cmake/FindTBB.cmake</span>
+<span class="w">    </span><span class="nb">find_library</span><span class="p">(</span><span class="s">TBB_</span><span class="o">${</span><span class="nv">TBB_LIB</span><span class="o">}</span><span class="s">_LIBRARY</span>
+<span class="w">        </span><span class="s">NAMES</span>
+<span class="w">            </span><span class="o">${</span><span class="nv">TBB_LIB</span><span class="o">}</span>
+<span class="w">        </span><span class="s">HINTS</span>
+<span class="w">            </span><span class="s2">"${TBB_LOCATION}/lib"</span>
+<span class="w">            </span><span class="s2">"${TBB_LOCATION}/bin"</span>
+<span class="w">            </span><span class="s2">"$ENV{TBB_LOCATION}/lib"</span>
+<span class="w">            </span><span class="s2">"$ENV{TBB_LOCATION}/bin"</span>
+<span class="w">            </span><span class="s2">"$ENV{PROGRAMFILES}/TBB/lib"</span>
+<span class="w">            </span><span class="s">/usr/lib</span>
+<span class="w">            </span><span class="s">/usr/lib/w32api</span>
+<span class="w">            </span><span class="s">/usr/local/lib</span>
+<span class="w">            </span><span class="s">/usr/X11R6/lib</span>
+<span class="w">        </span><span class="s">PATH_SUFFIXES</span>
+<span class="w">            </span><span class="s2">"${TBB_LIB_ARCH}"</span>
+<span class="w">            </span><span class="s2">"${TBB_LIB_ARCH}/${TBB_COMPILER}"</span>
+<span class="w">            </span><span class="s2">"${TBB_LIB_ARCH}/gcc4.4"</span>
+<span class="w">            </span><span class="s2">"${TBB_LIB_ARCH}/gcc4.1"</span>
+<span class="w">        </span><span class="s">DOC</span><span class="w"> </span><span class="s2">"Intel's Threading Building Blocks library"</span><span class="p">)</span>
+</pre></div>
+
 <p>vcpkgでは、<code>VCPKG_DIR/installed/x64-windows/debug/lib/tbb_debug.lib</code> にあるので見つかりませんね。
 <code>TBB_LOCATION=VCPKG_DIR/installed/x64-windows/debug</code> を指定したらうまくいった。</p>
 <p>portfile.cmakeに反映
 ports/opensubdiv/portfile.cmake
 こうなった。</p>
-<pre class="code literal-block"><span class="nb">vcpkg_configure_cmake</span><span class="p">(</span>
-    <span class="s">SOURCE_PATH</span> <span class="o">${</span><span class="nv">SOURCE_PATH</span><span class="o">}</span>
-    <span class="c">#PREFER_NINJA # Disable this option if project cannot be built with Ninja</span>
-    <span class="s">OPTIONS</span>
-        <span class="c">#-DNO_LIB=1</span>
-        <span class="s">-DNO_CUDA=1</span>
-        <span class="s">-DNO_DOC=1</span>
-        <span class="s">-DNO_OPENCL=1</span>
-        <span class="s">-DNO_OPENGL=1</span>
-        <span class="s">-DNO_METAL=1</span>
-        <span class="s">-DNO_DX=1</span>
-        <span class="c">#-DNO_OMP=1</span>
-        <span class="s">-DNO_TESTS=1</span>
-        <span class="s">-DNO_EXAMPLES=1</span>
-        <span class="s">-DNO_TUTORIALS=1</span>
-        <span class="s">-DNO_REGRESSION=1</span>
-        <span class="s">-DNO_GLTESTS=1</span>
-        <span class="c"># for tbb_debug.lib</span>
-        <span class="s">-DTBB_LOCATION=</span><span class="o">${</span><span class="nv">CURRENT_INSTALLED_DIR</span><span class="o">}</span><span class="s">/debug</span>
-    <span class="c"># OPTIONS_RELEASE -DOPTIMIZE=1</span>
-    <span class="c"># OPTIONS_DEBUG -DDEBUGGABLE=1</span>
+<div class="code"><pre class="code literal-block"><span class="nb">vcpkg_configure_cmake</span><span class="p">(</span>
+<span class="w">    </span><span class="s">SOURCE_PATH</span><span class="w"> </span><span class="o">${</span><span class="nv">SOURCE_PATH</span><span class="o">}</span>
+<span class="w">    </span><span class="c">#PREFER_NINJA # Disable this option if project cannot be built with Ninja</span>
+<span class="w">    </span><span class="s">OPTIONS</span>
+<span class="w">        </span><span class="c">#-DNO_LIB=1</span>
+<span class="w">        </span><span class="s">-DNO_CUDA=1</span>
+<span class="w">        </span><span class="s">-DNO_DOC=1</span>
+<span class="w">        </span><span class="s">-DNO_OPENCL=1</span>
+<span class="w">        </span><span class="s">-DNO_OPENGL=1</span>
+<span class="w">        </span><span class="s">-DNO_METAL=1</span>
+<span class="w">        </span><span class="s">-DNO_DX=1</span>
+<span class="w">        </span><span class="c">#-DNO_OMP=1</span>
+<span class="w">        </span><span class="s">-DNO_TESTS=1</span>
+<span class="w">        </span><span class="s">-DNO_EXAMPLES=1</span>
+<span class="w">        </span><span class="s">-DNO_TUTORIALS=1</span>
+<span class="w">        </span><span class="s">-DNO_REGRESSION=1</span>
+<span class="w">        </span><span class="s">-DNO_GLTESTS=1</span>
+<span class="w">        </span><span class="c"># for tbb_debug.lib</span>
+<span class="w">        </span><span class="s">-DTBB_LOCATION=</span><span class="o">${</span><span class="nv">CURRENT_INSTALLED_DIR</span><span class="o">}</span><span class="s">/debug</span>
+<span class="w">    </span><span class="c"># OPTIONS_RELEASE -DOPTIMIZE=1</span>
+<span class="w">    </span><span class="c"># OPTIONS_DEBUG -DDEBUGGABLE=1</span>
 <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>package
 VCPKG_DIR/packages/opensubdiv_x86-windows
 packageの調整
@@ -130,94 +133,95 @@ vcpkg_copy_pdbs()</p>
 <h2>Handle copyright</h2>
 <p>file(COPY ${CURRENT_BUILDTREES_DIR}/src/OpenSubdiv-3_3_0/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/opensubdiv)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/opensubdiv/LICENSE.txt ${CURRENT_PACKAGES_DIR}/share/opensubdiv/copyright)</p>
-<pre class="code literal-block"><span class="err">以下のようになった。</span>
+<div class="code"><pre class="code literal-block"><span class="err">以下のようになった。</span><span class="w"></span>
 
-<span class="err">```</span><span class="n">shell</span>
-<span class="o">+---</span><span class="n">debug</span>
-<span class="o">|</span>   \<span class="o">---</span><span class="n">lib</span>
-<span class="o">|</span>           <span class="n">osdCPU</span><span class="o">.</span><span class="n">lib</span>
-<span class="o">|</span>
-<span class="o">+---</span><span class="n">include</span>
-<span class="o">|</span>   \<span class="o">---</span><span class="n">opensubdiv</span>
-<span class="o">|</span>       <span class="o">|</span>   <span class="n">version</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span>       <span class="o">+---</span><span class="n">far</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">error</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">patchDescriptor</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">patchMap</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">patchParam</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">patchTable</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">patchTableFactory</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">primvarRefiner</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">ptexIndices</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">stencilTable</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">stencilTableFactory</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">topologyDescriptor</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">topologyLevel</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">topologyRefiner</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">topologyRefinerFactory</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">types</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span>       <span class="o">+---</span><span class="n">hbr</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">allocator</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">bilinear</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">catmark</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">cornerEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">creaseEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">face</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">faceEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">fvarData</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">fvarEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">halfedge</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">hierarchicalEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">holeEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">loop</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">mesh</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">subdivision</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">vertex</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">vertexEdit</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span>       <span class="o">+---</span><span class="n">osd</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">bufferDescriptor</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">cpuEvaluator</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">cpuPatchTable</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">cpuVertexBuffer</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">mesh</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">nonCopyable</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">ompEvaluator</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">ompKernel</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">opengl</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">tbbEvaluator</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">tbbKernel</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">types</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span>       <span class="o">+---</span><span class="n">sdc</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">bilinearScheme</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">catmarkScheme</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">crease</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">loopScheme</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">options</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">scheme</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>       <span class="n">types</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>       <span class="o">|</span>
-<span class="o">|</span>       \<span class="o">---</span><span class="n">vtr</span>
-<span class="o">|</span>               <span class="n">array</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">componentInterfaces</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">fvarLevel</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">fvarRefinement</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">level</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">refinement</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">sparseSelector</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">stackBuffer</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>               <span class="n">types</span><span class="o">.</span><span class="n">h</span>
-<span class="o">|</span>
-<span class="o">+---</span><span class="n">lib</span>
-<span class="o">|</span>       <span class="n">osdCPU</span><span class="o">.</span><span class="n">lib</span>
-<span class="o">|</span>
-\<span class="o">---</span><span class="n">share</span>
-    \<span class="o">---</span><span class="n">opensubdiv</span>
-            <span class="n">copyright</span>
-</pre>
+<span class="err">```</span><span class="n">shell</span><span class="w"></span>
+<span class="o">+---</span><span class="n">debug</span><span class="w"></span>
+<span class="o">|</span><span class="w">   </span>\<span class="o">---</span><span class="n">lib</span><span class="w"></span>
+<span class="o">|</span><span class="w">           </span><span class="n">osdCPU</span><span class="o">.</span><span class="n">lib</span><span class="w"></span>
+<span class="o">|</span><span class="w"></span>
+<span class="o">+---</span><span class="n">include</span><span class="w"></span>
+<span class="o">|</span><span class="w">   </span>\<span class="o">---</span><span class="n">opensubdiv</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">   </span><span class="n">version</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">+---</span><span class="n">far</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">error</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">patchDescriptor</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">patchMap</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">patchParam</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">patchTable</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">patchTableFactory</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">primvarRefiner</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">ptexIndices</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">stencilTable</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">stencilTableFactory</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">topologyDescriptor</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">topologyLevel</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">topologyRefiner</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">topologyRefinerFactory</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">types</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">+---</span><span class="n">hbr</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">allocator</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">bilinear</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">catmark</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">cornerEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">creaseEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">face</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">faceEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">fvarData</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">fvarEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">halfedge</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">hierarchicalEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">holeEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">loop</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">mesh</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">subdivision</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">vertex</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">vertexEdit</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">+---</span><span class="n">osd</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">bufferDescriptor</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">cpuEvaluator</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">cpuPatchTable</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">cpuVertexBuffer</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">mesh</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">nonCopyable</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">ompEvaluator</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">ompKernel</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">opengl</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">tbbEvaluator</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">tbbKernel</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">types</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">+---</span><span class="n">sdc</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">bilinearScheme</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">catmarkScheme</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">crease</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">loopScheme</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">options</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">scheme</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w">       </span><span class="n">types</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span>\<span class="o">---</span><span class="n">vtr</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">array</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">componentInterfaces</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">fvarLevel</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">fvarRefinement</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">level</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">refinement</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">sparseSelector</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">stackBuffer</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w">               </span><span class="n">types</span><span class="o">.</span><span class="n">h</span><span class="w"></span>
+<span class="o">|</span><span class="w"></span>
+<span class="o">+---</span><span class="n">lib</span><span class="w"></span>
+<span class="o">|</span><span class="w">       </span><span class="n">osdCPU</span><span class="o">.</span><span class="n">lib</span><span class="w"></span>
+<span class="o">|</span><span class="w"></span>
+\<span class="o">---</span><span class="n">share</span><span class="w"></span>
+<span class="w">    </span>\<span class="o">---</span><span class="n">opensubdiv</span><span class="w"></span>
+<span class="w">            </span><span class="n">copyright</span><span class="w"></span>
+</pre></div>
+
 <p>OpenSubdivにはdllのビルドは無いみたい。ライブラリ構成もtemplate classを主体とするもののようだ。</p>
 
 <hr>

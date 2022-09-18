@@ -44,25 +44,29 @@
 <h2>基本設計</h2>
 <p>MessagePack-RPCの仕様をおさらいすると以下の通り。</p>
 <p>request</p>
-<pre class="code literal-block"><span class="k">[type, msgid, method, params]</span>
- <span class="na">(0)   (int)  (str)   (array)</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">[type, msgid, method, params]</span><span class="w"></span>
+<span class="w"> </span><span class="na">(0)   (int)  (str)   (array)</span><span class="w"></span>
+</pre></div>
+
 <p>response</p>
-<pre class="code literal-block"><span class="k">[type, msgid, error, result]</span>
- <span class="na">(1)   (int)  (any)  (any)</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">[type, msgid, error, result]</span><span class="w"></span>
+<span class="w"> </span><span class="na">(1)   (int)  (any)  (any)</span><span class="w"></span>
+</pre></div>
+
 <p>msgpackのバイト列を受け取って、msgpackのバイト列を返す関数として一般化する。</p>
-<pre class="code literal-block"><span class="k">typedef</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">typedef</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span><span class="w"></span>
 <span class="c1">// msgpackのバイト列を引数にとり、msgpackのバイト列を返す</span>
 <span class="k">typedef</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">bytes</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bytes</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">procedurecall</span><span class="p">;</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>任意の関数呼び出しからprocedurecallを作り出せるようにして、MessagePack-RPCシステムの部品として使えるようにする。
 簡単な例
 例として</p>
-<pre class="code literal-block"><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">){</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">){</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+
 <p>をprocedurecallに変換してみる。</p>
-<pre class="code literal-block"><span class="n">procedurecall</span><span class="w"> </span><span class="nf">make_procedurecall</span><span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">))</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">procedurecall</span><span class="w"> </span><span class="nf">make_procedurecall</span><span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">))</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// request -&gt; response ではなくparams -&gt; result</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[</span><span class="n">f</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">bytes</span><span class="o">&amp;</span><span class="w"> </span><span class="n">src</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">bytes</span><span class="w"></span>
@@ -81,10 +85,11 @@
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">packer</span><span class="p">.</span><span class="n">get_payload</span><span class="p">();</span><span class="w"></span>
 <span class="w">    </span><span class="p">};</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>int add(int, int)</code> を <code>procedurecall</code> に変換するというのは、引数のアンパック、関数呼び出し、結果のパックという一連の定型コードの呼び出しになる。</p>
 <p><code>procedurecall</code> の使い方は以下の通り。</p>
-<pre class="code literal-block"><span class="c1">// register</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// register</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">proc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">msgpackpp</span><span class="o">::</span><span class="n">rpc</span><span class="o">::</span><span class="n">make_procedurecall</span><span class="p">(</span><span class="o">&amp;</span><span class="n">add</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// call</span>
@@ -94,16 +99,18 @@
 
 <span class="c1">// result</span>
 <span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">msgpackpp</span><span class="o">::</span><span class="n">parser</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="n">get_number</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>とりあえず動いたが、関数を増やすたびにこれだけのコードを記述するのはやってられませぬ。
 以下のような理想形を目指して作りこんでゆく。</p>
-<pre class="code literal-block"><span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">msgpack_procedurecall</span><span class="p">([](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">){</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">msgpack_procedurecall</span><span class="p">([](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">){</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span><span class="w"></span>
+</pre></div>
+
 <p><code>lambda</code> が動けば他も動くようにできるので、<code>lambda</code> を第一に実装する。</p>
 <h2>実装</h2>
 <p>ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。</p>
-<pre class="code literal-block"><span class="n">make_procedurecall</span><span class="w"></span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">...</span><span class="w"> </span><span class="n">IS</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">make_procedurecall</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="p">...</span><span class="n">AS</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">...</span><span class="w"> </span><span class="n">IS</span><span class="o">&gt;</span><span class="w"></span>
 <span class="n">procedurecall</span><span class="w"> </span><span class="n">_make_procedurecall</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">&amp;</span><span class="n">f</span><span class="w"></span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">AS</span><span class="p">...)</span><span class="k">const</span><span class="w"> </span><span class="c1">// template引数R, C, ASを受け付けるためのダミー</span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">index_sequence</span><span class="o">&lt;</span><span class="n">IS</span><span class="p">...</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// template引数ISを受け付けるためのダミー</span>
@@ -127,7 +134,7 @@
 <span class="w">    </span><span class="p">};</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
 <span class="n">procedurecall</span><span class="w"> </span><span class="n">_make_procedurecall</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">AS</span><span class="p">...)</span><span class="k">const</span><span class="w"> </span><span class="c1">// template引数R, C, ASを受け付けるためのダミー</span>
 <span class="p">)</span><span class="w"></span>
@@ -141,7 +148,7 @@
 <span class="c1">//</span>
 <span class="c1">// あらゆる型のlambdaを受け付けるようにした</span>
 <span class="c1">//</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="o">&gt;</span><span class="w"></span>
 <span class="n">procedurecall</span><span class="w"> </span><span class="n">make_procedurecall</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">_make_procedurecall</span><span class="p">(</span><span class="n">f</span><span class="w"></span>
@@ -150,7 +157,7 @@
 <span class="p">}</span><span class="w"></span>
 
 <span class="n">msgpack_call</span><span class="w"></span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
 <span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">_msgpack_call</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">(</span><span class="n">C</span><span class="o">::*</span><span class="p">)(</span><span class="n">AS</span><span class="p">...)</span><span class="k">const</span><span class="w"> </span><span class="c1">// template引数R, C, ASを受けるためのダミー</span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">AS</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"></span>
@@ -168,7 +175,7 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
 <span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">msgpack_call</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">AS</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="c1">// 返り値の型はreturnから型推論</span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">_msgpack_call</span><span class="p">(</span><span class="n">f</span><span class="w"></span>
@@ -176,11 +183,13 @@
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">...</span><span class="w"></span>
 <span class="w">    </span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h2>使う。</h2>
-<pre class="code literal-block"><span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span><span class="o">==</span><span class="n">msgpack_call</span><span class="p">([](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">REQUIRE</span><span class="p">(</span><span class="mi">3</span><span class="o">==</span><span class="n">msgpack_call</span><span class="p">([](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span><span class="w"></span>
 <span class="n">REQUIRE</span><span class="p">(</span><span class="mi">-1</span><span class="o">==</span><span class="n">msgpack_call</span><span class="p">([](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>valiadic template</code> おそるべし。
 従来であれば、1引数、２引数・・・と引数の個数ごとに手作業でバージョンを増やさねばならなかったものが、わりとさくっと書けるな。</p>
 

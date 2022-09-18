@@ -47,13 +47,14 @@
 <p>273行</p>
 <p>この量なら読める。</p>
 <h4>インクルードガード</h4>
-<pre class="code literal-block"><span class="k">if</span> exists<span class="p">(</span><span class="s1">'g:BufferListLoaded'</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="k">if</span> exists<span class="p">(</span><span class="s1">'g:BufferListLoaded'</span><span class="p">)</span>
   <span class="k">finish</span>
 <span class="k">endif</span>
 <span class="k">let</span> <span class="k">g</span>:BufferListLoaded <span class="p">=</span> <span class="m">1</span>
-</pre>
+</pre></div>
+
 <h4>初期値決め</h4>
-<pre class="code literal-block"><span class="c">" vimrcで先に値を決められるようにしている？</span>
+<div class="code"><pre class="code literal-block"><span class="c">" vimrcで先に値を決められるようにしている？</span>
 <span class="c">" vimrc より plugin の方が後に実行されるからか？</span>
 <span class="k">if</span> <span class="p">!</span>exists<span class="p">(</span><span class="s1">'g:BufferListWidth'</span><span class="p">)</span>
   <span class="k">let</span> <span class="k">g</span>:BufferListWidth <span class="p">=</span> <span class="m">20</span>
@@ -62,10 +63,11 @@
 <span class="k">if</span> <span class="p">!</span>exists<span class="p">(</span><span class="s1">'g:BufferListMaxWidth'</span><span class="p">)</span>
   <span class="k">let</span> <span class="k">g</span>:BufferListMaxWidth <span class="p">=</span> <span class="m">40</span>
 <span class="k">endif</span>
-</pre>
+</pre></div>
+
 <h4>BufferList関数</h4>
 <p><code>__BUFFERLIST__</code> という Buffer を専用のバッファとして扱う。</p>
-<pre class="code literal-block"><span class="c">" toggled the buffer list on/off</span>
+<div class="code"><pre class="code literal-block"><span class="c">" toggled the buffer list on/off</span>
 <span class="k">function</span><span class="p">!</span> BufferList<span class="p">()</span>
 <span class="c">  " if we get called and the list is open --&gt; close it</span>
   <span class="k">if</span> bufexists<span class="p">(</span>bufnr<span class="p">(</span><span class="s2">"__BUFFERLIST__"</span><span class="p">))</span>
@@ -73,19 +75,22 @@
     exec <span class="s1">':'</span> . bufnr<span class="p">(</span><span class="s2">"__BUFFERLIST__"</span><span class="p">)</span> . <span class="s1">'bwipeout'</span>
     <span class="k">return</span>
   <span class="k">endif</span>
-</pre>
+</pre></div>
+
 <p><code>bufnr</code> でバッファ名からバッファ番号を得て、<code>bufexists</code> で存在を確認する。
 <code>bufnr</code> には特別な名前を指定出来て以下のような効果があるようだ。</p>
-<pre class="code literal-block">  <span class="k">let</span> <span class="k">l</span>:bufcount <span class="p">=</span> bufnr<span class="p">(</span><span class="s1">'$'</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block">  <span class="k">let</span> <span class="k">l</span>:bufcount <span class="p">=</span> bufnr<span class="p">(</span><span class="s1">'$'</span><span class="p">)</span>
   <span class="k">let</span> <span class="k">l</span>:activebuf <span class="p">=</span> bufnr<span class="p">(</span><span class="s1">''</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <h5>バッファを作る</h5>
 <p>作ったバッファがアクティブになり、以降の操作対象になる。</p>
-<pre class="code literal-block"><span class="c">  " now, create the buffer &amp; set it up</span>
+<div class="code"><pre class="code literal-block"><span class="c">  " now, create the buffer &amp; set it up</span>
   exec <span class="s1">'silent! '</span> . <span class="k">l</span>:width . <span class="s1">'vne __BUFFERLIST__'</span>
-</pre>
+</pre></div>
+
 <h5>色決め</h5>
-<pre class="code literal-block"><span class="c">  " set up syntax highlighting</span>
+<div class="code"><pre class="code literal-block"><span class="c">  " set up syntax highlighting</span>
   <span class="k">if</span> has<span class="p">(</span><span class="s2">"syntax"</span><span class="p">)</span>
     <span class="k">syn</span> clear
     <span class="k">syn</span> <span class="k">match</span> BufferNormal <span class="sr">/  .*/</span>
@@ -93,10 +98,11 @@
     <span class="k">hi</span> <span class="nb">def</span> BufferNormal ctermfg<span class="p">=</span>black ctermbg<span class="p">=</span>white
     <span class="k">hi</span> <span class="nb">def</span> BufferSelected ctermfg<span class="p">=</span>white ctermbg<span class="p">=</span>black
   <span class="k">endif</span>
-</pre>
+</pre></div>
+
 <h5>Buffer構築</h5>
 <p><code>setlocal nomodifiable</code> で編集不可に</p>
-<pre class="code literal-block">  <span class="k">setlocal</span> <span class="nb">modifiable</span>
+<div class="code"><pre class="code literal-block">  <span class="k">setlocal</span> <span class="nb">modifiable</span>
   <span class="k">if</span> <span class="k">l</span>:displayedbufs <span class="p">&gt;</span> <span class="m">0</span>
 <span class="c">    " input the buffer list, delete the trailing newline, &amp; fill with blank lines</span>
     <span class="k">put</span><span class="p">!</span> <span class="p">=</span><span class="k">l</span>:buflist
@@ -113,11 +119,12 @@
     norm <span class="m">0</span>
   <span class="k">endif</span>
   <span class="k">setlocal</span> <span class="nb">nomodifiable</span>
-</pre>
+</pre></div>
+
 <h5>操作を設定</h5>
 <p>バッファローカルに <code>map</code> を設定する。
 <code>map</code> がキーボード・マウス入力へのコールバック設定になっているのか。なるほど。</p>
-<pre class="code literal-block"><span class="c">  " set up the keymap</span>
+<div class="code"><pre class="code literal-block"><span class="c">  " set up the keymap</span>
   <span class="nb">noremap</span> <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>CR<span class="p">&gt;</span> :<span class="k">call</span> LoadBuffer<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
   map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">q</span> :<span class="k">bwipeout</span><span class="p">&lt;</span>CR<span class="p">&gt;</span> 
   map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">j</span> :<span class="k">call</span> BufferListMove<span class="p">(</span><span class="s2">"down"</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
@@ -131,25 +138,29 @@
     \:<span class="k">call</span> LoadBuffer<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
   map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Down<span class="p">&gt;</span> <span class="k">j</span>
   map <span class="p">&lt;</span><span class="k">silent</span><span class="p">&gt;</span> <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Up<span class="p">&gt;</span> <span class="k">k</span>
-</pre>
+</pre></div>
+
 <p>左右への動きを封じてある</p>
-<pre class="code literal-block">  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">h</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+<div class="code"><pre class="code literal-block">  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">h</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">l</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Left<span class="p">&gt;</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>Right<span class="p">&gt;</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
-</pre>
+</pre></div>
+
 <p>その他編集系の機能を封じる</p>
-<pre class="code literal-block">  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">i</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
+<div class="code"><pre class="code literal-block">  map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">i</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">a</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> I <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> A <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="k">o</span> <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
   map <span class="p">&lt;</span>buffer<span class="p">&gt;</span> O <span class="p">&lt;</span>Nop<span class="p">&gt;</span>
-</pre>
+</pre></div>
+
 <p>移動</p>
-<pre class="code literal-block">  <span class="nv">map</span> <span class="o">&lt;</span><span class="nv">silent</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nv">buffer</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nv">Home</span><span class="o">&gt;</span> :<span class="k">call</span> <span class="nl">BufferListMove</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span><span class="o">&lt;</span><span class="nv">CR</span><span class="o">&gt;</span>
-  <span class="nv">map</span> <span class="o">&lt;</span><span class="nv">silent</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nv">buffer</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="k">End</span><span class="o">&gt;</span> :<span class="k">call</span> <span class="nl">BufferListMove</span><span class="ss">(</span><span class="nv">line</span><span class="ss">(</span><span class="s2">"</span><span class="s">$</span><span class="s2">"</span><span class="ss">))</span><span class="o">&lt;</span><span class="nv">CR</span><span class="o">&gt;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="nv">map</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">silent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">buffer</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">Home</span><span class="o">&gt;</span><span class="w"> </span>:<span class="k">call</span><span class="w"> </span><span class="nl">BufferListMove</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span><span class="o">&lt;</span><span class="nv">CR</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="nv">map</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">silent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">buffer</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="k">End</span><span class="o">&gt;</span><span class="w"> </span>:<span class="k">call</span><span class="w"> </span><span class="nl">BufferListMove</span><span class="ss">(</span><span class="nv">line</span><span class="ss">(</span><span class="s2">"$"</span><span class="ss">))</span><span class="o">&lt;</span><span class="nv">CR</span><span class="o">&gt;</span><span class="w"></span>
+</pre></div>
+
 <h3>情報収集</h3>
 <p><code>:set nomodifiable</code> で調べてみた</p>
 <ul>

@@ -52,15 +52,16 @@
 <h2>メンバー関数呼び出し</h2>
 <p><code>ImFont</code>, <code>ImFontAtlas</code> のみ何故か <code>c++</code> 色が強く、メンバ関数呼び出しがあったりするのでなんとかしたい。
 cdecl で FFI 記述できるんだっけ？</p>
-<pre class="code literal-block"><span class="c1">//io.Fonts-&gt;AddFontDefault();</span>
+<div class="code"><pre class="code literal-block"><span class="c1">//io.Fonts-&gt;AddFontDefault();</span>
 <span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);</span>
 <span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);</span>
 <span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);</span>
 <span class="c1">//io.Fonts-&gt;AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);</span>
 <span class="c1">//ImFont* font = io.Fonts-&gt;AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts-&gt;GetGlyphRangesJapanese());</span>
-</pre>
+</pre></div>
+
 <p>第1引数に this に相当する引数を追加してやればいけた。</p>
-<pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+<div class="code"><pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
 <span class="s">// 適当に名前を付け替える</span>
 <span class="s">struct ImFont* ImFontAtlas_AddFontFromFileTTF(</span>
 <span class="s">    struct ImFontAtlas* this,</span>
@@ -70,7 +71,8 @@ cdecl で FFI 記述できるんだっけ？</p>
 <span class="s">    ImWchar* glyph_ranges</span>
 <span class="s">) asm("?AddFontFromFileTTF@ImFontAtlas@@QEAAPEAUImFont@@PEBDMPEBUImFontConfig@@PEBG@Z");</span>
 <span class="s">]]</span>
-</pre>
+</pre></div>
+
 <h2>C++ デフォルト引数</h2>
 <p><code>ImGui</code> の <code>API</code> は基本的にほぼ C になるように配慮されていて、C++ の機能は限定的にしか使っていない。</p>
 <ul>
@@ -80,9 +82,10 @@ cdecl で FFI 記述できるんだっけ？</p>
 <p>である。
 で、このデフォルト引数がないと <code>imgui</code> の使い勝手が著しく下がる。
 リファレンスを確認して、デフォルト値を当ててやる必要が出るので。</p>
-<pre class="code literal-block"><span class="c1">// 例</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// 例</span>
 <span class="n">IMGUI_API</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">Begin</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">*</span><span class="w"> </span><span class="n">p_open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">ImGuiWindowFlags</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>NULL</code> は <code>nil</code> だし、 <code>0</code> はそのまま <code>0</code> なので、簡単なところだけでも対応する。
 最悪、インテリセンスに出るようにすることで調べる手間は回避できるのだけど
 <code>const &amp;ImVec2 v = ImVec2(0, 0)</code> とかはめんどくさいです。
@@ -91,7 +94,7 @@ FFI 境界の <code>struct の value 渡し</code>, <code>デフォルト引数<
 <code>rust</code> の <code>imgui</code> ラッパーの API を使いたいのではなくて、生の <code>imgui</code> が使いたいのだ。
 <code>luajit</code> の FFI はちょっとラップすることで簡単に解決できる(遅くなるかもしれないが)。</p>
 <p>ラッパーを自動で生成するようにできた。</p>
-<pre class="code literal-block">    <span class="c1">-- lua では nil と false のみが 偽 である</span>
+<div class="code"><pre class="code literal-block">    <span class="c1">-- lua では nil と false のみが 偽 である</span>
 
     <span class="c1">-- wrapper</span>
     <span class="n">Begin</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p_open</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
@@ -108,17 +111,20 @@ FFI 境界の <code>struct の value 渡し</code>, <code>デフォルト引数<
         <span class="c1">-- ffi 呼び出し</span>
         <span class="kr">return</span> <span class="n">imgui</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
     <span class="kr">end</span><span class="p">,</span>
-</pre>
+</pre></div>
+
 <h2>可変長引数</h2>
-<pre class="code literal-block"><span class="n">IMGUI_API</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">fmt</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">IMGUI_API</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">fmt</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"></span>
+</pre></div>
+
 <p>luajit ffi ではそのまま <code>...</code> を扱うことができた。</p>
 <p>ただし、<code>%d</code> のときは、
 <code>LL</code> をつけて <code>integer</code> を渡す。
 <code>number</code> だとうまくいかない。</p>
-<pre class="code literal-block"><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="n">LL</span> <span class="c1">-- 64bit int. UL もある</span>
+<div class="code"><pre class="code literal-block"><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="n">LL</span> <span class="c1">-- 64bit int. UL もある</span>
 <span class="n">imgui</span><span class="p">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">"counter = %d"</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p><code>LL</code> と <code>UL</code> は luajit の拡張らしい。
 <a href="https://luajit.org/ext_ffi_api.html">https://luajit.org/ext_ffi_api.html</a></p>
 <blockquote>
@@ -126,28 +132,30 @@ FFI 境界の <code>struct の value 渡し</code>, <code>デフォルト引数<
 <p>numeric literals with the suffixes LL or ULL as signed or unsigned 64 bit integers</p>
 </blockquote>
 <p>だがしかし、この記法使うと <code>stylua</code> がエラーになる。そりゃ、そうだ。</p>
-<pre class="code literal-block"><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'long long[1]'</span><span class="p">)</span> <span class="c1">-- 32bit だとうまくいかない</span>
+<div class="code"><pre class="code literal-block"><span class="kd">local</span> <span class="n">count</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'long long[1]'</span><span class="p">)</span> <span class="c1">-- 32bit だとうまくいかない</span>
 <span class="n">imgui</span><span class="p">.</span><span class="n">Text</span><span class="p">(</span><span class="s2">"counter = %d"</span><span class="p">,</span> <span class="n">counter</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</pre>
+</pre></div>
+
 <p>を使うのがよさそう。</p>
 <h2>template class のごまかし</h2>
 <p>T を pointer としてしか使わない場合は、
 <code>T*</code> を除去して <code>void*</code> にすれば動く。</p>
-<pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
-<span class="k">struct</span> <span class="nc">ImVector</span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">ImVector</span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">Capacity</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">Data</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w">    </span>
-</pre>
-<pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[</span>
 <span class="s">struct ImVector{</span>
 <span class="s">    int Size;</span>
 <span class="s">    int Capacity;</span>
 <span class="s">    void* Data;</span>
 <span class="s">};    </span>
 <span class="s">]]</span>
-</pre>
+</pre></div>
 
 <hr>
 <ul class="pager hidden-print">

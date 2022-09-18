@@ -47,21 +47,23 @@ portageとhomeをmountしていたので大丈夫かと思っていたのだが�
 パーティションの割り方の都合で拡大できないので新しく作り直すことにした。</p>
 <h3>作業記録。</h3>
 <h4>ファイルシステム準備</h4>
-<pre class="code literal-block"># lvcreate -L 100G -n gentoo_root mygroup
+<div class="code"><pre class="code literal-block"># lvcreate -L 100G -n gentoo_root mygroup
 # mkfs.ext4 /dev/mygroup/gentoo_root
 # cd /mnt
 # mkdir gentoo
 # mount /dev/mygroup/gentoo_root
-</pre>
+</pre></div>
+
 <h4>Installing the Gentoo Installation Files</h4>
 <p><a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=5">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=5</a></p>
 <p>stage3ファイルの取得と展開</p>
-<pre class="code literal-block"># cd /mnt/gentoo
+<div class="code"><pre class="code literal-block"># cd /mnt/gentoo
 # wget http://ftp.jaist.ac.jp/pub/Linux/Gentoo/releases/amd64/current-stage3/stage3-amd64-20130516.tar.bz2
 # tar xvjpf stage3-*.tar.bz2
-</pre>
+</pre></div>
+
 <p>portageは旧パーティションを流用</p>
-<pre class="code literal-block"># mkdir usr/portage
+<div class="code"><pre class="code literal-block"># mkdir usr/portage
 # mount /dev/mygroup/portage usr/portage
 
 /etc/portage/make.conf
@@ -98,31 +100,35 @@ LINGUAS="ja"
 
 MAKEOPTS="-j5"
 GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/linux/gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/"
-</pre>
+</pre></div>
+
 <p>CFLAGSに-march=nativeを使えるようになった</p>
 <h4>Installing the Gentoo Base System</h4>
 <p><a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=6">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=6</a></p>
-<pre class="code literal-block"><span class="c1"># cp -L /etc/resolv.conf /mnt/gentoo/etc/</span>
-<span class="c1"># mount -t proc none /mnt/gentoo/proc</span>
-<span class="c1"># mount --rbind /sys /mnt/gentoo/sys</span>
-<span class="c1"># mount --rbind /dev /mnt/gentoo/dev</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># cp -L /etc/resolv.conf /mnt/gentoo/etc/</span><span class="w"></span>
+<span class="c1"># mount -t proc none /mnt/gentoo/proc</span><span class="w"></span>
+<span class="c1"># mount --rbind /sys /mnt/gentoo/sys</span><span class="w"></span>
+<span class="c1"># mount --rbind /dev /mnt/gentoo/dev</span><span class="w"></span>
 
-<span class="c1"># chroot /mnt/gentoo /bin/bash</span>
-<span class="c1"># source /etc/profile</span>
-<span class="c1"># export PS1="(chroot) $PS1"</span>
+<span class="c1"># chroot /mnt/gentoo /bin/bash</span><span class="w"></span>
+<span class="c1"># source /etc/profile</span><span class="w"></span>
+<span class="c1"># export PS1="(chroot) $PS1"</span><span class="w"></span>
 
-<span class="c1"># emerge --sync</span>
-<span class="c1"># cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime</span>
-<span class="c1"># echo "Asia/Tokyo" &gt; /etc/timezone</span>
-</pre>
+<span class="c1"># emerge --sync</span><span class="w"></span>
+<span class="c1"># cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime</span><span class="w"></span>
+<span class="c1"># echo "Asia/Tokyo" &gt; /etc/timezone</span><span class="w"></span>
+</pre></div>
+
 <h4>Configuring the Kernel</h4>
 <p><a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=7">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=7</a></p>
-<pre class="code literal-block"># emerge gentoo-sources
-</pre>
+<div class="code"><pre class="code literal-block"># emerge gentoo-sources
+</pre></div>
+
 <p>LVMからブートするのでgenkernelを使う</p>
-<pre class="code literal-block"># emerge genkernel
+<div class="code"><pre class="code literal-block"># emerge genkernel
 # genkernel --lvm --install all
-</pre>
+</pre></div>
+
 <h4>Configuring your System</h4>
 <p><a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=8">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=8</a></p>
 <h4>Installing Necessary System Tools</h4>
@@ -130,11 +136,11 @@ GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ ftp://ftp.iij.ad.jp/pub/l
 <h4>Configuring the Bootloader</h4>
 <p><a href="http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=10">http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&amp;chap=10</a></p>
 <p>/boot/grub/menu.lst</p>
-<pre class="code literal-block">title genkernel 3.8.13
+<div class="code"><pre class="code literal-block">title genkernel 3.8.13
 root (hd0,0)
 kernel /boot/kernel-genkernel-x86_64-3.8.13-gentoo real_root=/dev/mygroup/gentoo_root rootfstype=ext4 dolvm
 initrd /boot/initramfs-genkernel-x86_64-3.8.13-gentoo
-</pre>
+</pre></div>
 
 <hr>
 <ul class="pager hidden-print">

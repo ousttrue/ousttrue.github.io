@@ -41,15 +41,16 @@
 </h1>
 
 <p>glBufferDataに数字のlistを渡す場合以下のように渡せるがどうゆう実装なのか。</p>
-<pre class="code literal-block"><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="c1"># x, y, z</span>
+<div class="code"><pre class="code literal-block"><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="c1"># x, y, z</span>
 
 <span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> 
         <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># byte size</span>
         <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">))(</span><span class="o">*</span><span class="n">vertices</span><span class="p">),</span> <span class="c1"># 謎のctypes</span>
         <span class="n">GL_STATIC_DRAW</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>非常に読み辛かったがVisualStudioでステップ実行して動きを追ってみた。</p>
-<pre class="code literal-block"><span class="c1"># site-packages/OpenGL/GL/VERSION/GL_1_5.py</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># site-packages/OpenGL/GL/VERSION/GL_1_5.py</span>
 <span class="nd">@_lazy</span><span class="p">(</span> <span class="n">glBufferData</span> <span class="p">)</span>
 <span class="k">def</span> <span class="nf">glBufferData</span><span class="p">(</span> <span class="n">baseOperation</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
     <span class="sd">"""Copy given data into the currently bound vertex-buffer-data object</span>
@@ -73,9 +74,10 @@
     <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">ArrayDatatype</span><span class="o">.</span><span class="n">arrayByteCount</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span>
     <span class="k">return</span> <span class="n">baseOperation</span><span class="p">(</span> <span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">usage</span> <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>難関。デバッガ無しでは追えませんでした。</p>
-<pre class="code literal-block"><span class="c1"># site-packages/OpenGL/arrays/arraydatatype.py</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># site-packages/OpenGL/arrays/arraydatatype.py</span>
 <span class="k">class</span> <span class="nc">HandlerRegistry</span><span class="p">(</span> <span class="nb">dict</span> <span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">plugin_match</span> <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">match</span> <span class="o">=</span> <span class="n">plugin_match</span>
@@ -118,8 +120,9 @@
         <span class="sd">"""Given a value, convert to preferred array representation"""</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">getHandler</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">asArray</span><span class="p">(</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">typeConstant</span> <span class="p">)</span> <span class="c1"># 1</span>
     <span class="n">asArray</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span> <span class="n">logs</span><span class="o">.</span><span class="n">logOnFail</span><span class="p">(</span> <span class="n">asArray</span><span class="p">,</span> <span class="n">_log</span> <span class="p">)</span> <span class="p">)</span>
-</pre>
-<pre class="code literal-block"><span class="c1"># site-packages/OpenGL/plugins.py</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="c1"># site-packages/OpenGL/plugins.py</span>
 <span class="k">class</span> <span class="nc">Plugin</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
     <span class="sd">"""Base class for plugins to be loaded"""</span>
     <span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
@@ -139,9 +142,10 @@
             <span class="k">if</span> <span class="nb">set</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">plugin</span>
         <span class="k">return</span> <span class="kc">None</span>
-</pre>
+</pre></div>
+
 <p>これらがimport時にFormatHandlerとして登録される。</p>
-<pre class="code literal-block"><span class="c1"># site-packages/OpenGL/__init__.py</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># site-packages/OpenGL/__init__.py</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">'none'</span><span class="p">,</span> <span class="s1">'OpenGL.arrays.nones.NoneHandler'</span><span class="p">,</span> <span class="p">[</span> <span class="n">_bi</span><span class="o">+</span><span class="s1">'.NoneType'</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
@@ -202,11 +206,12 @@
 <span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">'vbo'</span><span class="p">,</span> <span class="s1">'OpenGL.arrays.vbo.VBOHandler'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'OpenGL.arrays.vbo.VBO'</span><span class="p">,</span><span class="s1">'OpenGL_accelerate.vbo.VBO'</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
 <span class="n">FormatHandler</span><span class="p">(</span> <span class="s1">'vbooffset'</span><span class="p">,</span> <span class="s1">'OpenGL.arrays.vbo.VBOOffsetHandler'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'OpenGL.arrays.vbo.VBOOffset'</span><span class="p">,</span><span class="s1">'OpenGL_accelerate.vbo.VBOOffset'</span><span class="p">],</span><span class="n">isOutput</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>numpyとか定義されているね。なるほど。</p>
 <p><code>(ctypes.c_float*len(vertices))(*vertices)</code> は <code>ctypes.c_float</code> にマッチして、<code>CtypesArrayHandler</code> によって処理される。
 一方、単なるPythonのlistであるverticesは、<code>OpenGL.arrays.lists.ListHandler</code> によって処理されて <code>NotImplementedError</code> に落ちるのであった。</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">ListHandler</span><span class="p">(</span> <span class="n">formathandler</span><span class="o">.</span><span class="n">FormatHandler</span> <span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">ListHandler</span><span class="p">(</span> <span class="n">formathandler</span><span class="o">.</span><span class="n">FormatHandler</span> <span class="p">):</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">asArray</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeCode</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
         <span class="sd">"""Convert given value to a ctypes array value of given typeCode</span>
@@ -217,7 +222,8 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">typeCode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span> <span class="s2">"""Haven't implemented type-inference for lists yet"""</span> <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>確かにlistだと中身の型が決められんね。なるほど。</p>
 
 <hr>

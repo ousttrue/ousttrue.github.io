@@ -44,7 +44,7 @@
 MSVC15(VisualStudio2017)とかを使うには。</p>
 <p>本当はPythone.exeをビルドしたコンパイラにバージョンを合わせた方がいいのかもしれないが、古いC++でコンパイルできるようにコードを修正するのが嫌なので。
 例。</p>
-<pre class="code literal-block"><span class="c1"># setup.py</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># setup.py</span>
 <span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">Extension</span>
 
 <span class="n">iex</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s1">'iex'</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'PyIex/iexmodule.cpp'</span><span class="p">])</span>
@@ -53,16 +53,18 @@ MSVC15(VisualStudio2017)とかを使うには。</p>
        <span class="n">version</span> <span class="o">=</span> <span class="s1">'1.0'</span><span class="p">,</span>
        <span class="n">description</span> <span class="o">=</span> <span class="s1">'python binding of Alembic'</span><span class="p">,</span>
        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">iex</span><span class="p">])</span>
-</pre>
-<pre class="code literal-block"><span class="o">&gt;</span> <span class="n">python</span><span class="o">.</span><span class="n">exe</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
-<span class="n">running</span> <span class="n">build</span>
-<span class="n">running</span> <span class="n">build_ext</span>
-<span class="n">building</span> <span class="s1">'iex'</span> <span class="n">extension</span>
-<span class="n">error</span><span class="p">:</span> <span class="n">Unable</span> <span class="n">to</span> <span class="n">find</span> <span class="n">vcvarsall</span><span class="o">.</span><span class="n">bat</span>
-</pre>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="o">&gt;</span><span class="w"> </span><span class="n">python</span><span class="o">.</span><span class="n">exe</span><span class="w"> </span><span class="n">setup</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="n">build</span><span class="w"></span>
+<span class="n">running</span><span class="w"> </span><span class="n">build</span><span class="w"></span>
+<span class="n">running</span><span class="w"> </span><span class="n">build_ext</span><span class="w"></span>
+<span class="n">building</span><span class="w"> </span><span class="s1">'iex'</span><span class="w"> </span><span class="n">extension</span><span class="w"></span>
+<span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="n">vcvarsall</span><span class="o">.</span><span class="n">bat</span><span class="w"></span>
+</pre></div>
+
 <p>vs2008をインストールしていないのでエラーになる。
 調べたところdistutils/mvsc9compiler.pyのfind_vcvarsallを置き換えればよさそう。</p>
-<pre class="code literal-block"><span class="c1"># monkey patch for msvccompiler</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># monkey patch for msvccompiler</span>
 <span class="kn">import</span> <span class="nn">distutils.msvc9compiler</span>
 <span class="k">def</span> <span class="nf">find_vcvarsall</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
     <span class="k">return</span> <span class="s2">"C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvarsall.bat"</span>
@@ -90,7 +92,8 @@ MSVC15(VisualStudio2017)とかを使うには。</p>
        <span class="n">version</span> <span class="o">=</span> <span class="s1">'1.0'</span><span class="p">,</span>
        <span class="n">description</span> <span class="o">=</span> <span class="s1">'python binding of Alembic'</span><span class="p">,</span>
        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">iex</span><span class="p">])</span>
-</pre>
+</pre></div>
+
 <p>VS2017のコンパイラでビルドできた。</p>
 
 <hr>

@@ -44,21 +44,24 @@
 <p><a href="https://pypi.python.org/pypi/ptvsd">PTVSD</a></p>
 <p>VisualStudioのPTVS向けのリモートデバッグモジュール。VSCodeも対応しているらしい。
 リモート側でptvsdをimportして待ち受けて、VisualStudio側からtcp経由でアタッチする。</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">ptvsd</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">ptvsd</span>
 <span class="n">ptvsd</span><span class="o">.</span><span class="n">enable_attach</span><span class="p">(</span><span class="n">secret</span> <span class="o">=</span> <span class="s1">'secret'</span><span class="p">,</span> <span class="p">(</span><span class="s1">'0.0.0.0'</span><span class="p">,</span> <span class="mi">3000</span><span class="p">))</span>
 
 <span class="k">if</span> <span class="n">os</span> <span class="o">!=</span> <span class="s1">'Windows'</span><span class="p">:</span>
     <span class="n">ptvsd</span><span class="o">.</span><span class="n">wait_for_attach</span><span class="p">()</span> <span class="c1"># スクリプトが終わらないようにブロックする</span>
-</pre>
-<pre class="code literal-block">+--------------+
+</pre></div>
+
+<div class="code"><pre class="code literal-block">+--------------+
 |remoteのpython|
 |         ptvsd|tcp:3000 &lt;-- VisualStudio attach
 +--------------+
-</pre>
+</pre></div>
+
 <p>dos窓</p>
-<pre class="code literal-block">&gt; netstat -an | find "3000"
+<div class="code"><pre class="code literal-block">&gt; netstat -an | find "3000"
   TCP         0.0.0.0:3000           0.0.0.0:0              LISTENING
-</pre>
+</pre></div>
+
 <p>確かに待っている。
 TCP経由なのでptvsd側が、LinuxやRasPi、Blenderの組み込みPythonなどなんであってもアタッチできる。
 素のPythonでやってみる</p>
@@ -70,15 +73,17 @@ PTVSD-3.0.0</p>
 <p>等のエラーが出てうまくいかぬ。</p>
 <p>https://github.com/DonJayamanne/pythonVSCode/issues/1039</p>
 <p>ptvsdのインストール</p>
-<pre class="code literal-block">&gt; py -3.6 -m pip install ptvsd==3.0.0
-</pre>
+<div class="code"><pre class="code literal-block">&gt; py -3.6 -m pip install ptvsd==3.0.0
+</pre></div>
+
 <p>testプロジェクト</p>
-<pre class="code literal-block">&gt; mkdir ptvsd_test
-</pre>
+<div class="code"><pre class="code literal-block">&gt; mkdir ptvsd_test
+</pre></div>
+
 <p>VSCodeでptvsd_testフォルダを開く。
 testスクリプト
 ptvsd_test/main.py</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">time</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">time</span>
 
 <span class="c1"># PTVSDを準備する</span>
 <span class="kn">import</span> <span class="nn">ptvsd</span>
@@ -97,49 +102,52 @@ ptvsd_test/main.py</p>
     <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</pre>
-<pre class="code literal-block">&gt;py -3.6 main.py
+</pre></div>
+
+<div class="code"><pre class="code literal-block">&gt;py -3.6 main.py
 wait_for_attach... ('0.0.0.0', 3000)
-</pre>
+</pre></div>
+
 <p>VSCodeから接続
 ptvsd_test/main.pyを開いてデバッグ開始。構成の追加でpythonを選択する。</p>
 <p>ptvsd_test/.vscode/launch.json</p>
-<pre class="code literal-block"><span class="p">{</span>
-    <span class="err">//</span> <span class="err">I</span><span class="kc">ntell</span><span class="err">iSe</span><span class="kc">nse</span> <span class="err">を使用して利用可能な属性を学べます。</span>
-    <span class="err">//</span> <span class="err">既存の属性の説明をホバーして表示します。</span>
-    <span class="err">//</span> <span class="err">詳細情報は次を確認してください</span><span class="p">:</span> <span class="err">h</span><span class="kc">tt</span><span class="err">ps</span><span class="p">:</span><span class="err">//go.microso</span><span class="kc">ft</span><span class="err">.com/</span><span class="kc">f</span><span class="err">wli</span><span class="kc">n</span><span class="err">k/?li</span><span class="kc">n</span><span class="err">kid=</span><span class="mi">830387</span>
-    <span class="nt">"version"</span><span class="p">:</span> <span class="s2">"0.2.0"</span><span class="p">,</span>
-    <span class="nt">"configurations"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">,</span>
-            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"python"</span><span class="p">,</span>
-            <span class="nt">"request"</span><span class="p">:</span> <span class="s2">"launch"</span><span class="p">,</span>
-            <span class="nt">"stopOnEntry"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-            <span class="nt">"pythonPath"</span><span class="p">:</span> <span class="s2">"${config:python.pythonPath}"</span><span class="p">,</span>
-            <span class="nt">"program"</span><span class="p">:</span> <span class="s2">"${file}"</span><span class="p">,</span>
-            <span class="nt">"cwd"</span><span class="p">:</span> <span class="s2">"${workspaceRoot}"</span><span class="p">,</span>
-            <span class="nt">"env"</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="nt">"envFile"</span><span class="p">:</span> <span class="s2">"${workspaceRoot}/.env"</span><span class="p">,</span>
-            <span class="nt">"debugOptions"</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">"WaitOnAbnormalExit"</span><span class="p">,</span>
-                <span class="s2">"WaitOnNormalExit"</span><span class="p">,</span>
-                <span class="s2">"RedirectOutput"</span>
-            <span class="p">]</span>
-        <span class="p">},</span>
-        <span class="p">{</span> <span class="err">//</span> <span class="err">これ</span>
-            <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Python: Attach"</span><span class="p">,</span>
-            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"python"</span><span class="p">,</span>
-            <span class="nt">"request"</span><span class="p">:</span> <span class="s2">"attach"</span><span class="p">,</span>
-            <span class="nt">"localRoot"</span><span class="p">:</span> <span class="s2">"${workspaceRoot}"</span><span class="p">,</span>
-            <span class="nt">"remoteRoot"</span><span class="p">:</span> <span class="s2">"${workspaceRoot}"</span><span class="p">,</span>
-            <span class="nt">"port"</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span>
-            <span class="nt">"secret"</span><span class="p">:</span> <span class="s2">"my_secret"</span><span class="p">,</span>
-            <span class="nt">"host"</span><span class="p">:</span> <span class="s2">"localhost"</span>
-        <span class="p">},</span>
+<div class="code"><pre class="code literal-block"><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// IntelliSense を使用して利用可能な属性を学べます。</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// 既存の属性の説明をホバーして表示します。</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.2.0"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"configurations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"stopOnEntry"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"pythonPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${config:python.pythonPath}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"program"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${file}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"cwd"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceRoot}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"envFile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceRoot}/.env"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"debugOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">"WaitOnAbnormalExit"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">"WaitOnNormalExit"</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">"RedirectOutput"</span><span class="w"></span>
+<span class="w">            </span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="c1">// これ</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python: Attach"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"attach"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"localRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceRoot}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"remoteRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceRoot}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"port"</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"secret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my_secret"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"host"</span><span class="p">:</span><span class="w"> </span><span class="s2">"localhost"</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
 
-        <span class="err">//</span> <span class="err">以降省略</span>
-<span class="p">}</span>
-</pre>
+<span class="w">        </span><span class="c1">// 以降省略</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+
 <p>デバッグの選択メニューでPython:Attachを選択。改めて開始。
 うまく接続できればデバッグコンソールにprintした内容が表示される。
 breakポイントもステップ実行も可能。素晴らしい。
@@ -148,10 +156,11 @@ BlenderのAddOnでやってみる</p>
 <p>これ。
 BlenderのPythonにptvsdをインストールする
 Blenderを起動して以下のスクリプトを実行する。</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>適当なパスを選んでそこにptvsd-3.0.0をコピーする。
 ptvsd-3.0.0.zipをダウンロード。
 解凍してptvsdフォルダをBlenderのsys.pathに含まれていたC:/Program Files/Blender Foundation/Blenderにコピーした。
@@ -163,9 +172,10 @@ Save - User Settings</p>
 <p>実行してみる
 3DViewでspaceを押してConnect to Visual Studio Code Debuggerを選択。
 dos窓</p>
-<pre class="code literal-block">&gt; netstat -an | find "3000"
+<div class="code"><pre class="code literal-block">&gt; netstat -an | find "3000"
   TCP         0.0.0.0:3000           0.0.0.0:0              LISTENING
-</pre>
+</pre></div>
+
 <p>待っている。
 試しにAddOnを作ってみる
 例えばWindows版のBlenderのAddOnパスは
@@ -178,7 +188,7 @@ helloフォルダを作って、VSCodeでフォルダを開いた。
 hello/<strong>init</strong>.pyを作成。</p>
 <p>https://docs.blender.org/manual/en/dev/advanced/scripting/addon_tutorial.html</p>
 <p>を参考に。</p>
-<pre class="code literal-block"><span class="n">bl_info</span> <span class="o">=</span> <span class="p">{</span>
+<div class="code"><pre class="code literal-block"><span class="n">bl_info</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Move X Axis"</span><span class="p">,</span>
     <span class="s2">"category"</span><span class="p">:</span> <span class="s2">"Object"</span><span class="p">,</span>
 <span class="p">}</span>
@@ -213,7 +223,8 @@ hello/<strong>init</strong>.pyを作成。</p>
 <span class="c1"># to test the add-on without having to install it.</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">register</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>Blenderを再起動して、AddOnのチェックボックスを有効にする。
 3DViewでスペースを押してMove X by oneを実行してみる。
 動けば準備完了。
@@ -221,17 +232,18 @@ AddOnをステップ実行してみる</p>
 <p>3DViewでConnect to Visual Studio Code Debugger
 VSCodeで構成を追加してRemoteDebuggerでアタッチ</p>
 <p>hello/.vscode/launch.json</p>
-<pre class="code literal-block">        <span class="p">{</span>
-            <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Python: Attach"</span><span class="p">,</span>
-            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"python"</span><span class="p">,</span>
-            <span class="nt">"request"</span><span class="p">:</span> <span class="s2">"attach"</span><span class="p">,</span>
-            <span class="nt">"localRoot"</span><span class="p">:</span> <span class="s2">"${workspaceRoot}"</span><span class="p">,</span>
-            <span class="nt">"remoteRoot"</span><span class="p">:</span> <span class="s2">"${workspaceRoot}"</span><span class="p">,</span>
-            <span class="nt">"port"</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span>
-            <span class="nt">"secret"</span><span class="p">:</span> <span class="s2">"my_secret"</span><span class="p">,</span>
-            <span class="nt">"host"</span><span class="p">:</span> <span class="s2">"localhost"</span>
-        <span class="p">},</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python: Attach"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"attach"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"localRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceRoot}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"remoteRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceRoot}"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"port"</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"secret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my_secret"</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">"host"</span><span class="p">:</span><span class="w"> </span><span class="s2">"localhost"</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+</pre></div>
+
 <p>VSCodeでexecute関数のscene=context.sceneにbreak pointをセットする
 3DViewでMove X by one</p>
 <p>うまくいった。</p>

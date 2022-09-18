@@ -51,12 +51,13 @@ nvim-dap というのは、来たる nvim-0.5 で動くようになる、 <code>
 <p>最後の、<code>vscode-lldb(codelldb)</code> <a href="https://github.com/vadimcn/vscode-lldb">https://github.com/vadimcn/vscode-lldb</a> が使いたい。</p>
 <h3>codelldb の起動</h3>
 <p>nvim-dap から <code>codelldb.exe</code> プロセスは起動している様子。通信がうまくいってないように見える。</p>
-<pre class="code literal-block">&gt; .\.cache\dein\repos\github.com\puremourning\vimspector\gadgets\windows\CodeLLDB\adapter\codelldb.exe
+<div class="code"><pre class="code literal-block">&gt; .\.cache\dein\repos\github.com\puremourning\vimspector\gadgets\windows\CodeLLDB\adapter\codelldb.exe
 Listening on port 55201
-</pre>
+</pre></div>
+
 <p>標準入出力を使うモードになっていないのでは？</p>
 <p><code>adapter/src/lib.rs</code></p>
-<pre class="code literal-block"><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">run_debug_server</span><span class="p">(</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">run_debug_server</span><span class="p">(</span><span class="w"></span>
 <span class="w">    </span><span class="n">addr</span>: <span class="nc">net</span>::<span class="n">SocketAddr</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="n">adapter_settings</span>: <span class="nc">debug_protocol</span>::<span class="n">AdapterSettings</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="n">multi_session</span>: <span class="kt">bool</span><span class="p">,</span><span class="w"></span>
@@ -64,9 +65,10 @@ Listening on port 55201
 <span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">listener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TcpListener</span>::<span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">).</span><span class="k">await</span><span class="p">.</span><span class="n">unwrap</span><span class="p">();</span><span class="w"></span>
 
 <span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">"Listening on port {}"</span><span class="p">,</span><span class="w"> </span><span class="n">listener</span><span class="p">.</span><span class="n">local_addr</span><span class="p">().</span><span class="n">unwrap</span><span class="p">().</span><span class="n">port</span><span class="p">());</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>遡る。 <code>main -&gt; debug_server -&gt; entry -&gt; run_debug_server</code></p>
-<pre class="code literal-block"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">env_logger</span>::<span class="n">Builder</span>::<span class="n">from_default_env</span><span class="p">().</span><span class="n">init</span><span class="p">();</span><span class="w"></span>
 
 <span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">App</span>::<span class="n">new</span><span class="p">(</span><span class="s">"codelldb"</span><span class="p">)</span><span class="w"></span>
@@ -84,7 +86,8 @@ Listening on port 55201
 <span class="w">        </span><span class="n">debug_server</span><span class="p">(</span><span class="o">&amp;</span><span class="n">matches</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>どうやら、 <code>executable</code> かつ <code>stdio ではなく tcp</code> 通信というタイプで nvim-dap では未対応ということでよさそう。？</p>
 <ul>
 <li>起動</li>
@@ -96,7 +99,7 @@ Listening on port 55201
 <p>の <code>DebugAdapterServer</code> タイプにあたる。</p>
 <h3>nvim-dap の改造を試みる</h3>
 <p>adapter.type <code>executable</code>, <code>server</code> に加えて、第3の <code>executable_server</code> を作れるか。</p>
-<pre class="code literal-block"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">run_adapter</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">run_adapter</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">'[no name]'</span>
   <span class="kd">local</span> <span class="n">options</span> <span class="o">=</span> <span class="n">adapter</span><span class="p">.</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
   <span class="n">opts</span> <span class="o">=</span> <span class="n">vim</span><span class="p">.</span><span class="n">tbl_extend</span><span class="p">(</span><span class="s1">'keep'</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="p">{</span>
@@ -191,7 +194,8 @@ Listening on port 55201
   <span class="kr">end</span><span class="p">)</span>
   <span class="kr">return</span> <span class="n">session</span>
 <span class="kr">end</span>
-</pre>
+</pre></div>
+
 <p>動いた。 PR 作ろう。</p>
 
 <hr>

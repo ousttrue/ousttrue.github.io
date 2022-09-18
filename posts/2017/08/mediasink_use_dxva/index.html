@@ -51,7 +51,7 @@ Pipelineでテクスチャをやりとりするのだからデバイスを共有
 HRESULT DX11VideoRenderer::CMediaSink::GetService(__RPC__in REFGUID guidService, __RPC__in REFIID riid, __RPC__deref_out_opt LPVOID* ppvObject)
 {
     HRESULT hr = S_OK;</p>
-<pre class="code literal-block"><span class="n">if</span> <span class="p">(</span><span class="n">guidService</span> <span class="o">==</span> <span class="n">MF_RATE_CONTROL_SERVICE</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="n">if</span> <span class="p">(</span><span class="n">guidService</span> <span class="o">==</span> <span class="n">MF_RATE_CONTROL_SERVICE</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">hr</span> <span class="o">=</span> <span class="n">QueryInterface</span><span class="p">(</span><span class="n">riid</span><span class="p">,</span> <span class="n">ppvObject</span><span class="p">);</span>
 <span class="p">}</span>
@@ -70,7 +70,8 @@ HRESULT DX11VideoRenderer::CMediaSink::GetService(__RPC__in REFGUID guidService,
 <span class="p">}</span>
 
 <span class="n">return</span> <span class="n">hr</span><span class="p">;</span>
-</pre>
+</pre></div>
+
 <p>}</p>
 <p>実験
 まだIMFGetServiceを実装していないVideoRendererで、
@@ -113,32 +114,33 @@ StreamSinkにIMFGetServiceを実装した。
 STDMETHODIMP GetService(__RPC__in REFGUID guidService, __RPC__in REFIID riid, __RPC__deref_out_opt LPVOID* ppvObject)override
 {
     HRESULT hr = S_OK;</p>
-<pre class="code literal-block"><span class="nf">if</span> <span class="p">(</span><span class="n">guidService</span> <span class="o">==</span> <span class="n">MR_VIDEO_ACCELERATION_SERVICE</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="nf">if</span> <span class="p">(</span><span class="n">riid</span> <span class="o">==</span> <span class="n">__uuidof</span><span class="p">(</span><span class="n">IMFDXGIDeviceManager</span><span class="p">))</span>
-    <span class="p">{</span>
-        <span class="nf">if</span> <span class="p">(</span><span class="n">NULL</span> <span class="o">!=</span> <span class="n">m_pDXGIManager</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="o">*</span><span class="n">ppvObject</span> <span class="o">=</span> <span class="p">(</span><span class="n">void</span><span class="o">*</span><span class="p">)</span> <span class="n">static_cast</span><span class="o">&lt;</span><span class="n">IUnknown</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">m_pDXGIManager</span><span class="p">);</span>
-            <span class="p">((</span><span class="n">IUnknown</span><span class="o">*</span><span class="p">)</span><span class="o">*</span><span class="n">ppvObject</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">AddRef</span><span class="p">();</span>
-        <span class="p">}</span>
-        <span class="n">else</span>
-        <span class="p">{</span>
-            <span class="n">hr</span> <span class="o">=</span> <span class="n">E_NOINTERFACE</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="n">else</span>
-    <span class="p">{</span>
-        <span class="n">hr</span> <span class="o">=</span> <span class="n">E_NOINTERFACE</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="n">else</span>
-<span class="p">{</span>
-    <span class="n">hr</span> <span class="o">=</span> <span class="n">MF_E_UNSUPPORTED_SERVICE</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="code"><pre class="code literal-block"><span class="nf">if</span><span class="w"> </span><span class="p">(</span><span class="n">guidService</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">MR_VIDEO_ACCELERATION_SERVICE</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nf">if</span><span class="w"> </span><span class="p">(</span><span class="n">riid</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">__uuidof</span><span class="p">(</span><span class="n">IMFDXGIDeviceManager</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nf">if</span><span class="w"> </span><span class="p">(</span><span class="n">NULL</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">m_pDXGIManager</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="o">*</span><span class="n">ppvObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">void</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">static_cast</span><span class="o">&lt;</span><span class="n">IUnknown</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">m_pDXGIManager</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="p">((</span><span class="n">IUnknown</span><span class="o">*</span><span class="p">)</span><span class="o">*</span><span class="n">ppvObject</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">AddRef</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="n">else</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">hr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">E_NOINTERFACE</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">else</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">hr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">E_NOINTERFACE</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="n">else</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">hr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MF_E_UNSUPPORTED_SERVICE</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kr">return</span> <span class="n">hr</span><span class="p">;</span>
-</pre>
+<span class="kr">return</span><span class="w"> </span><span class="n">hr</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>IMFSampleからID3D11Texture2Dを取得できた。
 上流が、DXVA化されてSampleのバッファがテクスチャになった。
@@ -157,19 +159,21 @@ YUV To RGB
 if (m_useXVP)
 {
     BOOL bInputFrameUsed = FALSE;</p>
-<pre class="code literal-block"><span class="nv">hr</span> <span class="o">=</span> <span class="nv">ProcessFrameUsingXVP</span><span class="ss">(</span> <span class="nv">pCurrentType</span>, <span class="nv">pSample</span>, <span class="nv">pTexture2D</span>, <span class="nv">rcDest</span>, <span class="nv">ppOutputSample</span>, <span class="o">&amp;</span><span class="nv">bInputFrameUsed</span> <span class="ss">)</span><span class="c1">;</span>
+<div class="code"><pre class="code literal-block"><span class="nv">hr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ProcessFrameUsingXVP</span><span class="ss">(</span><span class="w"> </span><span class="nv">pCurrentType</span>,<span class="w"> </span><span class="nv">pSample</span>,<span class="w"> </span><span class="nv">pTexture2D</span>,<span class="w"> </span><span class="nv">rcDest</span>,<span class="w"> </span><span class="nv">ppOutputSample</span>,<span class="w"> </span><span class="o">&amp;</span><span class="nv">bInputFrameUsed</span><span class="w"> </span><span class="ss">)</span><span class="c1">;</span><span class="w"></span>
 
-<span class="k">if</span> <span class="ss">(</span><span class="nv">SUCCEEDED</span><span class="ss">(</span><span class="nv">hr</span><span class="ss">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nv">bInputFrameUsed</span><span class="ss">)</span>
-{
-    <span class="o">*</span><span class="nv">pbProcessAgain</span> <span class="o">=</span> <span class="nv">TRUE</span><span class="c1">;</span>
-}
-</pre>
+<span class="k">if</span><span class="w"> </span><span class="ss">(</span><span class="nv">SUCCEEDED</span><span class="ss">(</span><span class="nv">hr</span><span class="ss">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nv">bInputFrameUsed</span><span class="ss">)</span><span class="w"></span>
+{<span class="w"></span>
+<span class="w">    </span><span class="o">*</span><span class="nv">pbProcessAgain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">TRUE</span><span class="c1">;</span><span class="w"></span>
+}<span class="w"></span>
+</pre></div>
+
 <p>}
 else
 {
     hr = ProcessFrameUsingD3D11( pTexture2D, pEVTexture2D, dwViewIndex, dwEVViewIndex, rcDest, *punInterlaceMode, ppOutputSample );</p>
-<pre class="code literal-block">// 省略
-</pre>
+<div class="code"><pre class="code literal-block">// 省略
+</pre></div>
+
 <p>}</p>
 <p>どちらでもだいたい同じ動きになると思う。
 ProcessFrameUsingXVP</p>

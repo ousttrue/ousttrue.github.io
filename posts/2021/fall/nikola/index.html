@@ -43,27 +43,31 @@
 <p>また生成システムを変えてみる。</p>
 <p><a href="https://getnikola.com/">https://getnikola.com/</a></p>
 <h2>init</h2>
-<pre class="code literal-block"><span class="o">&gt;</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="ss">"Nikola[extras]"</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="o">&gt;</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="ss">"Nikola[extras]"</span><span class="w"></span>
 <span class="o">&gt;</span><span class="w"> </span><span class="n">nikola</span><span class="w"> </span><span class="n">init</span><span class="w"> </span><span class="p">.</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><a href="https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore">https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore</a></p>
-<pre class="code literal-block"><span class="c1"># nikola</span>
-<span class="na">.doit.db</span><span class="p">*</span>
-<span class="err">*</span><span class="na">.pyc</span>
-<span class="err">/</span><span class="nf">cache</span><span class="err">/</span>
-<span class="err">/</span><span class="nf">output</span><span class="err">/</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="c1"># nikola</span>
+<span class="na">.doit.db</span><span class="p">*</span><span class="w"></span>
+<span class="err">*</span><span class="na">.pyc</span><span class="w"></span>
+<span class="err">/</span><span class="nf">cache</span><span class="err">/</span><span class="w"></span>
+<span class="err">/</span><span class="nf">output</span><span class="err">/</span><span class="w"></span>
+</pre></div>
+
 <p><code>conf.py</code></p>
-<pre class="code literal-block"><span class="c1"># とりあえず </span>
+<div class="code"><pre class="code literal-block"><span class="c1"># とりあえず </span>
 <span class="n">POSTS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="p">(</span><span class="s2">"content/*.rst"</span><span class="p">,</span> <span class="s2">"posts"</span><span class="p">,</span> <span class="s2">"post.tmpl"</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">"content/*.md"</span><span class="p">,</span> <span class="s2">"posts"</span><span class="p">,</span> <span class="s2">"post.tmpl"</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">"content/*.txt"</span><span class="p">,</span> <span class="s2">"posts"</span><span class="p">,</span> <span class="s2">"post.tmpl"</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">"content/*.html"</span><span class="p">,</span> <span class="s2">"posts"</span><span class="p">,</span> <span class="s2">"post.tmpl"</span><span class="p">),</span>
 <span class="p">)</span>
-</pre>
-<pre class="code literal-block">&gt; nikola auto --browser
-</pre>
+</pre></div>
+
+<div class="code"><pre class="code literal-block">&gt; nikola auto --browser
+</pre></div>
+
 <p>なんとなくプレビューできた。
 ええやん。</p>
 <h2>zola から記事移植</h2>
@@ -75,16 +79,17 @@
 <code>taxonomies.tags</code> を <code>tags</code> に書き換える</li>
 </ul>
 <p>小文字強制</p>
-<pre class="code literal-block"><span class="n">METADATA_VALUE_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+<div class="code"><pre class="code literal-block"><span class="n">METADATA_VALUE_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"toml"</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">"tags"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">ls</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ls</span><span class="p">]</span>
      <span class="p">}</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <h2>github action で gh-pages</h2>
 <p><code>.github/workflows/nikola.yml</code></p>
 <p>こんなもんかな。</p>
-<pre class="code literal-block"><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">Nikola</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">Nikola</span><span class="w"></span>
 
 <span class="k">on</span><span class="err">:</span><span class="w"></span>
 <span class="w">  </span><span class="nl">push</span><span class="p">:</span><span class="w"></span>
@@ -106,7 +111,8 @@
 <span class="w">        </span><span class="k">with</span><span class="err">:</span><span class="w"></span>
 <span class="w">          </span><span class="nl">github_token</span><span class="p">:</span><span class="w"> </span><span class="err">${{</span><span class="w"> </span><span class="n">secrets</span><span class="p">.</span><span class="n">GITHUB_TOKEN</span><span class="w"> </span><span class="err">}}</span><span class="w"></span>
 <span class="w">          </span><span class="nl">publish_dir</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="k">output</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>動作</h3>
 <p><a href="https://getnikola.com/internals.html">https://getnikola.com/internals.html</a></p>
 <h3>yapsy</h3>
@@ -226,7 +232,7 @@
 <h4>bundles and assets</h4>
 <p><code>lib/python3.9/site-packages/nikola/data/themes/base</code> からコピーするとよさそう。</p>
 <h4>base.tmpl</h4>
-<pre class="code literal-block"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<div class="code"><pre class="code literal-block"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">id</span><span class="o">=</span><span class="s">"brand"</span><span class="p">&gt;</span>
@@ -241,9 +247,10 @@
 <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
-</pre>
+</pre></div>
+
 <h4>index.tmpl</h4>
-<pre class="code literal-block">{% extends 'base.tmpl' %}
+<div class="code"><pre class="code literal-block">{% extends 'base.tmpl' %}
 
 {% block content %}
 {% if prevlink %}
@@ -260,9 +267,10 @@
 <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"{{ nextlink }}"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"next"</span><span class="p">&gt;</span>next<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
 {% endif %}
 {% endblock %}
-</pre>
+</pre></div>
+
 <h4>post.tmpl</h4>
-<pre class="code literal-block">{% extends 'base.tmpl' %}
+<div class="code"><pre class="code literal-block">{% extends 'base.tmpl' %}
 
 {% block content %}
 <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">"p-name entry-title"</span> <span class="na">itemprop</span><span class="o">=</span><span class="s">"headline name"</span><span class="p">&gt;</span>
@@ -270,17 +278,20 @@
 <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
 {{ post.text() }}
 {% endblock %}
-</pre>
+</pre></div>
+
 <h4>THEME_NAME.theme</h4>
-<pre class="code literal-block"><span class="k">[Theme]</span>
-<span class="na">engine</span> <span class="o">=</span> <span class="s">jinja</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">[Theme]</span><span class="w"></span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">jinja</span><span class="w"></span>
+</pre></div>
+
 <h3>vscode</h3>
 <p><code>settings.json</code></p>
-<pre class="code literal-block">    <span class="nt">"files.associations"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">"*.tmpl"</span><span class="p">:</span> <span class="s2">"html"</span><span class="p">,</span>
-    <span class="p">},</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="nt">"files.associations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">"*.tmpl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"html"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+</pre></div>
+
 <h3>ToDo</h3>
 <ul>
 <li>Theme 調整</li>

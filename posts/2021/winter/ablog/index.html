@@ -54,13 +54,15 @@
 <li>-v: 詳細メッセージ</li>
 </ul>
 <h3>はまり2: ablog が timezone の有無で日付の比較に失敗する</h3>
-<pre class="code literal-block">can't compare offset-naive and offset-aware datetimes
-</pre>
+<div class="code"><pre class="code literal-block">can't compare offset-naive and offset-aware datetimes
+</pre></div>
+
 <p>これは、既存記事の <code>frontmatter</code> の日付に <code>timezone</code> が付いていると
 日付の比較に失敗する。</p>
-<pre class="code literal-block"><span class="c1"># site-packages/ablog/blog.py:382</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># site-packages/ablog/blog.py:382</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">date</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"date"</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>と対処した。</p>
 <h3>はまり3: myst-parser の toml frontmatter 対応</h3>
 <p><code>myst-parser</code> が <code>---</code> による <code>yaml</code> 形式の <code>frontmatter</code> にしか対応していない様子。
@@ -83,20 +85,22 @@
 記事は、日付やタグでグループ化してくれる。</p>
 <p><a href="https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter">https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter</a></p>
 <p>パス指定。</p>
-<pre class="code literal-block"><span class="n">blog_post_pattern</span> <span class="o">=</span> <span class="s2">"posts/**/*.md"</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">blog_post_pattern</span> <span class="o">=</span> <span class="s2">"posts/**/*.md"</span>
+</pre></div>
+
 <p>条件。</p>
-<pre class="code literal-block"><span class="c1"># .venv/lib/python3.9/site-packages/ablog/post.py</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># .venv/lib/python3.9/site-packages/ablog/post.py</span>
         <span class="k">if</span> <span class="s2">"blogpost"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">docname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">matched_blog_posts</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-</pre>
+</pre></div>
+
 <p><code>frontmatter</code> 等から最低限、日付の情報がとれないとトップページから辿る方法が無い状態になる。</p>
 <p>あと <code>sphinx</code> なのでトップレベルの表題が本文側に必要かも。
 <code>frontmatter</code> の <code>title</code> を反映できると便利そう。</p>
 <h4>event: 'doctree-read'</h4>
 <p>doctree から <code>PostNode</code> を集める。</p>
 <p><code>alog/post#process_posts(app, doctree)</code></p>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">process_posts</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">doctree</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">process_posts</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">doctree</span><span class="p">):</span>
     <span class="n">post_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">doctree</span><span class="o">.</span><span class="n">traverse</span><span class="p">(</span><span class="n">PostNode</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">post_nodes</span><span class="p">:</span>
         <span class="c1"># PostNode が必要</span>
@@ -127,17 +131,19 @@
     <span class="k">if</span> <span class="n">docname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">ablog_posts</span><span class="p">:</span>
         <span class="n">env</span><span class="o">.</span><span class="n">ablog_posts</span><span class="p">[</span><span class="n">docname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">env</span><span class="o">.</span><span class="n">ablog_posts</span><span class="p">[</span><span class="n">docname</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postinfo</span><span class="p">)</span>
-</pre>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">CheckFrontMatter</span><span class="p">(</span><span class="n">SphinxTransform</span><span class="p">):</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">CheckFrontMatter</span><span class="p">(</span><span class="n">SphinxTransform</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">():</span>
         <span class="k">pass</span>
 
 <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">add_transform</span><span class="p">(</span><span class="n">CheckFrontMatter</span><span class="p">)</span>    
-</pre>
+</pre></div>
+
 <h4>追加のページ生成</h4>
 <p><code>ablog/templates</code> に格納されている。</p>
-<pre class="code literal-block"><span class="c1"># -- ABlog Sidebars -------------------------------------------------------</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># -- ABlog Sidebars -------------------------------------------------------</span>
 
 <span class="c1"># There are seven sidebars you can include in your HTML output.</span>
 <span class="c1"># postcard.html provides information regarding the current post.</span>
@@ -157,7 +163,8 @@
         <span class="s1">'searchbox.html'</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>これらに対して追加のページ生成を行っている。
 <code>genindex.html</code> などのように。</p>
 <h3>ToDo</h3>
@@ -176,9 +183,10 @@
 <p><code>v0.10.22</code> で修正。👍</p>
 <h4>✅ 日付のフォーマット</h4>
 <p><code>conf.py</code></p>
-<pre class="code literal-block"><span class="n">post_date_format</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'%Y/%m/</span><span class="si">%d</span><span class="s1">'</span>
+<div class="code"><pre class="code literal-block"><span class="n">post_date_format</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'%Y/%m/</span><span class="si">%d</span><span class="s1">'</span>
 <span class="n">post_date_format_short</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'%Y/%m'</span>
-</pre>
+</pre></div>
+
 <h4>✅ 記事のURL</h4>
 <ul>
 <li><a href="https://zenn.dev/attakei/articles/sphinx-make-dirhtml">https://zenn.dev/attakei/articles/sphinx-make-dirhtml</a></li>

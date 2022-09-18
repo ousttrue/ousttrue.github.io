@@ -111,9 +111,10 @@ const $ = require('gulp-load-plugins')();</p>
 <p>const config = {
     server_src: './src/server/<em><em>/</em>.</em>',
     server_dst: './build',</p>
-<pre class="code literal-block">client_src: './src/client/**/*.*',
+<div class="code"><pre class="code literal-block">client_src: './src/client/**/*.*',
 client_dst: './build/public'
-</pre>
+</pre></div>
+
 <p>};
 const tsconfig = require('./tsconfig.json');</p>
 <p>function pushd(dst, callback) {
@@ -211,13 +212,14 @@ const io = socketio(server);
 io.on('connection', (socket) =&gt; {
     var clientAddress = socket.client.conn.remoteAddress;
     console.log('connected: %s from %s', socket.id, clientAddress);</p>
-<pre class="code literal-block"><span class="k">function</span><span class="w"> </span><span class="nf">recTimer</span><span class="p">(</span>interval: number, callback: Function<span class="p">)</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">function</span><span class="w"> </span><span class="nf">recTimer</span><span class="p">(</span>interval: number, callback: Function<span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">setTimeout</span><span class="p">(()=</span><span class="o">&gt;</span><span class="n">recTimer</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span><span class="w"> </span><span class="n">callback</span><span class="p">),</span><span class="w"> </span><span class="n">interval</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="n">callback</span><span class="p">();</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 <span class="n">recTimer</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span><span class="w"> </span><span class="p">()=</span><span class="o">&gt;</span><span class="n">socket</span><span class="p">.</span><span class="n">emit</span><span class="p">(</span><span class="s">'time'</span><span class="p">,</span><span class="w"> </span><span class="n">Date</span><span class="p">.</span><span class="n">now</span><span class="p">()));</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>});</p>
 <p>src/client/index.html</p>
 
@@ -237,16 +239,17 @@ io.on('connection', (socket) =&gt; {
 }</p>
 <p>window.onload = () =&gt; {
     const socket = io.connect();</p>
-<pre class="code literal-block"><span class="k">const</span> <span class="n">content</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s1">'content'</span><span class="p">);</span>
+<div class="code"><pre class="code literal-block"><span class="k">const</span><span class="w"> </span><span class="n">content</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s1">'content'</span><span class="p">);</span><span class="w"></span>
 
-<span class="n">socket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'connect'</span><span class="p">,</span> <span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span>
-    <span class="n">content</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">=</span><span class="s1">'connected!'</span><span class="p">;</span>
-<span class="p">});</span>
+<span class="n">socket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'connect'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">content</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">=</span><span class="s1">'connected!'</span><span class="p">;</span><span class="w"></span>
+<span class="p">});</span><span class="w"></span>
 
-<span class="n">socket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'time'</span><span class="p">,</span> <span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">any</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
-    <span class="n">content</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">+=</span><span class="s1">'&lt;br&gt;'</span><span class="o">+</span><span class="n">message</span><span class="p">;</span>
-<span class="p">});</span>
-</pre>
+<span class="n">socket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">message</span><span class="p">:</span><span class="w"> </span><span class="n">any</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">content</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">+=</span><span class="s1">'&lt;br&gt;'</span><span class="o">+</span><span class="n">message</span><span class="p">;</span><span class="w"></span>
+<span class="p">});</span><span class="w"></span>
+</pre></div>
+
 <p>}</p>
 <p>bvh
 準備が整ったので、node.js側でパースしたbvhを適当にjson化してsocket.ioにemitするサーバーを作る。</p>

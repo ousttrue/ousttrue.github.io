@@ -119,38 +119,39 @@ def _get_vc_env(plat_spec):
             key.lower(): value
             for key, value in os.environ.items()
         }</p>
-<pre class="code literal-block"><span class="n">vcvarsall</span><span class="p">,</span> <span class="n">vcruntime</span> <span class="o">=</span> <span class="n">distutils</span><span class="o">.</span><span class="n">_msvccompiler</span><span class="o">.</span><span class="n">_find_vcvarsall</span><span class="p">(</span><span class="n">plat_spec</span><span class="p">)</span>
-<span class="k">if</span> <span class="ow">not</span> <span class="n">vcvarsall</span><span class="p">:</span>
-    <span class="n">raise</span> <span class="n">DistutilsPlatformError</span><span class="p">(</span><span class="s2">"Unable to find vcvarsall.bat"</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="n">vcvarsall</span><span class="p">,</span><span class="w"> </span><span class="n">vcruntime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">distutils</span><span class="o">.</span><span class="n">_msvccompiler</span><span class="o">.</span><span class="n">_find_vcvarsall</span><span class="p">(</span><span class="n">plat_spec</span><span class="p">)</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">vcvarsall</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">raise</span><span class="w"> </span><span class="n">DistutilsPlatformError</span><span class="p">(</span><span class="s2">"Unable to find vcvarsall.bat"</span><span class="p">)</span><span class="w"></span>
 
-<span class="n">try</span><span class="p">:</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>
-        <span class="s1">'cmd /u /c "{}" {} &amp;&amp; set'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vcvarsall</span><span class="p">,</span> <span class="n">plat_spec</span><span class="p">),</span>
-        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-16le'</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">)</span>
-    <span class="c1">#######################################################################</span>
-    <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Error in script usage"</span><span class="p">):</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>
-            <span class="s1">'cmd /u /c "{}" {} &amp;&amp; set'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">"C:</span><span class="se">\\</span><span class="s2">Program Files (x86)</span><span class="se">\\</span><span class="s2">Microsoft Visual C++ Build Tools</span><span class="se">\\</span><span class="s2">vcbuildtools.bat"</span><span class="p">,</span> <span class="n">plat_spec</span><span class="p">),</span>
-            <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-16le'</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">)</span>
-    <span class="c1">#######################################################################</span>
-<span class="n">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-    <span class="nb">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-    <span class="n">raise</span> <span class="n">DistutilsPlatformError</span><span class="p">(</span><span class="s2">"Error executing {}"</span>
-            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">cmd</span><span class="p">))</span>
+<span class="n">try</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="s1">'cmd /u /c "{}" {} &amp;&amp; set'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vcvarsall</span><span class="p">,</span><span class="w"> </span><span class="n">plat_spec</span><span class="p">),</span><span class="w"></span>
+<span class="w">        </span><span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-16le'</span><span class="p">,</span><span class="w"> </span><span class="n">errors</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="c1">#######################################################################</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">out</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Error in script usage"</span><span class="p">):</span><span class="w"></span>
+<span class="w">        </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="s1">'cmd /u /c "{}" {} &amp;&amp; set'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">"C:</span><span class="se">\\</span><span class="s2">Program Files (x86)</span><span class="se">\\</span><span class="s2">Microsoft Visual C++ Build Tools</span><span class="se">\\</span><span class="s2">vcbuildtools.bat"</span><span class="p">,</span><span class="w"> </span><span class="n">plat_spec</span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-16le'</span><span class="p">,</span><span class="w"> </span><span class="n">errors</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="c1">#######################################################################</span><span class="w"></span>
+<span class="n">except</span><span class="w"> </span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">exc</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nb">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">raise</span><span class="w"> </span><span class="n">DistutilsPlatformError</span><span class="p">(</span><span class="s2">"Error executing {}"</span><span class="w"></span>
+<span class="w">            </span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">cmd</span><span class="p">))</span><span class="w"></span>
 
-<span class="n">env</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">value</span>
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span>
-    <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">'='</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
-    <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">value</span>
-<span class="p">}</span>
+<span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span><span class="w"> </span><span class="n">value</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="ow">in</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">'='</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">out</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">value</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">if</span> <span class="n">vcruntime</span><span class="p">:</span>
-    <span class="n">env</span><span class="p">[</span><span class="s1">'py_vcruntime_redist'</span><span class="p">]</span> <span class="o">=</span> <span class="n">vcruntime</span>
-<span class="k">return</span> <span class="n">env</span>
-</pre>
+<span class="k">if</span><span class="w"> </span><span class="n">vcruntime</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">env</span><span class="p">[</span><span class="s1">'py_vcruntime_redist'</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcruntime</span><span class="w"></span>
+<span class="k">return</span><span class="w"> </span><span class="n">env</span><span class="w"></span>
+</pre></div>
+
 <p>distutils._msvccompiler._get_vc_env=_get_vc_env</p>
 <p>以前にもこんなことやったことあるような気がする・・・。</p>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (sphinxについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/sphinx.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:22:19 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>SSGをABlogに変更</title><link>https://ousttrue.github.io/posts/2021/winter/ablog/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;ABlog にシステムを変更&lt;/h2&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (sphinxについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/sphinx.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 18 Sep 2022 09:57:33 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>SSGをABlogに変更</title><link>https://ousttrue.github.io/posts/2021/winter/ablog/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;ABlog にシステムを変更&lt;/h2&gt;
 &lt;p&gt;&lt;a href="https://getnikola.com/"&gt;nikola&lt;/a&gt; は使いこなせなくて短命に終わってしまった。
 &lt;a href="https://pydoit.org/"&gt;doit&lt;/a&gt; は面白いと思うのだが。&lt;/p&gt;
 &lt;p&gt;ということで、 &lt;code&gt;sphinx&lt;/code&gt; プラグインの &lt;a href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; です。&lt;/p&gt;
@@ -12,13 +12,15 @@
 &lt;li&gt;-v: 詳細メッセージ&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3&gt;はまり2: ablog が timezone の有無で日付の比較に失敗する&lt;/h3&gt;
-&lt;pre class="code literal-block"&gt;can't compare offset-naive and offset-aware datetimes
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;can't compare offset-naive and offset-aware datetimes
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;これは、既存記事の &lt;code&gt;frontmatter&lt;/code&gt; の日付に &lt;code&gt;timezone&lt;/code&gt; が付いていると
 日付の比較に失敗する。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# site-packages/ablog/blog.py:382&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# site-packages/ablog/blog.py:382&lt;/span&gt;
 &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;date&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;date&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"date"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tzinfo&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;と対処した。&lt;/p&gt;
 &lt;h3&gt;はまり3: myst-parser の toml frontmatter 対応&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;myst-parser&lt;/code&gt; が &lt;code&gt;---&lt;/code&gt; による &lt;code&gt;yaml&lt;/code&gt; 形式の &lt;code&gt;frontmatter&lt;/code&gt; にしか対応していない様子。
@@ -41,20 +43,22 @@
 記事は、日付やタグでグループ化してくれる。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter"&gt;https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;パス指定。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;blog_post_pattern&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"posts/**/*.md"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;blog_post_pattern&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"posts/**/*.md"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;条件。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# .venv/lib/python3.9/site-packages/ablog/post.py&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# .venv/lib/python3.9/site-packages/ablog/post.py&lt;/span&gt;
         &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;"blogpost"&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;metadata&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;docname&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;matched_blog_posts&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
             &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;code&gt;frontmatter&lt;/code&gt; 等から最低限、日付の情報がとれないとトップページから辿る方法が無い状態になる。&lt;/p&gt;
 &lt;p&gt;あと &lt;code&gt;sphinx&lt;/code&gt; なのでトップレベルの表題が本文側に必要かも。
 &lt;code&gt;frontmatter&lt;/code&gt; の &lt;code&gt;title&lt;/code&gt; を反映できると便利そう。&lt;/p&gt;
 &lt;h4&gt;event: 'doctree-read'&lt;/h4&gt;
 &lt;p&gt;doctree から &lt;code&gt;PostNode&lt;/code&gt; を集める。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;alog/post#process_posts(app, doctree)&lt;/code&gt;&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;process_posts&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;doctree&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;process_posts&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;doctree&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="n"&gt;post_nodes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;doctree&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;traverse&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PostNode&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
     &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;post_nodes&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
         &lt;span class="c1"&gt;# PostNode が必要&lt;/span&gt;
@@ -85,17 +89,19 @@
     &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;docname&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ablog_posts&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
         &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ablog_posts&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;docname&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
     &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ablog_posts&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;docname&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;postinfo&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;CheckFrontMatter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SphinxTransform&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;CheckFrontMatter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SphinxTransform&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;apply&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
         &lt;span class="k"&gt;pass&lt;/span&gt;
 
 &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CheckFrontMatter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;    
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;追加のページ生成&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;ablog/templates&lt;/code&gt; に格納されている。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# -- ABlog Sidebars -------------------------------------------------------&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# -- ABlog Sidebars -------------------------------------------------------&lt;/span&gt;
 
 &lt;span class="c1"&gt;# There are seven sidebars you can include in your HTML output.&lt;/span&gt;
 &lt;span class="c1"&gt;# postcard.html provides information regarding the current post.&lt;/span&gt;
@@ -115,7 +121,8 @@
         &lt;span class="s1"&gt;'searchbox.html'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
     &lt;span class="p"&gt;],&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;これらに対して追加のページ生成を行っている。
 &lt;code&gt;genindex.html&lt;/code&gt; などのように。&lt;/p&gt;
 &lt;h3&gt;ToDo&lt;/h3&gt;
@@ -134,9 +141,10 @@
 &lt;p&gt;&lt;code&gt;v0.10.22&lt;/code&gt; で修正。👍&lt;/p&gt;
 &lt;h4&gt;✅ 日付のフォーマット&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;conf.py&lt;/code&gt;&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;post_date_format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'%Y/%m/&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;post_date_format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'%Y/%m/&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;
 &lt;span class="n"&gt;post_date_format_short&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'%Y/%m'&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;✅ 記事のURL&lt;/h4&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://zenn.dev/attakei/articles/sphinx-make-dirhtml"&gt;https://zenn.dev/attakei/articles/sphinx-make-dirhtml&lt;/a&gt;&lt;/li&gt;
@@ -166,14 +174,15 @@
 :width: 320px
 :height: 320px
 
-&lt;pre class="code literal-block"&gt;```{toctree}
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;```{toctree}
 basic/create_window
 basic/create_device
 basic/create_swapchain
 basic/render_target
 basic/compile_shader
 basic/basic_pipeline
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 
 &lt;/pre&gt;
 

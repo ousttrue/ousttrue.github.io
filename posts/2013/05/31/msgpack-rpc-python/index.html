@@ -76,53 +76,54 @@ $ python setup.py develop --user</p>
 import tornado</p>
 <p>if <strong>name</strong>=="<strong>main</strong>":
     port=18080</p>
-<pre class="code literal-block"># <span class="nv">dispatcher</span>
-<span class="nv">dispatcher</span><span class="o">=</span><span class="nv">tornado_msgpack</span>.<span class="nv">Dispatcher</span><span class="ss">()</span>
-<span class="nv">def</span> <span class="nv">add</span><span class="ss">(</span><span class="nv">a</span>, <span class="nv">b</span><span class="ss">)</span>:
-    <span class="k">return</span> <span class="nv">a</span><span class="o">+</span><span class="nv">b</span>
-<span class="nv">dispatcher</span>.<span class="nv">add_handler</span><span class="ss">(</span><span class="s2">"</span><span class="s">add</span><span class="s2">"</span>, <span class="nv">add</span><span class="ss">)</span>
+<div class="code"><pre class="code literal-block">#<span class="w"> </span><span class="nv">dispatcher</span><span class="w"></span>
+<span class="nv">dispatcher</span><span class="o">=</span><span class="nv">tornado_msgpack</span>.<span class="nv">Dispatcher</span><span class="ss">()</span><span class="w"></span>
+<span class="nv">def</span><span class="w"> </span><span class="nv">add</span><span class="ss">(</span><span class="nv">a</span>,<span class="w"> </span><span class="nv">b</span><span class="ss">)</span>:<span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nv">a</span><span class="o">+</span><span class="nv">b</span><span class="w"></span>
+<span class="nv">dispatcher</span>.<span class="nv">add_handler</span><span class="ss">(</span><span class="s2">"add"</span>,<span class="w"> </span><span class="nv">add</span><span class="ss">)</span><span class="w"></span>
 
-# <span class="nv">server</span>
-<span class="nv">server_loop</span><span class="o">=</span><span class="nv">tornado</span>.<span class="nv">ioloop</span>.<span class="nv">IOLoop</span><span class="ss">()</span>
-<span class="nv">def</span> <span class="nv">on_receive</span><span class="ss">(</span><span class="nv">msg</span>, <span class="nv">session</span><span class="ss">)</span>:
-    <span class="nb">result</span><span class="o">=</span><span class="nv">dispatcher</span>.<span class="nv">dispatch</span><span class="ss">(</span><span class="nv">msg</span><span class="ss">)</span>
-    <span class="nv">session</span>.<span class="nv">send_async</span><span class="ss">(</span><span class="nb">result</span><span class="ss">)</span>
-<span class="nv">server</span><span class="o">=</span><span class="nv">tornado_msgpack</span>.<span class="nv">Server</span><span class="ss">(</span><span class="nv">server_loop</span><span class="ss">)</span>
-<span class="nv">server</span>.<span class="nv">listen</span><span class="ss">(</span><span class="s2">"</span><span class="s">localhost</span><span class="s2">"</span>, <span class="nv">port</span><span class="ss">)</span>
-<span class="nv">server_thread</span><span class="o">=</span><span class="nv">threading</span>.<span class="nv">Thread</span><span class="ss">(</span><span class="nv">target</span><span class="o">=</span><span class="nv">lambda</span> : <span class="nv">server_loop</span>.<span class="nv">start</span><span class="ss">()</span> <span class="ss">)</span>
+#<span class="w"> </span><span class="nv">server</span><span class="w"></span>
+<span class="nv">server_loop</span><span class="o">=</span><span class="nv">tornado</span>.<span class="nv">ioloop</span>.<span class="nv">IOLoop</span><span class="ss">()</span><span class="w"></span>
+<span class="nv">def</span><span class="w"> </span><span class="nv">on_receive</span><span class="ss">(</span><span class="nv">msg</span>,<span class="w"> </span><span class="nv">session</span><span class="ss">)</span>:<span class="w"></span>
+<span class="w">    </span><span class="nb">result</span><span class="o">=</span><span class="nv">dispatcher</span>.<span class="nv">dispatch</span><span class="ss">(</span><span class="nv">msg</span><span class="ss">)</span><span class="w"></span>
+<span class="w">    </span><span class="nv">session</span>.<span class="nv">send_async</span><span class="ss">(</span><span class="nb">result</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">server</span><span class="o">=</span><span class="nv">tornado_msgpack</span>.<span class="nv">Server</span><span class="ss">(</span><span class="nv">server_loop</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">server</span>.<span class="nv">listen</span><span class="ss">(</span><span class="s2">"localhost"</span>,<span class="w"> </span><span class="nv">port</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">server_thread</span><span class="o">=</span><span class="nv">threading</span>.<span class="nv">Thread</span><span class="ss">(</span><span class="nv">target</span><span class="o">=</span><span class="nv">lambda</span><span class="w"> </span>:<span class="w"> </span><span class="nv">server_loop</span>.<span class="nv">start</span><span class="ss">()</span><span class="w"> </span><span class="ss">)</span><span class="w"></span>
 
-# <span class="nv">clinet</span>
-<span class="nv">client_loop</span><span class="o">=</span><span class="nv">tornado</span>.<span class="nv">ioloop</span>.<span class="nv">IOLoop</span><span class="ss">()</span>
-<span class="nv">client</span><span class="o">=</span><span class="nv">tornado_msgpack</span>.<span class="nv">Client</span><span class="ss">(</span><span class="nv">client_loop</span><span class="ss">)</span>
-<span class="nv">def</span> <span class="nv">on_status_changed</span><span class="ss">(</span><span class="nv">status</span><span class="ss">)</span>:
-    <span class="nv">print</span><span class="ss">(</span><span class="nv">status</span><span class="ss">)</span>
-<span class="nv">clinet</span>.<span class="nv">attach_status_callback</span><span class="ss">(</span><span class="nv">on_status_changed</span><span class="ss">)</span>
-<span class="nv">client</span>.<span class="k">connect</span><span class="ss">(</span><span class="s2">"</span><span class="s">localhost</span><span class="s2">"</span>, <span class="nv">port</span><span class="ss">)</span>
-<span class="nv">clinet_thread</span><span class="o">=</span><span class="nv">threading</span>.<span class="nv">Thread</span><span class="ss">(</span><span class="nv">target</span><span class="o">=</span><span class="nv">lambda</span> : <span class="nv">client_loop</span>.<span class="nv">start</span><span class="ss">()</span> <span class="ss">)</span>
+#<span class="w"> </span><span class="nv">clinet</span><span class="w"></span>
+<span class="nv">client_loop</span><span class="o">=</span><span class="nv">tornado</span>.<span class="nv">ioloop</span>.<span class="nv">IOLoop</span><span class="ss">()</span><span class="w"></span>
+<span class="nv">client</span><span class="o">=</span><span class="nv">tornado_msgpack</span>.<span class="nv">Client</span><span class="ss">(</span><span class="nv">client_loop</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">def</span><span class="w"> </span><span class="nv">on_status_changed</span><span class="ss">(</span><span class="nv">status</span><span class="ss">)</span>:<span class="w"></span>
+<span class="w">    </span><span class="nv">print</span><span class="ss">(</span><span class="nv">status</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">clinet</span>.<span class="nv">attach_status_callback</span><span class="ss">(</span><span class="nv">on_status_changed</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">client</span>.<span class="k">connect</span><span class="ss">(</span><span class="s2">"localhost"</span>,<span class="w"> </span><span class="nv">port</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">clinet_thread</span><span class="o">=</span><span class="nv">threading</span>.<span class="nv">Thread</span><span class="ss">(</span><span class="nv">target</span><span class="o">=</span><span class="nv">lambda</span><span class="w"> </span>:<span class="w"> </span><span class="nv">client_loop</span>.<span class="nv">start</span><span class="ss">()</span><span class="w"> </span><span class="ss">)</span><span class="w"></span>
 
-# <span class="nv">request</span>
-<span class="nv">def</span> <span class="nv">on_receive</span><span class="ss">(</span><span class="nb">result</span><span class="ss">)</span>:
-    <span class="nv">print</span><span class="ss">(</span><span class="nb">result</span><span class="ss">)</span>
+#<span class="w"> </span><span class="nv">request</span><span class="w"></span>
+<span class="nv">def</span><span class="w"> </span><span class="nv">on_receive</span><span class="ss">(</span><span class="nb">result</span><span class="ss">)</span>:<span class="w"></span>
+<span class="w">    </span><span class="nv">print</span><span class="ss">(</span><span class="nb">result</span><span class="ss">)</span><span class="w"></span>
 
-<span class="nv">future</span><span class="o">=</span><span class="nv">clinet</span>.<span class="nv">call_async_with_callback</span><span class="ss">(</span><span class="nv">on_receive</span>, <span class="s2">"</span><span class="s">add</span><span class="s2">"</span>, <span class="mi">1</span><span class="ss">)</span>
-<span class="nv">future</span>.<span class="nv">join</span><span class="ss">()</span>
+<span class="nv">future</span><span class="o">=</span><span class="nv">clinet</span>.<span class="nv">call_async_with_callback</span><span class="ss">(</span><span class="nv">on_receive</span>,<span class="w"> </span><span class="s2">"add"</span>,<span class="w"> </span><span class="mi">1</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">future</span>.<span class="nv">join</span><span class="ss">()</span><span class="w"></span>
 
-<span class="nv">future</span><span class="o">=</span><span class="nv">clinet</span>.<span class="nv">call_async_with_callback</span><span class="ss">(</span><span class="nv">on_receive</span>, <span class="s2">"</span><span class="s">add</span><span class="s2">"</span>, <span class="mi">1</span>, <span class="mi">2</span><span class="ss">)</span>
-<span class="nv">future</span>.<span class="nv">join</span><span class="ss">()</span>
+<span class="nv">future</span><span class="o">=</span><span class="nv">clinet</span>.<span class="nv">call_async_with_callback</span><span class="ss">(</span><span class="nv">on_receive</span>,<span class="w"> </span><span class="s2">"add"</span>,<span class="w"> </span><span class="mi">1</span>,<span class="w"> </span><span class="mi">2</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">future</span>.<span class="nv">join</span><span class="ss">()</span><span class="w"></span>
 
-<span class="nv">future</span><span class="o">=</span><span class="nv">clinet</span>.<span class="nv">call_async_with_callback</span><span class="ss">(</span><span class="nv">on_receive</span>, <span class="s2">"</span><span class="s">add</span><span class="s2">"</span>, <span class="mi">1</span>, <span class="mi">2</span>, <span class="mi">3</span><span class="ss">)</span>
-<span class="nv">future</span>.<span class="nv">join</span><span class="ss">()</span>
+<span class="nv">future</span><span class="o">=</span><span class="nv">clinet</span>.<span class="nv">call_async_with_callback</span><span class="ss">(</span><span class="nv">on_receive</span>,<span class="w"> </span><span class="s2">"add"</span>,<span class="w"> </span><span class="mi">1</span>,<span class="w"> </span><span class="mi">2</span>,<span class="w"> </span><span class="mi">3</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">future</span>.<span class="nv">join</span><span class="ss">()</span><span class="w"></span>
 
-<span class="nv">print</span><span class="ss">(</span><span class="s2">"</span><span class="s">stop client...</span><span class="s2">"</span><span class="ss">)</span>
-<span class="nv">client_loop</span>.<span class="nv">stop</span><span class="ss">()</span>
-<span class="nv">clinet_thread</span>.<span class="nv">join</span><span class="ss">()</span>
+<span class="nv">print</span><span class="ss">(</span><span class="s2">"stop client..."</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">client_loop</span>.<span class="nv">stop</span><span class="ss">()</span><span class="w"></span>
+<span class="nv">clinet_thread</span>.<span class="nv">join</span><span class="ss">()</span><span class="w"></span>
 
-<span class="nv">print</span><span class="ss">(</span><span class="s2">"</span><span class="s">stop server...</span><span class="s2">"</span><span class="ss">)</span>
-<span class="nv">server_loop</span>.<span class="nv">stop</span><span class="ss">()</span>
-<span class="nv">server_thread</span>.<span class="nv">join</span><span class="ss">()</span>
+<span class="nv">print</span><span class="ss">(</span><span class="s2">"stop server..."</span><span class="ss">)</span><span class="w"></span>
+<span class="nv">server_loop</span>.<span class="nv">stop</span><span class="ss">()</span><span class="w"></span>
+<span class="nv">server_thread</span>.<span class="nv">join</span><span class="ss">()</span><span class="w"></span>
 
-<span class="nv">print</span><span class="ss">(</span><span class="s2">"</span><span class="s">done</span><span class="s2">"</span><span class="ss">)</span>
-</pre>
+<span class="nv">print</span><span class="ss">(</span><span class="s2">"done"</span><span class="ss">)</span><span class="w"></span>
+</pre></div>
+
 <p>とりあえずこんな感じを予定。
 ./sample/sample.pyでシンタックスエラーが出なくなるところまで確認。
 tornado_msgpackを順次実装していく。

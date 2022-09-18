@@ -45,13 +45,14 @@
 今使っている設定
 すべてのファイルの先頭にはこれだけ書いておく。
 いわばログ入力の設定。</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>これとは別に、ログ出力の設定を一か所だけ記述する。
 メインの始まるところがいいんでないか。
 他のライブラリをimportするより前に書きたいということもあるだろうからその辺はお好みで。</p>
-<pre class="code literal-block"><span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">'__main__'</span><span class="p">:</span>
+<div class="code"><pre class="code literal-block"><span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">'__main__'</span><span class="p">:</span>
     <span class="c1"># defaultのlogレベルではdebug出ないよ</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'before'</span><span class="p">)</span>
 
@@ -64,78 +65,89 @@
 
     <span class="c1"># 以降出る</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'after'</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>以上で、デフォルトのログ設定を使ってログが画面に出力される。
 デフォルトのログ設定とは
 上記のプログラムでは以下のようにログが流れる。</p>
-<pre class="code literal-block"><span class="n">logger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'message'</span><span class="p">)</span>
-  <span class="o">|</span>
-  <span class="n">v</span>            <span class="n">propagate</span><span class="p">(</span><span class="err">親にメッセージが伝搬する</span><span class="p">)</span>
-<span class="n">logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logger</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
-  <span class="n">handlers</span><span class="p">[</span>           <span class="n">handlers</span><span class="p">[</span>
-  <span class="p">]</span>                     <span class="n">Streamhandler</span> <span class="o">-&gt;</span> <span class="err">コンソール画面</span>
-                      <span class="p">]</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">logger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">'message'</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="o">|</span><span class="w"></span>
+<span class="w">  </span><span class="n">v</span><span class="w">            </span><span class="n">propagate</span><span class="p">(</span><span class="err">親にメッセージが伝搬する</span><span class="p">)</span><span class="w"></span>
+<span class="n">logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">logger</span><span class="p">(</span><span class="s">''</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="n">handlers</span><span class="p">[</span><span class="w">           </span><span class="n">handlers</span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w">                     </span><span class="n">Streamhandler</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">コンソール画面</span><span class="w"></span>
+<span class="w">                      </span><span class="p">]</span><span class="w"></span>
+</pre></div>
+
 <p>pythonのロガーは木構造
 <code>getLogger(__name__)</code> で得たロガーは <code>__name__</code> という名前になり、<code>''</code> という名のロガーが親になる。</p>
-<pre class="code literal-block"><span class="nb">print</span><span class="p">(</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">))</span>
+<div class="code"><pre class="code literal-block"><span class="nb">print</span><span class="p">(</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">))</span>
 <span class="o">&lt;</span><span class="n">RootLogger</span> <span class="n">root</span> <span class="p">(</span><span class="n">WARNING</span><span class="p">)</span><span class="o">&gt;</span>
-</pre>
+</pre></div>
+
 <p>というように <code>''</code> ロガーはルートロガーである。
 どういう基準で親子が決まるかというと名前ベースで <code>''</code> がすべての親、その子 <code>'hoge'</code> 、さらにその子 <code>'hoge.fuga'</code> というように <code>.</code> をセパレータとしたパス名で決めているぽい。 <code>getLogger(__name__)</code> という風にロガーを得れば、とりあえず <code>getLogger('')</code> の子孫になる。</p>
 <p>https://docs.python.org/2/library/logging.html#logger-objects</p>
 <p>さらにログは木構造を親に向かって遡りながら、通り道にあったhandlerに出力される。
 なのですべての親になるルートロガーにひとつだけhandlerをセットしておけばよい。</p>
-<pre class="code literal-block"><span class="nb">print</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="nb">print</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
 <span class="p">[]</span>
-</pre>
+</pre></div>
+
 <h2>ルートロガーにはデフォルトでStreamHandlerがセットされている</h2>
-<pre class="code literal-block"><span class="nb">print</span><span class="p">(</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="nb">print</span><span class="p">(</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
 <span class="p">[</span><span class="o">&lt;</span><span class="n">StreamHandler</span> <span class="o">&lt;</span><span class="n">stderr</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">NOTSET</span><span class="p">)</span><span class="o">&gt;</span><span class="p">]</span>
-</pre>
+</pre></div>
+
 <p>親に向かって流すかどうかを設定するには以下のようにする。</p>
 <h2>親に流さない</h2>
-<pre class="code literal-block"><span class="n">logger</span><span class="o">.</span><span class="n">propagate</span><span class="o">=</span><span class="kc">False</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">logger</span><span class="o">.</span><span class="n">propagate</span><span class="o">=</span><span class="kc">False</span>
+</pre></div>
+
 <p>前知識としてこれくらいあればカスタマイズできる。
 出力のカスタマイズ
 基本的に、ルートロガーに好みのフォーマットやハンドラを設定することになると思う。
 デフォルトのStreamHandlerを削除する</p>
-<pre class="code literal-block"><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+
 <h3>Formatを変えよう</h3>
 <p>サーバー風の時刻付きのフォーマットとか。</p>
 <h3>デフォルトのハンドラを得る</h3>
-<pre class="code literal-block"><span class="n">handler</span><span class="o">=</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">handler</span><span class="o">=</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
 <h3>もしくは自前で作る</h3>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">StreamHandler</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">StreamHandler</span>
 <span class="n">handler</span><span class="o">=</span><span class="n">StreamHandler</span><span class="p">()</span>
 <span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Formatter</span>
 <span class="n">formatter</span><span class="o">=</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">'</span><span class="si">%(name)s</span><span class="s1"> =&gt; </span><span class="si">%(asctime)s</span><span class="s1"> [</span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">)</span>
 <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>使える変数は、LogRecord attributesらしい。</p>
 <p>https://docs.python.org/2/library/logging.html#logrecord-attributes</p>
 <p>日付のカスタマイズは？</p>
-<pre class="code literal-block"><span class="n">basicConfig</span><span class="p">(</span>
+<div class="code"><pre class="code literal-block"><span class="n">basicConfig</span><span class="p">(</span>
        <span class="n">datefmt</span><span class="o">=</span><span class="s1">'%H:%M:%S'</span><span class="p">,</span>
        <span class="nb">format</span><span class="o">=</span><span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1">[</span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(name)s</span><span class="s1">.</span><span class="si">%(funcName)s</span><span class="s1"> =&gt; </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">)</span>
        <span class="p">)</span>
-</pre>
+</pre></div>
+
 <h3>色付きにしよう</h3>
 <p>おされなコンソール</p>
 <p>Pythonで色つきログを - rainbow_logging_handler をPyPIにリリースしました</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">rainbow_logging_handler</span> <span class="kn">import</span> <span class="n">RainbowLoggingHandler</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">rainbow_logging_handler</span> <span class="kn">import</span> <span class="n">RainbowLoggingHandler</span>
 <span class="n">handler</span> <span class="o">=</span> <span class="n">RainbowLoggingHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 <span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>QtのWidgetに出力する
 StackOverflowとかで見つけた気がするがとりあえず。</p>
 <p>https://github.com/buha/gpibcs/blob/master/qplaintexteditlogger.py</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">QPlainTextEditLogger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">QPlainTextEditLogger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
     <span class="sd">'''</span>
 <span class="sd">    Logger</span>
 <span class="sd">    '''</span>
@@ -165,9 +177,10 @@ StackOverflowとかで見つけた気がするがとりあえず。</p>
 
 <span class="n">handler</span><span class="o">=</span><span class="n">QPlainTextEditLogger</span><span class="p">()</span>
 <span class="n">getLogger</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>ログレベル別に色を付けてみる</p>
-<pre class="code literal-block">    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block">    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -184,7 +197,7 @@ StackOverflowとかで見つけた気がするがとりあえず。</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">textCursor</span><span class="p">()</span><span class="o">.</span><span class="n">movePosition</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCursor</span><span class="o">.</span><span class="n">Start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">textCursor</span><span class="p">()</span><span class="o">.</span><span class="n">insertHtml</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</pre>
+</pre></div>
 
 <hr>
 <ul class="pager hidden-print">

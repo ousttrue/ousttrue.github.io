@@ -45,14 +45,15 @@
 <p>https://github.com/ousttrue/deso</p>
 <p>作った</p>
 <p>とりあえず <code>dein.toml</code> に登録。</p>
-<pre class="code literal-block"><span class="k">[[plugins]]</span>
-<span class="n">repo</span> <span class="o">=</span>  <span class="s">'ousttrue/deso'</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">[[plugins]]</span><span class="w"></span>
+<span class="n">repo</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="s">'ousttrue/deso'</span><span class="w"></span>
+</pre></div>
+
 <p>nvim 再起動して <code>~/.cache/dein/repose/github.com/ousttrue/deso</code></p>
 <p>にクローンされるところまで確認。</p>
 <h4>deso.py</h4>
 <p><code>rplugin/python3/denite/source/deso.py</code> を作る</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
 <span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -64,26 +65,29 @@
     <span class="k">def</span> <span class="nf">gather_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">candidates</span>
-</pre>
+</pre></div>
+
 <p><code>:UpdateRemotePlugin</code></p>
 <p>して、<code>Denite deso</code> で空のリストが返るところまで確認した。</p>
 <h3>中身作る</h3>
 <p><code>help denite-create_-source</code> を読む。</p>
 <p><code>gather_candidates</code> は <code>dictionary</code> の <code>list</code> を返す。</p>
 <p><code>dictionary</code> の様式は、 <code>help denite-candidate-attributes</code> を読む。</p>
-<pre class="code literal-block"><span class="p">{</span>
+<div class="code"><pre class="code literal-block"><span class="p">{</span>
     <span class="s2">"word"</span><span class="p">:</span> <span class="s2">"hogehoge"</span><span class="p">,</span>  <span class="c1"># required</span>
     <span class="s2">"abbr"</span><span class="p">:</span> <span class="s2">"hoge"</span><span class="p">,</span> <span class="c1"># 表示用。無くてもよい</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>なるほど。</p>
-<pre class="code literal-block">    <span class="k">def</span> <span class="nf">gather_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block">    <span class="k">def</span> <span class="nf">gather_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">"word"</span><span class="p">:</span>  <span class="n">date</span>
             <span class="p">}</span>
         <span class="p">]</span>
-</pre>
+</pre></div>
+
 <p>しかし、うまくいかず。どうも変更が反映されないなーと悩んでいたのだが、</p>
 <p><code>~/.cache/dein/.cache/init.vim/.dein/rplugin/python3/denite/source/deso.py</code></p>
 <p>を見たら最初に作った空の候補を返す状態だった。</p>
@@ -92,9 +96,10 @@
 <p>dein で <code>denite</code> を入れなおしたら更新できた。
 もっと楽に更新する方法は無いのかしら。</p>
 <p>シンボリックリンクにしてごまかした w</p>
-<pre class="code literal-block">ln -s ~/.cache/dein/repos/github.com/ousttrue/deso/rplugin/python3/denite/source/deso.py
+<div class="code"><pre class="code literal-block">ln -s ~/.cache/dein/repos/github.com/ousttrue/deso/rplugin/python3/denite/source/deso.py
 ~/.cache/dein/.cache/init.vim/.dein/rplugin/python3/denite/source/deso.py
-</pre>
+</pre></div>
+
 <p>これで、 <code>neovim</code> を再起動すればリロードできるようになった。
 そのうち正しいやり方がわかるだろう・・・</p>
 

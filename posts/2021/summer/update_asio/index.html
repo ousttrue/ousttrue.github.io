@@ -49,7 +49,7 @@
 <p>に動画と動画のサンプルコードが有る。</p>
 <h2>compiler を最新にする</h2>
 <p><code>ASIO_HAS_CO_AWAIT</code> が必要でこれが有効になるには新しいコンパイラが必要。</p>
-<pre class="code literal-block"><span class="c1">// asio/detail/config.hpp`</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// asio/detail/config.hpp`</span>
 
 <span class="c1">// Support the co_await keyword on compilers known to allow it.</span>
 <span class="cp">#if !defined(ASIO_HAS_CO_AWAIT)</span>
@@ -77,7 +77,8 @@
 <span class="cp">#  endif </span><span class="c1">// defined(__GNUC__)</span>
 <span class="cp"># endif </span><span class="c1">// !defined(ASIO_DISABLE_CO_AWAIT)</span>
 <span class="cp">#endif </span><span class="c1">// !defined(ASIO_HAS_CO_AWAIT)</span>
-</pre>
+</pre></div>
+
 <h3>VC2019(20210818最新版いける)</h3>
 <p><a href="https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/">https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/</a></p>
 <blockquote>
@@ -89,32 +90,35 @@
 <li>
 <code>16.11.1</code> 動いた。</li>
 </ul>
-<pre class="code literal-block"># CMakeListx.txt
+<div class="code"><pre class="code literal-block"># CMakeListx.txt
 set(TARGET_NAME pingpong)
 add_executable(<span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> main.cpp)
 target_link_libraries(<span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> PRIVATE asio)
 set_property(TARGET <span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> PROPERTY CXX_STANDARD 20) # 必要
 target_compile_options(<span class="cp">${</span><span class="n">TARGET_NAME</span><span class="cp">}</span> PUBLIC $<span class="err">&lt;</span>$<span class="nt">&lt;C</span><span class="err">_COMPILER_ID:MSVC</span><span class="nt">&gt;</span>:/await&gt;) # 必要
 target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
-</pre>
-<pre class="code literal-block"><span class="cp">#if defined(ASIO_HAS_STD_COROUTINE)</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="cp">#if defined(ASIO_HAS_STD_COROUTINE)</span>
 <span class="cp">#</span><span class="w"> </span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;coroutine&gt;</span><span class="cp"></span>
 <span class="cp">#else </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
 <span class="cp">#</span><span class="w"> </span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;experimental/coroutine&gt;</span><span class="cp"></span>
 <span class="cp">#endif </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
-</pre>
+</pre></div>
+
 <h3>LLVM-12(うまくいかず。追加のコマンドライン引数か)</h3>
 <p><a href="https://clang.llvm.org/cxx_status.html">https://clang.llvm.org/cxx_status.html</a></p>
 <p>LLVM-12 だと、</p>
-<pre class="code literal-block"> 'C:\Program Files\LLVM\bin\clang.exe' -v
+<div class="code"><pre class="code literal-block"> 'C:\Program Files\LLVM\bin\clang.exe' -v
 clang version 12.0.1
 Target: x86_64-pc-windows-msvc
 Thread model: posix
 InstalledDir: C:\Program Files\LLVM\bin
-</pre>
+</pre></div>
+
 <p>わからん。</p>
 <h2>コード</h2>
-<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/awaitable.hpp&gt;</span><span class="cp"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/awaitable.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/co_spawn.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/detached.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/experimental/as_tuple.hpp&gt;</span><span class="cp"></span>
@@ -126,11 +130,12 @@ InstalledDir: C:\Program Files\LLVM\bin
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/use_awaitable.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/use_future.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio/write.hpp&gt;</span><span class="cp"></span>
-</pre>
+</pre></div>
+
 <h3>co_spawn で awaitable を起動する</h3>
 <p>coroutine は 戻り値の型が <code>asio::awaitable&lt;T&gt;</code> である必要がある。この関数の中で <code>co_await</code>, <code>co_yield</code>, <code>co_return</code> が使える。
 coroutine は lambda でもよいので、下記のようにできる。</p>
-<pre class="code literal-block"><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">co</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">co</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">co_return</span><span class="w"> </span><span class="s">"result"</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="p">};</span><span class="w"></span>
 <span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
@@ -138,15 +143,17 @@ coroutine は lambda でもよいので、下記のようにできる。</p>
 <span class="w">  </span><span class="n">client_context</span><span class="p">.</span><span class="n">run</span><span class="p">();</span><span class="w"> </span><span class="c1">// ループを回す</span>
 <span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">pong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="c1">// future から結果を得る</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"pong: "</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">pong</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>asio::use_future を使うことで返り値 <code>std::future</code> になるので <code>co_return</code> の値を得ることも可能。
 結果に興味がないときは、<code>asio::detached</code> でよい。
 Completion Handler というコールバックなので、 promise に set_value する関数を自前で書いたりしてもよい様子。
 <code>asio::use_awaitable</code> で <code>co_await</code> するのも可能。</p>
 <p>返り値が <code>std::tuple&lt;asio::error_code, RESULT&gt;</code> になるハンドラ。</p>
-<pre class="code literal-block"><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">use_nothrow_awaitable</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">use_nothrow_awaitable</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
 <span class="w">    </span><span class="n">asio</span><span class="o">::</span><span class="n">experimental</span><span class="o">::</span><span class="n">as_tuple</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>client side</h3>
 <ul>
 <li>timer</li>
@@ -154,7 +161,7 @@ Completion Handler というコールバックなので、 promise に set_value
 <li>send(ping)</li>
 <li>receive(pong)</li>
 </ul>
-<pre class="code literal-block"><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">co</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">client_context</span><span class="p">,</span><span class="w"> </span><span class="n">ep</span><span class="p">]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">co</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">client_context</span><span class="p">,</span><span class="w"> </span><span class="n">ep</span><span class="p">]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"[client]wait 1000ms..."</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 <span class="w">    </span><span class="n">asio</span><span class="o">::</span><span class="n">system_timer</span><span class="w"> </span><span class="nf">timer</span><span class="p">(</span><span class="n">context</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="n">timer</span><span class="p">.</span><span class="n">expires_from_now</span><span class="p">(</span><span class="mi">1000</span><span class="n">ms</span><span class="p">);</span><span class="w"></span>
@@ -166,7 +173,7 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"[client]connected"</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"[client]ping..."</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="s">"ping"</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">ping</span><span class="p">(</span><span class="s">"ping"</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">write_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">async_write</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">buffer</span><span class="p">(</span><span class="n">ping</span><span class="p">),</span><span class="w"></span>
 <span class="w">                                                 </span><span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">write_size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span>
@@ -177,9 +184,10 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">        </span><span class="n">socket</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">transfer_at_least</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="k">co_return</span><span class="w"> </span><span class="n">to_string</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span><span class="w"></span>
 <span class="w">  </span><span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>server side</h3>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">server</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">server</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
 <span class="w">  </span><span class="n">asio</span><span class="o">::</span><span class="n">io_context</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_context</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">acceptor</span><span class="w"> </span><span class="n">_acceptor</span><span class="p">;</span><span class="w"></span>
@@ -232,8 +240,9 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"[server]pong: "</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">write_size</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
-</pre>
-<pre class="code literal-block"><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">ep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span><span class="w"></span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">ep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span><span class="w"></span>
 <span class="w">                                    </span><span class="n">PORT</span><span class="p">);</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1">// server</span>
@@ -241,7 +250,8 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">  </span><span class="n">server</span><span class="w"> </span><span class="nf">server</span><span class="p">(</span><span class="n">server_context</span><span class="p">);</span><span class="w"></span>
 <span class="w">  </span><span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span><span class="w"></span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">server_thread</span><span class="p">([</span><span class="o">&amp;</span><span class="n">server_context</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">server_context</span><span class="p">.</span><span class="n">run</span><span class="p">();</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// thread でループを回す。</span>
-</pre>
+</pre></div>
+
 <p>ループ(io_context)が隠蔽されていないのが良いですね。</p>
 <h2>asio api</h2>
 <h3>io_context</h3>
@@ -258,7 +268,7 @@ Completion Handler というコールバックなので、 promise に set_value
 <li><a href="https://amedama1x1.hatenablog.com/entry/2017/12/09/102405">Networking TS の Boost.Asio からの変更点 - その 4: Associated Executor</a></li>
 </ul>
 <p>単純に io_service を io_context に追きかえるだけで動いた。</p>
-<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio.hpp&gt;</span><span class="cp"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;asio.hpp&gt;</span><span class="cp"></span>
 
 <span class="n">io_context</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w"></span>
 
@@ -271,18 +281,21 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="c1">// 止める</span>
 <span class="n">context</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span><span class="w"></span>
 <span class="n">run_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>endpoint</h3>
 <p>ipaddress + port</p>
-<pre class="code literal-block"><span class="n">asip</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="nf">ep</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span><span class="w"> </span><span class="mi">1234</span><span class="p">);</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">asip</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="n">ep</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">address</span><span class="o">::</span><span class="n">from_string</span><span class="p">(</span><span class="s">"127.0.0.1"</span><span class="p">),</span><span class="w"> </span><span class="mi">1234</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
 <h3>tcp connect</h3>
 <p>socket</p>
-<pre class="code literal-block"><span class="n">io_context</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">io_context</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w"></span>
 <span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span><span class="w"> </span><span class="nf">socket</span><span class="p">(</span><span class="n">coontext</span><span class="p">);</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>basic</p>
-<pre class="code literal-block"><span class="kt">void</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span><span class="w"> </span><span class="n">socket</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="kt">void</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span><span class="w"> </span><span class="n">socket</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">on_connect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">error_code</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ec</span><span class="p">)</span><span class="w"></span>
 <span class="w">  </span><span class="p">{</span><span class="w"></span>
@@ -296,10 +309,11 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">  </span><span class="p">};</span><span class="w"></span>
 <span class="w">  </span><span class="n">socket</span><span class="p">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span><span class="w"> </span><span class="n">on_connect</span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>c++11 future</code></p>
 <p>std::future に対して <code>continue_with</code> する手段を用意しないと、これ単体では使いづらい</p>
-<pre class="code literal-block"><span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">connect_future</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span><span class="w"> </span><span class="n">socket</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">connect_future</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span><span class="w"> </span><span class="n">socket</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="c1">// move するのが大変な場合があるので手抜き</span>
 <span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span><span class="p">();</span><span class="w"></span>
@@ -317,24 +331,27 @@ Completion Handler というコールバックなので、 promise に set_value
 
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>c++20 coroutine</code></p>
 <p>有望</p>
-<pre class="code literal-block"><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">co</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">io_context</span><span class="w"> </span><span class="o">&amp;</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">co</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">io_context</span><span class="w"> </span><span class="o">&amp;</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">endpoint</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ep</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="n">asio</span><span class="o">::</span><span class="n">ip</span><span class="o">::</span><span class="n">tcp</span><span class="o">::</span><span class="n">socket</span><span class="w"> </span><span class="nf">socket</span><span class="p">(</span><span class="n">coontext</span><span class="p">);</span><span class="w"></span>
 <span class="w">  </span><span class="k">co_await</span><span class="w"> </span><span class="n">socket</span><span class="p">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">use_awaitable</span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>tcp listen</h3>
 <h3>raed_async</h3>
 <h3>write_async</h3>
 <h2>coroutine 詳細</h2>
 <p>asio の coroutine を学んでいたらできないことが出てきた。</p>
-<pre class="code literal-block"><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc_call</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">rpc_call</span><span class="p">(</span><span class="s">"add"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
 <h2>自前の Awaiter が必要？</h2>
-<pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="p">...</span><span class="n">AS</span><span class="o">&gt;</span><span class="w"></span>
 <span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rpc_call</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">AS</span><span class="p">...</span><span class="w"> </span><span class="n">as</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="n">asio</span><span class="o">::</span><span class="n">io_context</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w"></span>
@@ -354,7 +371,8 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">get_future</span><span class="p">();</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p><code>co_await std::future</code> できるぽいが, <code>asio</code> と混ぜてうまくいくのだろうか。</p>
 <h2>c++20 coroutine</h2>
 <ul>
@@ -367,10 +385,10 @@ Completion Handler というコールバックなので、 promise に set_value
 返り値の型から promise_type を得られるようにする必要がある。</p>
 <p>初期化は <code>promise_type::get_return_object</code> から始まるぽい。</p>
 <h3>generator の例</h3>
-<pre class="code literal-block"><span class="k">struct</span> <span class="nc">generator</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span> <span class="nc">promise_type</span><span class="p">;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">struct</span><span class="w"> </span><span class="nc">generator</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">promise_type</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">;</span><span class="w">  </span>
-<span class="w">  </span><span class="k">struct</span> <span class="nc">promise_type</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">promise_type</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">get_return_object</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">generator</span><span class="p">{</span><span class="n">handle</span><span class="o">::</span><span class="n">from_promise</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)};</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 <span class="w">  </span><span class="p">};</span><span class="w"></span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">;</span><span class="w"></span>
@@ -378,18 +396,20 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">  </span><span class="n">handle</span><span class="w"> </span><span class="n">coro</span><span class="p">;</span><span class="w"></span>
 <span class="w">  </span><span class="n">generator</span><span class="p">(</span><span class="n">handle</span><span class="w"> </span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">coro</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
-</pre>
-<pre class="code literal-block"><span class="n">promise_type</span><span class="w"> </span><span class="n">promise</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="n">promise_type</span><span class="w"> </span><span class="n">promise</span><span class="p">;</span><span class="w"></span>
 
 <span class="c1">// 戻り値型オブジェクトの初期化</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">promise</span><span class="p">.</span><span class="n">get_return_object</span><span class="p">();</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h2>Asio の実装</h2>
 <h3>asio::awaitable</h3>
 <p><code>asio::awaitable&lt;T&gt;</code> が CoroutineTrait の実装。</p>
 <p><code>include/asio/awaitable.hpp</code></p>
-<pre class="code literal-block"><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">Executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">any_io_executor</span><span class="o">&gt;</span><span class="w"></span>
-<span class="k">class</span> <span class="nc">ASIO_NODISCARD</span><span class="w"> </span><span class="n">awaitable</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">any_io_executor</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ASIO_NODISCARD</span><span class="w"> </span><span class="n">awaitable</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="k">public</span><span class="o">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1">/// The type of the awaited value.</span>
@@ -432,7 +452,7 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1">// Support for co_await keyword.</span>
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">U</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span><span class="w"></span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">await_suspend</span><span class="p">(</span><span class="w"></span>
 <span class="w">      </span><span class="n">detail</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">h</span><span class="p">)</span><span class="w"></span>
 <span class="w">  </span><span class="p">{</span><span class="w"></span>
@@ -448,8 +468,8 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="cp">#endif </span><span class="c1">// !defined(GENERATING_DOCUMENTATION)</span>
 
 <span class="k">private</span><span class="o">:</span><span class="w"></span>
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="o">&gt;</span><span class="w"> </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span> <span class="nc">detail</span><span class="o">::</span><span class="n">awaitable_thread</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="o">&gt;</span><span class="w"> </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span> <span class="nc">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="o">&gt;</span><span class="w"> </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">detail</span><span class="o">::</span><span class="n">awaitable_thread</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="o">&gt;</span><span class="w"> </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="p">;</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1">// Not copy constructible or copy assignable.</span>
 <span class="w">  </span><span class="n">awaitable</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">awaitable</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span><span class="w"></span>
@@ -463,16 +483,17 @@ Completion Handler というコールバックなので、 promise に set_value
 
 <span class="w">  </span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">frame_</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h3>promise_type</h3>
 <p><code>include/asio/impl/awaitable.hpp</code></p>
 <p>// promise_type</p>
-<pre class="code literal-block"><span class="cp"># if defined(ASIO_HAS_STD_COROUTINE)</span>
+<div class="code"><pre class="code literal-block"><span class="cp"># if defined(ASIO_HAS_STD_COROUTINE)</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">Executor</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span><span class="w"></span>
-<span class="k">struct</span> <span class="nc">coroutine_traits</span><span class="o">&lt;</span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="p">...</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Executor</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">coroutine_traits</span><span class="o">&lt;</span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="p">...</span><span class="o">&gt;</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">typedef</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">promise_type</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
@@ -483,8 +504,8 @@ Completion Handler というコールバックなので、 promise に set_value
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">experimental</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span> <span class="nc">Executor</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span><span class="w"></span>
-<span class="k">struct</span> <span class="nc">coroutine_traits</span><span class="o">&lt;</span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="p">...</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Executor</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">coroutine_traits</span><span class="o">&lt;</span><span class="n">asio</span><span class="o">::</span><span class="n">awaitable</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="p">...</span><span class="o">&gt;</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">typedef</span><span class="w"> </span><span class="n">asio</span><span class="o">::</span><span class="n">detail</span><span class="o">::</span><span class="n">awaitable_frame</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">promise_type</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
@@ -492,10 +513,11 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="p">}}</span><span class="w"> </span><span class="c1">// namespace std::experimental</span>
 
 <span class="cp"># endif </span><span class="c1">// defined(ASIO_HAS_STD_COROUTINE)</span>
-</pre>
+</pre></div>
+
 <h3>asio::detail::awaitable_frame</h3>
-<pre class="code literal-block"><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Executor</span><span class="o">&gt;</span><span class="w"></span>
-<span class="k">class</span> <span class="nc">awaitable_frame</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Executor</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">awaitable_frame</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="o">&gt;</span><span class="w"></span>
 <span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">awaitable_frame_base</span><span class="o">&lt;</span><span class="n">Executor</span><span class="o">&gt;</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="k">public</span><span class="o">:</span><span class="w"></span>
@@ -515,7 +537,7 @@ Completion Handler というコールバックなので、 promise に set_value
 <span class="w">    </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">rethrow_exception</span><span class="p">();</span><span class="w"></span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
-</pre>
+</pre></div>
 
 <hr>
 <ul class="pager hidden-print">

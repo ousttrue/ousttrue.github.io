@@ -40,15 +40,17 @@
 </h1>
 
 <h2>bdist_wheel + pep517 ではまる</h2>
-<pre class="code literal-block">setup.py bdist_wheel
-</pre>
+<div class="code"><pre class="code literal-block">setup.py bdist_wheel
+</pre></div>
+
 <p>なら成功するが、</p>
-<pre class="code literal-block">pip wheel .
-</pre>
+<div class="code"><pre class="code literal-block">pip wheel .
+</pre></div>
+
 <p>だと失敗するという現象に悩まされる。
 cmake でビルドしている extension の pyd が含まれないのである。</p>
 <p>原因は、 <code>setup.py</code> の下記の記述。</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">build_ext_cmake</span><span class="p">(</span><span class="n">build_ext</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">build_ext_cmake</span><span class="p">(</span><span class="n">build_ext</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">:</span>
@@ -61,14 +63,17 @@ cmake でビルドしている extension の pyd が含まれないのである�
         <span class="n">build_temp</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">ext_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ext_fullpath</span><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="c1"># &lt;- これ</span>
         <span class="n">ext_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>直した。</p>
-<pre class="code literal-block">        <span class="n">ext_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ext_fullpath</span><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
-</pre>
+<div class="code"><pre class="code literal-block">        <span class="n">ext_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ext_fullpath</span><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+</pre></div>
+
 <p>たぶん、 <code>get_ext_fullpath</code> が相対パスを返していて、変なところに <code>pyd</code> が出力されていた。
 pip の時だけフォルダの構成や pwd が変わっている様子。</p>
-<pre class="code literal-block">pip wheel . -v
-</pre>
+<div class="code"><pre class="code literal-block">pip wheel . -v
+</pre></div>
+
 <p>として、ログと睨めっこしていたら気付いた。
 pip が subprocess とか使うので、デバッガがアタッチできなくて、なかなかわからなかった。</p>
 

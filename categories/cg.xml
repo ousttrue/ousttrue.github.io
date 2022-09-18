@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (cgについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/cg.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 14 May 2022 17:22:20 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>WindowsでPyAlembicできるのか</title><link>https://ousttrue.github.io/posts/2017/08/pyalembic/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Windows上でPyAlembicを使いたいのだができるのか。
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (cgについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/cg.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 18 Sep 2022 09:57:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>WindowsでPyAlembicできるのか</title><link>https://ousttrue.github.io/posts/2017/08/pyalembic/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;Windows上でPyAlembicを使いたいのだができるのか。
 素直にLinuxでやるべきでは・・・
 Windows10(64bit) + Python-3.6(64bit)&lt;/p&gt;
 &lt;p&gt;作業場。&lt;/p&gt;
@@ -208,43 +208,47 @@ SimpleAbcViewerのAbcOpenGLを読めばAlembicのAPI(読む方)が分かりそ�
 &lt;p&gt;読んだ。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;vcpkg create url&lt;/code&gt; で雛形が作れる。&lt;/p&gt;
 &lt;p&gt;実験&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;.&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe create alembic https://github.com/alembic/alembic/archive/1.7.1.tar.gz
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;.&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe create alembic https://github.com/alembic/alembic/archive/1.7.1.tar.gz
 CMake Error at scripts/ports.cmake:101 &lt;span class="o"&gt;(&lt;/span&gt;message&lt;span class="o"&gt;)&lt;/span&gt;:
   Portfile already exists: &lt;span class="s1"&gt;'D:\vcpkg\ports\alembic\portfile.cmake'&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;すでにあるだと！？
 最近できたらしい。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;https://github.com/Microsoft/vcpkg/tree/master/ports/alembic&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;しかし、hdf非対応みたいなので作ってみる。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;.&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe create alembic-hdf https://github.com/alembic/alembic/archive/1.7.1.tar.gz
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;.&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe create alembic-hdf https://github.com/alembic/alembic/archive/1.7.1.tar.gz
 
 VCPKG_DIR
     ports
         alembic-hdf
             CONTROL
             portfile.cmake
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;ができた。
 簡単なCONTROLから。
 こっちはパッケージ情報を決めるだけなのでさくっと。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;Source: alembic-hdf
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;Source: alembic-hdf
 Version: &lt;span class="m"&gt;1&lt;/span&gt;.7.1
 Description: alembic with hdf5
 Build-Depends: hdf5
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;本題のportfile.cmake。
 そのままだとエラーになるの。最低限以下が必要なようだ。
 アーカイブを展開パスの指定。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/1.7.1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/1.7.1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="c"&gt;# ↓ 修正する&lt;/span&gt;
 
-&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/alembic-1.7.1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/alembic-1.7.1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;実行してみる。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&amp;gt; ./vcpkg install alembic-hdf:x64-windows
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&amp;gt; ./vcpkg install alembic-hdf:x64-windows
 The following packages will be built and installed:
     alembic-hdf:x64-windows
 Building package alembic-hdf:x64-windows...
@@ -339,12 +343,13 @@ submit an issue at https://github.com/Microsoft/vcpkg/issues including:
   Vcpkg version: &lt;span class="m"&gt;0&lt;/span&gt;.0.81-144d3718c4197b101c7d61ee6a258200371fb1ab
 
 Additionally, attach any relevant sections from the log files above.
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;という感じになった。
 エラーメッセージがすごく親切。
 あと、NINJAビルド速い。
 エラーにはなるがビルド結果は以下のように出力された。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;VCPKG_DIR/packages/alembic-hdf_x64-windows
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;VCPKG_DIR/packages/alembic-hdf_x64-windows
 │  BUILD_INFO
 │
 ├─bin
@@ -443,60 +448,66 @@ Additionally, attach any relevant sections from the log files above.
                 AlembicConfigVersion.cmake
                 AlembicTargets-release.cmake
                 AlembicTargets.cmake
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;ここから不要なものを削除したり、場所の違うものを移動したりすることで完成できそう。
 エラーメッセージに沿って修正してみる&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;debug/include&lt;/code&gt; 不要&lt;/p&gt;
 &lt;p&gt;エラーメッセージに含まれるとおりに。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE_RECURSE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/include&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE_RECURSE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/include&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="err"&gt;lib/cmake/Alembic/*.cmakeをshare/alembic-hdfに移動するべし&lt;/span&gt;
 &lt;span class="err"&gt;debug/lib/cmake/Alembicを統合するべし。&lt;/span&gt;
-&lt;span class="nb"&gt;vcpkg_fixup_cmake_targets&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CONFIG_PATH&lt;/span&gt; &lt;span class="s2"&gt;"lib/cmake/Alembic"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="nb"&gt;vcpkg_fixup_cmake_targets&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CONFIG_PATH&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"lib/cmake/Alembic"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;ぽい。 &lt;code&gt;alembic/portfile.cmake&lt;/code&gt; を参考にした&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;lib/Alembic.dllをbin/Alembic.dllに移動せよ&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;lib/Alembic.dllをbin/Alembic.dllに移動せよ&lt;/span&gt;
 &lt;span class="err"&gt;debug/lib/Alembic.dllも。&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/lib/Alembic.dll&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/lib/Alembic.dll&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/lib/Alembic.dll&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/lib/Alembic.dll&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;code&gt;alembic/portfile.cmake&lt;/code&gt; を参考にした&lt;/p&gt;
 &lt;p&gt;ライセンスファイルをコピーせよ
 エラーメッセージに含まれるとおりに。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;COPY&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/alembic-1.7.1/LICENSE.txt&lt;/span&gt; &lt;span class="s"&gt;DESTINATION&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/LICENSE.txt&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/copyright&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;COPY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/alembic-1.7.1/LICENSE.txt&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;DESTINATION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/LICENSE.txt&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/copyright&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;exeを削除せよ&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt; &lt;span class="s"&gt;EXE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt; &lt;span class="s"&gt;DEBUG_EXE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DEBUG_EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;EXE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;DEBUG_EXE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DEBUG_EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;alembic/portfile.cmakeを参考にした
 おまけ: debug用にpdbをコピー
 alembic/portfile.cmakeを参考にした
 vcpkg_copy_pdbs()&lt;/p&gt;
 &lt;p&gt;vcpkg_install_cmakeより下を抜粋。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;vcpkg_install_cmake&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;vcpkg_install_cmake&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 
 &lt;span class="c"&gt;# Remove debug/include&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE_RECURSE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/include&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE_RECURSE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/include&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="c"&gt;# fix *.cmake&lt;/span&gt;
-&lt;span class="nb"&gt;vcpkg_fixup_cmake_targets&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CONFIG_PATH&lt;/span&gt; &lt;span class="s2"&gt;"lib/cmake/Alembic"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;vcpkg_fixup_cmake_targets&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;CONFIG_PATH&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"lib/cmake/Alembic"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="c"&gt;# Rename dll&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/lib/Alembic.dll&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/lib/Alembic.dll&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/lib/Alembic.dll&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/lib/Alembic.dll&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/Alembic.dll&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="c"&gt;# Handle copyright&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;COPY&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/alembic-1.7.1/LICENSE.txt&lt;/span&gt; &lt;span class="s"&gt;DESTINATION&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/LICENSE.txt&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/copyright&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;COPY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_BUILDTREES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/src/alembic-1.7.1/LICENSE.txt&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;DESTINATION&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;RENAME&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/LICENSE.txt&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/share/alembic-hdf/copyright&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="c"&gt;# Remove exe files&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt; &lt;span class="s"&gt;EXE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt; &lt;span class="s"&gt;DEBUG_EXE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DEBUG_EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;EXE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;GLOB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;DEBUG_EXE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CURRENT_PACKAGES_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/debug/bin/*.exe&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;REMOVE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DEBUG_EXE&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="c"&gt;# Copy pdb&lt;/span&gt;
 &lt;span class="nb"&gt;vcpkg_copy_pdbs&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;再度ビルド。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;&amp;gt; vcpkg install alembic-hdf:x64-windows&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;うまくいった。
@@ -505,14 +516,15 @@ portfileの修正
 CONTROLに依存追加。
 Build-Depends: ilmbase, hdf5&lt;/p&gt;
 &lt;p&gt;USE_HDF5を有効に。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;vcpkg_configure_cmake&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-    &lt;span class="s"&gt;PREFER_NINJA&lt;/span&gt; &lt;span class="c"&gt;# Disable this option if project cannot be built with Ninja&lt;/span&gt;
-    &lt;span class="s"&gt;OPTIONS&lt;/span&gt; &lt;span class="s"&gt;-DUSE_HDF5=ON&lt;/span&gt;
-    &lt;span class="c"&gt;# OPTIONS_RELEASE -DOPTIMIZE=1&lt;/span&gt;
-    &lt;span class="c"&gt;# OPTIONS_DEBUG -DDEBUGGABLE=1&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;vcpkg_configure_cmake&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s"&gt;PREFER_NINJA&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# Disable this option if project cannot be built with Ninja&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s"&gt;OPTIONS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;-DUSE_HDF5=ON&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c"&gt;# OPTIONS_RELEASE -DOPTIMIZE=1&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c"&gt;# OPTIONS_DEBUG -DDEBUGGABLE=1&lt;/span&gt;
 &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;ビルドあんどエラー
 ビルドしてみるがエラーになる。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;VCPKG_DIR\buildtrees\alembic-hdf\package-x64-windows-rel-out.log&lt;/code&gt; を見て原因を探る。&lt;/p&gt;
@@ -521,57 +533,62 @@ Build-Depends: ilmbase, hdf5&lt;/p&gt;
 alembic-1.7.1/lib/Alembic/CMakeLists.txtを修正したいのでやり方を調べる。
 パッチの当て方&lt;/p&gt;
 &lt;p&gt;portfile.cmakeに記述する。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;vcpkg_extract_source_archiveよりあと、vcpkg_install_cmakeより前。&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;vcpkg_extract_source_archiveよりあと、vcpkg_install_cmakeより前。&lt;/span&gt;
 &lt;span class="nb"&gt;vcpkg_apply_patches&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-    &lt;span class="s"&gt;PATCHES&lt;/span&gt; &lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CMAKE_CURRENT_LIST_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/fix-hdf5link.patch&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;SOURCE_PATH&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s"&gt;PATCHES&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;CMAKE_CURRENT_LIST_DIR&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="s"&gt;/fix-hdf5link.patch&lt;/span&gt;
 &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;パッチの作り方&lt;/p&gt;
 &lt;p&gt;https://github.com/Microsoft/vcpkg/blob/master/docs/examples/patching-libpng.md#patching-the-code-to-improve-compatibility&lt;/p&gt;
 &lt;p&gt;なるほど。
 gitを準備して・・・&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;vcpkg&amp;gt; &lt;span class="nb"&gt;cd&lt;/span&gt; ./buildtrees/alembic-hdf/src/alembic-1.7.1/
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;vcpkg&amp;gt; &lt;span class="nb"&gt;cd&lt;/span&gt; ./buildtrees/alembic-hdf/src/alembic-1.7.1/
 vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1&amp;gt; git init
 vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1&amp;gt; git add .
 vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1&amp;gt; git commit -m &lt;span class="s2"&gt;"temp"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;修正
 alembic-1.7.1/lib/Alembic/CMakeLists.txtを修正。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&amp;gt; git diff
-&lt;span class="gd"&gt;--git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt&lt;/span&gt;
-&lt;span class="gh"&gt;index 5028c91..1f81d50 100644&lt;/span&gt;
-&lt;span class="gd"&gt;--- a/lib/Alembic/CMakeLists.txt&lt;/span&gt;
-&lt;span class="gi"&gt;+++ b/lib/Alembic/CMakeLists.txt&lt;/span&gt;
-&lt;span class="gu"&gt;@@ -49,6 +49,12 @@ ADD_SUBDIRECTORY(AbcMaterial)&lt;/span&gt;
- ADD_SUBDIRECTORY(Ogawa)
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;&amp;gt; git diff&lt;/span&gt;
+&lt;span class="gd"&gt;--git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gh"&gt;index 5028c91..1f81d50 100644&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gd"&gt;--- a/lib/Alembic/CMakeLists.txt&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+++ b/lib/Alembic/CMakeLists.txt&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -49,6 +49,12 @@ ADD_SUBDIRECTORY(AbcMaterial)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;ADD_SUBDIRECTORY(Ogawa)&lt;span class="w"&gt;&lt;/span&gt;
 
- ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})
-&lt;span class="gi"&gt;+IF (USE_HDF5)&lt;/span&gt;
-&lt;span class="gi"&gt;+    TARGET_LINK_LIBRARIES(Alembic&lt;/span&gt;
-&lt;span class="gi"&gt;+        ${HDF5_LIBRARIES}&lt;/span&gt;
-&lt;span class="gi"&gt;+        )&lt;/span&gt;
-&lt;span class="gi"&gt;+    ADD_DEFINITIONS(-DH5_BUILT_AS_DYNAMIC_LIB)&lt;/span&gt;
-&lt;span class="gi"&gt;+ENDIF()&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+IF (USE_HDF5)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+    TARGET_LINK_LIBRARIES(Alembic&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+        ${HDF5_LIBRARIES}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+        )&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+    ADD_DEFINITIONS(-DH5_BUILT_AS_DYNAMIC_LIB)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="gi"&gt;+ENDIF()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
- TARGET_INCLUDE_DIRECTORIES(Alembic
-     PUBLIC
-&lt;/pre&gt;
+&lt;span class="w"&gt; &lt;/span&gt;TARGET_INCLUDE_DIRECTORIES(Alembic&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;    PUBLIC&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;gitでpatchを作成&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;&amp;gt; git diff | out-file -enc ascii ..\..\..\..\ports\alembic-hdf\fix-hdf5link.patch&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;ビルド&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&amp;gt; .&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe install alembic-hdf:x64-windows
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&amp;gt; .&lt;span class="se"&gt;\v&lt;/span&gt;cpkg.exe install alembic-hdf:x64-windows
 Installing package alembic-hdf:x64-windows... &lt;span class="k"&gt;done&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;VCPKG_DIR/installed/x64-windows/bin/Alembic.dllをdependencywalkerで見てみるとばっちりhdf5.dllへのリンクが含まれている。作業完了。
 はじめてで調べながらでもわりとさくさく作業が進んだ。エラーメッセージの出し方とか、フォルダの構成とかvcpkgなかなかレベルが高いな。&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;ports
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ports
 ports/alembic-hdf/CONTROL
 Source: alembic-hdf
 Version: &lt;span class="m"&gt;1&lt;/span&gt;.7.1
 Description: alembic with hdf5
 Build-Depends: ilmbase, hdf5
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;```ports/alembic-hdf/portfile.cmake&lt;/p&gt;
 &lt;h2&gt;Common Ambient Variables:&lt;/h2&gt;
 &lt;h2&gt;CURRENT_BUILDTREES_DIR    = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}&lt;/h2&gt;
@@ -621,7 +638,7 @@ file(REMOVE ${EXE})
 file(REMOVE ${DEBUG_EXE})&lt;/p&gt;
 &lt;h2&gt;Copy pdb&lt;/h2&gt;
 &lt;p&gt;vcpkg_copy_pdbs()&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;```ports/alembic-hdf/fix-hdf5link.patch
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;```ports/alembic-hdf/fix-hdf5link.patch
 diff --git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt
 index 5028c91..1f81d50 100644
 --- a/lib/Alembic/CMakeLists.txt
@@ -639,6 +656,7 @@ index 5028c91..1f81d50 100644
 
  TARGET_INCLUDE_DIRECTORIES(Alembic
      PUBLIC
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;vcpkgにPR送った
 採用されたので上記の作業は必要なくなったのが、cmake-3.9.0の更新でFindHDF5が壊れるという事態が発生したので対応中…。&lt;/p&gt;</description><category>cg</category><category>vcpkg</category><guid>https://ousttrue.github.io/posts/2017/07/vcpkg_alembic/</guid><pubDate>Mon, 17 Jul 2017 15:00:00 GMT</pubDate></item></channel></rss>

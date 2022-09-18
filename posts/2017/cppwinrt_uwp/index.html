@@ -43,12 +43,14 @@
 <p>C++/CXを置き換えるよさげなライブラリC++WinRTを発見した。</p>
 <p>C++/CXの機能を純粋なC++(C++17とか新しめの)で実装したものらしく、WinRTのC++バインディングのような位置。
 C++/CXで</p>
-<pre class="code literal-block"><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="w"> </span><span class="o">^</span><span class="n">window</span><span class="p">;</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreWindow</span><span class="w"> </span><span class="o">^</span><span class="n">window</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+
 <p>のようなものを</p>
-<pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
 <span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">UI</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">Core</span><span class="w"> </span><span class="n">window</span><span class="p">;</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>のように置き換える。<code>-&gt;</code>じゃなくて <code>.</code> を使うスマートポインタで実装されている。</p>
 <ul>
 <li>Migrating C++/CX source code to C++/WinRT</li>
@@ -64,7 +66,7 @@ C++WinRTはヘッダオンリーライブラリである。
 ビルド確認</p>
 <p>https://github.com/Microsoft/cppwinrt/tree/master/10.0.15063.0/Samples/CL</p>
 <p>をベース。</p>
-<pre class="code literal-block"><span class="c1">// main.cpp</span>
+<div class="code"><pre class="code literal-block"><span class="c1">// main.cpp</span>
 <span class="cp">#pragma comment(lib, "windowsapp") </span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/base.h&gt;</span><span class="cp"></span>
@@ -75,51 +77,54 @@ C++WinRTはヘッダオンリーライブラリである。
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>あえてCMakeで。
 CMakeLists.txt</p>
-<pre class="code literal-block"><span class="nb">CMAKE_MINIMUM_REQUIRED</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.5</span><span class="p">)</span>
-<span class="nb">PROJECT</span><span class="p">(</span><span class="s">RendererToolkit</span><span class="p">)</span> <span class="c"># .sln</span>
+<div class="code"><pre class="code literal-block"><span class="nb">CMAKE_MINIMUM_REQUIRED</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.5</span><span class="p">)</span>
+<span class="nb">PROJECT</span><span class="p">(</span><span class="s">RendererToolkit</span><span class="p">)</span><span class="w"> </span><span class="c"># .sln</span>
 
 <span class="nb">ADD_DEFINITIONS</span><span class="p">(</span>
-    <span class="s">-DWIN32=1</span>
-    <span class="s">-DUNICODE=1</span>
-    <span class="s">-D_UNICODE=1</span>
-    <span class="p">)</span>
+<span class="w">    </span><span class="s">-DWIN32=1</span>
+<span class="w">    </span><span class="s">-DUNICODE=1</span>
+<span class="w">    </span><span class="s">-D_UNICODE=1</span>
+<span class="w">    </span><span class="p">)</span>
 
-<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_C_FLAGS</span> <span class="s2">"/ZW /EHsc /await /std:c++latest"</span><span class="p">)</span>
-<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_CXX_FLAGS</span> <span class="o">${</span><span class="nv">CMAKE_C_FLAGS</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_C_FLAGS</span><span class="w"> </span><span class="s2">"/ZW /EHsc /await /std:c++latest"</span><span class="p">)</span>
+<span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_CXX_FLAGS</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_C_FLAGS</span><span class="o">}</span><span class="p">)</span>
 <span class="nb">INCLUDE_DIRECTORIES</span><span class="p">(</span>
-    <span class="c"># 適当にcloneしたパスを参照</span>
-    <span class="o">${</span><span class="nv">CMAKE_CURRENT_LIST_DIR</span><span class="o">}</span><span class="s">/cppwinrt/10.0.15063.0</span>
-    <span class="p">)</span>
+<span class="w">    </span><span class="c"># 適当にcloneしたパスを参照</span>
+<span class="w">    </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_LIST_DIR</span><span class="o">}</span><span class="s">/cppwinrt/10.0.15063.0</span>
+<span class="w">    </span><span class="p">)</span>
 
 <span class="c">##############################################################################</span>
 <span class="c"># project</span>
 <span class="c">##############################################################################</span>
-<span class="nb">SET</span><span class="p">(</span><span class="s">PROJECTNAME</span> <span class="s">_SampleCoreWindow</span><span class="p">)</span>
+<span class="nb">SET</span><span class="p">(</span><span class="s">PROJECTNAME</span><span class="w"> </span><span class="s">_SampleCoreWindow</span><span class="p">)</span>
 
-<span class="nb">FILE</span><span class="p">(</span><span class="s">GLOB</span> <span class="s">SRCS</span> <span class="s">*.cpp</span> <span class="s">*.h</span><span class="p">)</span>
+<span class="nb">FILE</span><span class="p">(</span><span class="s">GLOB</span><span class="w"> </span><span class="s">SRCS</span><span class="w"> </span><span class="s">*.cpp</span><span class="w"> </span><span class="s">*.h</span><span class="p">)</span>
 
-<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECTNAME</span><span class="o">}</span> <span class="s">WIN32</span> <span class="o">${</span><span class="nv">SRCS</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">ADD_EXECUTABLE</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECTNAME</span><span class="o">}</span><span class="w"> </span><span class="s">WIN32</span><span class="w"> </span><span class="o">${</span><span class="nv">SRCS</span><span class="o">}</span><span class="p">)</span>
 
-<span class="nb">TARGET_INCLUDE_DIRECTORIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECTNAME</span><span class="o">}</span> <span class="s">PUBLIC</span>
-    <span class="o">${</span><span class="nv">SUBRENDERER_INCLUDE</span><span class="o">}</span>
-    <span class="p">)</span>
-</pre>
+<span class="nb">TARGET_INCLUDE_DIRECTORIES</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECTNAME</span><span class="o">}</span><span class="w"> </span><span class="s">PUBLIC</span>
+<span class="w">    </span><span class="o">${</span><span class="nv">SUBRENDERER_INCLUDE</span><span class="o">}</span>
+<span class="w">    </span><span class="p">)</span>
+</pre></div>
+
 <p>UWPをターゲットにしたプロジェクトを生成する。</p>
-<pre class="code literal-block">&gt; mkdir build
+<div class="code"><pre class="code literal-block">&gt; mkdir build
 &gt; cd build
 build&gt; cmake.exe -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 -DCMAKE_C_FLAGS=/ZW /EHsc -G "Visual Studio 15 2017 Win64" ..
-</pre>
+</pre></div>
+
 <p>ビルドすると警告が出る。
-warning C4447: スレッド モデルのない 'main' シグネチャが見つかりました。'int main(Platform::Array<:string>^ args)' の使用を検討してください。</:string></p>
+warning C4447: スレッド モデルのない 'main' シグネチャが見つかりました。'int main(Platform::Array&lt;:string&gt;^ args)' の使用を検討してください。</p>
 <p>以下のように属性をつければ外せた。
 [Platform::MTAThread]
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)</p>
 <p>Debug - X64 - ローカルコンピューター でアプリが起動して、即終了することが確認できればよし。
 UWPの作法で空のAppを作ってみる</p>
-<pre class="code literal-block"><span class="cp">#pragma comment(lib, "windowsapp") </span>
+<div class="code"><pre class="code literal-block"><span class="cp">#pragma comment(lib, "windowsapp") </span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.ApplicationModel.Core.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;winrt/Windows.UI.Core.h&gt;</span><span class="cp"></span>
@@ -127,7 +132,7 @@ UWPの作法で空のAppを作ってみる</p>
 <span class="c1">//</span>
 <span class="c1">// IFrameworkViewSourceとIFrameworkViewを一体化させるのは必要(ばらすとエラーになった)</span>
 <span class="c1">//</span>
-<span class="k">struct</span> <span class="nc">App</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">implements</span><span class="o">&lt;</span><span class="n">App</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">App</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">implements</span><span class="o">&lt;</span><span class="n">App</span><span class="w"></span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkViewSource</span><span class="w"></span>
 <span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">IFrameworkView</span><span class="o">&gt;</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -172,7 +177,8 @@ UWPの作法で空のAppを作ってみる</p>
 
 <span class="w">    </span><span class="n">winrt</span><span class="o">::</span><span class="n">Windows</span><span class="o">::</span><span class="n">ApplicationModel</span><span class="o">::</span><span class="n">Core</span><span class="o">::</span><span class="n">CoreApplication</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">App</span><span class="p">());</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <p>警告とは無関係に、実行に
 [Platform::MTAThread]かwinrt::init_apartment();のどちらかが必要？
 IUnknown*を得る

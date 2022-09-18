@@ -43,19 +43,22 @@
 <p>再度使ってみるべく環境整備から。</p>
 <h3>zls の master を使う</h3>
 <p>どうやら @import std 以外がうまく動かないらしく、 最新版を試してみたい。</p>
-<pre class="code literal-block"><span class="k">const</span> <span class="n">glfw</span> <span class="o">=</span> <span class="err">@</span><span class="n">import</span><span class="p">(</span><span class="s2">"glfw"</span><span class="p">);</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">const</span><span class="w"> </span><span class="n">glfw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">@</span><span class="n">import</span><span class="p">(</span><span class="s2">"glfw"</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
 <p><a href="https://ziglang.org/download/">https://ziglang.org/download/</a> からダウンロードするべし。</p>
 <h3>いちおう build を 試みた</h3>
 <p>zls の最新判を試すには、 zig の最新版(0.9.1じゃなくてmaster)が必要。
 zig のビルドには static build の llvm-13 が必要。
 Windows では頓挫した。
 しかし、最近 gentoo を育成しているのでこっちでやってみる。</p>
-<pre class="code literal-block">cmake -B build -S .
-</pre>
+<div class="code"><pre class="code literal-block">cmake -B build -S .
+</pre></div>
+
 <p>してみたが、最後にリンクエラーが出る。</p>
-<pre class="code literal-block">undefined reference to clang::SourceManager::getFilename
-</pre>
+<div class="code"><pre class="code literal-block">undefined reference to clang::SourceManager::getFilename
+</pre></div>
+
 <p>しかし、 gentoo の emerge に <code>dev-lang/zig-9999</code> があった。
 これを使って zls がビルドできた。
 <code>glfw</code> のインテリセンスも動作した。</p>
@@ -79,16 +82,19 @@ Windows では頓挫した。
 <h3>gyro の使いかた</h3>
 <p><code>202204</code> 現在だと、 gyro で import すると zls が解決できないような気がする。</p>
 <h4>add package</h4>
-<pre class="code literal-block">gyro add --src github hexops/mach-glfw --root src/main.zig --alias glfw
-</pre>
+<div class="code"><pre class="code literal-block">gyro add --src github hexops/mach-glfw --root src/main.zig --alias glfw
+</pre></div>
+
 <h4>dep package</h4>
-<pre class="code literal-block">gyro add --build-dep --src github hexops/mach-glfw --root build.zig --alias build-glfw
-</pre>
+<div class="code"><pre class="code literal-block">gyro add --build-dep --src github hexops/mach-glfw --root build.zig --alias build-glfw
+</pre></div>
+
 <h4>use package</h4>
-<pre class="code literal-block"><span class="kr">const</span><span class="w"> </span><span class="n">glfw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">"glfw"</span><span class="p">);</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="kr">const</span><span class="w"> </span><span class="n">glfw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">"glfw"</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+
 <h4>build.zig</h4>
-<pre class="code literal-block"><span class="kr">const</span><span class="w"> </span><span class="n">pkgs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">"deps.zig"</span><span class="p">).</span><span class="n">pkgs</span><span class="p">;</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="kr">const</span><span class="w"> </span><span class="n">pkgs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">"deps.zig"</span><span class="p">).</span><span class="n">pkgs</span><span class="p">;</span><span class="w"></span>
 <span class="kr">const</span><span class="w"> </span><span class="n">glfw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">@import</span><span class="p">(</span><span class="s">"build-glfw"</span><span class="p">);</span><span class="w"></span>
 
 <span class="kr">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">b</span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="n">Builder</span><span class="p">)</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -97,11 +103,12 @@ Windows では頓挫した。
 <span class="w">    </span><span class="n">exe</span><span class="p">.</span><span class="n">addPackage</span><span class="p">(</span><span class="n">pkgs</span><span class="p">.</span><span class="n">glfw</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="n">glfw</span><span class="p">.</span><span class="n">link</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">exe</span><span class="p">,</span><span class="w"> </span><span class="p">.{});</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-</pre>
+</pre></div>
+
 <h4>zgl</h4>
 <p>libepoxy</p>
-<pre class="code literal-block">gyro add --src github ziglibs/zgl --root zgl.zig --alias gl
-</pre>
+<div class="code"><pre class="code literal-block">gyro add --src github ziglibs/zgl --root zgl.zig --alias gl
+</pre></div>
 
 <hr>
 <ul class="pager hidden-print">

@@ -48,15 +48,16 @@
 </ul>
 <h5>vim-lsp解読</h5>
 <p>plugin/lsp.vim</p>
-<pre class="code literal-block"><span class="k">if</span> <span class="k">g</span>:lsp_auto_enable
+<div class="code"><pre class="code literal-block"><span class="k">if</span> <span class="k">g</span>:lsp_auto_enable
     augroup lsp_auto_enable
         autocmd<span class="p">!</span>
         autocmd <span class="nb">VimEnter</span> * <span class="k">call</span> <span class="nb">lsp</span>#enable<span class="p">()</span>
     augroup END
 <span class="k">endif</span>
-</pre>
+</pre></div>
+
 <p>autoload/lsp.vim</p>
-<pre class="code literal-block"><span class="k">function</span><span class="p">!</span> <span class="nb">lsp</span>#enable<span class="p">()</span> abort
+<div class="code"><pre class="code literal-block"><span class="k">function</span><span class="p">!</span> <span class="nb">lsp</span>#enable<span class="p">()</span> abort
     <span class="k">call</span> s:register_events<span class="p">()</span>
 <span class="k">endfunction</span>
 
@@ -84,9 +85,10 @@
         \ }<span class="p">)</span>
 
 <span class="k">endfunction</span>
-</pre>
+</pre></div>
+
 <p><code>autoload/lsp/client.vim</code></p>
-<pre class="code literal-block"><span class="k">function</span><span class="p">!</span> s:lsp_start<span class="p">(</span>opts<span class="p">)</span> abort
+<div class="code"><pre class="code literal-block"><span class="k">function</span><span class="p">!</span> s:lsp_start<span class="p">(</span>opts<span class="p">)</span> abort
 <span class="c">    " async.vim ライブラリに移る</span>
     <span class="k">let</span> <span class="k">l</span>:client_id <span class="p">=</span> async#job#<span class="k">start</span><span class="p">(</span><span class="k">a</span>:opts.cmd<span class="p">,</span> {
         \ <span class="s1">'on_stdout'</span>: <span class="k">function</span><span class="p">(</span><span class="s1">'s:on_stdout'</span><span class="p">),</span>
@@ -98,7 +100,8 @@
 <span class="c">" stdout を on_notification と on_request に切り出す</span>
 <span class="k">function</span><span class="p">!</span> s:on_stdout<span class="p">(</span>id<span class="p">,</span> data<span class="p">,</span> <span class="nb">event</span><span class="p">)</span> abort
 <span class="k">endfunction</span>
-</pre>
+</pre></div>
+
 <ul>
 <li>https://github.com/prabirshrestha/async.vim</li>
 </ul>
@@ -114,7 +117,7 @@
 <p>が入ってないな・・・</p>
 <p>Requestにそもそも入っていないのでは</p>
 <p>入れてみた。</p>
-<pre class="code literal-block">        autocmd <span class="nb">User</span> lsp_setup <span class="k">call</span> <span class="nb">lsp</span>#register_server<span class="p">(</span>{
+<div class="code"><pre class="code literal-block">        autocmd <span class="nb">User</span> lsp_setup <span class="k">call</span> <span class="nb">lsp</span>#register_server<span class="p">(</span>{
                     \ <span class="s1">'name'</span>: <span class="s1">'d'</span><span class="p">,</span>
                     \ <span class="s1">'cmd'</span>: {server_info<span class="p">-&gt;</span>[<span class="s1">'root_dls'</span>]}<span class="p">,</span>
 <span class="c">                    "\ 'cmd': {server_info-&gt;['dub', 'run', '-q', 'serve-d']},</span>
@@ -131,12 +134,15 @@
                     \   }
                     \ }
                     \ }<span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>実際に通信するようになた。</p>
-<pre class="code literal-block"><span class="p">[</span><span class="s2">"---&gt;"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">,</span> <span class="p">{</span><span class="nt">"method"</span><span class="p">:</span> <span class="s2">"textDocument/definition"</span><span class="p">,</span> <span class="nt">"on_notification"</span><span class="p">:</span> <span class="s2">"---funcref---"</span><span class="p">,</span> <span class="nt">"params"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"textDocument"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"uri"</span><span class="p">:</span> <span class="s2">"file:///home/ousttrue/work/d_hello/source/app.d"</span><span class="p">},</span> <span class="nt">"position"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"character"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">"line"</span><span class="p">:</span> <span class="mi">14</span><span class="p">}}}]</span>
-</pre>
-<pre class="code literal-block"><span class="p">[</span><span class="s2">"&lt;---"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">,</span> <span class="p">{</span><span class="nt">"response"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"id"</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="nt">"jsonrpc"</span><span class="p">:</span> <span class="s2">"2.0"</span><span class="p">,</span> <span class="nt">"result"</span><span class="p">:</span> <span class="p">[]},</span> <span class="nt">"request"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"id"</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="nt">"jsonrpc"</span><span class="p">:</span> <span class="s2">"2.0"</span><span class="p">,</span> <span class="nt">"method"</span><span class="p">:</span> <span class="s2">"textDocument/definition"</span><span class="p">,</span> <span class="nt">"params"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"textDocument"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"uri"</span><span class="p">:</span> <span class="s2">"file:///home/ousttrue/work/d_hello/source/app.d"</span><span class="p">},</span> <span class="nt">"position"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"character"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">"line"</span><span class="p">:</span> <span class="mi">14</span><span class="p">}}}}]</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="p">[</span><span class="s2">"---&gt;"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s2">"d"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nt">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"textDocument/definition"</span><span class="p">,</span><span class="w"> </span><span class="nt">"on_notification"</span><span class="p">:</span><span class="w"> </span><span class="s2">"---funcref---"</span><span class="p">,</span><span class="w"> </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"textDocument"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"file:///home/ousttrue/work/d_hello/source/app.d"</span><span class="p">},</span><span class="w"> </span><span class="nt">"position"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"character"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="nt">"line"</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">}}}]</span><span class="w"></span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="p">[</span><span class="s2">"&lt;---"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s2">"d"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nt">"response"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="nt">"jsonrpc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2.0"</span><span class="p">,</span><span class="w"> </span><span class="nt">"result"</span><span class="p">:</span><span class="w"> </span><span class="p">[]},</span><span class="w"> </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="nt">"jsonrpc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2.0"</span><span class="p">,</span><span class="w"> </span><span class="nt">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"textDocument/definition"</span><span class="p">,</span><span class="w"> </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"textDocument"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"file:///home/ousttrue/work/d_hello/source/app.d"</span><span class="p">},</span><span class="w"> </span><span class="nt">"position"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"character"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="nt">"line"</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">}}}}]</span><span class="w"></span>
+</pre></div>
+
 <p>エラーが <code>Definition not found</code> に変わって
 確かに、 <code>result</code> の中身が空っぽなので <code>not found</code> とサーバーが応答している。</p>
 <p>問題が <code>vim-lsp</code> から <code>dls</code> に移った。</p>
@@ -166,8 +172,9 @@
 <h5><code>--&gt; response1</code></h5>
 <h5><code>&lt;-- notify initialized</code></h5>
 <h5><code>&lt;-- notify textDocument/didOpen</code></h5>
-<pre class="code literal-block">autocmd <span class="nb">FileType</span> * <span class="k">call</span> wf#<span class="nb">lsp</span>#setFileType<span class="p">()</span>
-</pre>
+<div class="code"><pre class="code literal-block">autocmd <span class="nb">FileType</span> * <span class="k">call</span> wf#<span class="nb">lsp</span>#setFileType<span class="p">()</span>
+</pre></div>
+
 <h5><code>&lt;-- notify textDocument/didChange</code></h5>
 <h5><code>--&gt; notify textDocument/publishDiagnostics</code></h5>
 <h5><code>&lt;-- request2 textDocument/documentHighlight</code></h5>
