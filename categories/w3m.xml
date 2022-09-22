@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (w3mについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/w3m.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 18 Sep 2022 09:57:33 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>w3m改造に再突入</title><link>https://ousttrue.github.io/posts/2022/0918-w3m-mod/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;w3m改造に再突入&lt;/h2&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (w3mについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/w3m.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Thu, 22 Sep 2022 17:26:46 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>w3m改造に再突入</title><link>https://ousttrue.github.io/posts/2022/0918-w3m-mod/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;w3m改造に再突入&lt;/h2&gt;
 &lt;p&gt;なんとなく最初からやり直し。&lt;/p&gt;
 &lt;h3&gt;マクロカッター&lt;/h3&gt;
 &lt;p&gt;今回は、 &lt;code&gt;python&lt;/code&gt; でマクロカッターを作って前処理してみた。&lt;/p&gt;
@@ -17,23 +17,54 @@
 次の一手はこれ。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;typdef struct Some {} Some;&lt;/code&gt; を &lt;code&gt;struct Some;&lt;/code&gt; に書き換える。
 これでストレスをかなり低減できる。&lt;/p&gt;
-&lt;h3&gt;fm.h の分解&lt;/h3&gt;
+&lt;h3&gt;fm.h, proto.h の分配&lt;/h3&gt;
 &lt;ul&gt;
+&lt;li&gt;&lt;code&gt;.c&lt;/code&gt; と &lt;code&gt;.h&lt;/code&gt; をペアにして関数を一致させる&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;struct&lt;/code&gt; 毎にヘッダを分ける。&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;global&lt;/code&gt; 変数を散らす&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;const char*&lt;/code&gt; との戦い。順次&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3&gt;メインループを libuv にしてみる&lt;/h3&gt;
+&lt;h3&gt;libuv&lt;/h3&gt;
+&lt;h4&gt;mainloop&lt;/h4&gt;
 &lt;p&gt;あっさりできてしまった。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;tty input&lt;/code&gt;, &lt;code&gt;resize signal&lt;/code&gt; で &lt;code&gt;idle&lt;/code&gt; のときに描画などという方針でよさそう。
-raw モード切り替えなども &lt;code&gt;libuv&lt;/code&gt; 移行できそう。
-入力ストリームを &lt;code&gt;libuv&lt;/code&gt; に乗せられれば、&lt;code&gt;tab&lt;/code&gt; を並行動作できるはず。&lt;/p&gt;
-&lt;h3&gt;TODO: vt100 分離&lt;/h3&gt;
+raw モード切り替えなども &lt;code&gt;libuv&lt;/code&gt; 移行できそう。&lt;/p&gt;
+&lt;h4&gt;入力ストリーム&lt;/h4&gt;
+&lt;h4&gt;linein / readline&lt;/h4&gt;
+&lt;h4&gt;出力&lt;/h4&gt;
+&lt;h3&gt;使わない機能を削る&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;backend, dump など&lt;/li&gt;
+&lt;li&gt;pager 系の機能&lt;/li&gt;
+&lt;li&gt;news, gopher など使わないプロトコル&lt;/li&gt;
+&lt;li&gt;mouse 系の機能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;wtf-8 とは？&lt;/h3&gt;
+&lt;p&gt;謎の文字コード &lt;code&gt;wtf-8&lt;/code&gt; について、再調査。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://badsector.pullup.net/?p=70"&gt;https://badsector.pullup.net/?p=70&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;👇&lt;/p&gt;
+&lt;p&gt;&amp;lt;https://simonsapin.github.io/wtf-8/&lt;/p&gt;
+&lt;h3&gt;vt100 分離&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Buffer =&amp;gt; Screen =&amp;gt; tty_out&lt;/code&gt; という流れに統一する。
+各所からローレベルの描画機能を呼ばない。&lt;/p&gt;
 &lt;h3&gt;TODO: logger 導入&lt;/h3&gt;
-&lt;h3&gt;TODO: lua 導入&lt;/h3&gt;
+&lt;h3&gt;UIとデータ構造の分離&lt;/h3&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;+----+
+|DATA| TabBuffer, Buffer, Anchor, Form, Image...
++----+
+  A
+  |
++----+
+| UI | mainloop... tty, key dispatch
++----+
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;TabBuffer, Buffer, Anchor, FormList&lt;/code&gt; と &lt;code&gt;mainloop keydispatch&lt;/code&gt; あたりを分離する。
+片方向の参照。&lt;/p&gt;
+&lt;h4&gt;TODO: lua 導入&lt;/h4&gt;
 &lt;p&gt;DEFUN を lua で記述したい。
 rc も？&lt;/p&gt;
-&lt;h3&gt;TODO: libgc やめる&lt;/h3&gt;
+&lt;h3&gt;TODO: libgc 減らす。止める&lt;/h3&gt;
 &lt;h3&gt;TODO: zig に移植&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;zig cc&lt;/code&gt; でビルドはできた。
 じゃなくて、ソースを &lt;code&gt;zig&lt;/code&gt; にしたい。&lt;/p&gt;

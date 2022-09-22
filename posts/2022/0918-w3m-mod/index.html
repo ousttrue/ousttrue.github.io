@@ -57,8 +57,10 @@
 次の一手はこれ。</p>
 <p><code>typdef struct Some {} Some;</code> を <code>struct Some;</code> に書き換える。
 これでストレスをかなり低減できる。</p>
-<h3>fm.h の分解</h3>
+<h3>fm.h, proto.h の分配</h3>
 <ul>
+<li>
+<code>.c</code> と <code>.h</code> をペアにして関数を一致させる</li>
 <li>
 <code>struct</code> 毎にヘッダを分ける。</li>
 <li>
@@ -66,17 +68,47 @@
 <li>
 <code>const char*</code> との戦い。順次</li>
 </ul>
-<h3>メインループを libuv にしてみる</h3>
+<h3>libuv</h3>
+<h4>mainloop</h4>
 <p>あっさりできてしまった。</p>
 <p><code>tty input</code>, <code>resize signal</code> で <code>idle</code> のときに描画などという方針でよさそう。
-raw モード切り替えなども <code>libuv</code> 移行できそう。
-入力ストリームを <code>libuv</code> に乗せられれば、<code>tab</code> を並行動作できるはず。</p>
-<h3>TODO: vt100 分離</h3>
+raw モード切り替えなども <code>libuv</code> 移行できそう。</p>
+<h4>入力ストリーム</h4>
+<h4>linein / readline</h4>
+<h4>出力</h4>
+<h3>使わない機能を削る</h3>
+<ul>
+<li>backend, dump など</li>
+<li>pager 系の機能</li>
+<li>news, gopher など使わないプロトコル</li>
+<li>mouse 系の機能</li>
+</ul>
+<h3>wtf-8 とは？</h3>
+<p>謎の文字コード <code>wtf-8</code> について、再調査。</p>
+<p><a href="https://badsector.pullup.net/?p=70">https://badsector.pullup.net/?p=70</a></p>
+<p>👇</p>
+<p>&lt;https://simonsapin.github.io/wtf-8/</p>
+<h3>vt100 分離</h3>
+<p><code>Buffer =&gt; Screen =&gt; tty_out</code> という流れに統一する。
+各所からローレベルの描画機能を呼ばない。</p>
 <h3>TODO: logger 導入</h3>
-<h3>TODO: lua 導入</h3>
+<h3>UIとデータ構造の分離</h3>
+<div class="code"><pre class="code literal-block">+----+
+|DATA| TabBuffer, Buffer, Anchor, Form, Image...
++----+
+  A
+  |
++----+
+| UI | mainloop... tty, key dispatch
++----+
+</pre></div>
+
+<p><code>TabBuffer, Buffer, Anchor, FormList</code> と <code>mainloop keydispatch</code> あたりを分離する。
+片方向の参照。</p>
+<h4>TODO: lua 導入</h4>
 <p>DEFUN を lua で記述したい。
 rc も？</p>
-<h3>TODO: libgc やめる</h3>
+<h3>TODO: libgc 減らす。止める</h3>
 <h3>TODO: zig に移植</h3>
 <p><code>zig cc</code> でビルドはできた。
 じゃなくて、ソースを <code>zig</code> にしたい。</p>
