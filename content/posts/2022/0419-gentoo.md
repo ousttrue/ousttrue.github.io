@@ -16,6 +16,10 @@ Ubuntu と同じ `/home` をマウントしてみたら `dotfiles` に互換性�
 システムを壊してしもた。
 作りなおし。ついでに [btffs](https://wiki.gentoo.org/wiki/Btrfs) やってみる。
 
+* <https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Downloading_the_stage_tarball>
+
+Stage3: `openrc | desktop profile`
+
 ## btrfs
 
 `/etc/fstab`
@@ -67,6 +71,10 @@ LC_MESSAGES="C"
 
 MAKEOPTS="-j6"
 ```
+
+## passwd
+
+`/etc/security/passwdqc.conf`
 
 ## boot
 
