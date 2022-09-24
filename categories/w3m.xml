@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (w3mについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/w3m.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Thu, 22 Sep 2022 17:26:46 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>w3m改造に再突入</title><link>https://ousttrue.github.io/posts/2022/0918-w3m-mod/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;w3m改造に再突入&lt;/h2&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌 (w3mについての記事)</title><link>https://ousttrue.github.io/</link><description></description><atom:link href="https://ousttrue.github.io/categories/w3m.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Sep 2022 18:10:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>w3m改造に再突入</title><link>https://ousttrue.github.io/posts/2022/0918-w3m-mod/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;w3m改造に再突入&lt;/h2&gt;
 &lt;p&gt;なんとなく最初からやり直し。&lt;/p&gt;
 &lt;h3&gt;マクロカッター&lt;/h3&gt;
 &lt;p&gt;今回は、 &lt;code&gt;python&lt;/code&gt; でマクロカッターを作って前処理してみた。&lt;/p&gt;
@@ -10,34 +10,60 @@
 
 &lt;p&gt;みたいな &lt;code&gt;#ifdef&lt;/code&gt; 事前に解決しえカットしていくツールである。
 めんどくさいので &lt;code&gt;if defined(HOGE)&lt;/code&gt; などは実装していない。
-&lt;code&gt;true&lt;/code&gt;, &lt;code&gt;false&lt;/code&gt;, &lt;code&gt;none&lt;/code&gt; の3値で判断して true であれば &lt;code&gt;#if&lt;/code&gt; を false であれば &lt;code&gt;#if&lt;/code&gt; ブロックをコードごと削除し、&lt;code&gt;none&lt;/code&gt; であれば保持するというロジック。
+&lt;code&gt;true&lt;/code&gt;, &lt;code&gt;false&lt;/code&gt;, &lt;code&gt;none&lt;/code&gt; の3値で判断。
+true であれば &lt;code&gt;#if&lt;/code&gt; を削除。
+false であれば &lt;code&gt;#if&lt;/code&gt; ブロックをコードごと削除し。
+&lt;code&gt;none&lt;/code&gt; であれば保持するというロジック。
 わりとうまくいって、コードがかなり簡単になった。&lt;/p&gt;
 &lt;h3&gt;いつも通り C++ 化&lt;/h3&gt;
 &lt;p&gt;C++ 化しないとCの暗黙の型変換が緩すぎてコンパイルエラー追うのが難しくなるので、
 次の一手はこれ。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;typdef struct Some {} Some;&lt;/code&gt; を &lt;code&gt;struct Some;&lt;/code&gt; に書き換える。
+&lt;p&gt;&lt;code&gt;c++&lt;/code&gt; できたら、 &lt;code&gt;typdef struct Some {} Some;&lt;/code&gt; を &lt;code&gt;struct Some;&lt;/code&gt; に書き換える。
 これでストレスをかなり低減できる。&lt;/p&gt;
-&lt;h3&gt;fm.h, proto.h の分配&lt;/h3&gt;
+&lt;p&gt;局所性の高い関数をメンバー関数にする。
+なるべくメンバーを private にして、名前も &lt;code&gt;_&lt;/code&gt; などの prefix を付ける。
+大きい struct は分割する。
+コンストラクタ、デストラクタ、コピーコンストラクタは避ける。&lt;code&gt;GC&lt;/code&gt; や &lt;code&gt;setmem(0)&lt;/code&gt; で死ぬ。
+同様に、 std::vector, std::string は慎重に導入する。&lt;/p&gt;
+&lt;h3&gt;macro 減らす&lt;/h3&gt;
+&lt;p&gt;macro 関数を&lt;code&gt;inline 関数&lt;/code&gt; に置き換えたり、
+macro 定数を &lt;code&gt;enum&lt;/code&gt; に置き換える。int, char などを enum に置き換える。
+使えれば &lt;code&gt;bitfield&lt;/code&gt; とかも駆使。&lt;/p&gt;
+&lt;h3&gt;fm.h, proto.h, file.c の分配&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;.c&lt;/code&gt; と &lt;code&gt;.h&lt;/code&gt; をペアにして関数を一致させる&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;struct&lt;/code&gt; 毎にヘッダを分ける。&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;global&lt;/code&gt; 変数を散らす&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;const char*&lt;/code&gt; との戦い。順次&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;膨大な global 変数があるので、使わないもの思い切って削除する。&lt;/p&gt;
+&lt;h4&gt;file.c&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;file.c&lt;/code&gt; が 7000 行とかあってすごい。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;html のロードが 4500 くらい。 &lt;code&gt;table.c&lt;/code&gt;, &lt;code&gt;frame.c&lt;/code&gt; も関連？&lt;/li&gt;
+&lt;li&gt;http を操作が 500 くらい&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;http アクセスや、html パース、ローカルCGI とか Buffer 操作が色々入っている。&lt;/p&gt;
 &lt;h3&gt;libuv&lt;/h3&gt;
 &lt;h4&gt;mainloop&lt;/h4&gt;
 &lt;p&gt;あっさりできてしまった。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;tty input&lt;/code&gt;, &lt;code&gt;resize signal&lt;/code&gt; で &lt;code&gt;idle&lt;/code&gt; のときに描画などという方針でよさそう。
 raw モード切り替えなども &lt;code&gt;libuv&lt;/code&gt; 移行できそう。&lt;/p&gt;
 &lt;h4&gt;入力ストリーム&lt;/h4&gt;
+&lt;p&gt;tcp, fd, FILE*, Str と圧縮 decoder のランタイム polymorphism.
+c++ の継承に置き換えて、 &lt;code&gt;void*&lt;/code&gt; の cast より、型チェックの聞く状態にできる。&lt;/p&gt;
+&lt;p&gt;TODO: libuv を使う&lt;/p&gt;
 &lt;h4&gt;linein / readline&lt;/h4&gt;
 &lt;h4&gt;出力&lt;/h4&gt;
+&lt;h4&gt;signal&lt;/h4&gt;
+&lt;p&gt;読み込みを &lt;code&gt;ctrl-c&lt;/code&gt; で中断するなど。&lt;/p&gt;
 &lt;h3&gt;使わない機能を削る&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;backend, dump など&lt;/li&gt;
 &lt;li&gt;pager 系の機能&lt;/li&gt;
 &lt;li&gt;news, gopher など使わないプロトコル&lt;/li&gt;
 &lt;li&gt;mouse 系の機能&lt;/li&gt;
+&lt;li&gt;search_header 系の機能&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3&gt;wtf-8 とは？&lt;/h3&gt;
 &lt;p&gt;謎の文字コード &lt;code&gt;wtf-8&lt;/code&gt; について、再調査。&lt;/p&gt;
@@ -47,6 +73,14 @@ raw モード切り替えなども &lt;code&gt;libuv&lt;/code&gt; 移行でき�
 &lt;h3&gt;vt100 分離&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;Buffer =&amp;gt; Screen =&amp;gt; tty_out&lt;/code&gt; という流れに統一する。
 各所からローレベルの描画機能を呼ばない。&lt;/p&gt;
+&lt;p&gt;メッセージ表示も抽象化して、text を push するだけに。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;カーソル移動&lt;/li&gt;
+&lt;li&gt;out&lt;/li&gt;
+&lt;li&gt;flush&lt;/li&gt;
+&lt;li&gt;カーソル復帰&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;とかしない。&lt;/p&gt;
 &lt;h3&gt;TODO: logger 導入&lt;/h3&gt;
 &lt;h3&gt;UIとデータ構造の分離&lt;/h3&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;+----+
@@ -61,6 +95,8 @@ raw モード切り替えなども &lt;code&gt;libuv&lt;/code&gt; 移行でき�
 
 &lt;p&gt;&lt;code&gt;TabBuffer, Buffer, Anchor, FormList&lt;/code&gt; と &lt;code&gt;mainloop keydispatch&lt;/code&gt; あたりを分離する。
 片方向の参照。&lt;/p&gt;
+&lt;p&gt;バッファーローダーからグローバル変数を除去して、再入可能にする。
+tab を平行動作可能にする。&lt;/p&gt;
 &lt;h4&gt;TODO: lua 導入&lt;/h4&gt;
 &lt;p&gt;DEFUN を lua で記述したい。
 rc も？&lt;/p&gt;

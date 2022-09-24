@@ -50,14 +50,26 @@
 
 <p>みたいな <code>#ifdef</code> 事前に解決しえカットしていくツールである。
 めんどくさいので <code>if defined(HOGE)</code> などは実装していない。
-<code>true</code>, <code>false</code>, <code>none</code> の3値で判断して true であれば <code>#if</code> を false であれば <code>#if</code> ブロックをコードごと削除し、<code>none</code> であれば保持するというロジック。
+<code>true</code>, <code>false</code>, <code>none</code> の3値で判断。
+true であれば <code>#if</code> を削除。
+false であれば <code>#if</code> ブロックをコードごと削除し。
+<code>none</code> であれば保持するというロジック。
 わりとうまくいって、コードがかなり簡単になった。</p>
 <h3>いつも通り C++ 化</h3>
 <p>C++ 化しないとCの暗黙の型変換が緩すぎてコンパイルエラー追うのが難しくなるので、
 次の一手はこれ。</p>
-<p><code>typdef struct Some {} Some;</code> を <code>struct Some;</code> に書き換える。
+<p><code>c++</code> できたら、 <code>typdef struct Some {} Some;</code> を <code>struct Some;</code> に書き換える。
 これでストレスをかなり低減できる。</p>
-<h3>fm.h, proto.h の分配</h3>
+<p>局所性の高い関数をメンバー関数にする。
+なるべくメンバーを private にして、名前も <code>_</code> などの prefix を付ける。
+大きい struct は分割する。
+コンストラクタ、デストラクタ、コピーコンストラクタは避ける。<code>GC</code> や <code>setmem(0)</code> で死ぬ。
+同様に、 std::vector, std::string は慎重に導入する。</p>
+<h3>macro 減らす</h3>
+<p>macro 関数を<code>inline 関数</code> に置き換えたり、
+macro 定数を <code>enum</code> に置き換える。int, char などを enum に置き換える。
+使えれば <code>bitfield</code> とかも駆使。</p>
+<h3>fm.h, proto.h, file.c の分配</h3>
 <ul>
 <li>
 <code>.c</code> と <code>.h</code> をペアにして関数を一致させる</li>
@@ -68,20 +80,34 @@
 <li>
 <code>const char*</code> との戦い。順次</li>
 </ul>
+<p>膨大な global 変数があるので、使わないもの思い切って削除する。</p>
+<h4>file.c</h4>
+<p><code>file.c</code> が 7000 行とかあってすごい。</p>
+<ul>
+<li>html のロードが 4500 くらい。 <code>table.c</code>, <code>frame.c</code> も関連？</li>
+<li>http を操作が 500 くらい</li>
+</ul>
+<p>http アクセスや、html パース、ローカルCGI とか Buffer 操作が色々入っている。</p>
 <h3>libuv</h3>
 <h4>mainloop</h4>
 <p>あっさりできてしまった。</p>
 <p><code>tty input</code>, <code>resize signal</code> で <code>idle</code> のときに描画などという方針でよさそう。
 raw モード切り替えなども <code>libuv</code> 移行できそう。</p>
 <h4>入力ストリーム</h4>
+<p>tcp, fd, FILE*, Str と圧縮 decoder のランタイム polymorphism.
+c++ の継承に置き換えて、 <code>void*</code> の cast より、型チェックの聞く状態にできる。</p>
+<p>TODO: libuv を使う</p>
 <h4>linein / readline</h4>
 <h4>出力</h4>
+<h4>signal</h4>
+<p>読み込みを <code>ctrl-c</code> で中断するなど。</p>
 <h3>使わない機能を削る</h3>
 <ul>
 <li>backend, dump など</li>
 <li>pager 系の機能</li>
 <li>news, gopher など使わないプロトコル</li>
 <li>mouse 系の機能</li>
+<li>search_header 系の機能</li>
 </ul>
 <h3>wtf-8 とは？</h3>
 <p>謎の文字コード <code>wtf-8</code> について、再調査。</p>
@@ -91,6 +117,14 @@ raw モード切り替えなども <code>libuv</code> 移行できそう。</p>
 <h3>vt100 分離</h3>
 <p><code>Buffer =&gt; Screen =&gt; tty_out</code> という流れに統一する。
 各所からローレベルの描画機能を呼ばない。</p>
+<p>メッセージ表示も抽象化して、text を push するだけに。</p>
+<ul>
+<li>カーソル移動</li>
+<li>out</li>
+<li>flush</li>
+<li>カーソル復帰</li>
+</ul>
+<p>とかしない。</p>
 <h3>TODO: logger 導入</h3>
 <h3>UIとデータ構造の分離</h3>
 <div class="code"><pre class="code literal-block">+----+
@@ -105,6 +139,8 @@ raw モード切り替えなども <code>libuv</code> 移行できそう。</p>
 
 <p><code>TabBuffer, Buffer, Anchor, FormList</code> と <code>mainloop keydispatch</code> あたりを分離する。
 片方向の参照。</p>
+<p>バッファーローダーからグローバル変数を除去して、再入可能にする。
+tab を平行動作可能にする。</p>
 <h4>TODO: lua 導入</h4>
 <p>DEFUN を lua で記述したい。
 rc も？</p>
