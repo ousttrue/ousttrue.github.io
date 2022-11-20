@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌</title><link>https://ousttrue.github.io/</link><description>作業記録</description><atom:link href="https://ousttrue.github.io/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Sep 2022 18:10:56 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>w3m改造に再突入</title><link>https://ousttrue.github.io/posts/2022/0918-w3m-mod/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;w3m改造に再突入&lt;/h2&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>三次元日誌</title><link>https://ousttrue.github.io/</link><description>作業記録</description><atom:link href="https://ousttrue.github.io/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>ja</language><copyright>Contents © 2022 &lt;a href="mailto:ousttrue@gmail.com"&gt;ousttrue&lt;/a&gt; </copyright><lastBuildDate>Sun, 20 Nov 2022 18:39:31 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>PREFIX の構築 (meson など)</title><link>https://ousttrue.github.io/posts/2022/1121-build-prefix/</link><dc:creator>ousttrue</dc:creator><description>&lt;p&gt;GStreamer をビルドする過程で &lt;code&gt;meson&lt;/code&gt; を調べたら、存外に良かった。
+python なので、CMake と比べてデバッガをアタッチできるのが圧倒的に楽。
+CMake はステップ実行とかできないからね。&lt;/p&gt;
+&lt;p&gt;成り行きで GStreamer に続いて、 Gtk4,  PyGObject とかをビルドしていたら、
+Gtk4 もわりと面白そうなことがわかった。
+昔、Windows では扱いが面倒だった GLArea がさくっと動いた。
+さらに Gtk4 で新しくできた Gsk 層が 2D の SceneGraph ぽくて、
+PyOpenGL と連携して遊べるかもしれない。
+NodeEditor とか Timeline(KeyFrame) Editor 作れないかなぁ。
+PyGObject まわりは、gir(xml) から Python の型ヒント(pyi stub) を生成することで、
+LanguageServer のインテリセンスをそれなりに効かせることができた。
+最近の python では、 &lt;code&gt;Qt&lt;/code&gt; とか &lt;code&gt;bpy&lt;/code&gt; といった &lt;code&gt;native extension&lt;/code&gt; の方が、
+素の python モジュールより型情報が無くなるという逆転現象が起きているのだが、
+PyGObject はほぼ gir(xml) そのままなので、わりといい感じになる。&lt;/p&gt;
+&lt;p&gt;Gtk のビルドが短時間でできることがわかったので、
+GUI 層は自前ビルドでいけそうな気がしてきた。
+つまり、Linux と Windows 両方を gtk4 でなるべく同じツールを使ってみる。
+Gentoo をクリーンインストールして下の層だけ  &lt;code&gt;emerge&lt;/code&gt; で入れた。
+Gentoo は USE フラグで &lt;code&gt;-gtk -glib -qt&lt;/code&gt; などとすることで、依存が連鎖することを止めることができる。&lt;/p&gt;
+&lt;p&gt;ついでに &lt;code&gt;wayland&lt;/code&gt; に手を出したところ、&lt;code&gt;wayland&lt;/code&gt; 界隈もビルドツールに
+&lt;code&gt;meson&lt;/code&gt; が導入されているのを発見。
+&lt;code&gt;download/clone&lt;/code&gt; =&amp;gt; &lt;code&gt;meson&lt;/code&gt; を自動化する python スクリプトの作成に着手した。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ousttrue/toprefix"&gt;https://github.com/ousttrue/toprefix&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;プロトタイプとしてはまぁまぁの使い勝手。
+&lt;code&gt;gentoo&lt;/code&gt; と &lt;code&gt;Windows&lt;/code&gt; 共用で &lt;code&gt;gtk4&lt;/code&gt; などをさくっと展開できるようになる。予定。&lt;/p&gt;
+&lt;p&gt;さらに &lt;code&gt;dotfiles&lt;/code&gt; の管理でやっている &lt;code&gt;neovim&lt;/code&gt; のビルドも合流。
+go 系の &lt;code&gt;ghq&lt;/code&gt;, &lt;code&gt;fzf&lt;/code&gt; などの展開や、
+rust 系の &lt;code&gt;wezterm&lt;/code&gt;, &lt;code&gt;stylua&lt;/code&gt;, &lt;code&gt;ripgrep&lt;/code&gt; の展開もこっちに移そうかなと。
+わりと処理のパターンは決まっていて次のうちのどれかになる事が多い。&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;download&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;extract&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tar&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ball&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;download&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;extract&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;ビルド済み&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tar&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ball&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="n"&gt;clone&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;repository&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;これにパッチ当てが追加になることがある。&lt;/p&gt;
+&lt;p&gt;ついでに、
+以前作った &lt;code&gt;blender&lt;/code&gt; の &lt;code&gt;bpy&lt;/code&gt; モジュール生成スクリプトなんかも合流することを画策。
+&lt;code&gt;svn&lt;/code&gt; なしで &lt;code&gt;blender&lt;/code&gt; ビルドできんかね。
+となると &lt;code&gt;pixar usd&lt;/code&gt; も &lt;code&gt;llvm&lt;/code&gt; もビルドしたいわね。
+&lt;code&gt;pyxar usd&lt;/code&gt; は &lt;code&gt;boost&lt;/code&gt; の除去したいけどね。
+TUI と Desktop のツール系は自前ビルドで遊べるようにしていく。&lt;/p&gt;</description><category>buildtool</category><guid>https://ousttrue.github.io/posts/2022/1121-build-prefix/</guid><pubDate>Sun, 20 Nov 2022 15:00:00 GMT</pubDate></item><item><title>w3m改造に再突入</title><link>https://ousttrue.github.io/posts/2022/0918-w3m-mod/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;w3m改造に再突入&lt;/h2&gt;
 &lt;p&gt;なんとなく最初からやり直し。&lt;/p&gt;
 &lt;h3&gt;マクロカッター&lt;/h3&gt;
 &lt;p&gt;今回は、 &lt;code&gt;python&lt;/code&gt; でマクロカッターを作って前処理してみた。&lt;/p&gt;
@@ -564,18 +604,4 @@ NerdFonts や 絵文字 はそのようになっている？&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://floooh.github.io/2017/08/06/sokol-api-update.html"&gt;https://floooh.github.io/2017/08/06/sokol-api-update.html&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://floooh.github.io/2017/07/29/sokol-gfx-tour.html"&gt;https://floooh.github.io/2017/07/29/sokol-gfx-tour.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description><category>c++</category><guid>https://ousttrue.github.io/posts/2022/0206-sokol/</guid><pubDate>Sat, 05 Feb 2022 15:00:00 GMT</pubDate></item><item><title>0205-xonsh</title><link>https://ousttrue.github.io/posts/2022/0205-xonsh/</link><dc:creator>ousttrue</dc:creator><description>&lt;h2&gt;xonsh メモ&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://xon.sh/contents.html"&gt;https://xon.sh/contents.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3&gt;関連&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://vaaaaaanquish.hatenablog.com/archive/category/xonsh"&gt;https://vaaaaaanquish.hatenablog.com/archive/category/xonsh&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://murabitoleg.com/windows-xonsh/"&gt;https://murabitoleg.com/windows-xonsh/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://qiita.com/choge_/items/a4ceb6e2d77a373a8e2e"&gt;https://qiita.com/choge_/items/a4ceb6e2d77a373a8e2e&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://scrapbox.io/PythonOsaka/prompt--toolkit_%E3%82%92%E4%BD%BF%E3%81%84%E3%81%93%E3%81%AA%E3%81%9D%E3%81%86"&gt;https://scrapbox.io/PythonOsaka/prompt--toolkit_%E3%82%92%E4%BD%BF%E3%81%84%E3%81%93%E3%81%AA%E3%81%9D%E3%81%86&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3&gt;tools&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://github.com/prompt-toolkit/pymux"&gt;https://github.com/prompt-toolkit/pymux&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description><category>python</category><category>xonsh</category><guid>https://ousttrue.github.io/posts/2022/0205-xonsh/</guid><pubDate>Fri, 04 Feb 2022 15:00:00 GMT</pubDate></item></channel></rss>
+&lt;/ul&gt;</description><category>c++</category><guid>https://ousttrue.github.io/posts/2022/0206-sokol/</guid><pubDate>Sat, 05 Feb 2022 15:00:00 GMT</pubDate></item></channel></rss>
