@@ -40,14 +40,14 @@ def process(src: str) -> dict:
         return {
             "type": "yaml",
             "frontmatter": yaml.safe_load(io.StringIO(m.group(1))),
-            "body": m.group(2),
+            "body": m.group(2).lstrip(),
         }
     m = re.match(r"^\+\+\+$\n(.*?)\n^\+\+\+$\n(.*)", src, re.MULTILINE | re.DOTALL)
     if m:
         return {
             "type": "toml",
             "frontmatter": toml.loads(m.group(1)),
-            "body": m.group(2),
+            "body": m.group(2).lstrip(),
         }
     return {"body": src}
 
@@ -72,14 +72,26 @@ def run(path: pathlib.Path, do: bool):
                     target = ""
                     if new_body != body:
                         target += "b"
+                    if "title" not in frontmatter:
+                        lines = body.splitlines()
+                        title = lines[0].split(maxsplit=1)[1]
+                        body = lines[1]
+                        target += "t " + title
+                        frontmatter["title"] = title
+
+                    if target:
                         print(
                             f"{Color.GREEN}yaml{Color.RESET}: {path} {Color.RED}{target}{Color.RESET}"
                         )
                         if do:
+                            yaml_frontmatter = yaml.dump(
+                                frontmatter, allow_unicode=True
+                            )
                             with path.open("w") as w:
                                 w.write("---\n")
-                                w.write(frontmatter)
+                                w.write(yaml_frontmatter)
                                 w.write("---\n")
+                                w.write("\n")
                                 w.write(new_body)
                     # print(frontmatter)
                     # yaml.dump(frontmatter)
@@ -89,8 +101,15 @@ def run(path: pathlib.Path, do: bool):
                     target = "f"
                     if new_body != body:
                         target += "b"
+                    if "title" not in frontmatter:
+                        lines = body.splitlines()
+                        title = lines[0].split(maxsplit=1)[1]
+                        body = lines[1]
+                        target += "t " + title
+                        frontmatter["title"] = title
+
                     print(
-                        f"{Color.MAGENTA}toml{Color.RESET}: {path} {Color.RED+target+Color.RESET}"
+                        f"{Color.MAGENTA}toml{Color.RESET}: {path} {Color.RED}{target}{Color.RESET}"
                     )
                     # print(frontmatter)
                     if do:
@@ -99,6 +118,7 @@ def run(path: pathlib.Path, do: bool):
                             w.write("---\n")
                             w.write(yaml_frontmatter)
                             w.write("---\n")
+                            w.write("\n")
                             w.write(new_body)
                 case _:
                     print(f"{Color.RED}unknown{Color.RESET}: {path}")

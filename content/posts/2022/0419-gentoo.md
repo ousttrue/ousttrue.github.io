@@ -2,6 +2,7 @@
 date: 2022-04-20
 tags:
 - linux
+title: Gentoo 構築
 ---
 
 # Gentoo 構築

@@ -2,6 +2,7 @@
 date: 2022-02-06
 tags:
 - c++
+title: sokol やってみる
 ---
 
 # sokol やってみる

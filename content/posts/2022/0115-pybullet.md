@@ -3,6 +3,7 @@ date: 2022-01-15
 tags:
 - python
 - bullet
+title: ExampleBrowser を読んでいる
 ---
 
 # ExampleBrowser を読んでいる

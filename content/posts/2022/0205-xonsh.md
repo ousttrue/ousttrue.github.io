@@ -3,6 +3,7 @@ date: 2022-02-05
 tags:
 - python
 - xonsh
+title: xonsh メモ
 ---
 
 # xonsh メモ

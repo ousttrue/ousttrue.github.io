@@ -23,6 +23,7 @@ exports.createPages = async ({ graphql, actions }) => {
     {
       allMdx {
         nodes {
+          body
           fields {
             slug
           }
@@ -35,7 +36,13 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `);
   data.allMdx.nodes.map((node) => {
-    console.log("[page]", node.fields.slug);
+    // node.body = node.body.trim();
+    // if (!node.frontmatter.title) {
+    //   const { head, body } = node.body.split("\n", 1);
+    //   node.boyd = body;
+    //   node.frontmatter.title = head;
+    // }
+    console.log("[page]", node.fields.slug, node.frontmatter);
 
     createPage({
       path: node.fields.slug,

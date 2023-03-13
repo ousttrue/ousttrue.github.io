@@ -2,6 +2,7 @@
 date: 2022-05-07
 tags:
 - python
+title: bdist_wheel + pep517 ではまる
 ---
 
 # bdist_wheel + pep517 ではまる

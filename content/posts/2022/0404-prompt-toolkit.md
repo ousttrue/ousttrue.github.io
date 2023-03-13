@@ -3,6 +3,7 @@ date: 2022-04-04
 tags:
 - python
 - ptk
+title: prompt-toolkit の fullscreen アプリケーション
 ---
 
 # prompt-toolkit の fullscreen アプリケーション
