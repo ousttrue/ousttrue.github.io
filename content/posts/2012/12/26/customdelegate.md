@@ -4,6 +4,7 @@ date: 2012-12-26
 tags: []
 ---
 
+```
 C++のQt4と平行してPyQt4を使い始めた。大概の用途にはこっちで十分な気がする。
 
 pyqtのチュートリアルには、
@@ -20,30 +21,30 @@ import sys from PyQt4 import QtGui, QtCore from random import randint
 class CustomDelegate(QtGui.QItemDelegate):
 
   def \_\_init\_\_(self, parent = None):
- 
+
   :   super(CustomDelegate, self).\_\_init\_\_(parent) self.editor
       = QtGui.QSpinBox()
- 
+
   \# 編集時
   ---------
- 
+
   \# create widget def createEditor(self, parent, styleOption, index):
   editor = QtGui.QSpinBox(parent) return editor
- 
+
   \# model to editor def setEditorData(self, editor, index):
   data=index.model().data(index, QtCore.Qt.EditRole)
   editor.setValue(data.toInt()\[0\])
- 
+
   \# editor to model def setModelData(self, editor, model, index):
   model.setData(index, editor.value())
- 
+
   def updateEditorGeometry(self, editor, option, index):
- 
+
   :   editor.setGeometry(option.rect)
- 
+
   \# 通常時
   ---------
- 
+
   \# item render def paint(self, painter, option, index): widget =
   QtGui.QLabel() \#widget = QtGui.QSpinBox()
   data=index.model().data(index, QtCore.Qt.EditRole)
@@ -51,15 +52,15 @@ class CustomDelegate(QtGui.QItemDelegate):
   \#widget.setValue(data.toInt()\[0\]) widget.setGeometry(option.rect)
   \# border ? point=QtCore.QPoint(option.rect.left()+2,
   option.rect.top()+2) widget.render(painter, point)
- 
+
   \# item一個分の大きさ
   ---------------------
- 
+
   def sizeHint(self, option, index):
- 
+
   :   self.editor.setGeometry(option.rect)
       return self.editor.sizeHint()
- 
+
 def main():
 
 :   app = QtGui.QApplication(sys.argv)
@@ -82,3 +83,4 @@ if \_\_name\_\_ == '\_\_main\_\_':
 QItemDelegateは非編集時のアイテム描画にpaintメソッドを使い、編集時の描画にcreateEditor,
 setEditorData, setModelData,
 updateEditorGeometryを使う。カスタムデリゲートにするとアイテムの大きさが変わりそうなのでsizeHintも実装するとよさげ。
+```
