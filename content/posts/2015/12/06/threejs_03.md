@@ -4,16 +4,14 @@ date: 2015-12-06
 tags: []
 ---
 
-
-
-
+```
 source
 シーンを強化してみる。
 軸
 先人が記事を残してくれていたので楽ちん。
 Three.js　AxisHelper
 //軸の長さ１０００
-var axis = new THREE.AxisHelper(1000);   
+var axis = new THREE.AxisHelper(1000);
 //sceneに追加
 this.scene.add(axis);
 
@@ -57,4 +55,4 @@ Animate() {
     this.controls.update();
     this.stats.update();
 }
-
+```

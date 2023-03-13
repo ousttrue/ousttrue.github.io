@@ -4,12 +4,13 @@ date: 2015-12-24
 tags: []
 ---
 
-Socket.IOサーバーとしてHerokuを使ってみよう。
+Socket.IO サーバーとして Heroku を使ってみよう。
 実験中
 https://shielded-caverns-4913.herokuapp.com/
-Heroku練習
+Heroku 練習
 以前作ったユーザーが生きていたので改めてチュートリアルを実践。
 
+```
 Getting Started with Node.js on Heroku
 
 gulpでexpressなサーバを作る
@@ -182,7 +183,7 @@ herokuにデプロイ。
 > git push heroku master
 # エラーが出たら直す。npm installなど
 
-# herokuサイトをブラウザで開く 
+# herokuサイトをブラウザで開く
 > heroku open
 # エラーが出たら直す。npm installなど
 
@@ -196,7 +197,7 @@ const io = socketio(server);
 io.on('connection', (socket) => {
     var clientAddress = socket.client.conn.remoteAddress;
     console.log('connected: %s from %s', socket.id, clientAddress);
-    
+
     function recTimer(interval: number, callback: Function)
     {
         setTimeout(()=>recTimer(interval, callback), interval);
@@ -216,7 +217,7 @@ src/client/index.html
 </head>
 <body>
     <h1>Hello</h1>
-    
+
     <div id='content'></div>
 </body>
 </html>
@@ -230,13 +231,13 @@ declare module io {
 
 window.onload = () => {
     const socket = io.connect();
-    
+
     const content=document.getElementById('content');
-    
+
     socket.on('connect', ()=>{
         content.innerHTML='connected!';
     });
-    
+
     socket.on('time', (message: any)=>{
         content.innerHTML+='<br>'+message;
     });
@@ -244,3 +245,4 @@ window.onload = () => {
 
 bvh
 準備が整ったので、node.js側でパースしたbvhを適当にjson化してsocket.ioにemitするサーバーを作る。
+```

@@ -4,7 +4,9 @@ date: 2015-11-14
 tags: []
 ---
 
-gulpで静的サイト生成その２
+gulp で静的サイト生成その２
+
+```
 引き続き、サイト生成作業を続行中。見た目は置いておいて(bootstrap入れたけど)機能を優先して作ろう。
 「次へ」と「前へ」のリンクを作れば内部リンクは揃う。
 gulpは自由度が高いのでなんとでもなるな。
@@ -67,9 +69,9 @@ module.exports = function (outputFileName, options) {
             for (var i = 0; i < filelist.length; ++i) {
                 var f = filelist[i];
                 var rel = dest + "/" + f.path.substr(f.base.length).replace(/\\/g, '/');
-                //console.log(rel);              
+                //console.log(rel);
                 html += '<li><a href="' + rel + '">' + f.frontMatter.title + '</a></li>\n';
-                
+
                 // 各アイテムのfrontMatterにnextとprevを付ける
                 // 降順に並んでいる
                 if (i === 0) {
@@ -132,7 +134,7 @@ module.exports = function () {
         // do something
         for(var key in file.filelist){
             var output=file.filelist[key];
-            this.push(output);           
+            this.push(output);
         }
 
         // callback()は必ず実行
@@ -163,4 +165,4 @@ gulp.task('posts', function () {
         .pipe(gulp.dest('build/posts'))
     ;
 });
-
+```

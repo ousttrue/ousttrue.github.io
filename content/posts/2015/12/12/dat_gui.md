@@ -4,11 +4,7 @@ date: 2015-12-12
 tags: []
 ---
 
-
-
-
-
-
+```
 view typescript
 view javascript
 
@@ -76,4 +72,4 @@ http://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-
 
 autoPlace: falseがポインツ。そのうえでdomにposition:abusolute
 var  gui = new dat.GUI( { autoPlace: false } );
-
+```

@@ -4,11 +4,12 @@ date: 2015-12-19
 tags: []
 ---
 
-Windows上でnode-ffiでdllから関数を呼びだしていたのだが、
-dllにコールバックを登録した呼び出しを繰り返していると死ぬという現象に遭遇。
+Windows 上で node-ffi で dll から関数を呼びだしていたのだが、
+dll にコールバックを登録した呼び出しを繰り返していると死ぬという現象に遭遇。
 調べ始めた。
 node-v5.3.0-x64.msi(Windows10)
 
+```
 node-ffiはstdcallに対応してない
 2014/01/25
 
@@ -133,3 +134,4 @@ process.on('uncaughtException', function (err) {
 
 ひっかからないな・・・
 自前ビルドしてどう死んでいるか確かめるか。
+```

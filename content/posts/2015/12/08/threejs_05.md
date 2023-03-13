@@ -4,14 +4,16 @@ date: 2015-12-08
 tags: []
 ---
 
-骨入りモデルとかやってみようかと思ったのだけど、その前にThree.jsのソースを見やすい状態で作業したい。
-結合前のThree.jsを自前ビルドしながら運用する方法を調べてみる。
+骨入りモデルとかやってみようかと思ったのだけど、その前に Three.js のソースを見やすい状態で作業したい。
+結合前の Three.js を自前ビルドしながら運用する方法を調べてみる。
 build.py, or how to generate a compressed three.js file
-と本家に書いてある。python使うんか。gulpでやりてぇな。
-全部concatしてuglifyしたらいいんじゃないか。
+と本家に書いてある。python 使うんか。gulp でやりてぇな。
+全部 concat して uglify したらいいんじゃないか。
 やってみよう。
-とりあえずbowerで導入したthree.js関連を削除。
-threejs.srcフォルダを作ってthree.jsソースのsrcディレクトリの中身を展開した。
+とりあえず bower で導入した three.js 関連を削除。
+threejs.src フォルダを作って three.js ソースの src ディレクトリの中身を展開した。
+
+```
 gulp.task('bowerjs', function () {
 
     var files = [
@@ -50,7 +52,7 @@ includeってなんだろうと調べてみると
 
 にjsonファイルがあり中にjsファイルがリストされている。
 なるほど。src下を全部concatするのではなくここに書いてあるものを、書いてある順でconcatすればいいんでないか。
-// 
+//
 gulp.task('threejs:build', function(){
     var common=JSON.parse(fs.readFileSync('three.js/includes/common.json')).map(function(v, i){ return 'three.js/'+v; });
     gulp.src(common)
@@ -62,10 +64,10 @@ gulp.task('threejs:build', function(){
 gulp.task('bowerjs', ['threejs:build'], function () {
     // 前と同じ
 }
-````
+```
 
-これで実行するとそれっぽいthree.jsが出てくるが、まだエラーが出る。
-でエラー行に飛ぶとifdefがある。なんだこれは。
+これで実行するとそれっぽい three.js が出てくるが、まだエラーが出る。
+でエラー行に飛ぶと ifdef がある。なんだこれは。
 
 ```glsl
 #ifdef USE_ALPHAMAP
@@ -131,3 +133,4 @@ gulp.task('threejs:build', function(){
 
 FireFoxでブレイクポイントを仕掛けてステップ実行できた。
 これで、Loaderの自作とかが捗るぞ。
+```

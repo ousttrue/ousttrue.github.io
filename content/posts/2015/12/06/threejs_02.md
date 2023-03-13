@@ -4,8 +4,7 @@ date: 2015-12-06
 tags: []
 ---
 
-
-
+```
 
 source
 今回は、TrackballControlsを導入します。
@@ -150,7 +149,7 @@ TrackballControlsを初期化
         // trackballに変化があった時だけ描画を呼ぶ
         this.controls.addEventListener('change', this.Render.bind(this));
     }
-    
+
 // Rendererのメソッドを追加
     Animate() {
         requestAnimationFrame(this.Animate.bind(this));
@@ -179,7 +178,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 定義を修正。
 // 定義
     constructor(camera: THREE.Camera, element?: Element);
-    
+
 // 呼び出し
    this.controls = new THREE.TrackballControls(this.camera, this.$container[0]);
 
@@ -198,7 +197,7 @@ cssの話だけれど。
                 case 1:
                     $(this).css({ cursor: 'n-resize' });
                     break;
-                    
+
                 case 2:
                     $(this).css({ cursor: 'move' });
                     break;
@@ -209,4 +208,4 @@ cssの話だけれど。
         })
     ;
 
-
+```

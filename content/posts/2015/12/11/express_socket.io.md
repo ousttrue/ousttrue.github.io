@@ -4,8 +4,9 @@ date: 2015-12-11
 tags: []
 ---
 
-Socket.IOを実験する環境のメモ。
+Socket.IO を実験する環境のメモ。
 
+```
 Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように
 coffee-scriptは無しでES6要素をなるべく入れる
 Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる
@@ -125,7 +126,7 @@ browserSync導入
 gulpfile.js。browserSync
 const config = { // 追加分
     app_entry: './build/app.js',
-    app_port: 5000,    
+    app_port: 5000,
 };
 
 const browserSync = require('browser-sync').create();
@@ -193,7 +194,7 @@ Socket.IOの疎通
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-    <script type="text/javascript" src="/socket.io/socket.io.js"></script>    
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script src="index.js"></script>
 </head>
 <body>
@@ -207,7 +208,7 @@ function setup(target) {
     const div = document.createElement('div');
     div.appendChild(document.createTextNode('hello'));
     target.appendChild(div);
-    
+
     this.socket = io.connect();
 }
 
@@ -309,7 +310,7 @@ function setup(target: Element) {
     const div = document.createElement('div');
     div.appendChild(document.createTextNode('hello socket.io'));
     target.appendChild(div);
-    
+
     this.socket = io.connect();
 }
 
@@ -355,13 +356,13 @@ class Client {
         const div = document.createElement('div');
         div.appendChild(document.createTextNode('hello socket.io'));
         target.appendChild(div);
-        
+
         this.socket.on('server-message', (data: any)=>{
             const div = document.createElement('div');
             div.appendChild(document.createTextNode(data.toString()));
             target.appendChild(div);
         });
-        
+
         const button=document.createElement('button');
         button.appendChild(document.createTextNode('send'));
         button.onclick=(ev: MouseEvent)=>{
@@ -377,4 +378,4 @@ window.onload = () => {
     client.setup(document.getElementById('target'));
 
 };
-
+```

@@ -4,6 +4,7 @@ date: 2015-11-15
 tags: []
 ---
 
+```
 前から写経しながら読んでいる
 「シングルページWebアプリケーション」がようやく終盤に差し掛かってきた。
 Socket.IOで接続するところがあるのだけど、独自にgulpからbrowserSyncを使っていてWebSocketがupgradeできずにはまる。
@@ -25,3 +26,4 @@ gulp.task('server', ['nodemon'], function () {
 mongodb -> node.js + express + socket.IO -> JQuery
 な構成をベースにgulpによる開発環境と、typescript、mithril、bootstrapなんかを盛って行く路線で
 寄り道しながら修行中。
+```

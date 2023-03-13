@@ -4,6 +4,7 @@ date: 2015-11-21
 tags: []
 ---
 
+```
 “シングルページWebアプリケーション”に説明されている
 mongodbをバックエンドに、node.js + expressをフロントエンドにする構成のおさらい。
 MongoDB <-> node.js Express <-> Browser
@@ -219,7 +220,7 @@ $ = require("gulp-load-plugins")();
 browserSync = require("browser-sync").create();
 
 config = {
-    src_ts: './src/**/*.ts',   
+    src_ts: './src/**/*.ts',
     dst_js_dir: './build/js',
     dst_watch: './build/**/*.js',
     app_entry: './build/js/app.js',
@@ -301,7 +302,7 @@ filesGlobは必要で、無いとインテリセンスが遅くなる(Loading…
 tsタスクがtsconfig.jsonを使うようにする。
 # gulpfile.coffee
 gulp.task 'ts', ->
-  tsconfig = require('tsconfig.json')  
+  tsconfig = require('tsconfig.json')
   gulp.src config.src_ts
     .pipe $.typescript(tsconfig.compilerOptions).js
     .pipe gulp.dest config.dst_js_dir
@@ -373,7 +374,7 @@ let dbHandle = new mongodb.Db(
     'crud', mongoServer, {w: 1}
 );
 dbHandle.open(()=>{
-   console.log("connected to mongoDB"); 
+   console.log("connected to mongoDB");
 });
 
 // http
@@ -426,11 +427,11 @@ app.get('/', (request, response) => {
     response.send('<html><head></head><body>Hello ts</body></html>');
 });
 server.listen(port);
-    
+
 // restful
 app.all('/api/:obj_type/*', (req, res, next)=>{
    res.contentType('json');
-   next(); 
+   next();
 });
 app.get('/api/:obj_type', mongocrud.findAll);
 app.get('/api/:obj_type/:id', mongocrud.findById);
@@ -455,7 +456,7 @@ let db = new mongodb.Db(
 );
 db.open(() => {
     console.log("connected to mongoDB");
-    populateDB();    
+    populateDB();
 });
 
 //
@@ -594,7 +595,7 @@ function populateDB() {
 <div class="body">
     <div class="left">
         <div class="list">
-            
+
         </div>
         <form action="add">
             <button>Add</button>
@@ -659,7 +660,7 @@ html{
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: #828;   
+    background-color: #828;
 }
 .footer{
     position: absolute;
@@ -681,3 +682,4 @@ mongocrud/client> bower install jquery --save
 別のページに整理しなおそう。
 あとから、coffee-scriptやtypescritpを導入すると手順としては冗長になりすぎるな。
 最初から、NoDemon, Express, BrowserSyync, gulpfile.coffee, typescript, scssの構成にしよう。
+```

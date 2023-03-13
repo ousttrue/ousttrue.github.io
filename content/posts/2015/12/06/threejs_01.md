@@ -4,7 +4,7 @@ date: 2015-12-06
 tags: []
 ---
 
-
+```
 
 source
 TypeScriptを学び始めた目的のひとつであるThree.jsをようやくはじめた。
@@ -124,7 +124,7 @@ class Renderer {
             , 0.1, 1000);
         this.camera.position.z = 5;
     }
-    
+
     Render(){
         requestAnimationFrame(this.Render.bind(this));
 
@@ -143,7 +143,7 @@ $(() => {
     var $container = $('div#renderer');
     renderer.CreateRenderer($container);
     renderer.CreateScene();
-    
+
     renderer.Render();
 });
-
+```

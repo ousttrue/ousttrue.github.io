@@ -4,14 +4,10 @@ date: 2015-12-12
 tags: []
 ---
 
-
 "W" translate | "E" rotate | "R" scale | "+" increase size | "-" decrease size
 Press "Q" to toggle world/local space, keep "Ctrl" down to snap to grid
 
-
-
-
-
+```
 source
 今回は、本家サイトのサンプル
 http://threejs.org/examples/#misc_controls_transform
@@ -31,7 +27,7 @@ declare module THREE {
         setRotationSnap(radians: number): void;
         setMode(mode: string): void;
         setSize(size: number): void;
-        
+
         space: string;
         size: number;
     }
@@ -95,5 +91,6 @@ CreateTransformControl(mesh: THREE.Mesh) {
 
     });
 }
+```
 
-マウスイベントを監視するHtmlノードと、マウスの動きをどのように解釈するかを知るためにカメラが必要ということですね。
+マウスイベントを監視する Html ノードと、マウスの動きをどのように解釈するかを知るためにカメラが必要ということですね。
