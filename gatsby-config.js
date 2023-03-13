@@ -1,8 +1,10 @@
+const content_path = "content/posts/2020";
+
 module.exports = {
   siteMetadata: {
     title: "三次元日誌(Gatsby)",
     author: "ousttrue",
-    description: ''
+    description: "",
   },
   plugins: [
     {
@@ -11,29 +13,20 @@ module.exports = {
         extensions: [`.mdx`, `.md`],
       },
     },
-    {
-      resolve: `gatsby-source-filesystem`,
-      options: {
-        name: `pages`,
-        path: `${__dirname}/src/pages`,
-      },
-    },
+    // content_path
     {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `content`,
-        path: `${__dirname}/content/pages`,
+        path: `${__dirname}/${content_path}`,
+        // ignore: [`**/0*`],
       },
     },
     {
       resolve: `gatsby-plugin-page-creator`,
       options: {
-        path: `${__dirname}/content/pages`,
+        path: `${__dirname}/${content_path}`,
       },
     },
-    {
-      resolve: `gatsby-transformer-remark`,
-      options: {},
-    },
   ],
-}
+};
