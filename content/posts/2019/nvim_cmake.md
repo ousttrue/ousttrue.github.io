@@ -1,9 +1,11 @@
-+++
-date = 2019-04-19T00:14:08+09:00
-tags = ['vim', 'cpp']
-draft = true
-title = 'nvim で CMake'
-+++
+---
+date: 2019-04-19 00:14:08+09:00
+draft: true
+tags:
+- vim
+- cpp
+title: nvim で CMake
+---
 
 * [vimからC++プロジェクトに対してCMakeでビルドツリー生成＋コンパイル](https://hogehuga.net/c/289/)
 

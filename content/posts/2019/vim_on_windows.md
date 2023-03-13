@@ -1,8 +1,9 @@
-+++
-date = 2019-04-18T01:00:00+09:00
-tags = ['vim']
-title = 'vim on Windows'
-+++
+---
+date: 2019-04-18 01:00:00+09:00
+tags:
+- vim
+title: vim on Windows
+---
 
 常用エディタをvimに復古するべく環境を整備し始めた。
 せっかくなので `neovim` も試してみる。

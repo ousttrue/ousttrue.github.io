@@ -1,10 +1,11 @@
-+++
-date = 2019-04-19T05:34:33+09:00
-tags = ['python', 'vim']
-draft = true
-title = 'WorkspaceFolder作成中'
-+++
-
+---
+date: 2019-04-19 05:34:33+09:00
+draft: true
+tags:
+- python
+- vim
+title: WorkspaceFolder作成中
+---
 
 https://github.com/ousttrue/WorkspaceFolder
 

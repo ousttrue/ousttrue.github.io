@@ -1,11 +1,11 @@
-+++
-date = 2019-04-28T19:47:41+09:00
-tags = ['python']
-title = 'python で process を起動して PIPE 通信する'
-+++
+---
+date: 2019-04-28 19:47:41+09:00
+tags:
+- python
+title: python で process を起動して PIPE 通信する
+---
 
-
- https://docs.python.org/3/library/subprocess.html
+https://docs.python.org/3/library/subprocess.html
 
 こういうやつ
 

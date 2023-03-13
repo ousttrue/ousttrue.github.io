@@ -1,10 +1,10 @@
-+++
-date = 2019-04-21T13:00:17+09:00
-tags = ['nvim']
-draft = true
-title = 'vim-autoformat を使う'
-+++
-
+---
+date: 2019-04-21 13:00:17+09:00
+draft: true
+tags:
+- nvim
+title: vim-autoformat を使う
+---
 
 当初 `python` 向けに `mindriot101/vim-yapf` を使っていたが、
 全部まとめて `hiel92/vim-autoformat` で設定してみる。

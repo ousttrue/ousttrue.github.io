@@ -1,9 +1,10 @@
-+++
-date = 2019-04-21T18:13:27+09:00
-tags = ['vim']
-draft = true
-title = 'Denite練習'
-+++
+---
+date: 2019-04-21 18:13:27+09:00
+draft: true
+tags:
+- vim
+title: Denite練習
+---
 
 nvim 環境が軌道に乗ってきたので、 `denite` やってみよう。
 

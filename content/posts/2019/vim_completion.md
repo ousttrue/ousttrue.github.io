@@ -1,9 +1,11 @@
-+++
-date = 2019-04-22T02:17:20+09:00
-tags = ['vim', 'lsp']
-draft = true
-title = 'vim の Completion について調べる'
-+++
+---
+date: 2019-04-22 02:17:20+09:00
+draft: true
+tags:
+- vim
+- lsp
+title: vim の Completion について調べる
+---
 
 `omnicompletion` とかいろいろあるけどどう違うねん。ということで調べる。
 `help ins-completion`

@@ -1,9 +1,10 @@
-+++
-date = 2019-04-23T14:30:07+09:00
-tags = ['vim']
-draft = true
-title = 'vim の Buffer 操作のメモ'
-+++
+---
+date: 2019-04-23 14:30:07+09:00
+draft: true
+tags:
+- vim
+title: vim の Buffer 操作のメモ
+---
 
 `buffer list` < `buffer` > `window` > `tab` > `vim`
 

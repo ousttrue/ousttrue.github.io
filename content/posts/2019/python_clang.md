@@ -1,6 +1,11 @@
 ---
-date: 2019-04-18T16:10:34+09:00
-tags: ['clang', 'python', 'cpp', 'dlang', 'com']
+date: 2019-04-18 16:10:34+09:00
+tags:
+- clang
+- python
+- cpp
+- dlang
+- com
 title: pythonモジュール clang で C++ ヘッダーを変換する
 ---
 
@@ -51,11 +56,11 @@ Windows10(64bit)
 こいつがあると、C/C++のヘッダから各言語向けのバインディングを作成するなどの作業を半自動化できて便利。
 例えば、
 
-<https://github.com/ousttrue/UnityCairo>
+https://github.com/ousttrue/UnityCairo
 
 元々、
 
-<http://andrestraks.github.io/BulletSharp/>
+http://andrestraks.github.io/BulletSharp/
 
 が clang で bullet のヘッダーを変換しているぽかったので、そこから調べた。
 
@@ -63,5 +68,5 @@ Windows10(64bit)
 
 なんとなく動くものができた。
 
-<https://github.com/ousttrue/pycpptool>
+https://github.com/ousttrue/pycpptool
 

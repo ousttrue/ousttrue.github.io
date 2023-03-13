@@ -1,9 +1,9 @@
-+++
-date = 2019-05-12T21:25:03+09:00
-tags = ['vim']
-title = 'Vimのgutter表示'
-+++
-
+---
+date: 2019-05-12 21:25:03+09:00
+tags:
+- vim
+title: Vimのgutter表示
+---
 
 ## 使い方
 

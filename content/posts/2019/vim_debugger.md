@@ -1,9 +1,10 @@
-+++
-date = 2019-04-27T19:00:26+09:00
-tags = ['vim', 'dap']
-title = 'vim で DebugAdapterProtocol する'
-+++
-
+---
+date: 2019-04-27 19:00:26+09:00
+tags:
+- vim
+- dap
+title: vim で DebugAdapterProtocol する
+---
 
 vimで `breakpoint` を設置してステップ実行できるようなデバッガを調べた。
 

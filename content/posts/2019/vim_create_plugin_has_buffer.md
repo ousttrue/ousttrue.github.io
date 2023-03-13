@@ -1,10 +1,10 @@
-+++
-date = 2019-04-23T00:13:09+09:00
-tags = ['vim']
-draft = true
-title = 'buffer を持つ vim plugin を作る'
-+++
-
+---
+date: 2019-04-23 00:13:09+09:00
+draft: true
+tags:
+- vim
+title: buffer を持つ vim plugin を作る
+---
 
 独自のバッファを持つpluginを作りたい
 

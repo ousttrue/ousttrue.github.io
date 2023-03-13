@@ -1,10 +1,10 @@
-+++
-date = 2019-04-21T02:40:00+09:00
-tags = ['vim']
-draft = true
-title = 'nvim frontend Oni'
-+++
-
+---
+date: 2019-04-21 02:40:00+09:00
+draft: true
+tags:
+- vim
+title: nvim frontend Oni
+---
 
 Electron製のGUI、`Oni` です。
 予想外に普通の `neovim` だったのでWindows環境はこれで行く。
