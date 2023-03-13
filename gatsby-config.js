@@ -1,4 +1,4 @@
-const content_path = "content/posts/2020";
+const content_path = "content/posts/2022/";
 
 module.exports = {
   siteMetadata: {
@@ -19,7 +19,6 @@ module.exports = {
       options: {
         name: `content`,
         path: `${__dirname}/${content_path}`,
-        // ignore: [`**/0*`],
       },
     },
     {

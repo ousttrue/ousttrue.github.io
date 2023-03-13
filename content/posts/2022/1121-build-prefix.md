@@ -1,7 +1,7 @@
 ---
 date: 2022-11-21
 tags:
-- buildtool
+  - buildtool
 title: PREFIX の構築 (meson など)
 ---
 
@@ -9,7 +9,7 @@ GStreamer をビルドする過程で `meson` を調べたら、存外に良か�
 python なので、CMake と比べてデバッガをアタッチできるのが圧倒的に楽。
 CMake はステップ実行とかできないからね。
 
-成り行きで GStreamer に続いて、 Gtk4,  PyGObject とかをビルドしていたら、
+成り行きで GStreamer に続いて、 Gtk4, PyGObject とかをビルドしていたら、
 Gtk4 もわりと面白そうなことがわかった。
 昔、Windows では扱いが面倒だった GLArea がさくっと動いた。
 さらに Gtk4 で新しくできた Gsk 層が 2D の SceneGraph ぽくて、
@@ -24,7 +24,7 @@ PyGObject はほぼ gir(xml) そのままなので、わりといい感じにな
 Gtk のビルドが短時間でできることがわかったので、
 GUI 層は自前ビルドでいけそうな気がしてきた。
 つまり、Linux と Windows 両方を gtk4 でなるべく同じツールを使ってみる。
-Gentoo をクリーンインストールして下の層だけ  `emerge` で入れた。
+Gentoo をクリーンインストールして下の層だけ `emerge` で入れた。
 Gentoo は USE フラグで `-gtk -glib -qt` などとすることで、依存が連鎖することを止めることができる。
 
 ついでに `wayland` に手を出したところ、`wayland` 界隈もビルドツールに

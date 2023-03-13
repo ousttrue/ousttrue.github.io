@@ -5,6 +5,7 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
   //fmImagesToRelative(node)
 
   if (node.internal.type === `Mdx`) {
+    console.log("[node]", node.frontmatter);
     const slug = createFilePath({ node, getNode });
     createNodeField({
       node,
@@ -34,7 +35,7 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `);
   data.allMdx.nodes.map((node) => {
-    console.log("create markdown page: ", node.fields.slug);
+    console.log("[page]", node.fields.slug);
 
     createPage({
       path: node.fields.slug,
