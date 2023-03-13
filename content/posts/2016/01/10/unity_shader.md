@@ -4,12 +4,12 @@ date: 2016-01-10
 tags: ["unity"]
 ---
 
-下記のUnityの半透明シェーダーがいったいどういうメカニズムなのかを調べる。
-Shaderの元ネタはこちら
+下記の Unity の半透明シェーダーがいったいどういうメカニズムなのかを調べる。
+Shader の元ネタはこちら
 
 Unity で Transparent/Diffuse で描画順が崩れてしまう際の対処法
 
-
+```
 Shader "Transparent/Diffuse ZWrite" {
     Properties{
         _Color("Main Color", Color) = (1,1,1,1)
@@ -157,13 +157,13 @@ DefaultResourcesExtra/Standard.shader
     {
         Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
         LOD 300
-    
+
 
         // ------------------------------------------------------------------
         //  Base forward pass (directional light, emission, lightmaps, ...)
         Pass
         {
-            Name "FORWARD" 
+            Name "FORWARD"
             Tags { "LightMode" = "ForwardBase" }
 
             Blend [_SrcBlend] [_DstBlend]
@@ -173,16 +173,16 @@ DefaultResourcesExtra/Standard.shader
             #pragma target 3.0
             // TEMPORARY: GLES2.0 temporarily disabled to prevent errors spam on devices without textureCubeLodEXT
             #pragma exclude_renderers gles
-            
+
             // -------------------------------------
-                    
+
             #pragma shader_feature _NORMALMAP
             #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
             #pragma shader_feature _EMISSION
-            #pragma shader_feature _METALLICGLOSSMAP 
+            #pragma shader_feature _METALLICGLOSSMAP
             #pragma shader_feature ___ _DETAIL_MULX2
             #pragma shader_feature _PARALLAXMAP
-            
+
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
 
@@ -256,7 +256,7 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
     TRANSFER_SHADOW(o);
 
     o.ambientOrLightmapUV = VertexGIForward(v, posWorld, normalWorld);
-    
+
     #ifdef _PARALLAXMAP
         TANGENT_SPACE_ROTATION;
         half3 viewDirForParallax = mul (rotation, ObjSpaceViewDir(v.vertex));
@@ -346,11 +346,11 @@ DefaultResourcesExtra/Standard.shaderから切り張り
 
             CGPROGRAM
             #pragma target 2.0
-            
+
             #pragma shader_feature _NORMALMAP
             #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _EMISSION 
-            #pragma shader_feature _METALLICGLOSSMAP 
+            #pragma shader_feature _EMISSION
+            #pragma shader_feature _METALLICGLOSSMAP
             #pragma shader_feature ___ _DETAIL_MULX2
             // SM2.0: NOT SUPPORTED shader_feature _PARALLAXMAP
 
@@ -1007,7 +1007,7 @@ Shader "Transparent/Diffuse ZWrite" {
 
             CGPROGRAM
             #pragma target 2.0
-    
+
             #pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
 
             // これは要るっぽい
@@ -1036,4 +1036,4 @@ surfaceシェーダーでは無い(shaderのinspectorにも書いてあった)
 UsePassでsurfaceシェーダーのPASSを指定することもできる
 それ故大変分かりにくい(可読性とコード量とのトレードオフが大きい)
 surfaceシェーダーも何らかの形でvertexとfragmentを含むPassの集合に展開されている(どう展開されるのか知りたいんだけど)
-
+```

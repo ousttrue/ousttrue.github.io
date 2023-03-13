@@ -4,9 +4,9 @@ date: 2016-01-27
 tags: ["unity"]
 ---
 
-UnityのSerializedObjectのメモ。
+Unity の SerializedObject のメモ。
 
-
+```
 PropertyDrawers have two uses:
 - Customize the GUI of every instance of a Serializable class.
 - Customize the GUI of script members with custom PropertyAttributes.
@@ -118,4 +118,4 @@ SerializedObjectのPropertyを列挙してみる
 
 EditorGUIの関数はpositionが必要
 EditorGUILayoutはposition無用。
-
+```

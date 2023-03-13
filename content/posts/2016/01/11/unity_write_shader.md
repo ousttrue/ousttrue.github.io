@@ -4,14 +4,13 @@ date: 2016-01-11
 tags: ["unity"]
 ---
 
-
-
 アルファブレンディング
 シャドウキャスター
 シャドウレシーバー
 
 なシェーダー。
 
+```
 基本
 新規作成
 Create -> Shader -> UnLitShader
@@ -35,7 +34,7 @@ Shader "CustomShader"
             #pragma fragment frag
             // make fog work
             #pragma multi_compile_fog
-            
+
             #include "UnityCG.cginc"
 
             struct appdata
@@ -53,7 +52,7 @@ Shader "CustomShader"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -62,7 +61,7 @@ Shader "CustomShader"
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
-            
+
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
@@ -354,13 +353,13 @@ Shader "CustomShader"
             half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
             // factor in the light color
             o.diffuse = nl * _LightColor0;
-            
+
             // the only difference from previous shader:
             // in addition to the diffuse lighting from the main light,
             // add illumination from ambient or light probes
             // ShadeSH9 function from UnityCG.cginc evaluates it,
             // using world space normal
-            o.diffuse.rgb += ShadeSH9(half4(worldNormal,1));            
+            o.diffuse.rgb += ShadeSH9(half4(worldNormal,1));
 
             UNITY_TRANSFER_FOG(o,o.vertex);
             return o;
@@ -555,4 +554,4 @@ Shader "CustomShader"
 
     Fallback "Transparent/VertexLit"
 }
-
+```

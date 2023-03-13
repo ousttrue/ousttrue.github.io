@@ -4,9 +4,9 @@ date: 2016-01-12
 tags: ["unity"]
 ---
 
+Toon シェーダーをやってみる。
 
-Toonシェーダーをやってみる。
-
+```
 メニューからインポートすると、
 Assets > Import Package > Effects
 
@@ -22,15 +22,15 @@ Shader "MyToon/Lit Outline" {
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
         _Outline ("Outline width", Range (.002, 0.03)) = .005
         _MainTex ("Base (RGB)", 2D) = "white" {}
-        _Ramp ("Toon Ramp (RGB)", 2D) = "gray" {} 
+        _Ramp ("Toon Ramp (RGB)", 2D) = "gray" {}
     }
 
     SubShader {
         Tags { "RenderType"="Opaque" }
         UsePass "Toon/Lit/FORWARD"
         UsePass "Toon/Basic Outline/OUTLINE"
-    } 
-    
+    }
+
     Fallback "Toon/Lit"
 }
 
@@ -639,4 +639,4 @@ fixed4 frag(v2f i) : SV_Target
     return i.color;
 }
 
-
+```

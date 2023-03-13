@@ -4,14 +4,13 @@ date: 2016-01-23
 tags: []
 ---
 
-gulpだけでいっぱいいっぱいだったので敬遠していたwebpackをやってみる。
-#ことはじめ
+gulp だけでいっぱいいっぱいだったので敬遠していた webpack をやってみる。 #ことはじめ
 
 http://webpack.github.io/docs/
 
 http://webpack.github.io/docs/tutorials/getting-started/
 
-
+```
 webpackをインストールして
 > npm install webpack -g
 
@@ -226,4 +225,4 @@ browsery-syncとnodemonの連携みたいにproxyを駆使するのか。
 webpack で Node サーバー用のコードを bundle する
 https://webpack.github.io/docs/webpack-dev-server.html#proxy
 http://stackoverflow.com/questions/26203725/how-to-allow-for-webpack-dev-server-to-allow-entry-points-from-react-router
-
+```
