@@ -4,9 +4,11 @@ date: 2013-02-28
 tags: []
 ---
 
-sphinxも入れてみる
-OctopressのサブディレクトリにSphinxを入れた。
+sphinx も入れてみる
+Octopress のサブディレクトリに Sphinx を入れた。
 今回のディレクトリ配置
+
+```
 work
   + octopress
     + Rakefile
@@ -64,5 +66,6 @@ extensions = ['sphinxtogithub']
 
 と書いて
 $ Make octopress
+```
 
 でできあがり。

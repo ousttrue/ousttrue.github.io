@@ -4,7 +4,9 @@ date: 2013-11-28
 tags: []
 ---
 
-vim環境整備
+vim 環境整備
+
+```
 Windows8でコーディングができるようにvim回りを整備する。
 コマンドライン環境としてPowerShellを採用してそこからvim(gvim)する方向性。
 前の日記を整理して書き直し。
@@ -23,7 +25,7 @@ C:/Users/_USER_NAME_/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps
 とりあえずwhichコマンド的な関数を書いておく
 function which([string] $command=$(throw "need command name")){
     $Env:Path.Split(";") | %{ ls $_  2> $null } | ?{ $_.Name -match "^$command" } | % { $_.FullName }
-} 
+}
 
 改めてPowerShellを起動してchocolateyでvimをインストールする
 powershell> cinst vim
@@ -77,3 +79,4 @@ powershell> git submodule add https://github.com/scrooloose/nerdtree.git
 WindowsだとNerdTreeの[m]キーのメニューにcopyが出ない問題があったがstackoverflowに
 原因と解決方法が書いてあった。
 http://stackoverflow.com/questions/11269926/nerdtree-copy-command-in-windows-7
+```

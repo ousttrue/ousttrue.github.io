@@ -1,7 +1,9 @@
 ---
-title: "lambdaの引数の型を得たい"
 date: 2013-05-16
-tags: ['cpp', 'msgpack']
+tags:
+- cpp
+- msgpack
+title: lambdaの引数の型を得たい
 ---
 
 lambdaの引数の型を得たい
@@ -38,10 +40,10 @@ c++ template<typename F, typename R, typename A1, typename A2> void add_handler(
 ```
 
 こちらのサイトから
-<http://d.hatena.ne.jp/osyo-manga/20121205/1354674180>
+http://d.hatena.ne.jp/osyo-manga/20121205/1354674180
 decltypeを使ったらなんかできそうな感じがしたので粘っていたのだが、
 目的そのものの記事を発見した。
-<http://stackoverflow.com/questions/6512019/can-we-get-the-type-of-a-lambda-argument>
+http://stackoverflow.com/questions/6512019/can-we-get-the-type-of-a-lambda-argument
 微妙にそのままではコンパイルが通らなかったので少し工夫したらうまくいった。
 
 ```c++ 

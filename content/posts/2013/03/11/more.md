@@ -4,10 +4,9 @@ date: 2013-03-11
 tags: []
 ---
 
-Octopress整備
-Octopress整備。
+Octopress 整備
+Octopress 整備。
 続きを読むを入れてみた。
-<!-- more -->
 
 トップがだいぶすっきりする。
 カテゴリーリスト
@@ -18,4 +17,3 @@ http://tokkonopapa.github.com/blog/2012/01/04/octopress-plugin-for-categories-cl
 参考
 
 http://gam0022.net/blog/2012/08/10/make-categories-on-otcpress/
-

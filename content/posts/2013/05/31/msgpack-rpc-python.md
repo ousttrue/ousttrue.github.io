@@ -1,9 +1,10 @@
 ---
 title: "おれおれmsgpack-rpc-pythonを作る"
 date: 2013-05-31
-tags: ['cpp', 'msgpack']
+tags: ["cpp", "msgpack"]
 ---
 
+```
 おれおれmsgpack-rpc-pythonを作る
 MsgPackRPCのpythonバインディング(クライアント側)が必要になったのでmsgpack-rpc-pythonを使ってみたのだが、
 GUI(pyqt)に載せて接続制御とエラーハンドリングを細やかに制御したいので俺俺で類似品を作ることにした。
@@ -123,3 +124,4 @@ stop server...
 done
 
 サーバースレッドのioloopと、クライアントスレッドのioloopが相互にやり取りしている感じでちゃんと動いている。
+```

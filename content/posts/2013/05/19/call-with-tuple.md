@@ -1,21 +1,21 @@
 ---
 title: "msgpack-rpc-asioの関数登録と実行"
 date: 2013-05-19
-tags: ['cpp', 'msgpack']
+tags: ["cpp", "msgpack"]
 ---
 
-msgpack-rpc-asioの関数登録と実行
-msgpack-rpcのリクエストは、によると
+msgpack-rpc-asio の関数登録と実行
+msgpack-rpc のリクエストは、によると
 
 ```
 [type, msgid, method, params]
 ```
 
-という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。
+という形式なので method 名を std::string として params を std::tuple として得られる。
 これをサーバ側で如何に呼び出すかについて。
 単純な実装だと以下のようにメソッド名をキーにして分岐することになる。
 
-```c++ 
+```c++
 int and(int, int);
 class dispatcher { void dispatch(int msgid, const std::string &method,
 const msgpack::object &params) { if(method==“add”){ // 引数展開
@@ -75,10 +75,10 @@ return response;
 }
 ```
 
-１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。
-さらに 関数の登録と実行を分けるべく次のように拡張した。 
+１引数関数から９引数くらいまでと返り値 void 版を作ってやればだいたいの関数を登録することができる。
+さらに 関数の登録と実行を分けるべく次のように拡張した。
 
-```c++ 
+```c++
 class
 dispatcher { std::map m_map;
 // 実行 void dispatch(int msgid, const std::string &method, const
@@ -118,15 +118,16 @@ return response;
 
 }
 ```
+
 `msgpack->引数展開->c++関数呼び出し->msgpack` への一連の操作を 同一のシグネチャの `std::function` に封じ込めることができる。
 次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。
-まず、std::functionから実装。
+まず、std::function から実装。
 
 ```
 c++   // std::function用   template<typname R, typename A1, typename A2>   void add_handler(contt std::string &method, std::function<R(A1, A2)> f)   {     // 中身同じ   }
 ```
 
-呼び出し時にstd::functionを経由するようにすればあらゆる関数呼び出しを登録できる。
+呼び出し時に std::function を経由するようにすればあらゆる関数呼び出しを登録できる。
 例えば、ラムダ関数も以下のように登録できる。
 
 ```
@@ -141,25 +142,30 @@ c++ dispatcher d; d.add_handler("add",      [](int a, int b)->int{        return
 
 と書きたい。
 となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。
-c++   // ラムダの登録   template<typname F>   void add_handler(const std::string &method, F f)   {     // 型がわからぬ   }
-ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。
 
-```c++ 
+```c++
+// ラムダの登録
+template<typname F>
+void add_handler(const std::string &method, F f)   {     // 型がわからぬ   }
+```
+
+ここで関数オブジェクトの operator()へのポインタを型推論することで F のシグネチャを得ることができる。
+
+```c++
 template void add_handler(const std::string &method, F f,
 R(C::*)(A1, A2)const) { // 中身同じ }
 // ラムダの登録 // std::functionも受けられる // std::bindは無理だった //
 ```
 
-operator()がひとつしかない関数オブジェクトを受け付けられる？ 
+operator()がひとつしかない関数オブジェクトを受け付けられる？
 
 ```c++
 template
-void add_handler(const std::string &method, F f) { 
-// 上の関数で型推論させる 
-add_handler(method, f, &F::operator()); } 
+void add_handler(const std::string &method, F f) {
+// 上の関数で型推論させる
+add_handler(method, f, &F::operator()); }
 ```
 
 これでめでたくラムダも直接登録できるようになった。
-ただし、operator()のオーバーロードが解決できないらしくstd::bindが登録できない。
-std::bindに関しては、ラムダで代用できるしstd::functionでラップできるのでおいておくことにした。
-
+ただし、operator()のオーバーロードが解決できないらしく std::bind が登録できない。
+std::bind に関しては、ラムダで代用できるし std::function でラップできるのでおいておくことにした。

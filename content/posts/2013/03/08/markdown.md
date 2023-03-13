@@ -4,6 +4,7 @@ date: 2013-03-08
 tags: []
 ---
 
+```
 Markdown形式メモ
 Octopressの記述形式であるMarkDown。
 githubのREADME.mdの書式でもあるのでちゃんとマスターすべくメモする。
@@ -45,4 +46,4 @@ image
 参考
 
 http://blog.2310.net/archives/6
-
+```

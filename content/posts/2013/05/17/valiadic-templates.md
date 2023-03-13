@@ -1,7 +1,9 @@
 ---
-title: "可変長テンプレート引数"
 date: 2013-05-17
-tags: ['cpp', 'msgpack']
+tags:
+- cpp
+- msgpack
+title: 可変長テンプレート引数
 ---
 
 可変長テンプレート引数
@@ -28,7 +30,7 @@ func(handler); }
 template void add_handler(F handler, const std::string &method) {
 add_handler(handler, &decltype(handler)::operator()); }
 昨日参照させてもらった
-<http://d.hatena.ne.jp/osyo-manga/20121205/1354674180>
+http://d.hatena.ne.jp/osyo-manga/20121205/1354674180
 のコードがやっとわかるようになってきた。
 
 上記コードはさらに可変長テンプレート引数で

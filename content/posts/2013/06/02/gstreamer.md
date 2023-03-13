@@ -4,6 +4,7 @@ date: 2013-06-11
 tags: []
 ---
 
+```
 動画プログラムでもしてみようということでGstreamerをはじめた。
 
 #Hello world
@@ -17,20 +18,20 @@ tutorials http://docs.gstreamer.com/display/GstSDK/Basic+tutorials をやって�
 ::
 #include <gst/gst.h>
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     gst_init (&argc, &argv);
 
     {
         GstElement *pipeline = gst_parse_launch (
-                "playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm", 
+                "playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm",
                 NULL);
 
         gst_element_set_state (pipeline, GST_STATE_PLAYING);
         {
             GstBus *bus = gst_element_get_bus (pipeline);
             {
-                GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, 
+                GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
                         static_cast<GstMessageType>(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
                 if (msg != NULL){
                     gst_message_unref (msg);
@@ -56,7 +57,7 @@ https://developer.gnome.org/gstreamermm/0.10/
 #include <gstreamermm.h>
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     Gst::init();
 
@@ -67,9 +68,9 @@ int main(int argc, char *argv[])
         pipeline->set_state(Gst::STATE_PLAYING);
         {
             auto bus = pipeline->get_bus();
-            auto msg = bus->pop(Gst::CLOCK_TIME_NONE, 
+            auto msg = bus->pop(Gst::CLOCK_TIME_NONE,
                     static_cast<Gst::MessageType>(
-                        Gst::MESSAGE_ERROR 
+                        Gst::MESSAGE_ERROR
                         | Gst::MESSAGE_EOS));
         }
         pipeline->set_state(Gst::STATE_NULL);
@@ -87,7 +88,7 @@ C版から翻訳するのに少し手間がかかるが、ほぼ機械的に変�
 #include <gstreamermm.h>
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     Gst::init();
 
@@ -136,7 +137,7 @@ int main(int argc, char *argv[])
 
     /* Wait until error or EOS */
     auto bus = pipeline->get_bus ();
-    auto msg = bus->pop(Gst::CLOCK_TIME_NONE, 
+    auto msg = bus->pop(Gst::CLOCK_TIME_NONE,
             Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);
 
     /* Parse message */
@@ -148,8 +149,8 @@ int main(int argc, char *argv[])
                     Glib::Error err;
                     std::string debug_info;
                     Gst::MessageError(msg->gobj_copy()).parse(err, debug_info);
-                    g_printerr ("Error received from element %s: %s\n", 
-                            msg->get_source()->get_name().c_str(), 
+                    g_printerr ("Error received from element %s: %s\n",
+                            msg->get_source()->get_name().c_str(),
                             err.what().c_str());
                     g_printerr ("Debugging information: %s\n", debug_info.c_str());
                 }
@@ -175,7 +176,7 @@ int main(int argc, char *argv[])
 ::
 #include <gstreamermm.h>
 
-struct CustomData 
+struct CustomData
 {
     Glib::RefPtr< Gst::Pipeline > pipeline;
     Glib::RefPtr< Gst::Element > source;
@@ -186,12 +187,12 @@ struct CustomData
 
 // Handler for the pad-added signal
 static void pad_added_handler (
-        const Glib::RefPtr<Gst::Pad> &new_pad, 
+        const Glib::RefPtr<Gst::Pad> &new_pad,
         CustomData *data)
 {
     auto sink_pad = data->convert->get_static_pad("sink");
 
-    g_print ("Received new pad '%s'\n", 
+    g_print ("Received new pad '%s'\n",
             new_pad->get_name().c_str());
 
     /* If our converter is already linked, we have nothing to do here */
@@ -205,7 +206,7 @@ static void pad_added_handler (
     auto new_pad_struct = new_pad_caps->get_structure (0);
     std::string new_pad_type = new_pad_struct.get_name();
     if (new_pad_type.find("audio/x-raw")==std::string::npos) {
-        g_print ("  It has type '%s' which is not raw audio. Ignoring.\n", 
+        g_print ("  It has type '%s' which is not raw audio. Ignoring.\n",
                 new_pad_type.c_str());
         return;
     }
@@ -213,14 +214,14 @@ static void pad_added_handler (
     /* Attempt the link */
     if (!new_pad->link(sink_pad)) {
         g_print ("  Type is '%s' but link failed.\n", new_pad_type.c_str());
-    } 
+    }
     else {
         g_print ("  Link succeeded (type '%s').\n", new_pad_type.c_str());
     }
 }
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     Gst::init();
 
@@ -247,7 +248,7 @@ int main(int argc, char *argv[])
 
     /* Set the URI to play */
     data.source->set_property(
-            "uri", 
+            "uri",
             Glib::ustring("http://docs.gstreamer.com/media/sintel_trailer-480p.webm")
             );
 
@@ -280,7 +281,7 @@ int main(int argc, char *argv[])
                         Glib::Error err;
                         std::string debug_info;
                         Gst::MessageError(msg->gobj_copy()).parse(err, debug_info);
-                        g_printerr ("Error received from element %s: %s\n", 
+                        g_printerr ("Error received from element %s: %s\n",
                                 msg->get_source()->get_name().c_str(),
                                 err.what().c_str());
                         g_printerr ("Debugging information: %s\n", debug_info.c_str());
@@ -321,3 +322,4 @@ int main(int argc, char *argv[])
 
 .. categories:: programming
 .. taxonomies: {tags: : cpp, gstreamer}
+```

@@ -8,11 +8,13 @@ tags: []
 そろそろ右辺値を抑えておきたい気がしたのでテストコードを書きながら実験してみた(VC2010
 Express Edition)。
 http://msdn.microsoft.com/ja-jp/library/vstudio/dd293665.aspx
-を参考に右辺値実験クラスRightKunを書いた。
+を参考に右辺値実験クラス RightKun を書いた。
 コピーコンストラクタと同じくシグニチャは決まったものがあって
 右辺値代入演算のオーバーロードとペアになるらしい。
 各関数の呼び出しでメッセージを表示するように仕込んだ。
 https://gist.github.com/ousttrue/7178535
+
+```cpp
 #include <memory>
 #include <iostream>
 
@@ -56,8 +58,11 @@ public:
         return *this;
     }
 };
+```
 
 とりあえず使ってみる
+
+```cpp
 {
     // default
     RightKun r1;
@@ -70,7 +75,7 @@ public:
 0025FE33:default constructor
 0025FE32:copy constructor: left value operator= 0025FE33
 0025FE32:destructor
-0025FE33:destructor 
+0025FE33:destructor
 
 問題ない。
 通常の値返しの呼び出し
@@ -247,6 +252,7 @@ RightKun &&moveFail()
 {
     RightKun r=moveFail();
 }
+```
 
 結果
 0025FE07:default constructor
@@ -254,9 +260,9 @@ RightKun &&moveFail()
 0025FE2D:move constructor: right value operator= 0025FE07
 0025FE2D:destructor
 
-destructorが動いた後のポインタで、ムーブコンストラクタが呼び出される
+destructor が動いた後のポインタで、ムーブコンストラクタが呼び出される
 大変危険なコードになった。 なんじゃこりゃー。
-gccでやってみたらわかりやすいエラーメッセージが出た。
+gcc でやってみたらわかりやすいエラーメッセージが出た。
 警告: 一時オブジェクトへの参照を返そうとしています [デフォルトで有効]
 
 関数返り値の宣言に&&を使ってはいけないということか

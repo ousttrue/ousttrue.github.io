@@ -1,14 +1,15 @@
 ---
 title: "GentooでBluetooth"
 date: 2013-05-27
-tags: ['linux']
+tags: ["linux"]
 ---
 
-GentooでBluetooth
-Gentooでbluetoothを使う。
+Gentoo で Bluetooth
+Gentoo で bluetooth を使う。
 
 http://wiki.gentoo.org/wiki/Bluetooth
 
+```
 dmesg
 [22782.149236] Bluetooth: Core ver 2.16
 [22782.149244] NET: Registered protocol family 31
@@ -64,4 +65,4 @@ $ bluez-test-input connect XX:XX:XX:XX:XX:XX
 一瞬だけコネクトボタンなしでの切り替えができた時期があったのでなんか方法があるはずなのだが。
 utility
 # emerge -av blueman
-
+```

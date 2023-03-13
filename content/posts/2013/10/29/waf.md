@@ -4,9 +4,11 @@ date: 2013-10-29
 tags: []
 ---
 
-pythonによるビルドスクリプトwafを使い始めた
-pythonによるビルドシステムwafを使ってみた。
-使ってみた感触ではvcとgcc両方でビルドするとかそういうのに向いていそうなので、要するにわしのニーズに合っているように思える。
+python によるビルドスクリプト waf を使い始めた
+python によるビルドシステム waf を使ってみた。
+使ってみた感触では vc と gcc 両方でビルドするとかそういうのに向いていそうなので、要するにわしのニーズに合っているように思える。
+
+```
 https://code.google.com/p/waf/
 前から気にはなっていたのだけれどどうにも取っ付きが悪くて使えるところまでたどりつけていなかったのだが、やっと最初の一歩を踏み出すことができたのでメモを残す。
 早速実践から行く。
@@ -43,12 +45,12 @@ def configure(conf):
 
 def build(bld):
     bld.program(
-            source='hello.cpp', 
+            source='hello.cpp',
             target=APPNAME
             )
 
 初回とwscriptのconfigureを修正する度にconfigureする。
-> python waf configure 
+> python waf configure
 Setting top to                           : C:\work\_waf\hello
 Setting out to                           : C:\work\_waf\hello\build
 Checking for program CL                  : C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin\amd64\CL.exe
@@ -100,3 +102,4 @@ hello waf !
 何もパスの設定をしなくてもvcのコンパイラを勝手に探してビルドできるのは意外だった。
 とはいえ、これだけではwafの嬉しさは発揮されないのでこれからwscriptを拡張していく。
 次回、debugとrelease, 32bitビルドと64bitビルドの管理について書く予定。
+```

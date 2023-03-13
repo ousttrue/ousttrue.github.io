@@ -1,9 +1,10 @@
 ---
 title: "cmakeを使ってみる(Windowsかつコマンドラインで)"
 date: 2013-12-08
-tags: ['cmake']
+tags: ["cmake"]
 ---
 
+```
 ArUcoを使おうとしたら、msvcpdのvc10版を要求されてvc12でデバッグビルドが動かなかった。
 
 最新版のOpenCV-2.4.7をゲットしてきたところvc10とvc11は含まれて居るのだが、vc12ビルドは含まれていなかった(vc2013は早すぎたかw)。
@@ -180,3 +181,4 @@ makeの各ターゲットに対するmsbuildの実行方法は以下の通り。
 "install", "make install", "msbuild INSTALL.vcxproj"
 
 ちょっといろいろビルドしてみる。
+```

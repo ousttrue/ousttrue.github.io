@@ -4,7 +4,9 @@ date: 2013-03-02
 tags: []
 ---
 
-Boost.GIL再学習
+Boost.GIL 再学習
+
+```
 Boost.GILを再学習。
 {% include_code boost gil practice lang:cpp gil_practice.cpp %}
 前半はオレオレImageクラスの記述で画像の読み書きにboost/gil/extension/ioを使うのを避けるために用意した。boost.gilのioはlibpng,
@@ -20,4 +22,4 @@ octopress
 
 http://octopress.org/docs/plugins/image-tag/
 http://octopress.org/docs/blogging/code/
-
+```

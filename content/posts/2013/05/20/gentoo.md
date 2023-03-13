@@ -1,7 +1,8 @@
 ---
-title: "Gentoo再構築"
 date: 2013-05-20
-tags: ['linux']
+tags:
+- linux
+title: Gentoo再構築
 ---
 
 # Gentoo再構築
@@ -26,7 +27,7 @@ portageとhomeをmountしていたので大丈夫かと思っていたのだが�
 
 ### Installing the Gentoo Installation Files
 
-<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=5>
+http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=5
 
 stage3ファイルの取得と展開
 
@@ -82,7 +83,7 @@ CFLAGSに-march=nativeを使えるようになった
 
 ### Installing the Gentoo Base System
 
-<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=6>
+http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=6
 
 ```
 # cp -L /etc/resolv.conf /mnt/gentoo/etc/
@@ -101,7 +102,7 @@ CFLAGSに-march=nativeを使えるようになった
 
 ### Configuring the Kernel
 
-<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=7>
+http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=7
 
 ```
 # emerge gentoo-sources
@@ -116,15 +117,15 @@ LVMからブートするのでgenkernelを使う
 
 ### Configuring your System
 
-<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=8>
+http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=8
 
 ### Installing Necessary System Tools
 
-<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=9>
+http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=9
 
 ### Configuring the Bootloader
 
-<http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=10>
+http://www.gentoo.org/doc/en/handbook/handbook-amd64.xml?part=1&chap=10
 
 /boot/grub/menu.lst
 ```

@@ -4,6 +4,7 @@ date: 2013-06-17
 tags: []
 ---
 
+```
 IrrlichtにMsgPackRPCを仕込む
 Oculusの通販ステータスが早くもProcessingに変わって届くのが楽しみな今日この頃。
 レンダリングエンジンにはIrrlichtを選択したのであるが、
@@ -77,7 +78,7 @@ public:
         m_uid_map.insert(std::make_pair(m_uid, this));
     }
 
-    unsigned int uid()const 
+    unsigned int uid()const
     {
         return m_uid;
     }
@@ -89,8 +90,8 @@ private:
     static unsigned int m_next_uid=1;
     static std::hash_map<unsigned int, T*> m_uid_map;
 public:
-    static unsigned int generate_uid(){ 
-        return m_next_uid++; 
+    static unsigned int generate_uid(){
+        return m_next_uid++;
     }
 
     statc T* get_from_uid(unsigned int uid){
@@ -129,7 +130,7 @@ public:
         s_uid_map[m_uid]=this;
     }
 
-    unsigned int uid()const 
+    unsigned int uid()const
     {
         return m_uid;
     }
@@ -140,9 +141,9 @@ public:
 private:
     static core::map<unsigned int, IDGenerator*> s_uid_map;
 public:
-    static unsigned int generate_uid(){ 
+    static unsigned int generate_uid(){
         static unsigned int next_uid=1;
-        return next_uid++; 
+        return next_uid++;
     }
 
     static T* get_from_uid(unsigned int uid){
@@ -224,3 +225,4 @@ PythonやLuaから使えるようにするのと同じような作業でリモ�
 呼び出し側にPythonのMsgPackRPCを使えば違う言語からでも呼び出せるので一石二鳥というもの。
 ということで引き続き作業を進める。
 MsgPackRPCのリモート呼び出しを利用したシーンエディタを作りながら表示できるものを増やしていく。
+```

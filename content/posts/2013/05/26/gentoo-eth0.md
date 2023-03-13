@@ -1,10 +1,12 @@
 ---
 title: "Gentooでネットワークインターフェースがeth0にならない件"
 date: 2013-05-26
-tags: ['linux']
+tags: ["linux"]
 ---
 
-Gentooでネットワークインターフェースがeth0にならない件
+Gentoo でネットワークインターフェースが eth0 にならない件
+
+```
 最近インストールしたAMDのオンボードEtherと、MacBookAirのUsb
 Etherが共にeth0にならなかった。
 AMD機では、/etc/init.d/net.eth0 startが失敗するのでなんでかと思ったら違う名前になっていた。
@@ -60,4 +62,4 @@ changing net interface name from 'enp3s0' to 'eth0'
 # vim /etc/conf.d/net
 
 # reboot
-
+```

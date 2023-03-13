@@ -1,23 +1,25 @@
 ---
-title: "msgpack-rpcのasio版を作成中"
 date: 2013-05-14
-tags: ['cpp', 'msgpack']
+tags:
+- cpp
+- msgpack
+title: msgpack-rpcのasio版を作成中
 ---
 
 msgpack-rpcのasio版を作成中
 連休から始めていたmsgpack-rpcのバックエンドをasioに置き換えてWindowsでも動くようにする試みがやっと目処が立った。
 
-<https://github.com/ousttrue/msgpack-asiorpc>
+https://github.com/ousttrue/msgpack-asiorpc
 
 改め
 
-<https://github.com/ousttrue/msgpack-rpc-asio>
+https://github.com/ousttrue/msgpack-rpc-asio
 
 当初は `msgpack-rpc` のバックエンドの `mpio` に `asio` の `kernel` を追加することで乗り切ろうとしたのだが、わりとすぐに頓挫した。
 `mpio` のファイルディスクリプタでIOを管理するAPIがasioと合わないのですな。
 次に、 `msgpack-rpc` の `mp::wavy::loop` をasioをラップしたクラスで置き換える作戦で
 進めていたのだがだいぶ改造して構造が見えてきたところで、 `asio` との設計の違いをラップするのがめんどくさく
-なってまた頓挫した。 <http://dev.activebasic.com/egtra/2011/10/27/449/>
+なってまた頓挫した。 http://dev.activebasic.com/egtra/2011/10/27/449/
 を見ると簡単そうに見えるのだが功夫が足らないようだ。
 で、上記の反省を踏まえて `asio` で `msgpack-rpc` を自由に実装することにした。
 バイナリデータと `msgpack-rpc` の変換部分に `msgpack-rpc` のコードを借用して、

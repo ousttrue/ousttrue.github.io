@@ -1,26 +1,35 @@
 ---
-title: "xorgインストール"
 date: 2013-05-21
-tags: ['linux']
+tags:
+  - linux
+title: xorgインストール
 ---
 
+```
 # xorgインストール
 
 gentooにxorgをインストールする
 
 The X Server Configuration HOWTO
-<http://www.gentoo.org/doc/en/xorg-config.xml>
+http://www.gentoo.org/doc/en/xorg-config.xml
 
 /etc/portage/make.conf
 ```
+
 INPUT_DEVICES="evdev"
+
 ```
 
 ```
+
 # echo "x11-base/xorg-server udev" >> /etc/portage/package.use
+
 # emerge -av xorg-server
+
 # env-update
+
 # source /etc/profile
+
 ```
 
 ## fglrx
@@ -28,22 +37,31 @@ http://wiki.gentoo.org/wiki/Fglrx
 AMD A10 向けにfglrxドライバ
 
 ```
+
 # cat /proc/cpuinfo | grep model
-model name      : AMD A10-5700 APU with Radeon(tm) HD Graphics
+
+model name : AMD A10-5700 APU with Radeon(tm) HD Graphics
+
 # lspci | grep -i vga
+
 00:01.0 VGA compatible controller: Advanced Micro Devices [AMD] nee ATI Trinity [Radeon HD 7660D]
+
 ```
 
 kernel作り直し [Direct Rendering Manager]を無効にする。
 
 ```
+
 # genkernel --lvm2 --menuconfig --no-clean all
 
 VIDEO_CARDS="fglrx"
 
 # emerge xorg-drivers
+
 # aticonfig --initial
+
 # eselect opengl set ati
+
 ```
 
 ## intel
@@ -54,7 +72,9 @@ VIDEO_CARDS="intel"
 gnomeとかをいれずにopenboxを素で使う。lxdeぽい感じ。
 
 ```
+
 # emerge -av xterm xmodmap
+
 ```
 
 Window Manager
@@ -118,4 +138,4 @@ http://wiki.gentoo.org/wiki/Synaptics
 INPUT_DEVICES="synaptics"
 
 emerge --ask --changed-use --deep world
-
+```
