@@ -1,7 +1,9 @@
-+++
-date = 2022-04-04
-tags = ["python", "ptk"]
-+++
+---
+date: 2022-04-04
+tags:
+- python
+- ptk
+---
 
 # prompt-toolkit の fullscreen アプリケーション
 
@@ -15,11 +17,11 @@ Lexer で基本的な装飾を施して、Preprocess でフォーカスやホバ
 `FormattedTextControl` の場合は初期化時にスタイル適用済みのテキストを渡してしまう。
 ## example
 
-<https://github.com/prompt-toolkit> の、
+https://github.com/prompt-toolkit の、
 
-* <https://github.com/prompt-toolkit/pyvim>
-* <https://github.com/prompt-toolkit/pymux>
-* <https://github.com/prompt-toolkit/pyterm>
+* https://github.com/prompt-toolkit/pyvim
+* https://github.com/prompt-toolkit/pymux
+* https://github.com/prompt-toolkit/pyterm
 
 が `prompt-toolkit2` のままになっているのだが、
 ちょっと手直しすることで、 `prompt-toolkit3` で動作させることができた。
@@ -27,7 +29,7 @@ Lexer で基本的な装飾を施して、Preprocess でフォーカスやホバ
 
 `ptterm` の `prompt-toolkit3` 化に PR を送ってみた。
 主に `pipe` 周りの非同期入力を `asyncio` に適合させてやることで動く。
-<https://github.com/prompt-toolkit/ptterm/pull/9>
+https://github.com/prompt-toolkit/ptterm/pull/9
 
 
 `pymux` も `fork` しない `standalone` 引き数付きならば `Windows` + `prompt-toolkit3` でも動かすことができた。

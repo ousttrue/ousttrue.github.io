@@ -1,8 +1,9 @@
-+++
-title = "rawtypes 作ってみる"
-date = 2022-01-01
-tags = ["python"]
-+++
+---
+date: 2022-01-01
+tags:
+- python
+title: rawtypes 作ってみる
+---
 
 # rawtypes 作ってみる
 
@@ -46,7 +47,7 @@ object の所有権 はまじめに探求しない。
 
 ## 動いた
 
-<https://github.com/ousttrue/pydear>
+https://github.com/ousttrue/pydear
 
 ImGui ひととおりできた。
 もうちっとパッケージング(sdist, wheel)を整理したら形が整う。
@@ -58,7 +59,7 @@ ImGui ひととおりできた。
 
 ## pypi
 
-<https://pypi.org/project/pydear/>
+https://pypi.org/project/pydear/
 
 github actions で wheel をビルドして、 pypi にアップロードするところまでできた。
 あと、 `sdist` も作る。

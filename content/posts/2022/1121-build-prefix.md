@@ -1,8 +1,9 @@
-+++
-date = 2022-11-21
-tags = ["buildtool"]
-title = "PREFIX の構築 (meson など)"
-+++
+---
+date: 2022-11-21
+tags:
+- buildtool
+title: PREFIX の構築 (meson など)
+---
 
 GStreamer をビルドする過程で `meson` を調べたら、存外に良かった。
 python なので、CMake と比べてデバッガをアタッチできるのが圧倒的に楽。
@@ -30,7 +31,7 @@ Gentoo は USE フラグで `-gtk -glib -qt` などとすることで、依存�
 `meson` が導入されているのを発見。
 `download/clone` => `meson` を自動化する python スクリプトの作成に着手した。
 
-<https://github.com/ousttrue/toprefix>
+https://github.com/ousttrue/toprefix
 
 プロトタイプとしてはまぁまぁの使い勝手。
 `gentoo` と `Windows` 共用で `gtk4` などをさくっと展開できるようになる。予定。

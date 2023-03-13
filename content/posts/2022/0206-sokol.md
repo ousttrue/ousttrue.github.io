@@ -1,7 +1,8 @@
-+++
-date = 2022-02-06
-tags = ["c++"]
-+++
+---
+date: 2022-02-06
+tags:
+- c++
+---
 
 # sokol やってみる
 
@@ -9,10 +10,10 @@ tags = ["c++"]
 
 ## imgui サンプル
 
-* <https://github.com/floooh/cimgui-sokol-starterkit>
+* https://github.com/floooh/cimgui-sokol-starterkit
 
 ## 参考
 
-* <https://floooh.github.io/2017/08/06/sokol-api-update.html>
-* <https://floooh.github.io/2017/07/29/sokol-gfx-tour.html>
+* https://floooh.github.io/2017/08/06/sokol-api-update.html
+* https://floooh.github.io/2017/07/29/sokol-gfx-tour.html
 

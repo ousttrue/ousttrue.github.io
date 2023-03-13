@@ -1,13 +1,15 @@
-+++
-date = 2022-01-15
-tags = ["python", "bullet"]
-+++
+---
+date: 2022-01-15
+tags:
+- python
+- bullet
+---
 
 # ExampleBrowser を読んでいる
 
 fork して改造しながら読んでいる。
 
-<https://github.com/ousttrue/bullet3>
+https://github.com/ousttrue/bullet3
 
 やっと構造がわかってきた。
 コードはディレクトリに別れているのだけど、

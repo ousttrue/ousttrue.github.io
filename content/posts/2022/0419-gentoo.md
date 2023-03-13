@@ -1,7 +1,8 @@
-+++
-date = 2022-04-20
-tags = ["linux"]
-+++
+---
+date: 2022-04-20
+tags:
+- linux
+---
 
 # Gentoo 構築
 
@@ -16,7 +17,7 @@ Ubuntu と同じ `/home` をマウントしてみたら `dotfiles` に互換性�
 システムを壊してしもた。
 作りなおし。ついでに [btffs](https://wiki.gentoo.org/wiki/Btrfs) やってみる。
 
-* <https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Downloading_the_stage_tarball>
+* https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage#Downloading_the_stage_tarball
 
 Stage3: `openrc | desktop profile`
 

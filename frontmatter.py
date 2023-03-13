@@ -52,6 +52,13 @@ def process(src: str) -> dict:
     return {"body": src}
 
 
+def process_body(src: str) -> str:
+    def repl(m) -> str:
+        return m.group(1)
+
+    return re.sub(r"<(https?:[^>]+)>", repl, src)
+
+
 def run(path: pathlib.Path, do: bool):
     if path.is_dir():
         for f in path.iterdir():
@@ -60,13 +67,30 @@ def run(path: pathlib.Path, do: bool):
         if path.suffix.lower() == ".md":
             content = process(path.read_text())
             match content:
-                case {"type": "yaml", "frontmatter": frontmatter}:
-                    print(f"{Color.GREEN}yaml{Color.RESET}: {path}")
+                case {"type": "yaml", "frontmatter": frontmatter, "body": body}:
+                    new_body = process_body(body)
+                    target = ""
+                    if new_body != body:
+                        target += "b"
+                        print(
+                            f"{Color.GREEN}yaml{Color.RESET}: {path} {Color.RED}{target}{Color.RESET}"
+                        )
+                        if do:
+                            with path.open("w") as w:
+                                w.write("---\n")
+                                w.write(frontmatter)
+                                w.write("---\n")
+                                w.write(new_body)
                     # print(frontmatter)
-                    yaml.dump(frontmatter)
+                    # yaml.dump(frontmatter)
+                    pass
                 case {"type": "toml", "frontmatter": frontmatter, "body": body}:
+                    new_body = process_body(body)
+                    target = "f"
+                    if new_body != body:
+                        target += "b"
                     print(
-                        f"{Color.MAGENTA}toml{Color.RESET}: {path} {Color.RED+'w'+Color.RESET if do else ''}"
+                        f"{Color.MAGENTA}toml{Color.RESET}: {path} {Color.RED+target+Color.RESET}"
                     )
                     # print(frontmatter)
                     if do:
@@ -75,7 +99,7 @@ def run(path: pathlib.Path, do: bool):
                             w.write("---\n")
                             w.write(yaml_frontmatter)
                             w.write("---\n")
-                            w.write(body)
+                            w.write(new_body)
                 case _:
                     print(f"{Color.RED}unknown{Color.RESET}: {path}")
 

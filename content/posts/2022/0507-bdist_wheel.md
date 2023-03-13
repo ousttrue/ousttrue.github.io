@@ -1,7 +1,8 @@
-+++
-date = 2022-05-07
-tags = ["python"]
-+++
+---
+date: 2022-05-07
+tags:
+- python
+---
 
 # bdist_wheel + pep517 ではまる
 
