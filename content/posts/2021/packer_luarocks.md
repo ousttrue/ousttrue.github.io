@@ -1,8 +1,10 @@
-+++
-title = "packer から luarocks を使う"
-date = 2021-07-08
-tags = ["nvim", "lua"]
-+++
+---
+date: 2021-07-08
+tags:
+- nvim
+- lua
+title: packer から luarocks を使う
+---
 
 nvim のパッケージマネージャー packer に、 luarocks のモジュール機能があるのだが Windows hererocks が失敗する。
 Linux は、 hererocks はできるがモジュールがロードできぬ。

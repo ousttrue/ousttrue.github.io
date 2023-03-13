@@ -1,17 +1,19 @@
-+++
-title = "Asio と Coroutine (c++20)"
-date = 2021-08-15
-updated = 2021-08-18
-tags = ["cpp", "asio"]
-+++
+---
+date: 2021-08-15
+tags:
+- cpp
+- asio
+title: Asio と Coroutine (c++20)
+updated: 2021-08-18
+---
 
 非同期ライブラリ ASIO 
 
-<http://think-async.com/Asio/index.html>
+http://think-async.com/Asio/index.html
 
 の知識を `c++20` 時代にアップデート。
 
-* <https://github.com/chriskohlhoff/talking-async>
+* https://github.com/chriskohlhoff/talking-async
 
 に動画と動画のサンプルコードが有る。
 
@@ -52,7 +54,7 @@ tags = ["cpp", "asio"]
 
 ## VC2019(20210818最新版いける)
 
-<https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/>
+https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/
 
 > C++20 coroutines in Visual Studio 2019 version 16.8.
 
@@ -79,7 +81,7 @@ target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要
 
 ## LLVM-12(うまくいかず。追加のコマンドライン引数か)
 
-<https://clang.llvm.org/cxx_status.html>
+https://clang.llvm.org/cxx_status.html
 
 LLVM-12 だと、
 
@@ -391,8 +393,8 @@ asio::awaitable<R> rpc_call(const std::string &method, AS... as)
 
 # c++20 coroutine
 
-* <https://cpprefjp.github.io/lang/cpp20/coroutines.html>
-* <https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html>
+* https://cpprefjp.github.io/lang/cpp20/coroutines.html
+* https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html
 * [C++ でコルーチン (async/await 準備編)](https://qiita.com/tan-y/items/ae54153ec3eb42f80638)
 * [C++ で async/await をする](https://qiita.com/tan-y/items/6033ab9e7298999bf214#await_ready)
 

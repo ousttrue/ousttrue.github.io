@@ -1,8 +1,9 @@
-+++
-title = "msys2 セットアップ"
-date = 2021-11-13
-tags = ["msys2"]
-+++
+---
+date: 2021-11-13
+tags:
+- msys2
+title: msys2 セットアップ
+---
 
 ## pacman
 

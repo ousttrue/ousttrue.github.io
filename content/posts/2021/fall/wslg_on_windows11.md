@@ -1,9 +1,9 @@
-+++
-title = "Windows11 で wslg する"
-date = 2021-10-31 00:18:23 UTC+09:00
-tags = ["wsl"]
-+++
-
+---
+date: 2021-10-31 00:18:23
+tags:
+- wsl
+title: Windows11 で wslg する
+---
 
 PCを新調したので `Windows11` にアップグレードして wslg を試してみた。
 
@@ -15,10 +15,10 @@ PCを新調したので `Windows11` にアップグレードして wslg を試�
 
 ## WSLg とは
 
-* <https://github.com/microsoft/wslg>
-* <https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps>
-* (2021.10) <https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/>
-* (2021.04) <https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/>
+* https://github.com/microsoft/wslg
+* https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps
+* (2021.10) https://devblogs.microsoft.com/commandline/a-preview-of-wsl-in-the-microsoft-store-is-now-available/
+* (2021.04) https://devblogs.microsoft.com/commandline/the-initial-preview-of-gui-app-support-is-now-available-for-the-windows-subsystem-for-linux-2/
 * (2020) [Microsoft Is Writing Its Own Wayland Compositor As Part Of WSL2 GUI Efforts](https://www.phoronix.com/scan.php?page=news_item&px=Microsoft-Writing-Wayland-Comp)
 
 ビジュアルは `Wayland` 、音声は `PulseAudio` で WSLg 仮想マシンに転送することで、
@@ -36,7 +36,7 @@ Distribution による特別な設定は不要？
 
 * (2021)[WSL その222 - Linux GUIアプリを動かすWSLgのアーキテクチャーと仕組み](https://kledgeb.blogspot.com/2021/04/wsl-222-linux-guiwslg.html)
 
-* <https://github.com/microsoft/wslg/discussions/78>
+* https://github.com/microsoft/wslg/discussions/78
 
 `glxinfo -B`
 
@@ -55,8 +55,8 @@ Distribution による特別な設定は不要？
 
 ## mpd から pluse audio に出力してみる
 
-* <https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu>
-* <https://github.com/microsoft/wslg/issues/306>
+* https://mpcbridge.fourthgate.jp/other/mpd_on_ubuntu
+* https://github.com/microsoft/wslg/issues/306
 
 ```
 echo $PULSE_SERVER
@@ -84,5 +84,5 @@ load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
 
 ### mpd client
 
-* <https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx>
+* https://www.microsoft.com/ja-jp/p/mpdctrl/9nv2bbj82brx
 

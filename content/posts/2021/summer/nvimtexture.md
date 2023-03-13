@@ -1,15 +1,17 @@
-+++
-title = "NvimTexture開発開始"
-date = 2021-08-22
-tags = ["nvim", "msgpack"]
-previewimage = "nvimtexture.jpg"
-+++
+---
+date: 2021-08-22
+previewimage: nvimtexture.jpg
+tags:
+- nvim
+- msgpack
+title: NvimTexture開発開始
+---
 
 `Nvy` の改造をしてだいたい構造を理解した。
 [msgpack-rpc-asio](https://github.com/ousttrue/msgpack-rpc-asio) をオーバーホールして使えるようになった。
 ということで一から組みなおすで。
 
-<https://github.com/ousttrue/NvimTexture>
+https://github.com/ousttrue/NvimTexture
 
 # 部品を疎結合にする
 

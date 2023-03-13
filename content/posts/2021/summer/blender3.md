@@ -1,9 +1,10 @@
-+++
-title = "Blender-3.0"
-date = 2021-08-30
-tags = ["blender"]
-[extra]
-+++
+---
+date: 2021-08-30
+extra: {}
+tags:
+- blender
+title: Blender-3.0
+---
 
 Blender-3.0 が面白そうだし bender 活動を再開しよう。
 `Gingerbread Man` を作りなおそう。
@@ -11,14 +12,14 @@ Blender-3.0 が面白そうだし bender 活動を再開しよう。
 # Blender-3.0 alpha
 ## build
 
-<https://github.com/ousttrue/bpy_module>
+https://github.com/ousttrue/bpy_module
 
 build より subversion の更新が遥かに長い。
 embree や llvm までいろんなもの入っているな。
 
 luajit を仕込んだら ffi で色々な関数にアクセスできるかもしれないな。
 
-<https://github.com/scoder/lupa>
+https://github.com/scoder/lupa
 
 ## python-3.9
 
@@ -32,7 +33,7 @@ Blender に合わせて python のバージョンを上げるスタイル。
 
 ## pose library
 
-* <https://www.youtube.com/watch?v=TNbdj6qbrAg>
+* https://www.youtube.com/watch?v=TNbdj6qbrAg
 
 ## USD
 
@@ -44,6 +45,6 @@ Blender に合わせて python のバージョンを上げるスタイル。
 
 作りかけで放置している
 
-* <https://github.com/ousttrue/io_scene_yup>
-* <https://github.com/ousttrue/pyimpex>
+* https://github.com/ousttrue/io_scene_yup
+* https://github.com/ousttrue/pyimpex
 

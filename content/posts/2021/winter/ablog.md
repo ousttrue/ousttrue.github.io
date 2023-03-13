@@ -1,8 +1,11 @@
-+++
-title = "SSGをABlogに変更"
-date = 2021-12-20
-tags = ["python", "ssg", "sphinx"]
-+++
+---
+date: 2021-12-20
+tags:
+- python
+- ssg
+- sphinx
+title: SSGをABlogに変更
+---
 
 # ABlog にシステムを変更
 
@@ -60,7 +63,7 @@ self.date = date = info["date"].replace(tzinfo=None)
 
 とりあえず `conf.py` にて直接修正する。
 
-<https://github.com/ousttrue/ousttrue.github.io/blob/ablog/content/patch.py>
+https://github.com/ousttrue/ousttrue.github.io/blob/ablog/content/patch.py
 
 後で PR 送ったりできるかな。
 
@@ -71,7 +74,7 @@ self.date = date = info["date"].replace(tzinfo=None)
 特定の条件で、記事をブログ記事と見做して `toctree` 無しで辿れるようにする。
 記事は、日付やタグでグループ化してくれる。
 
-<https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter>
+https://ablog.readthedocs.io/en/latest/manual/posting-and-listing/#posting-with-page-front-matter
 
 パス指定。
 
@@ -204,7 +207,7 @@ post_date_format_short = r'%Y/%m'
 
 ### ✅ 記事のURL
 
-* <https://zenn.dev/attakei/articles/sphinx-make-dirhtml>
+* https://zenn.dev/attakei/articles/sphinx-make-dirhtml
 
 ### ✅ 記事タイトルは最初の見出しではなく、frontmatter の title にしたい
 

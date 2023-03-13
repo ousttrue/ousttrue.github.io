@@ -1,15 +1,17 @@
-+++
-title = "最近のWayland"
-date = 2021-10-23
-tags = ["wayland", "wsl"]
-+++
+---
+date: 2021-10-23
+tags:
+- wayland
+- wsl
+title: 最近のWayland
+---
 
-* <https://gitlab.freedesktop.org/wayland>
+* https://gitlab.freedesktop.org/wayland
     * [Core Wayland protocol and libraries (mirror)](https://github.com/wayland-project/wayland)
-    * <https://github.com/NilsBrause/waylandpp>
-    * <https://github.com/danvd/wlroots-eglstreams>
+    * https://github.com/NilsBrause/waylandpp
+    * https://github.com/danvd/wlroots-eglstreams
 
-* <https://wayland-book.com/>
+* https://wayland-book.com/
 
 (2021) [Ubuntu Weekly Recipe
 第666回　Waypipeを用いてWayland環境で「X転送 over SSH」っぽいことをしてみる](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0666)
@@ -20,7 +22,7 @@ tags = ["wayland", "wsl"]
 
 ## Waypipe
 
-* <https://gitlab.freedesktop.org/mstoeckl/waypipe>
+* https://gitlab.freedesktop.org/mstoeckl/waypipe
 
 (2019) [Network transparency with Wayland](https://mstoeckl.com/notes/gsoc/blog.html)
 
@@ -31,11 +33,11 @@ pyOpenGL からできる方法が分かるとよいのだが。
 
 ## python
 
-* <https://github.com/flacjacket/pywayland>
+* https://github.com/flacjacket/pywayland
 
 ## 参考
 
-* <https://wayland-book.com/introduction.html>
-* <https://aznote.jakou.com/prog/wayland/index.html>
+* https://wayland-book.com/introduction.html
+* https://aznote.jakou.com/prog/wayland/index.html
 * (2017)[作って学ぶWayland](https://qiita.com/maueki/items/34323b2762e3c3342c51)
 

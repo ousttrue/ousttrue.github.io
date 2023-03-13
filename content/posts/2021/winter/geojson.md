@@ -1,8 +1,10 @@
-+++
-title = "geojson"
-date = 2021-12-29
-tags = ["gis", "python"]
-+++
+---
+date: 2021-12-29
+tags:
+- gis
+- python
+title: geojson
+---
 
 # geojson
 
@@ -12,9 +14,9 @@ OpenGL や SVG のような二次元のベクター描画で簡単に済ませ�
 
 ## format
 
-* <https://datatracker.ietf.org/doc/html/rfc7946>
-* <https://ja.wikipedia.org/wiki/GeoJSON>
-    * <https://en.wikipedia.org/wiki/GeoJSON>
+* https://datatracker.ietf.org/doc/html/rfc7946
+* https://ja.wikipedia.org/wiki/GeoJSON
+    * https://en.wikipedia.org/wiki/GeoJSON
 
 > GeoJSON is a geospatial data
 
@@ -137,7 +139,7 @@ if __name__ == '__main__':
     main(pathlib.Path('japan.geo.json'))
 ```
 
-`jpan.geo.json` は、 <https://github.com/dataofjapan/land> です。
+`jpan.geo.json` は、 https://github.com/dataofjapan/land です。
 実行結果。
 
 
@@ -190,12 +192,12 @@ def process_geometry(geometry: dict) -> Polygon:
 
 ## data
 
-* <https://github.com/dataofjapan/land>
-* <http://geojson.io/>
+* https://github.com/dataofjapan/land
+* http://geojson.io/
 
 ## 参考
 
 * [GeoJSON (RFC7946) 仕様の注意点など](https://qiita.com/kkdd/items/416b955fb2d3e1327edc)
-* <https://github.com/jeremyfromearth/cinder-geojson-experiments>
-* <https://github.com/soolmaz-mk/Atlasi>
+* https://github.com/jeremyfromearth/cinder-geojson-experiments
+* https://github.com/soolmaz-mk/Atlasi
 

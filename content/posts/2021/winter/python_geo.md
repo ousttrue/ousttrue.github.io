@@ -1,8 +1,10 @@
-+++
-title = "python で地理情報を扱う"
-date = 2021-12-28
-tags = ["python", "gis"]
-+++
+---
+date: 2021-12-28
+tags:
+- python
+- gis
+title: python で地理情報を扱う
+---
 
 # python で地理情報を扱う
 
@@ -10,14 +12,14 @@ python で地図画像を作ろうと思ったら思いのほか大変だった(
 
 Windows であれば
 
-<https://www.lfd.uci.edu/~gohlke/pythonlibs/>
+https://www.lfd.uci.edu/~gohlke/pythonlibs/
 
 の助けを借りるのがよさそう。
 
 ## GEOS
 
-* <https://libgeos.org/>
-* <https://github.com/libgeos/geos>
+* https://libgeos.org/
+* https://github.com/libgeos/geos
 
 ## GDAL
 
@@ -31,41 +33,41 @@ sudo apt install libgdal-dev
 
 version ?
 
-<https://github.com/OSGeo/gdal/issues/1762>
+https://github.com/OSGeo/gdal/issues/1762
 
 > You need to install the native library GDAL 3.0.1 first. 
 
 ## shapely
 
 * depends: GEOS
-* <https://github.com/shapely/shapely>
+* https://github.com/shapely/shapely
 
 ## fiona
 
-* <https://github.com/Toblerity/Fiona>
+* https://github.com/Toblerity/Fiona
 
 ## geopandas
 
-* <https://geopandas.org/en/stable/index.html>
-* <https://github.com/geopandas/geopandas>
+* https://geopandas.org/en/stable/index.html
+* https://github.com/geopandas/geopandas
 * depends: shapely, fiona
 
-* <https://github.com/sorabatake/article_20455_geopandas/blob/master/geoPandas01.ipynb>
+* https://github.com/sorabatake/article_20455_geopandas/blob/master/geoPandas01.ipynb
 
 ## folium
 
-* <http://python-visualization.github.io/folium/#>
+* http://python-visualization.github.io/folium/#
 
 ## geohash
 
-* <http://geohash.org/site/tips.html>
+* http://geohash.org/site/tips.html
 
 ## 地図タイル
 
-* <https://blog.geolonia.com/2020/07/06/zoom-level.html>
-* <https://www.cariot.jp/blog/2017/07/14/maptiler/>
-* <https://maps.gsi.go.jp/development/ichiran.html>
-* <https://ujicya.jp/blog-mapping/xyz-tiles-url/>
+* https://blog.geolonia.com/2020/07/06/zoom-level.html
+* https://www.cariot.jp/blog/2017/07/14/maptiler/
+* https://maps.gsi.go.jp/development/ichiran.html
+* https://ujicya.jp/blog-mapping/xyz-tiles-url/
 
 ## 参考
 

@@ -1,17 +1,19 @@
-+++
-title = "libclang で luajit 向けの FFI を生成する"
-date = 2021-07-23
-tags = ["lua", "libclang"]
-+++
+---
+date: 2021-07-23
+tags:
+- lua
+- libclang
+title: libclang で luajit 向けの FFI を生成する
+---
 
 lua による imgui 計画の準備として、 `libclang` によるバインディング生成器を `luajit` に移植してみた。
 
-<https://github.com/ousttrue/luajitffi>
+https://github.com/ousttrue/luajitffi
 
 `libclang` に対してはだいだい動くようになって、自身で生成した `FFI` で動作するところまでできた。
 また、 `EmmyLua Annotation` もある程度付与できた。
 
-<https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua>
+https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua
 
 こいつで、 `imgui.h` から luajit FFI を生成する。
 
@@ -75,11 +77,11 @@ TODO
 
 ひとつだけはまりがあって、 `struct` の値渡しができない場合がある。
 
-<http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs>
+http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs
 
 そういえば、 `rust` でも `struct` の値渡しではまった記憶が。
 
-<https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org>
+https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org
 
 rust の場合は、 `struct` の値返しが動かなかった。
 これ、C の方で pointer 経由で値を返すラッパーを定義する必要があって回避方法はなかった。

@@ -1,13 +1,14 @@
-+++
-title = "Squirrel"
-date = 2021-09-27
-tags = ["sq"]
-+++
+---
+date: 2021-09-27
+tags:
+- sq
+title: Squirrel
+---
 
 lua のコード解読しててふお思い出した Squirrel 。
 
-* <http://www.squirrel-lang.org/>
-* <https://github.com/albertodemichelis/squirrel>
+* http://www.squirrel-lang.org/
+* https://github.com/albertodemichelis/squirrel
 
 こっちの方が `c++` なので読みやすいかも。
 

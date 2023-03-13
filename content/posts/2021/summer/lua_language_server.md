@@ -1,9 +1,12 @@
-+++
-title = "Lua Language Server 解読"
-date = 2021-08-06
-tags = ["lua", "luajit", "lsp"]
-[extra]
-+++
+---
+date: 2021-08-06
+extra: {}
+tags:
+- lua
+- luajit
+- lsp
+title: Lua Language Server 解読
+---
 
 [lua-language-server](https://github.com/sumneko/lua-language-server) が luajit ffi のインテリセンスを出せるように emmylua annotation を生成するより、
 `ffi.cdef` を読めるようにすればよいのでは。
@@ -11,7 +14,7 @@ tags = ["lua", "luajit", "lsp"]
 
 # 構成
 
-<https://github.com/sumneko/lua-language-server/wiki/Command-line>
+https://github.com/sumneko/lua-language-server/wiki/Command-line
 
 `BINRARY/lua-language-server LUA_LANGUAGE_SERVER/main.lua --logpath=D:/log --metapath=D:/meta --locale=en-us --configpath="config.json"`
 
@@ -44,7 +47,7 @@ native モジュールを埋め込んだインタープリター `lua-language-s
 
 # LSP
 
-<https://microsoft.github.io/language-server-protocol/>
+https://microsoft.github.io/language-server-protocol/
 
 * [signatureHelp](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_signatureHelp)
 

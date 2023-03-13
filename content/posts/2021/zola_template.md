@@ -1,9 +1,12 @@
-+++
-title = "zola のテンプレートを整備する"
-date = 2021-06-14
-updated = 2021-08-31
-tags = ["zola", "css", "ssg"]
-+++
+---
+date: 2021-06-14
+tags:
+- zola
+- css
+- ssg
+title: zola のテンプレートを整備する
+updated: 2021-08-31
+---
 
 サイト整備のメモ。共通化して部品を少なくした。
 
@@ -23,7 +26,7 @@ tags = ["zola", "css", "ssg"]
 
 # 20210716: masonry 入れてみた
 
-<https://masonry.desandro.com/>
+https://masonry.desandro.com/
 
 # 20210717: TOC
 
@@ -76,7 +79,7 @@ position: fixed;
 
 # 20210815: pagination
 
-<https://www.getzola.org/documentation/templates/pagination/>
+https://www.getzola.org/documentation/templates/pagination/
 
 ドキュメントよりもソースを読もう w
 5分もかからぬ。
@@ -89,7 +92,7 @@ position: fixed;
 
 `.md` の記法。
 
-<https://www.getzola.org/documentation/content/linking/#internal-links>
+https://www.getzola.org/documentation/content/linking/#internal-links
 
 `[NvimTexture](@/posts/2021/summer/nvimtexture.md)`
 
@@ -97,9 +100,9 @@ position: fixed;
 
 # 20210831: search
 
-<https://www.getzola.org/documentation/content/search/>
+https://www.getzola.org/documentation/content/search/
 
 設定は `build_search_index = true` するだけなのだが、
 template 作るのは大変。
 
-<https://github.com/aaranxu/adidoks> から部品を頂いてきた。
+https://github.com/aaranxu/adidoks から部品を頂いてきた。

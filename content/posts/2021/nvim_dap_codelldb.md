@@ -1,19 +1,21 @@
-+++
-title = "nvim-dap で coldelldb 動いた"
-date = 2021-06-27
-tags = ["nvim", "dap"]
-+++
+---
+date: 2021-06-27
+tags:
+- nvim
+- dap
+title: nvim-dap で coldelldb 動いた
+---
 
 [nvim-dap](https://github.com/mfussenegger/nvim-dap) で rust をデバッグするべく悪戦苦闘中。
 nvim-dap というのは、来たる nvim-0.5 で動くようになる、 `vscode` のデバッグアダプターを動作させる機能。
 
 rust(Windows) は native debugger をアタッチすればいいので、いくつか選択肢があって
 
-* <https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools>
-* <https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode>
-* <https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb>
+* https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools
+* https://marketplace.visualstudio.com/items?itemName=lanza.lldb-vscode
+* https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb
 
-最後の、`vscode-lldb(codelldb)` <https://github.com/vadimcn/vscode-lldb> が使いたい。
+最後の、`vscode-lldb(codelldb)` https://github.com/vadimcn/vscode-lldb が使いたい。
 
 ## codelldb の起動
 
@@ -67,7 +69,7 @@ fn main() -> Result<(), Error> {
 * `Listening on port XXXXX` メッセージから port を得る
 * そのポートに対して TCP 接続という手順が必要
 
-<https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension>
+https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension
 
 の `DebugAdapterServer` タイプにあたる。
 

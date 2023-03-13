@@ -1,13 +1,14 @@
-+++
-title = "luv"
-date = 2021-07-29
-tags = ["lua"]
-[extra]
-+++
+---
+date: 2021-07-29
+extra: {}
+tags:
+- lua
+title: luv
+---
 
 main loop がブロックするので luv を取り入れてみる。
 
-<https://github.com/luvit/luv>
+https://github.com/luvit/luv
 
 # cmake で build
 
@@ -62,7 +63,7 @@ Error: thread arg not support type 'table' at 2Error: thread arg not support typ
 
 # thread 間で受け渡しのできる型
 
-* <https://github.com/luvit/luv/blob/master/docs.md#pseudo-types>
+* https://github.com/luvit/luv/blob/master/docs.md#pseudo-types
 
 > threadargs: variable arguments (...) of type nil, boolean, number, string, or userdata
 
@@ -74,7 +75,7 @@ nvim ではそこで messagepack なわけか。
 
 たしかに、これだ。
 
-<https://github.com/catwell/luajit-msgpack-pure>
+https://github.com/catwell/luajit-msgpack-pure
 
 * Windows なので `malloc`, `free`, `realloc` が cdef できなかったのを修正
 * `function` と `cdata` を nil にしてスキップする処理を追加してみた
@@ -90,4 +91,4 @@ OpenGL のレンダースレッドと、シーン更新を分離する。
 # 関連
 
 * [node.jsを支えるlibuvのチュートリアル"uvbook" :スレッド](https://kimitok.hateblo.jp/entry/2014/04/16/223643)
-* <https://nikhilm.github.io/uvbook/threads.html>
+* https://nikhilm.github.io/uvbook/threads.html

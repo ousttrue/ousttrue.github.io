@@ -1,16 +1,20 @@
-+++
-title = "imgui の python バインディングをまた作る"
-date = 2021-12-20
-tags = ["python", "libclang", "cython", "imgui"]
-+++
+---
+date: 2021-12-20
+tags:
+- python
+- libclang
+- cython
+- imgui
+title: imgui の python バインディングをまた作る
+---
 
 # 名付けて cydeer
 
-<https://github.com/ousttrue/cydeer>
+https://github.com/ousttrue/cydeer
 
 `python`, `cython`, `dear imgui` の組み合わせで名前を付けようと思ったのだが、既に先人がいっぱいいて名前が被るので適当に決めた。🦌
 
-<https://github.com/HankiDesign/awesome-dear-imgui#languages>
+https://github.com/HankiDesign/awesome-dear-imgui#languages
 
 最初、`DearPyGui` のサイトが強そうだったので試そうと思ったのだけど用途が違いそうだった。
 次に、しばらく `pyimgui` を使っていい感じだったので、 `docking` ブランチ対応を見たら開発ブランチならば動いたので、自前ビルドを改造して使っていた。

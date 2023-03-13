@@ -1,31 +1,34 @@
-+++
-title = "LuaDA"
-date = 2021-07-31
-tags = ["lua", "luajit", "dap"]
-+++
+---
+date: 2021-07-31
+tags:
+- lua
+- luajit
+- dap
+title: LuaDA
+---
 
 vscode の lua デバッガーに
 
-<https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode> を使っていたのだが、
+https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode を使っていたのだが、
 
 `launch.json` の `args` に `\\` が入るとエラーで起動できない。
 Windows で作業しているので、稀によくファイルパスの指定に `\\` が入る。
 
 # DebugAdapter を作っていたら、直し方がわかった
 
- <https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4>
+ https://github.com/ousttrue/local-lua-debugger-vscode/commit/0f3974b73964b2e34f90a21de9757a57d6746eb4
 
 ## PR
 
-<https://github.com/tomblind/local-lua-debugger-vscode/pull/37>
+https://github.com/tomblind/local-lua-debugger-vscode/pull/37
 
 Linux では動かんかったらしく、別の方法で修正してくれた。
 
-👍 `0.2.2` <https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md>
+👍 `0.2.2` https://github.com/tomblind/local-lua-debugger-vscode/blob/master/CHANGELOG.md
 
 # 自前で `DebugAdapter` 作ってみることにした。
 
-<https://github.com/ousttrue/luada>
+https://github.com/ousttrue/luada
 
 途中まで実装したのだが、
 
@@ -43,17 +46,17 @@ lua 埋め込み型の exe が作りやすそう。
 
 # VSCode の Extension を作る
 
-* <https://code.visualstudio.com/api/get-started/your-first-extension>
+* https://code.visualstudio.com/api/get-started/your-first-extension
 
 手順通りに初期化した。npm は最新版に更新したほうがよいぽい。
 
 # MockDebug
 
-* <https://code.visualstudio.com/api/extension-guides/debugger-extension>
+* https://code.visualstudio.com/api/extension-guides/debugger-extension
 
 を読む。
 
-* <https://github.com/microsoft/vscode-mock-debug>
+* https://github.com/microsoft/vscode-mock-debug
 
 というサンプルがある。
 
@@ -173,7 +176,7 @@ export function deactivate() { }
 
 ## Debug Adapter の実装
 
-<https://microsoft.github.io/debug-adapter-protocol/specification>
+https://microsoft.github.io/debug-adapter-protocol/specification
 
 を見て粛々と実装する。
 
@@ -187,11 +190,11 @@ vscode の DebugConsole に出力されるので早期に作ると print debug �
 
 例
 
-<https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts>
+https://github.com/Microsoft/vscode-debugadapter-node/blob/main/adapter/src/loggingDebugSession.ts
 
 ## VSIX に出力
 
-<https://code.visualstudio.com/api/working-with-extensions/publishing-extension>
+https://code.visualstudio.com/api/working-with-extensions/publishing-extension
 
 vsce を使う。
 
@@ -211,11 +214,11 @@ $ npx vsce package
 
 # 参考
 
-## <https://github.com/actboy168/lua-debug>
+## https://github.com/actboy168/lua-debug
 
 * vscode.DebugAdapterExecutable
 
-## <https://github.com/tomblind/local-lua-debugger-vscode>
+## https://github.com/tomblind/local-lua-debugger-vscode
 
 * vscode.DebugAdapterServer
 * TypeScript で vscode.DebugAdapterServer を new

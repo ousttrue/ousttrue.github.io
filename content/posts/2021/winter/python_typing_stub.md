@@ -1,12 +1,13 @@
-+++
-title = "python の型ヒント"
-date = 2021-12-12
-tags = ["python"]
-+++
+---
+date: 2021-12-12
+tags:
+- python
+title: python の型ヒント
+---
 
 # python typing
 
-* <https://docs.python.org/3/library/typing.html>
+* https://docs.python.org/3/library/typing.html
 
 ## 生成する
 
@@ -36,7 +37,7 @@ tags = ["python"]
 
 ## imgui で作ってみた。
 
-* <https://github.com/ousttrue/cydeer>
+* https://github.com/ousttrue/cydeer
 
 * [PEP 561 に準拠した型ヒントを含むパッケージの作り方](https://blog.ymyzk.com/2018/09/creating-packages-using-pep-561/)
 

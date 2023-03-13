@@ -1,16 +1,17 @@
-+++
-title = "法線マップやってみる"
-date = 2021-09-05
-tags = ["OpenGL"]
-previewimage = "mikk.jpg"
-+++
+---
+date: 2021-09-05
+previewimage: mikk.jpg
+tags:
+- OpenGL
+title: 法線マップやってみる
+---
 
 glTFViewerの実装がてら法線マップの実装をやってみる。
 `OpenGL 4.0 Shading Language Cookbook` を参考に進めた。
 
 # 法線mapとTangentを供給する
 
-<https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet> をサンプルモデルとした。
+https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet をサンプルモデルとした。
 
 `glActiveTexture` がうまくいかず難航する。
 以下のようにして、無理やり解決。
@@ -28,13 +29,13 @@ layout(binding = 1) uniform sampler2D Tex1;
 
 # Tangent が格納されていないので生成する
 
-<https://github.com/KhronosGroup/glTF/tree/master/specification/2.0> に以下のよう書いてある。
+https://github.com/KhronosGroup/glTF/tree/master/specification/2.0 に以下のよう書いてある。
 
 > Implementation note: When tangents are not specified, client implementations should calculate tangents using default MikkTSpace algorithms. For best results, the mesh triangles should also be processed using default MikkTSpace algorithms.
 
 # MikkTSpace
 
-<https://github.com/mmikk/MikkTSpace>
+https://github.com/mmikk/MikkTSpace
 
 さくっと dll を作成して、 luajit から呼びだしてみた。
 `indices` `POSITION` `NORMAL` `TEXCOORD0` を入力して `TANGENT` を出力する。
@@ -43,7 +44,7 @@ layout(binding = 1) uniform sampler2D Tex1;
 
 memo
 
-* <https://bgolus.medium.com/generating-perfect-normal-maps-for-unity-f929e673fc57#c473>
+* https://bgolus.medium.com/generating-perfect-normal-maps-for-unity-f929e673fc57#c473
 
 # Shader
 
@@ -110,7 +111,7 @@ void main() {
 
 glTF の シェーダー では、 `mat3` を fragment shader に送りこんでいた。
 
-<https://github.com/bwasty/gltf-viewer/tree/master/src/shaders>
+https://github.com/bwasty/gltf-viewer/tree/master/src/shaders
 
 tangent space でライティングするという概念は同じらしい。
 

@@ -1,11 +1,15 @@
-+++
-title = "imgui の FFI が luajit で動くところまで作った"
-date = 2021-07-25
-tags = ["luajit", "ffi", "imgui", "libclang"]
-previewimage = "imgui_from_luajit.jpg"
-+++
+---
+date: 2021-07-25
+previewimage: imgui_from_luajit.jpg
+tags:
+- luajit
+- ffi
+- imgui
+- libclang
+title: imgui の FFI が luajit で動くところまで作った
+---
 
-<https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua>
+https://github.com/ousttrue/limgui/blob/master/imgui_ffi/cdef/imgui.lua
 
 Window System は `GLFW`、3D API は `OpenGL3` を選択。
 
@@ -108,7 +112,7 @@ imgui.Text("counter = %d", counter)
 ```
 
 `LL` と `UL` は luajit の拡張らしい。
-<https://luajit.org/ext_ffi_api.html>
+https://luajit.org/ext_ffi_api.html
 > Extensions to the Lua Parser
 >
 > numeric literals with the suffixes LL or ULL as signed or unsigned 64 bit integers

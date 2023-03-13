@@ -1,8 +1,9 @@
-+++
-title = "最近のpythonパッケージングとpyproject.toml"
-date = 2021-11-15
-tags = ["python"]
-+++
+---
+date: 2021-11-15
+tags:
+- python
+title: 最近のpythonパッケージングとpyproject.toml
+---
 
 # 最近の python ライブラリのパッケージング手法を調査
 
@@ -30,7 +31,7 @@ tags = ["python"]
 
 ## pyproject の build-system
 
-* (2019)<https://engineer.recruit-lifestyle.co.jp/techblog/2019-12-25-python-packaging-specs/>
+* (2019)https://engineer.recruit-lifestyle.co.jp/techblog/2019-12-25-python-packaging-specs/
 
 ### setuptools
 
@@ -43,7 +44,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 ```
 
-* <https://packaging.python.org/tutorials/packaging-projects/#creating-pyproject-toml>
+* https://packaging.python.org/tutorials/packaging-projects/#creating-pyproject-toml
 * (2021)[PyPIパッケージのリリースもバージョニングもGitHub単独で完結させる](https://zenn.dev/detsu/articles/5d74bf72e96a0f)
 
 ```toml
@@ -68,18 +69,18 @@ from setuptools import setup
 setup()
 ```
 
-* <https://packaging.python.org/guides/distributing-packages-using-setuptools/>
-* <https://github.com/dephell/dephell/blob/master/setup.py>
+* https://packaging.python.org/guides/distributing-packages-using-setuptools/
+* https://github.com/dephell/dephell/blob/master/setup.py
 
 #### setup.cfg: metadata
 
-* <https://packaging.python.org/specifications/core-metadata/>
+* https://packaging.python.org/specifications/core-metadata/
 
 #### setup.cfg: options
 
 ##### setup.cfg: options.entry_points
 
-* <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>
+* https://setuptools.pypa.io/en/latest/userguide/entry_point.html
 
 #### setup.cfg: 
 
@@ -93,12 +94,12 @@ requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 ```
 
-* (2019)<https://rcmdnk.com/blog/2019/02/04/computer-python/>
+* (2019)https://rcmdnk.com/blog/2019/02/04/computer-python/
 * (2018)[Poetryを使ったPythonパッケージ開発からPyPI公開まで](https://kk6.hateblo.jp/entry/2018/12/20/124151)
 
 ## 練習
 
-<https://github.com/ousttrue/glglue> に使ってみる。
+https://github.com/ousttrue/glglue に使ってみる。
 結局、 `setup.cfg` を使っているのとあまり変わらず。
 `setuptools_scm` による git tag を `version` 化する技を覚えた。
 あと、`github actions`。

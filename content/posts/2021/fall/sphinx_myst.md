@@ -1,15 +1,17 @@
-+++
-title = "sphinx + MyST よいのでは"
-date = 2021-09-11
-tags = ["ssg", "sphinx"]
-+++
+---
+date: 2021-09-11
+tags:
+- ssg
+- sphinx
+title: sphinx + MyST よいのでは
+---
 
 Gizmo を作る過程で GeometryShader からやりなおしていたら、記憶が飛んでいたので
 忘れてもいいように記録しておくことにした。
 
 旧 `MinTriangle` リポジトリを作り直し。
 
-<http://ousttrue.github.io/d3d11_samples/>
+http://ousttrue.github.io/d3d11_samples/
 
 # MyST なかなかよい
 
@@ -40,7 +42,7 @@ basic/basic_pipeline
 
 # memo
 
-* <https://github.com/wpilibsuite/sphinxext-remoteliteralinclude>
+* https://github.com/wpilibsuite/sphinxext-remoteliteralinclude
 
 git の revision と path 指定して include できないかしら。
 サンプルコードにちょこちょこっと解説を書きたいのだが、サンプルコードが進化する場合に `literalinclude` だと場所がずれるのだ。

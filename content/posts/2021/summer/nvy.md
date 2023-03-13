@@ -1,39 +1,41 @@
-+++
-title = "nvim frontend nvy"
-date = 2021-08-07
-updated = 2021-08-29
-tags = ["nvim", "msgpack"]
-previewimage = "nvy.jpg"
-+++
+---
+date: 2021-08-07
+previewimage: nvy.jpg
+tags:
+- nvim
+- msgpack
+title: nvim frontend nvy
+updated: 2021-08-29
+---
 
 よさげなレポジトリを発見した。
 
-<https://github.com/RMichelsen/Nvy>
+https://github.com/RMichelsen/Nvy
 
 だいぶ前に作ろうとして頓挫した
 
-<https://github.com/ousttrue/nvim-dx>
+https://github.com/ousttrue/nvim-dx
 
 の完成形。
 どこがうまくいかなかったのか忘れてしまったが。
 
 ## 改造
 
-<https://github.com/ousttrue/Nvy>
+https://github.com/ousttrue/Nvy
 
 * [ ] RenderTarget に対して Nvim をレンダリングする
-* [x] nvim の IO を <https://think-async.com/Asio/#> にのせる
+* [x] nvim の IO を https://think-async.com/Asio/# にのせる
 * [ ] imgui と合体する
 
 # 20210815
 
 MsgPack-RPC のバックエンドに昔作った
 
-<https://github.com/ousttrue/msgpack-rpc-asio>
+https://github.com/ousttrue/msgpack-rpc-asio
 
 におきかえる。
 
-さらに、これのシリアライザーを自前の <https://github.com/ousttrue/msgpackpp> におきかえる。
+さらに、これのシリアライザーを自前の https://github.com/ousttrue/msgpackpp におきかえる。
 
 * CMake 化
 * RPC を `c++20` 化 (co_await)

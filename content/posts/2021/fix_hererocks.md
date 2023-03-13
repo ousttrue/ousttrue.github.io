@@ -1,12 +1,15 @@
-+++
-title = "VS2019 向けに hererocks を修正(vswhere を使う)"
-date = 2021-07-15
-tags = ["python", "lua", "nvim"]
-+++
+---
+date: 2021-07-15
+tags:
+- python
+- lua
+- nvim
+title: VS2019 向けに hererocks を修正(vswhere を使う)
+---
 
 hererocks が VS2019BuildTools を検知して動作するように改造してみた。
 
-<https://github.com/luarocks/hererocks/pull/15>
+https://github.com/luarocks/hererocks/pull/15
 
 通るかどうかは微妙。
 内容的に、通りづらそう。
@@ -15,7 +18,7 @@ hererocks が VS2019BuildTools を検知して動作するように改造して�
 
 採用されれば、
 
-<https://github.com/wbthomason/packer.nvim/issues/302>
+https://github.com/wbthomason/packer.nvim/issues/302
 
 も進展する。
 Windows 版の luarocks 呼び出しに改造が必要なのだが、
@@ -56,7 +59,7 @@ standalone の lua インタプリタを使う場合は `hererocks` がいいの
 
 ## vswhere メモ
 
-<https://github.com/Microsoft/vswhere>
+https://github.com/Microsoft/vswhere
 
 `cl.exe`, `msbuild.exe` などの探索に使う。
 `vs2017 version 15.2` 以降に入っているらしい。
@@ -108,7 +111,7 @@ properties_nickname:
 properties_setupEngineFilePath: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe
 ```
 
-<https://github.com/microsoft/vswhere/wiki/Find-VC>
+https://github.com/microsoft/vswhere/wiki/Find-VC
 
 フィルタをかけられる。
 

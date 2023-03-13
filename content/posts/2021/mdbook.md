@@ -1,20 +1,22 @@
-+++
-title = "mdBook もやってみる"
-date = 2021-06-14
-updated = 2021-08-31
-tags = ["mdbook", "ssg"]
-+++
+---
+date: 2021-06-14
+tags:
+- mdbook
+- ssg
+title: mdBook もやってみる
+updated: 2021-08-31
+---
 
-* <https://rust-lang.github.io/mdBook/>
-* <https://github.com/rust-lang/mdBook>
+* https://rust-lang.github.io/mdBook/
+* https://github.com/rust-lang/mdBook
 
 # 作ってみた
 
-* <https://github.com/ousttrue/cmake_book>
+* https://github.com/ousttrue/cmake_book
 
 gh-pages
 
-* <https://ousttrue.github.io/cmake_book/>
+* https://ousttrue.github.io/cmake_book/
 
 # config.toml
 
@@ -40,7 +42,7 @@ edit-url-template = "https://github.com/rust-lang/mdBook/edit/master/guide/{path
 
 # github actions
 
-<https://github.com/marketplace/actions/mdbook-action>
+https://github.com/marketplace/actions/mdbook-action
 
 を参考にしたのだけど、
 ちょっとはまった。
@@ -71,7 +73,7 @@ jobs:
 
 動かないとき、特に action として認識されていないときは全く手掛かりが無くて難儀した。
 
-<https://docs.github.com/ja/actions/quickstart>
+https://docs.github.com/ja/actions/quickstart
 
 は動いたので、これと違うところを見比べて勘でなおした。
 よくわかっていない。
@@ -154,5 +156,5 @@ jobs:
 
 # 参考
 
-<https://o296.com/e/mdbook_as_blog.html>
+https://o296.com/e/mdbook_as_blog.html
 

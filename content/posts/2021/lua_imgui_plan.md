@@ -1,8 +1,10 @@
-+++
-title = "lua による imgui 計画"
-date = 2021-07-17
-tags = ["lua", "imgui"]
-+++
+---
+date: 2021-07-17
+tags:
+- lua
+- imgui
+title: lua による imgui 計画
+---
 
 ## rust で D3D11 レンダラを進めてきたが・・・
 
@@ -22,17 +24,17 @@ tags = ["lua", "imgui"]
 ということで Windows 向けのソースからのビルドシステムを作って `nvim` 環境を整備してみた。
 lua で記述された plugin をなるべく採用。
 
-<https://github.com/ousttrue/my_nvim>
+https://github.com/ousttrue/my_nvim
 
 最近常用していた、 `vscode` の便利さにどこまで追いつけるか。
 
 * Language Server Protocol。nvim-0.5 から nvim-lsp (luaで書いてある) がある。組み込み
-* Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。<https://github.com/mfussenegger/nvim-dap>
+* Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。https://github.com/mfussenegger/nvim-dap
 
 vscode から `lsp` と `dap` という重要な資産を持ってこれるので慣れればいけそうである。
 調べたところ下記のようだった。
 
-* codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた <https://github.com/ousttrue/nvim-dap>
+* codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた https://github.com/ousttrue/nvim-dap
 * rust-analyzer 動いた
 * python: lsp, dap ともに動きそう
 * lua: lsp, dap ともに動きそう
@@ -43,8 +45,8 @@ nvim-lsp も nvim-dap も lua で簡単に記述されているので、コー�
 
 ## luarocks の Windows 運用
 
-lua で記述された nvim のパッケージマネージャー <https://github.com/wbthomason/packer.nvim> を採用したのだが、
-Windows で luarocks 機能が動かなかった。<https://luarocks.org/> は `lua` のパッケージマネージャー。
+lua で記述された nvim のパッケージマネージャー https://github.com/wbthomason/packer.nvim を採用したのだが、
+Windows で luarocks 機能が動かなかった。https://luarocks.org/ は `lua` のパッケージマネージャー。
 ちょっと、古め(vc2017より前)の vc でないとだめぽい。
 改造した。
 
@@ -71,12 +73,12 @@ project_root
 
 ### lua の LanguageServer
 
-* <https://marketplace.visualstudio.com/items?itemName=sumneko.lua>
-  * <https://github.com/sumneko/lua-language-server>
+* https://marketplace.visualstudio.com/items?itemName=sumneko.lua
+  * https://github.com/sumneko/lua-language-server
 
 がしっかり動き、`EmmyLua` の型ヒントを活用できることが分かった。
 
-<https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua> に例があって、
+https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua に例があって、
 
 ```lua
 require'lspconfig'.sumneko_lua.setup {
@@ -103,10 +105,10 @@ luajit の場合は対応しているものを使うべし。
 
 #### Lua Debug
 
-* <https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug>
-    * <https://github.com/actboy168/lua-debug>
+* https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug
+    * https://github.com/actboy168/lua-debug
 
-<https://github.com/actboy168/bee.lua> の
+https://github.com/actboy168/bee.lua の
 
 * Add error hook (for debugger)
 * Add resume/yield hook (for debugger)
@@ -115,8 +117,8 @@ luajit の場合は対応しているものを使うべし。
 
 #### Local Lua Debugger
 
-* <https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode>
-  * <https://github.com/tomblind/local-lua-debugger-vscode>
+* https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode
+  * https://github.com/tomblind/local-lua-debugger-vscode
 
 * luajit でも動く
 * TypeScriptToLua で書かれている
@@ -126,8 +128,8 @@ luajit の場合は対応しているものを使うべし。
 ちょっと試したところ、 luajit の [FFI](https://luajit.org/ext_ffi.html) を使うのが有望そうという感触を得た。
 d3d は lua でやっている人があまりいなかった。
 
-* <https://github.com/sonoro1234/LuaJIT-GLFW>
-* <https://github.com/sonoro1234/LuaJIT-ImGui>
+* https://github.com/sonoro1234/LuaJIT-GLFW
+* https://github.com/sonoro1234/LuaJIT-ImGui
 
 最新の luajit-2.1.0-beta3(lua-5.1仕様) でいく。
 
@@ -135,7 +137,7 @@ d3d は lua でやっている人があまりいなかった。
 
 `cimgui` ではなく 素の `imgui` の luajit ffi できるか実験した。
 
-<https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi>
+https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi
 
 ```lua
 ffi.cdef[[
@@ -152,6 +154,6 @@ void Test1_Method1(void) asm("_ZN5Test17Method1Ev");
 
 `imgui` の `luajit` `FFI` の使い勝手が重要。
 
-<https://github.com/ousttrue/limgui>
+https://github.com/ousttrue/limgui
 
 * [ ] libclang で `imgui.h` をパースして、luajit FFI 生成と `lsp` への EmmyLua アノテーション生成を同時にやるツール。

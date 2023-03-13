@@ -1,12 +1,14 @@
-+++
-title = "pyside6 やってみる"
-date = 2021-11-16
-tags = ["python", "qt"]
-+++
+---
+date: 2021-11-16
+tags:
+- python
+- qt
+title: pyside6 やってみる
+---
 
 # pyside6 の pyi
 
-* <https://doc.qt.io/qtforpython/quickstart.html>
+* https://doc.qt.io/qtforpython/quickstart.html
 
 `pip install pyside6`
 
@@ -27,21 +29,21 @@ open_action.triggered.connect(self.open_dialog)  # type: ignore
 
 のように明示的に型チェックを無効にする。
 
-* <https://github.com/microsoft/pylance-release/issues/196>
-* <https://github.com/microsoft/pylance-release/issues/333>
+* https://github.com/microsoft/pylance-release/issues/196
+* https://github.com/microsoft/pylance-release/issues/333
 
 # Tutorials
 
-* <https://doc.qt.io/qtforpython/tutorials/index.html>
+* https://doc.qt.io/qtforpython/tutorials/index.html
 
 # Widgets
 
-* <https://doc.qt.io/qtforpython/PySide6/QtWidgets/index.html>
+* https://doc.qt.io/qtforpython/PySide6/QtWidgets/index.html
 
 # QMainWindow
 
-* <https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QMainWindow.html>
-* <https://www.pythonguis.com/tutorials/pyside6-creating-your-first-window/>
+* https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QMainWindow.html
+* https://www.pythonguis.com/tutorials/pyside6-creating-your-first-window/
 
 
 ```python
@@ -64,7 +66,7 @@ if __name__ == "__main__":
 
 ## QDockWidget
 
-* <https://pythonpyqt.com/qdockwidget/>
+* https://pythonpyqt.com/qdockwidget/
 
 ## menu
 
@@ -87,25 +89,25 @@ if __name__ == "__main__":
 
 ## file dialog
 
-* <https://doc.qt.io/qtforpython/PySide6/QtWidgets/QFileDialog.html>
+* https://doc.qt.io/qtforpython/PySide6/QtWidgets/QFileDialog.html
 
 # OpenGL
 
-* <https://ousttrue.github.io/glglue/samples/pyside6.html>
+* https://ousttrue.github.io/glglue/samples/pyside6.html
 
 # Signal
 
-* <https://www.pythoncentral.io/pysidepyqt-tutorial-creating-your-own-signals-and-slots/>
+* https://www.pythoncentral.io/pysidepyqt-tutorial-creating-your-own-signals-and-slots/
 
 # Timeline
 
-* <https://doc.qt.io/qtforpython/PySide6/QtCore/QTimeLine.html>
+* https://doc.qt.io/qtforpython/PySide6/QtCore/QTimeLine.html
 
 # Tree
 
-* <https://fereria.github.io/reincarnation_tech/11_PySide/02_Tips/ViewModelDelegate/custom_model/>
+* https://fereria.github.io/reincarnation_tech/11_PySide/02_Tips/ViewModelDelegate/custom_model/
 
 # メモ
 
-* <https://pyqt-node-editor.readthedocs.io/en/latest/introduction.html#installation>
+* https://pyqt-node-editor.readthedocs.io/en/latest/introduction.html#installation
 

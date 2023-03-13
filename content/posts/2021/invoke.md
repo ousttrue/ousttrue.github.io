@@ -1,8 +1,9 @@
-+++
-title = "python の task runner invoke"
-date = 2021-07-24
-tags = ["python"]
-+++
+---
+date: 2021-07-24
+tags:
+- python
+title: python の task runner invoke
+---
 
 python でちょっとしたツールを書くときに便利。
 `make` みたいにタスクを定義して、コマンドラインから実行する。

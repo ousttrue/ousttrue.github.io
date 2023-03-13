@@ -1,14 +1,16 @@
-+++
-title = "gizmo のライブラリを整備したい"
-date = 2021-09-10
-tags = ["3D", "c++"]
-+++
+---
+date: 2021-09-10
+tags:
+- 3D
+- c++
+title: gizmo のライブラリを整備したい
+---
 
 # gizmo のライブラリを整備したい
 
 去年手を付けたのだが、放棄されていたのを発掘した。
 
-<https://github.com/ousttrue/gizmesh>
+https://github.com/ousttrue/gizmesh
 
 tiny gizmo を改造しようとしてて、動かなくなっている。
 
@@ -16,19 +18,19 @@ tiny gizmo を改造しようとしてて、動かなくなっている。
 
 ## tinygizmo
 
-<https://github.com/ddiakopoulos/tinygizmo>
+https://github.com/ddiakopoulos/tinygizmo
 
-`minalg.h`. <https://github.com/sgorsten/linalg> の改造版
+`minalg.h`. https://github.com/sgorsten/linalg の改造版
 
 ## im3d
 
-<https://github.com/john-chapman/im3d>
+https://github.com/john-chapman/im3d
 
 `im3d_math.h` 300行くらいでシンプル。
 
 ## ImGuizmo
 
-<https://github.com/CedricGuillemet/ImGuizmo>
+https://github.com/CedricGuillemet/ImGuizmo
 
 ImGui のDrawListに相乗りするぽい。
 
@@ -37,7 +39,7 @@ ImGui のDrawListに相乗りするぽい。
 
 tinygizmo の改造を最初からやりなおし
 
-<https://github.com/ousttrue/tinygizmo/tree/custom>
+https://github.com/ousttrue/tinygizmo/tree/custom
 
 example を整理する。
 * glfw 依存を最小化して、 include が伝わらないように隔離

@@ -1,8 +1,11 @@
-+++
-title = "rust の ffi"
-date = 2021-06-20
-tags = ["rust", "libclang", "ffi"]
-+++
+---
+date: 2021-06-20
+tags:
+- rust
+- libclang
+- ffi
+title: rust の ffi
+---
 
 rust の FFI に取り組んでいた。
 結局、 sdl binding と imgui binding を自作した。

@@ -1,16 +1,17 @@
-+++
-title = "lua の DebugAdapter を書いてみた"
-date = 2021-07-13
-tags = ["lua", "dap"]
-+++
-
+---
+date: 2021-07-13
+tags:
+- lua
+- dap
+title: lua の DebugAdapter を書いてみた
+---
 
 nvim の nvim-dap で lua をデバッグするべく自分で書いてみた。
 手頃なのが見つからなかったので。
 
-<https://github.com/ousttrue/my_nvim/blob/master/luada.lua>
+https://github.com/ousttrue/my_nvim/blob/master/luada.lua
 
-<https://microsoft.github.io/debug-adapter-protocol/> の自前実装。
+https://microsoft.github.io/debug-adapter-protocol/ の自前実装。
 
 `request` のうち `initialize`, `launch`, `setBreakpoints`, `configurationDone`, `threads`, `stackTrace`, `scopes`, `variables`, `continue`, `next` を実装した。
 `event` のうち `initialized`, `exited`, `stopped(breakpoint, step)` を実装した。
@@ -81,12 +82,12 @@ Content-Leght: 123\n\n
 
 ### debug.sethook 内で coroutine.yield できない
 
-<https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working>
+https://stackoverflow.com/questions/54858455/lua-debug-hooks-seems-to-prevent-the-coroutine-from-working
 
 breakpoint 等によるスクリプト中断を `coroutine.yield` で実装しようとしたのだけど断念した。
 (yield すると `suspend` にならずに `dead` になる)
 
-<https://github.com/tomblind/local-lua-debugger-vscode> は、coroutine で実装しているような気がするのだが・・・。
+https://github.com/tomblind/local-lua-debugger-vscode は、coroutine で実装しているような気がするのだが・・・。
 
 yield する代わりに main.loop をネストさせてそこで通信待機させることにした、
 

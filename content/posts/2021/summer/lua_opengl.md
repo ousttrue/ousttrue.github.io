@@ -1,13 +1,16 @@
-+++
-title = "Lua で OpenGL"
-date = 2021-08-05
-tags = ["lua", "luajit", "OpenGL"]
-previewimage = "glfw_sample.jpg"
-+++
+---
+date: 2021-08-05
+previewimage: glfw_sample.jpg
+tags:
+- lua
+- luajit
+- OpenGL
+title: Lua で OpenGL
+---
 
 imgui bind がだいたいできて軌道に乗ったので、glTF viewer の作成にとりかかる。
 
-<https://www.glfw.org/docs/latest/quick.html>
+https://www.glfw.org/docs/latest/quick.html
 
 の回転アニメーション以外できた。
 
@@ -51,7 +54,7 @@ local vertices = ffi.new(
 
 luajit を活かした線形代数ライブラリを探索していて、
 
-<https://github.com/bjornbytes/maf>
+https://github.com/bjornbytes/maf
 
 を見つけた。
 
@@ -70,7 +73,7 @@ ffi.metatype(ct, metatable)
 
 `mat4` を実装してみた。
 
-<https://github.com/ousttrue/limgui/blob/master/lua/mafex.lua>
+https://github.com/ousttrue/limgui/blob/master/lua/mafex.lua
 
 ```C
     typedef union {

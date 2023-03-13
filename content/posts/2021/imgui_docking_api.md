@@ -1,11 +1,14 @@
-+++
-title = "ImGui の API"
-date = 2021-07-28
-tags = ["imgui", "luajit", "ffi"]
-previewimage = 'dockbuilder.jpg'
-+++
+---
+date: 2021-07-28
+previewimage: dockbuilder.jpg
+tags:
+  - imgui
+  - luajit
+  - ffi
+title: ImGui の API
+---
 
-<https://github.com/ousttrue/limgui>
+https://github.com/ousttrue/limgui
 
 ようやく `FFI` の整備ができたので、ImGui の API 調査に進む
 
@@ -13,7 +16,7 @@ previewimage = 'dockbuilder.jpg'
 
 `imgui_internal.h` に一連の `Docking` 向けの API がある。
 
-* <https://github.com/ocornut/imgui/issues/2109>
+- https://github.com/ocornut/imgui/issues/2109
 
 ## [PossiblyAShrub/dock_builder_example.cpp](https://gist.github.com/PossiblyAShrub/0aea9511b84c34e191eaa90dd7225969)
 
@@ -38,7 +41,7 @@ auto down = ImGui::DockBuilderSplitNode(right, ImGuiDir_Down, 0.25f, nullptr, &u
 ```
 
 ```
-# .imgui.ini 
+# .imgui.ini
 [Docking][Data]
 DockSpace     ID=0x7CF2A649 Window=0x9A404470 Pos=0,30 Size=1200,870 Split=X
   DockNode    ID=0x00000001 Parent=0x7CF2A649 SizeRef=599,900 Selected=0xDA554856 => Left
@@ -47,19 +50,18 @@ DockSpace     ID=0x7CF2A649 Window=0x9A404470 Pos=0,30 Size=1200,870 Split=X
     DockNode  ID=0x00000004 Parent=0x00000002 SizeRef=599,225 Selected=0xBCCD3F05 => Down
 ```
 
-* [ ] central node
+- [ ] central node
 
 # Tree
 
 libclang のパース結果の `CXCursor` のツリー
 
-{{ image(path="tree.jpg") }}
+![image]("tree.jpg")
 
-* [ ] selection
+- [ ] selection
 
 # Table
 
 glTF を表示してみた。さくさく書けてよさそう。
 
-{{ image(path="table.jpg") }}
-
+![image]("table.jpg")

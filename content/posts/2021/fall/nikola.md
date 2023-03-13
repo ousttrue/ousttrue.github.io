@@ -1,12 +1,14 @@
-+++
-title = "サイトジェネレーターを nikola にしてみる"
-date = 2021-10-16
-tags = ["ssg", "python"]
-+++
+---
+date: 2021-10-16
+tags:
+- ssg
+- python
+title: サイトジェネレーターを nikola にしてみる
+---
 
 また生成システムを変えてみる。
 
-<https://getnikola.com/>
+https://getnikola.com/
 
 # init
 
@@ -15,7 +17,7 @@ tags = ["ssg", "python"]
 > nikola init .
 ```
 
-<https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore>
+https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore
 ```.gitignore
 # nikola
 .doit.db*
@@ -47,7 +49,7 @@ POSTS = (
 `POSTS` のパス調整でもうできているのだけど、 `frontmatter` の非互換がある。
 それを調べる。
 
-<https://getnikola.com/handbook.html#metadata-fields>
+https://getnikola.com/handbook.html#metadata-fields
 
 * `taxonomies.tags` を `tags` に書き換える
 
@@ -93,15 +95,15 @@ jobs:
 
 ## 動作
 
-<https://getnikola.com/internals.html>
+https://getnikola.com/internals.html
 
 ## yapsy
 
-<https://getnikola.com/extending.html>
+https://getnikola.com/extending.html
 
 `nikola/plugin_categories.py`
 
-<http://yapsy.sourceforge.net/>
+http://yapsy.sourceforge.net/
 
 ## build
 
@@ -109,13 +111,13 @@ jobs:
 
 nikola は DoIt の task を生成する。
 
-* <https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/>
+* https://schettino72.wordpress.com/2008/04/14/doit-a-build-tool-tale/
 * [タスクランナー Doit を使ってみよう](https://qiita.com/iisaka51/items/052ffbd9ab3b12504228)
 
 ## Theme
 
-* <https://getnikola.com/creating-a-theme.html>
-* <https://getnikola.com/theming.html>
+* https://getnikola.com/creating-a-theme.html
+* https://getnikola.com/theming.html
 * [Nikola を windows でやるぞ 2](https://iuk.hateblo.jp/entry/2016/10/28/040908)
 
 

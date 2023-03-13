@@ -1,13 +1,16 @@
-+++
-title = "サイトジェネレーターを Zola に変更"
-date = 2021-06-12
-tags = ["zola", "rust", "ssg"]
-+++
+---
+date: 2021-06-12
+tags:
+- zola
+- rust
+- ssg
+title: サイトジェネレーターを Zola に変更
+---
 
 最近、 rust を再開したので、
 `Static Site Generator` を go 製の hugo から rust 製の zola に変更してみた。
 
-<https://www.getzola.org/>
+https://www.getzola.org/
 
 # hugo のからの引っ越し
 
