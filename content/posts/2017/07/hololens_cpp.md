@@ -1,25 +1,30 @@
 ---
 title: "c++でHololens"
 date: 2017-07-09
-tags: ['cpp', 'hololens']
+tags: ["cpp", "hololens"]
 ---
 
-SharpDXでHololensが頓挫したので、C++でまいりましょう。
+SharpDX で Hololens が頓挫したので、C++でまいりましょう。
 
-VisualStudio2015update3しかUnivsersal cpp HolographicApp templateが含まれないので githubにコピーしておいた。
+VisualStudio2015update3 しか Univsersal cpp HolographicApp template が含まれないので github にコピーしておいた。
 
 https://github.com/ousttrue/HolographicApp
 
 エミュレーターで描画が乱れる件
->>(tools)から
 
-checkを外したらなおった。
+```
+>>(tools)から
+```
+
+check を外したらなおった。
 実機
 問題ない。
-Hololens特有の部分
-通常のDirectXとHolographicAppの違いを調べていたのだけれど、
+Hololens 特有の部分
+通常の DirectX と HolographicApp の違いを調べていたのだけれど、
 両目レンダリングを効率よくするために、複数のレンダーターゲットに対して
 まとめてパイプラインを実行する関連のようだ。
+
+```cpp
 VPAndRTArrayIndexFromAnyShaderFeedingRasterizer
 VPAndRTArrayIndexFromAnyShaderFeedingRasterizerないとき(エミュレーター)
 // A constant buffer that stores the model transform.
@@ -60,7 +65,7 @@ VertexShaderOutput main(VertexShaderInput input)
 
     // Note which view this vertex has been sent to. Used for matrix lookup.
     // Taking the modulo of the instance ID allows geometry instancing to be used
-    // along with stereo instanced drawing; in that case, two copies of each 
+    // along with stereo instanced drawing; in that case, two copies of each
     // instance would be drawn, one for left and one for right.
     int idx = input.instId % 2;
 
@@ -98,7 +103,7 @@ struct GeometryShaderOutput
     uint        rtvId   : SV_RenderTargetArrayIndex; // <- RTVテクスチャアレイのindex
 };
 
-// This geometry shader is a pass-through that leaves the geometry unmodified 
+// This geometry shader is a pass-through that leaves the geometry unmodified
 // and sets the render target array index.
 [maxvertexcount(3)]
 void main(triangle GeometryShaderInput input[3], inout TriangleStream<GeometryShaderOutput> outStream)
@@ -152,7 +157,7 @@ VertexShaderOutput main(VertexShaderInput input)
 
     // Note which view this vertex has been sent to. Used for matrix lookup.
     // Taking the modulo of the instance ID allows geometry instancing to be used
-    // along with stereo instanced drawing; in that case, two copies of each 
+    // along with stereo instanced drawing; in that case, two copies of each
     // instance would be drawn, one for left and one for right.
     int idx = input.instId % 2;
 
@@ -171,35 +176,38 @@ VertexShaderOutput main(VertexShaderInput input)
 
     return output;
 }
+```
 
 どう違うのか
 見比べてみたところ、
-VPAndRTArrayIndexFromAnyShaderFeedingRasterizer=trueの場合
-VertexShaderでSV_RenderTargetArrayIndexを使うことが可能で、
-そうでない場合はVertexShaderで使うことができないがGeometryShaderでSV_RenderTargetArrayIndexを使うことが可能ということらしい。
+VPAndRTArrayIndexFromAnyShaderFeedingRasterizer=true の場合
+VertexShader で SV_RenderTargetArrayIndex を使うことが可能で、
+そうでない場合は VertexShader で使うことができないが GeometryShader で SV_RenderTargetArrayIndex を使うことが可能ということらしい。
 デバッガで確認したところ、実機・エミュレーター共に
-backbufferはD3D11_TEXTURE2D_DESC.ArraySize=2となっていた。
+backbuffer は D3D11_TEXTURE2D_DESC.ArraySize=2 となっていた。
 
 https://developer.microsoft.com/en-us/windows/mixed-reality/rendering_in_directx#important_note_about_rendering_on_non-hololens_devices
 
-実機ではVPAndRTArrayIndexFromAnyShaderFeedingRasterizer=true、エミュレーターでfalseでgometryshader版になることがわかった。
+実機では VPAndRTArrayIndexFromAnyShaderFeedingRasterizer=true、エミュレーターで false で gometryshader 版になることがわかった。
 SV_RenderTargetArrayIndex
 
-VRのためのステレオレンダリングを高速化するアイデア
+VR のためのステレオレンダリングを高速化するアイデア
 
 なんとなくわかってきた。
 
 ジオメトリシェーダを使用した複数画面描画
 
-SV_ViewportArrayIndexというのもあるらしい。
+SV_ViewportArrayIndex というのもあるらしい。
 なるほどー。
 
 セマンティクス (DirectX HLSL)
 
 まとめ
-D3D11専用のレンダラを作ってみる。
-HololensとUWP兼用のプロジェクトにできそうな気がする。
-Hololensの初期化に失敗したら通常のUWPにフォールバックすればよいのではないか。
+D3D11 専用のレンダラを作ってみる。
+Hololens と UWP 兼用のプロジェクトにできそうな気がする。
+Hololens の初期化に失敗したら通常の UWP にフォールバックすればよいのではないか。
+
+```
 HoloApp
     Backbuffer
     CameraUpdate
@@ -216,5 +224,6 @@ HoloApp
     CameraUpdate
     Backbuffer
 UwpApp
+```
 
 こんな感じのプロジェクトを模索してみよう。

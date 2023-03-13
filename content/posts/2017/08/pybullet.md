@@ -4,17 +4,22 @@ date: 2017-08-14
 tags: []
 ---
 
-BulletPhysicsの公式Pythonバインディングが出てたので使ってみる。
+BulletPhysics の公式 Python バインディングが出てたので使ってみる。
 
 Windows10(64bit) + Python3.6
+
+```
 pip
 > C:\Python36\Scripts\pip.exe install pybullet
+```
 
-cl.exe not found的な
-msvc-14.0なコンパイラがインストールされているにも関わらず出るなら
+cl.exe not found 的な
+msvc-14.0 なコンパイラがインストールされているにも関わらず出るなら
 これ
 かもしれない
-C:\Python36\Lib\distutils\_msvccompiler.pyを修正すればいけるかも。
+C:\Python36\Lib\distutils_msvccompiler.py を修正すればいけるかも。
+
+```python
     try:
         out = subprocess.check_output(
             'cmd /u /c "{}" {} && set'.format(vcvarsall, plat_spec),
@@ -31,17 +36,23 @@ C:\Python36\Lib\distutils\_msvccompiler.pyを修正すればいけるかも。
         log.error(exc.output)
         raise DistutilsPlatformError("Error executing {}"
                 .format(exc.cmd))
+```
 
-utf-8がどうこう的な
-いい加減WindowsはCP932を使うのやめて欲しいのだけど。
+utf-8 がどうこう的な
+いい加減 Windows は CP932 を使うのやめて欲しいのだけど。
+
+```
 chcp65001
+```
 
 インストールできた。
 使ってみる
 
 pybullet quickstart guide
 
-日付が2017で思ったより新しい。むしろ、記述中くらいか。
+日付が 2017 で思ったより新しい。むしろ、記述中くらいか。
+
+```
 hello pybullet
 import pybullet as p
 physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
@@ -54,9 +65,12 @@ p.stepSimulation()
 cubePos, cubeOrn = p.getBasePositionAndOrientation(boxId)
 print(cubePos,cubeOrn)
 p.disconnect()
+```
 
-plane.urdfはどこにあるのか。
-bullet3のソースの中にあった。bullet3/build/data/plane.urdf
+plane.urdf はどこにあるのか。
+bullet3 のソースの中にあった。bullet3/build/data/plane.urdf
+
+```xml
 <?xml version="0.0" ?>
 <robot name="plane">
   <link name="planeLink">
@@ -85,9 +99,12 @@ bullet3のソースの中にあった。bullet3/build/data/plane.urdf
     </collision>
   </link>
 </robot>
+```
 
 なるほどー。
-ちょっとhelloを改造
+ちょっと hello を改造
+
+```python
 import os
 os.chdir('D:/dev/_python/bullet3/build/data') # urdfのあるところに移動
 
@@ -105,6 +122,6 @@ while True: # とりあえずpythonを抜けないように
     print(cubePos,cubeOrn)
 
 p.disconnect()
-
+```
 
 面白そう。

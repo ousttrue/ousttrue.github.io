@@ -4,12 +4,12 @@ date: 2017-02-27
 tags: ["unity"]
 ---
 
-いつもJSONUtilやMiniJson+JsonNodeを使うのだけど数値周りのcastで苦しんだので自前でつくることにした。
+いつも JSONUtil や MiniJson+JsonNode を使うのだけど数値周りの cast で苦しんだので自前でつくることにした。
 
 https://github.com/ousttrue/JsonSan~
 https://github.com/ousttrue/Osaru
 
-
+```
 UnityのJSON
 UnityのJsonUtilityみたいなシリアライザ・デシリアライザと不可分のものは使いづらい。例えば、以下のようなjsonでpositionだけをデシリアライズしたい場合。
 {
@@ -76,4 +76,4 @@ foreach(var child in node)
 {
     Debug.Log(child.GetString());
 }
-
+```

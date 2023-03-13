@@ -1,6 +1,8 @@
 ---
 date: 2017-08-14
-tags: ['usd']
+tags:
+- usd
+title: PixarのUniversal Scene Descriptionをビルドしてみる
 ---
 
 # PixarのUniversal Scene Descriptionをビルドしてみる
@@ -40,7 +42,7 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 `VS2017` しか入っていないとき
 build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラは `VS2008(MSVC9.0)` らしい。
 
-<https://www.microsoft.com/en-us/download/details.aspx?id=44266>
+https://www.microsoft.com/en-us/download/details.aspx?id=44266
 
 ## python補足
 
@@ -189,7 +191,7 @@ using python
 を作って環境変数 `BOOST_BUILD_PATH` を `user-config.jam` のあるディレクトリに指定する。
 `%USERROFILE%\user-config.jam` に作って `BOOST_BUILD_PATH` 無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。
 
-<http://www.boost.org/build/doc/html/bbv2/overview/configuration.html>
+http://www.boost.org/build/doc/html/bbv2/overview/configuration.html
 
 WindowsのBoost.Pythonは作るときも使うときもリンクではまる。
 

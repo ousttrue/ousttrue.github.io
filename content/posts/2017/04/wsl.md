@@ -1,12 +1,13 @@
 ---
 title: "Windows Creators UPDATEが来たしWSL環境を整備"
 date: 2017-04-14
-tags: ['linux', 'wsl']
+tags: ["linux", "wsl"]
 ---
 
 Windows SubSystem for Linux
 わりとよくなっていそうな感じなので使ってみる。
 
+```
 wsltty導入
 minttyにwslビルド(wslbridge同梱)という素敵インストーラが提供されていた。
 インストーラーを実行したらショートカットができる。片方のショートカットの末尾に”–login”を追加して、”~/.profile”が実行されるようにした。
@@ -123,4 +124,4 @@ binaryをdownloadして/usr/local/goに展開
 nvm
 
 https://github.com/creationix/nvm
-
+```

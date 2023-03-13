@@ -4,24 +4,24 @@ date: 2017-06-07
 tags: []
 ---
 
-threejsのソースを自前で、minimizeする環境を模索する。
+threejs のソースを自前で、minimize する環境を模索する。
 
-なんとなくwebpackをメインに据えてみたい。
-npm install -g xxxは適宜やるとして省略。
-es2015メモ
+なんとなく webpack をメインに据えてみたい。
+npm install -g xxx は適宜やるとして省略。
+es2015 メモ
 
 const, let
 無名関数はアロー形式で()=>{} もしくは()=>expression
 文字テンプレート`${expression}`
 promise, await
 
-Project作成
+Project 作成
 $ mkdir app
 $ cd app
 app$ npm init
 
-とりあえずgitに登録しよう。
-.gitignoreは、
+とりあえず git に登録しよう。
+.gitignore は、
 
 https://github.com/github/gitignore/blob/master/Node.gitignore
 https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore
@@ -29,145 +29,151 @@ https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore
 をそのまま採用させていただきます。
 app$ git init
 app$ git add .
-app$ git commit -m init 
+app$ git commit -m init
 
 WebSocketServer
 app$ npm install websocket --save
 
 server.js
-'use strict';
 
-const http = require('http');
-const WSServer = require('websocket').server;
-const url = require('url');
-const fs = require('fs')
+```javascript
+"use strict";
 
-const port=8888;
+const http = require("http");
+const WSServer = require("websocket").server;
+const url = require("url");
+const fs = require("fs");
 
-function onHttpRequest(req, res)
-{
-    fs.readFile('client.html', 'utf8', (err, text)=>{
-        res.writeHead(200, { 'Content-Type': 'text/html'});
-        res.end(text);
-    });
+const port = 8888;
+
+function onHttpRequest(req, res) {
+  fs.readFile("client.html", "utf8", (err, text) => {
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(text);
+  });
 }
 const plainHttpServer = http.createServer(onHttpRequest).listen(port);
-const webSocketServer = new WSServer({httpServer: plainHttpServer});
+const webSocketServer = new WSServer({ httpServer: plainHttpServer });
 
-let clients=[];
+let clients = [];
 function broadcast(message) {
-    clients.forEach((con, i)=> {
-        con.send(message);
-    });
+  clients.forEach((con, i) => {
+    con.send(message);
+  });
 }
 
-function onRequest(req)
-{
-    const websocket = req.accept(null, req.origin || '*');
+function onRequest(req) {
+  const websocket = req.accept(null, req.origin || "*");
 
-    clients.push(websocket);
+  clients.push(websocket);
 
-    websocket.send("welcome to this server");
-    broadcast(`clients: [${clients.map((v, i)=>v.remoteAddress[0]).join(', ')}]`);
+  websocket.send("welcome to this server");
+  broadcast(
+    `clients: [${clients.map((v, i) => v.remoteAddress[0]).join(", ")}]`
+  );
 
-    websocket.on('message', (msg)=>{
-        console.log(`"${msg.utf8Data}" is recieved from ${req.origin} !`);
-        websocket.send(msg.utf8Data);
-    });
+  websocket.on("message", (msg) => {
+    console.log(`"${msg.utf8Data}" is recieved from ${req.origin} !`);
+    websocket.send(msg.utf8Data);
+  });
 
-    websocket.on('close', (code,desc)=>{
-        console.log(`connection released!: ${code} - ${desc}`);
+  websocket.on("close", (code, desc) => {
+    console.log(`connection released!: ${code} - ${desc}`);
 
-        clients=clients.filter((v, i)=>v!=websocket);
-        broadcast(`clients: [${clients.map((v, i)=>v.remoteAddress[0]).join(', ')}]`);
-    });
+    clients = clients.filter((v, i) => v != websocket);
+    broadcast(
+      `clients: [${clients.map((v, i) => v.remoteAddress[0]).join(", ")}]`
+    );
+  });
 }
 
-webSocketServer.on('request', onRequest);
+webSocketServer.on("request", onRequest);
 
 console.log(`server start: ${port}`);
+```
 
 client.html
+
+```html
 <html>
-    <head>
-    </head>
-    <body>
-        <input id="message" type="text"><button id="send">send</button>
-        <div id="output"></div>
+  <head> </head>
+  <body>
+    <input id="message" type="text" /><button id="send">send</button>
+    <div id="output"></div>
 
-        <script>
-'use strict';
-let attempts = 1;
-let ws=null;
+    <script>
+      "use strict";
+      let attempts = 1;
+      let ws = null;
 
-const output = document.getElementById('output');
-const sendmessage = document.getElementById('message');
-sendmessage.addEventListener('keydown', (e)=>{
-    if(e.keyCode==13){
-        send(sendmessage.value);
-    }
-});
-document.getElementById('send').addEventListener('click', ()=>send(sendmessage.value));
+      const output = document.getElementById("output");
+      const sendmessage = document.getElementById("message");
+      sendmessage.addEventListener("keydown", (e) => {
+        if (e.keyCode == 13) {
+          send(sendmessage.value);
+        }
+      });
+      document
+        .getElementById("send")
+        .addEventListener("click", () => send(sendmessage.value));
 
-function logger(msg)
-{
-    output.innerHTML += `<div>${msg}</div>`;
-}
-function send(msg)
-{
-    ws.send(msg);
-    logger(`send: ${msg}`);
-}
+      function logger(msg) {
+        output.innerHTML += `<div>${msg}</div>`;
+      }
+      function send(msg) {
+        ws.send(msg);
+        logger(`send: ${msg}`);
+      }
 
-function createWebSocket () {
-    logger(`connecting... ${attempts++}`);
+      function createWebSocket() {
+        logger(`connecting... ${attempts++}`);
 
-    ws = new WebSocket(`ws://${location.host}`);
+        ws = new WebSocket(`ws://${location.host}`);
 
-    ws.onopen = (e)=> {
-        logger(`${e.type}: ${e.code || ''}`);
+        ws.onopen = (e) => {
+          logger(`${e.type}: ${e.code || ""}`);
 
-        // reset the tries back to 1 since we have a new ws opened.
-        attempts = 1; 
+          // reset the tries back to 1 since we have a new ws opened.
+          attempts = 1;
 
-        // ...Your app's logic...
-    }
+          // ...Your app's logic...
+        };
 
-    ws.onclose = (e)=> {
-        logger(`${e.type}: ${e.code || ''}`);
-        ws=null;
+        ws.onclose = (e) => {
+          logger(`${e.type}: ${e.code || ""}`);
+          ws = null;
 
-        const time = generateInterval(attempts);
+          const time = generateInterval(attempts);
 
-        setTimeout(()=>{
+          setTimeout(() => {
             // Connection has closed so try to reconnect every 10 seconds.
-            createWebSocket(); 
-        }, time);
-    }
+            createWebSocket();
+          }, time);
+        };
 
-    ws.onmessage =(e)=>{
-        logger(`${e.type}: ${e.data}`);
-    }
-}
+        ws.onmessage = (e) => {
+          logger(`${e.type}: ${e.data}`);
+        };
+      }
 
-function generateInterval (k) {
-    let maxInterval = (Math.pow(2, k) - 1) * 1000;
+      function generateInterval(k) {
+        let maxInterval = (Math.pow(2, k) - 1) * 1000;
 
-    if (maxInterval > 30*1000) {
-        maxInterval = 30*1000; // If the generated interval is more than 30 seconds, truncate it down to 30 seconds.
-    }
+        if (maxInterval > 30 * 1000) {
+          maxInterval = 30 * 1000; // If the generated interval is more than 30 seconds, truncate it down to 30 seconds.
+        }
 
-    // generate the interval to a random number between 0 and the maxInterval determined from above
-    return Math.random() * maxInterval; 
-}
+        // generate the interval to a random number between 0 and the maxInterval determined from above
+        return Math.random() * maxInterval;
+      }
 
-window.addEventListener('DOMContentLoaded', ()=> createWebSocket());
-        </script>
-    </body>
+      window.addEventListener("DOMContentLoaded", () => createWebSocket());
+    </script>
+  </body>
 </html>
+```
 
-
-WebSocketを再接続するアルゴリズムの工夫
+WebSocket を再接続するアルゴリズムの工夫
 
 webpack
 

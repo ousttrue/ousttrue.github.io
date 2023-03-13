@@ -1,7 +1,8 @@
 ---
-title: "GentooでX11を設定する"
 date: 2017-09-05
-tags: ['linux']
+tags:
+- linux
+title: GentooでX11を設定する
 ---
 
 # GentooでX11を設定する
@@ -10,7 +11,7 @@ tags: ['linux']
 
 xorg-server
 
-<https://wiki.gentoo.org/wiki/Xorg/Guide>
+https://wiki.gentoo.org/wiki/Xorg/Guide
 
 ```
 /etc/portage/make.conf
@@ -39,8 +40,8 @@ $ startx
 
 ## Plasma5
 
-- <https://wiki.gentoo.org/wiki/KDE/Plasma_5_upgrade>
-- <https://wiki.gentoo.org/wiki/KDE#Plasma>
+- https://wiki.gentoo.org/wiki/KDE/Plasma_5_upgrade
+- https://wiki.gentoo.org/wiki/KDE#Plasma
 
 ## eselect profile list
 
@@ -105,17 +106,17 @@ sddm
 
 ## Windows上にX-Server
 
-- <https://sourceforge.net/projects/vcxsrv/>
-- <https://wiki.archlinuxjp.org/index.php/SDDM>
+- https://sourceforge.net/projects/vcxsrv/
+- https://wiki.archlinuxjp.org/index.php/SDDM
 
 SDDMはXDMCPサポートは無い？
 
-- <https://wiki.gentoo.org/wiki/Display_manager>
+- https://wiki.gentoo.org/wiki/Display_manager
 
 ## LightDMに乗り換え
 VNC
 
-<https://wiki.gentoo.org/wiki/TigerVNC>
+https://wiki.gentoo.org/wiki/TigerVNC
 
 ## 日本語フォント
 

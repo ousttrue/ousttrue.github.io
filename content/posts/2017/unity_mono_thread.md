@@ -4,6 +4,7 @@ date: 2017-10-30
 tags: ["unity"]
 ---
 
+```
 タイトルが長いが、RenderingスレッドでC#関数を呼び出すと次回play時に固まるの続きです。
 
 前回の記事についてメールで指摘をいただきました。
@@ -108,6 +109,7 @@ public class CallbackOnRenderThread : MonoBehaviour
         GL.IssuePluginEvent(p, 0);
     }
 }
+```
 
 できちゃった。
 やったぜ。

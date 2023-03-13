@@ -1,12 +1,14 @@
 ---
-title: "Header-OnlyのMessagePack実装とmsgpack-rpc-asioの更新"
 date: 2017-05-28
-tags: ['cpp', 'msgpack']
+tags:
+- cpp
+- msgpack
+title: Header-OnlyのMessagePack実装とmsgpack-rpc-asioの更新
 ---
 
 車輪の再発明的だけどmessagepackのc++実装をまた作った。
 
-<https://github.com/ousttrue/msgpackpp>
+https://github.com/ousttrue/msgpackpp
 
 `refrange` と `osaru` の知見を基に実装というか、編集した。
 実装のシンプルさと使いやすさを優先して、パフォーマンスと汎用性にあまり配慮していない。`refrange` のAPIがダメダメなのを反省し、`osaru` で `serializer/deserializer` のレイヤーと `formatter/parser` のレイヤーを分けた設計を踏襲。なかなかよいのではないか。で、本家の `messagepack` を見たらバージョンが結構進んでいて、`c++11` 版ならヘッダーオンリーあるよと書いてあった。あったのかー。知ってたような気もするが、カスタムのオレオレ車輪でいく。

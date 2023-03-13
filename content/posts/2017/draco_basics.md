@@ -1,12 +1,13 @@
 ---
-title: "dracoの基本"
 date: 2017-12-12
-tags: ["gltf"]
+tags:
+- gltf
+title: dracoの基本
 ---
 
 Googleのメッシュ圧縮ライブラリDracoの使い方を調査中。
 
-<https://github.com/google/draco>
+https://github.com/google/draco
 
 コマンドラインツールから `obj` と `ply` 形式の読み書きができるのでそこから解読する。
 ポイントクラウドの読み書き

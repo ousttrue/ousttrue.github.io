@@ -1,22 +1,23 @@
 ---
 title: "PythonでImGuiする"
 date: 2017-07-31
-tags: ['python', 'imgui']
+tags: ["python", "imgui"]
 ---
 
-PythonでImGuiするのがよさげな気がしたのでやってみた。
+Python で ImGui するのがよさげな気がしたのでやってみた。
 
-ImGuiはcではなくc++のライブラリなのでPythonのctypesは使えぬ。
-本家のBindingsの項に２つのpython bindingが紹介されている。
+ImGui は c ではなく c++のライブラリなので Python の ctypes は使えぬ。
+本家の Bindings の項に２つの python binding が紹介されている。
 
 https://github.com/chromy/cyimgui
 https://github.com/swistakm/pyimgui
 
 なんかうまくいかなった。
-ならばswigで自前でラップすればええやんということで、やってみる。
+ならば swig で自前でラップすればええやんということで、やってみる。
 
 https://github.com/ousttrue/SwigImGui
 
+```
 Swig
 %module swig_imgui
 
@@ -27,13 +28,18 @@ Swig
 
 /* Parse the header file to generate wrappers */
 %include "imgui/imgui.h"
+```
 
+```
 > swig -python -c++ imgui.i
+```
 
-imgui_wrap.cxxと”swig_imgui.py”を生成した。
-imgui_wrap.cxxから_swig_imgui.pydをビルドする。
+imgui_wrap.cxx と”swig_imgui.py”を生成した。
+imgui_wrap.cxx から\_swig_imgui.pyd をビルドする。
 ビルドしてみる
-pythonのNativeModuleをビルドするのでsetup.pyを書いてみる。
+python の NativeModule をビルドするので setup.py を書いてみる。
+
+```python
 from distutils.core import setup, Extension
 
 
@@ -53,18 +59,27 @@ setup (name = 'swig_imgeui',
         ext_modules = [imgui_module],
         py_modules = ["imgui"],
         )
+```
 
 ビルド。
+
+```
 > C:\python36\python.exe setup.py build
+```
 
 ビルドしてみるとエラー。
+
+```
 swigimgui\imgui_wrap.cxx(26285): error C2668: 'ImGui::TreePush': オーバーロード関数の呼び出しを解決することができません。(新機能 ; ヘルプを参照)
 swigimgui\imgui\imgui.h(338): note: 'void ImGui::TreePush(const void *)' の可能性があります
 swigimgui\imgui\imgui.h(337): note: または 'void ImGui::TreePush(const char *)'
 swigimgui\imgui_wrap.cxx(26285): note: 引数リスト '()' を一致させようとしているとき
+```
 
-ImGui::TreePush();がTreePush(const char* str_id = NULL)とTreePush(const void* ptr_id = NULL)でどちらなのか解決できない。
+ImGui::TreePush();が TreePush(const char* str_id = NULL)と TreePush(const void* ptr_id = NULL)でどちらなのか解決できない。
 修正。
+
+```
 %module swig_imgui
 
 %{
@@ -78,38 +93,46 @@ ImGui::TreePush();がTreePush(const char* str_id = NULL)とTreePush(const void* 
 %include "imgui/imgui.h"
 
 %include "imgui/imgui.h"の前に%ignoreを記述することで、
-引数無しのTreePushを作らないようにした。
+```
+
+引数無しの TreePush を作らないようにした。
 これでコンパイルは通った。
-python36_d.libにリンクしない
-python36_d.libではなあくpython36.libにリンクする。
-imgui.iの上の方に以下の記述を追加する。
+python36_d.lib にリンクしない
+python36_d.lib ではなあく python36.lib にリンクする。
+imgui.i の上の方に以下の記述を追加する。
+
+```
 %begin %{
-#ifdef _MSC_VER
+#ifdef \_MSC_VER
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG
 #endif
 %}
+```
 
 実行してみよう
 
 https://github.com/ocornut/imgui/tree/master/examples/sdl_opengl3_example
 
-をまるっとpythonに移植してみる。
+をまるっと python に移植してみる。
 ここからが長くなるで。
+
 # ImGui - standalone example application for SDL2 + OpenGL
+
 # If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
+
+```python
 import os
 import sys
 
 if not 'PYSDL2_DLL_PATH' in os.environ:
-    os.environ['PYSDL2_DLL_PATH']=os.environ['VCPKG_DIR'] + '/installed/x64-windows/bin'
-from sdl2 import *
+os.environ['PYSDL2_DLL_PATH']=os.environ['VCPKG_DIR'] + '/installed/x64-windows/bin'
+from sdl2 import \*
 
 python_dir=os.path.dirname(sys.executable)
 os.environ['PATH']+=(';'+python_dir)
 import swig_imgui as imgui
 
 import ImplSdlGL3
-
 
 def main():
 
@@ -200,50 +223,52 @@ def main():
 
     return 0;
 
-if __name__=='__main__':
-    main()
+if **name**=='**main**':
+main()
 
 ImplSdlGL3.py
 def Init(window):
-    pass
+pass
 
 def ProcessEvent(event):
-    pass
+pass
 
 def NewFrame(window):
-    pass
+pass
+```
 
-pydのサーチ
-環境変数PATH
-環境変数PYSDL2_DLL_PATH
+pyd のサーチ
+環境変数 PATH
+環境変数 PYSDL2_DLL_PATH
 実行
 諸々、正しく初期化していないのでクラッシュする。
-Initを移植
-import swig_imgui as imgui
-from sdl2 import *
+Init を移植
 
+```python
+import swig_imgui as imgui
+from sdl2 import \*
 
 def Init(window):
-    io = imgui.GetIO();
-    #io.KeyMap[imgui.ImGuiKey_Tab] = SDLK_TAB;
-    io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
-    io.KeyMap[imgui.ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
-    io.KeyMap[imgui.ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
-    io.KeyMap[imgui.ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
-    io.KeyMap[imgui.ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
-    io.KeyMap[imgui.ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
-    io.KeyMap[imgui.ImGuiKey_Home] = SDL_SCANCODE_HOME;
-    io.KeyMap[imgui.ImGuiKey_End] = SDL_SCANCODE_END;
-    io.KeyMap[imgui.ImGuiKey_Delete] = SDLK_DELETE;
-    io.KeyMap[imgui.ImGuiKey_Backspace] = SDLK_BACKSPACE;
-    io.KeyMap[imgui.ImGuiKey_Enter] = SDLK_RETURN;
-    io.KeyMap[imgui.ImGuiKey_Escape] = SDLK_ESCAPE;
-    io.KeyMap[imgui.ImGuiKey_A] = SDLK_a;
-    io.KeyMap[imgui.ImGuiKey_C] = SDLK_c;
-    io.KeyMap[imgui.ImGuiKey_V] = SDLK_v;
-    io.KeyMap[imgui.ImGuiKey_X] = SDLK_x;
-    io.KeyMap[imgui.ImGuiKey_Y] = SDLK_y;
-    io.KeyMap[imgui.ImGuiKey_Z] = SDLK_z;
+io = imgui.GetIO();
+#io.KeyMap[imgui.ImGuiKey_Tab] = SDLK_TAB;
+io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
+io.KeyMap[imgui.ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
+io.KeyMap[imgui.ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
+io.KeyMap[imgui.ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
+io.KeyMap[imgui.ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
+io.KeyMap[imgui.ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
+io.KeyMap[imgui.ImGuiKey_Home] = SDL_SCANCODE_HOME;
+io.KeyMap[imgui.ImGuiKey_End] = SDL_SCANCODE_END;
+io.KeyMap[imgui.ImGuiKey_Delete] = SDLK_DELETE;
+io.KeyMap[imgui.ImGuiKey_Backspace] = SDLK_BACKSPACE;
+io.KeyMap[imgui.ImGuiKey_Enter] = SDLK_RETURN;
+io.KeyMap[imgui.ImGuiKey_Escape] = SDLK_ESCAPE;
+io.KeyMap[imgui.ImGuiKey_A] = SDLK_a;
+io.KeyMap[imgui.ImGuiKey_C] = SDLK_c;
+io.KeyMap[imgui.ImGuiKey_V] = SDLK_v;
+io.KeyMap[imgui.ImGuiKey_X] = SDLK_x;
+io.KeyMap[imgui.ImGuiKey_Y] = SDLK_y;
+io.KeyMap[imgui.ImGuiKey_Z] = SDLK_z;
 
     # Alternatively you can set this to NULL and call imgui.GetDrawData() after imgui.Render() to get the same ImDrawData pointer.
     io.RenderDrawListsFn = ImGui_ImplSdlGL3_RenderDrawLists;
@@ -251,62 +276,80 @@ def Init(window):
     io.GetClipboardTextFn = ImGui_ImplSdlGL3_GetClipboardText;
     #io.ClipboardUserData = NULL;
 
-#ifdef _WIN32
-    wmInfo=SDL_SysWMinfo();
-    SDL_VERSION(wmInfo.version);
-    SDL_GetWindowWMInfo(window, wmInfo);
-    io.ImeWindowHandle = wmInfo.info.win.window;
+#ifdef \_WIN32
+wmInfo=SDL_SysWMinfo();
+SDL_VERSION(wmInfo.version);
+SDL_GetWindowWMInfo(window, wmInfo);
+io.ImeWindowHandle = wmInfo.info.win.window;
 #else
-    #(void)window;
+#(void)window;
 #endif
 
     return True;
+```
 
 実行してエラーをつぶしていく。
-int型配列へのindexを使った代入
-冒頭のio.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;がエラーになる。
+int 型配列への index を使った代入
+冒頭の io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;がエラーになる。
+
+```
 io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
 TypeError: 'SwigPyObject' object does not support item assignment
+```
 
-io.KeyMapのCでの型。
-int           KeyMap[ImGuiKey_COUNT];
+io.KeyMap の C での型。
 
-単なる配列へのアクセス。KeyMapをlist的なオブジェクトとしてpython側に公開するよりも、ioにセッターを実装することにした。
-imgui.iに追加。
+```c
+int KeyMap[ImGuiKey_COUNT];
+```
+
+単なる配列へのアクセス。KeyMap を list 的なオブジェクトとして python 側に公開するよりも、io にセッターを実装することにした。
+imgui.i に追加。
+
+```
 %extend ImGuiIO {
-    void SetKeyMap(int k, int v)
-    {
-        ImGui::GetIO().KeyMap[k]=v;
-    }
+void SetKeyMap(int k, int v)
+{
+ImGui::GetIO().KeyMap[k]=v;
 }
+}
+```
 
-pythonでは次のように使う。
+python では次のように使う。
+
+```python
 io.SetKeyMap(imgui.ImGuiKey_LeftArrow, SDL_SCANCODE_LEFT);
+```
 
-関数ポインタ型にpythonの関数を代入。
-swig的にはこれがいちばんの難問である。
+関数ポインタ型に python の関数を代入。
+swig 的にはこれがいちばんの難問である。
 関数ポインタを変数に代入するのがエラーになる。
+
+```python
 def RenderDrawLists():
-    pass
+pass
 
 io.RenderDrawListsFn = RenderDrawLists;
 
-TypeError: in method 'ImGuiIO_RenderDrawListsFn_set', argument 2 of type 'void (*)(ImDrawData *)'
+TypeError: in method 'ImGuiIO_RenderDrawListsFn_set', argument 2 of type 'void (_)(ImDrawData _)'
 Press any key to continue . . .
+```
 
-そりゃ、pythonの関数をこれに代入するのは無理だ。
+そりゃ、python の関数をこれに代入するのは無理だ。
 解決方法は、以下のようにする。
-imgui.iに追記。場所に注意が必要。
+imgui.i に追記。場所に注意が必要。
+
+```
 %{
 static void PythonRenderDrawListsFn(ImDrawData* data)
 {
-    auto func=(PyObject*)ImGui::GetIO().UserData; // Get Python function
-    auto obj = SWIG_NewPointerObj(SWIG_as_voidptr(data)
-    , SWIGTYPE_p_ImDrawData, 0 |  0 );
-    auto arglist = Py_BuildValue("(O)",obj); // Build argument list
-    PyEval_CallObject(func, arglist); // Call Python
-    Py_DECREF(arglist); // Trash arglist
-    Py_DECREF(obj);
+auto func=(PyObject*)ImGui::GetIO().UserData; // Get Python function
+auto obj = SWIG_NewPointerObj(SWIG_as_voidptr(data)
+, SWIGTYPE_p_ImDrawData, 0 | 0 );
+auto arglist = Py_BuildValue("(O)",obj); // Build argument list
+PyEval_CallObject(func, arglist); // Call Python
+Py_DECREF(arglist); // Trash arglist
+Py_DECREF(obj);
 }
 %}
 
@@ -315,39 +358,42 @@ static void PythonRenderDrawListsFn(ImDrawData* data)
 // after
 
 %extend ImGuiIO {
-    void SetRenderDrawListsFn(PyObject *pyfunc) {
-        ImGui::GetIO().UserData=pyfunc;
-        self->RenderDrawListsFn=PythonRenderDrawListsFn;
-        Py_INCREF(pyfunc);
-    }
+void SetRenderDrawListsFn(PyObject \*pyfunc) {
+ImGui::GetIO().UserData=pyfunc;
+self->RenderDrawListsFn=PythonRenderDrawListsFn;
+Py_INCREF(pyfunc);
 }
+}
+```
 
 残り２つの関数ポインタも同様の対応で行けると思うがコメントアウトして飛ばした。
+
+```
 io.SetClipboardTextFn = ImGui_ImplSdlGL3_SetClipboardText;
 io.GetClipboardTextFn = ImGui_ImplSdlGL3_GetClipboardText;
 
-void*の代入
+void\*の代入
 io.ImeWindowHandle = wmInfo.info.win.window;
 
-TypeError: in method 'ImGuiIO_ImeWindowHandle_set', argument 2 of type 'void *'
+TypeError: in method 'ImGuiIO_ImeWindowHandle_set', argument 2 of type 'void \*'
 
 セッターを作った。
 %extend ImGuiIO {
-    void SetImeWindowHandle(long long v)
-    {
-        ImGui::GetIO().ImeWindowHandle = (void*)v;
-    }
+void SetImeWindowHandle(long long v)
+{
+ImGui::GetIO().ImeWindowHandle = (void\*)v;
+}
 }
 
-NewFrameの移植
+NewFrame の移植
 def CreateDeviceObjects():
-    pass
+pass
 
 g_MousePressed=[False, False, False]
 g_MouseWheel=None
 def NewFrame(window):
-    if not g_FontTexture:
-        CreateDeviceObjects();
+if not g_FontTexture:
+CreateDeviceObjects();
 
     io = imgui.GetIO();
 
@@ -356,7 +402,7 @@ def NewFrame(window):
     display_w, display_h=SDL_GL_GetDrawableSize(window);
     io.DisplaySize = imgui.ImVec2(w, h);
     io.DisplayFramebufferScale = ImVec2(
-        (display_w / float(w)) if w > 0 else 0, 
+        (display_w / float(w)) if w > 0 else 0,
         (display_h / float(h)) if h > 0 else 0);
 
     # Setup time step
@@ -370,12 +416,12 @@ def NewFrame(window):
     mouseMask, mx, my = SDL_GetMouseState();
     if (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS):
         # Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
-        io.MousePos = ImVec2(mx, my);   
+        io.MousePos = ImVec2(mx, my);
     else:
         io.MousePos = ImVec2(-1, -1);
 
     # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-    io.MouseDown[0] = g_MousePressed[0] or (mouseMask & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;		
+    io.MouseDown[0] = g_MousePressed[0] or (mouseMask & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
     io.MouseDown[1] = g_MousePressed[1] or (mouseMask & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = g_MousePressed[2] or (mouseMask & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
     g_MousePressed[0] = g_MousePressed[1] = g_MousePressed[2] = False;
@@ -392,19 +438,19 @@ def NewFrame(window):
 io.MouseDown
 セッター。
 %extend ImGuiIO {
-    void SetMouseDown(int k, int v)
-    {
-        ImGui::GetIO().MouseDown[k]=v;
-    }
+void SetMouseDown(int k, int v)
+{
+ImGui::GetIO().MouseDown[k]=v;
+}
 }
 
-CreateDeviceObjectsの移植
-    # Backup GL state
-    last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);
-    last_array_buffer=glGetIntegerv(GL_ARRAY_BUFFER_BINDING);
-    last_vertex_array=glGetIntegerv(GL_VERTEX_ARRAY_BINDING);
+CreateDeviceObjects の移植 # Backup GL state
+last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);
+last_array_buffer=glGetIntegerv(GL_ARRAY_BUFFER_BINDING);
+last_vertex_array=glGetIntegerv(GL_VERTEX_ARRAY_BINDING);
 
     vertex_shader =b'''#version 330
+
 uniform mat4 ProjMtx;
 in vec2 Position;
 in vec2 UV;
@@ -413,20 +459,21 @@ out vec2 Frag_UV;
 out vec4 Frag_Color;
 void main()
 {
-    Frag_UV = UV;
-    Frag_Color = Color;
-    gl_Position = ProjMtx * vec4(Position.xy,0,1);
+Frag_UV = UV;
+Frag_Color = Color;
+gl_Position = ProjMtx \* vec4(Position.xy,0,1);
 };
 '''
 
     fragment_shader =b'''#version 330
+
 uniform sampler2D Texture;
 in vec2 Frag_UV;
 in vec4 Frag_Color;
 out vec4 Out_Color;
 void main()
 {
-    Out_Color = Frag_Color * texture( Texture, Frag_UV.st);
+Out_Color = Frag_Color \* texture( Texture, Frag_UV.st);
 };
 '''
 
@@ -457,11 +504,11 @@ void main()
     glEnableVertexAttribArray(g_AttribLocationUV);
     glEnableVertexAttribArray(g_AttribLocationColor);
 
-#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
-    SIZEOF_ImDrawVert=20
-    glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, SIZEOF_ImDrawVert, ctypes.c_void_p(0));
-    glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, SIZEOF_ImDrawVert, ctypes.c_void_p(8));
-    glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, SIZEOF_ImDrawVert, ctypes.c_void_p(16));
+#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE \*)0)->ELEMENT))
+SIZEOF_ImDrawVert=20
+glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, SIZEOF_ImDrawVert, ctypes.c_void_p(0));
+glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, SIZEOF_ImDrawVert, ctypes.c_void_p(8));
+glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, SIZEOF_ImDrawVert, ctypes.c_void_p(16));
 #undef OFFSETOF
 
     CreateFontsTexture();
@@ -479,7 +526,7 @@ sizeof
 
 offset
 %{
-#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
+#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE \*)0)->ELEMENT))
 const int OFFSETOF_ImDrawVert_pos = OFFSETOF(ImDrawVert, pos);
 const int OFFSETOF_ImDrawVert_uv = OFFSETOF(ImDrawVert, uv);
 const int OFFSETOF_ImDrawVert_col = OFFSETOF(ImDrawVert, col);
@@ -489,12 +536,10 @@ const int OFFSETOF_ImDrawVert_pos = OFFSETOF_ImDrawVert_pos;
 const int OFFSETOF_ImDrawVert_uv = OFFSETOF_ImDrawVert_uv;
 const int OFFSETOF_ImDrawVert_col = OFFSETOF_ImDrawVert_col;
 
-CreateFontsTextureの移植
-def CreateFontsTexture():
-    # Build texture atlas
-    io = imgui.GetIO();
-    # Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user's existing shader.
-    pixels, width, height=io.Fonts.GetTexDataAsRGBA32();
+CreateFontsTexture の移植
+def CreateFontsTexture(): # Build texture atlas
+io = imgui.GetIO(); # Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user's existing shader.
+pixels, width, height=io.Fonts.GetTexDataAsRGBA32();
 
     # Upload texture to graphics system
     last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);
@@ -511,22 +556,22 @@ def CreateFontsTexture():
     # Restore state
     glBindTexture(GL_TEXTURE_2D, last_texture);
 
-値を返すためにポインタ引数を出力に使い(in + argout)、長さの分かっているバイト列へのポインタをbytesとして返す
+値を返すためにポインタ引数を出力に使い(in + argout)、長さの分かっているバイト列へのポインタを bytes として返す
 対象はこれ。
-IMGUI_API void GetTexDataAsRGBA32(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel = NULL);
+IMGUI_API void GetTexDataAsRGBA32(unsigned char\*_ out_pixels, int_ out_width, int* out_height, int* out_bytes_per_pixel = NULL);
 
-typemapでやってみる。
-imgui.iの%include "imgui/imgui.h"より前に記述。
+typemap でやってみる。
+imgui.i の%include "imgui/imgui.h"より前に記述。
 %typemap(in, numinputs=0) (unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel) (unsigned char *tempP, int tempW, int tempH, int tempB) {
-    $1 = &tempP;
-    $2 = &tempW;
-    $3 = &tempH;
-    $4 = &tempB;
+$1 = &tempP;
+$2 = &tempW;
+$3 = &tempH;
+$4 = &tempB;
 }
 %typemap(argout)(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel){
-    auto b = PyBytes_FromStringAndSize((const char *)*$1, (*$2) * (*$3) * (*$4));
-    auto w = PyLong_FromLong(*$2);
-    auto h = PyLong_FromLong(*$3);
+auto b = PyBytes_FromStringAndSize((const char *)_$1, (_$2) _ (_$3) _ (_$4));
+auto w = PyLong_FromLong(_$2);
+auto h = PyLong_FromLong(_$3);
 
     if ((!$result) || ($result == Py_None)) {
         // new tuple3
@@ -557,24 +602,25 @@ imgui.iの%include "imgui/imgui.h"より前に記述。
             Py_DECREF(tail);
         }
     }
+
 }
 
-typemap(in)で呼び出し時に出力変数を与える必要を無くして、typemap(argout)で呼び出し後の返り値をtuple化して値を詰める。その際に、バイト列のサイズが計算できるのでPyBytes_FromStringAndSizeでbytesを作る。
-TexIDのセッター
-intからvoid*への変換。
+typemap(in)で呼び出し時に出力変数を与える必要を無くして、typemap(argout)で呼び出し後の返り値を tuple 化して値を詰める。その際に、バイト列のサイズが計算できるので PyBytes_FromStringAndSize で bytes を作る。
+TexID のセッター
+int から void*への変換。
 %extend ImFontAtlas {
-    void SetTexID(long long id) {
-        self->TexID=reinterpret_cast<void*>(id);
-    }
+void SetTexID(long long id) {
+self->TexID=reinterpret_cast<void*>(id);
+}
 }
 
-ここまで実装するとTextureのnullptrでプログラムがクラッシュしなくなる。
-imguiのwidgetに対するinoutな引数
+ここまで実装すると Texture の nullptr でプログラムがクラッシュしなくなる。
+imgui の widget に対する inout な引数
 float*
 IMGUI_API bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format = "%.3f", float power = 1.0f);
 
-argoutにすると返り値が(bool, float)になっていまいちな気がする。
-swigでfloat*型のヘルパークラスを作る。
+argout にすると返り値が(bool, float)になっていまいちな気がする。
+swig で float\*型のヘルパークラスを作る。
 %include "cpointer.i"
 %pointer_functions(float, floatp);
 
@@ -583,7 +629,7 @@ imgui.floatp_assign(f, 0.0)
 imgui.SliderFloat("float", f, 0.0, 1.0);
 
 bool*
-floatと同様に。
+float と同様に。
 IMGUI_API void ShowTestWindow(bool* p_open = NULL);
 
 %include "cpointer.i"
@@ -600,11 +646,11 @@ IMGUI_API void ShowTestWindow(bool* p_open = NULL);
 
 動くとはいえこれはいかんな。ポインタクラスをもう少し便利にするか、別の方法を調べよう。
 float[3]
-IMGUI_API bool ColorEdit3(const char* label, float col[3]);
+IMGUI_API bool ColorEdit3(const char\* label, float col[3]);
 
-typemapでlistリストを受け取って、listに結果を格納するように記述する。
+typemap で list リストを受け取って、list に結果を格納するように記述する。
 %typemap(in) float col[3] (float temp[3]) {
-    if (!PySequence_Check($input)) {
+if (!PySequence_Check($input)) {
         PyErr_SetString(PyExc_ValueError,"Expected a sequence");
         return NULL;
     }
@@ -614,29 +660,29 @@ typemapでlistリストを受け取って、listに結果を格納するよう�
     }
     for (int i = 0; i < $1_dim0; i++) {
         PyObject *o = PySequence_GetItem($input,i);
-        if (PyNumber_Check(o)) {
-            temp[i] = (float) PyFloat_AsDouble(o);
-        }
-        else {
-            PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
-            return NULL;
-        }
-    }
-    $1 = temp;
+if (PyNumber_Check(o)) {
+temp[i] = (float) PyFloat_AsDouble(o);
+}
+else {
+PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
+return NULL;
+}
+}
+$1 = temp;
 }
 %typemap(argout) float col[3] {
     for (int i = 0; i < $1_dim0; i++) {
         PyObject *o = PyFloat_FromDouble((double) $1[i]);
         PyList_SetItem($input, i, o);
-    }
+}
 }
 
 clear_color = [114/255.0, 144/255.0, 154/255.0, 0];
 imgui.ColorEdit3("clear color", clear_color);
 
-RenderDrawListsの移植
+RenderDrawLists の移植
 def RenderDrawLists(draw_data):
-    global g_ShaderHandle
+global g_ShaderHandle
 
     # Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
     io = imgui.GetIO();
@@ -720,21 +766,21 @@ def RenderDrawLists(draw_data):
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
     glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
     glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha, last_blend_dst_alpha);
-    if (last_enable_blend): 
-        glEnable(GL_BLEND); 
-    else: 
+    if (last_enable_blend):
+        glEnable(GL_BLEND);
+    else:
         glDisable(GL_BLEND);
-    if (last_enable_cull_face): 
-        glEnable(GL_CULL_FACE); 
-    else: 
+    if (last_enable_cull_face):
+        glEnable(GL_CULL_FACE);
+    else:
         glDisable(GL_CULL_FACE);
-    if (last_enable_depth_test): 
+    if (last_enable_depth_test):
         glEnable(GL_DEPTH_TEST);
-    else: 
+    else:
         glDisable(GL_DEPTH_TEST);
-    if (last_enable_scissor_test): 
-        glEnable(GL_SCISSOR_TEST); 
-    else: 
+    if (last_enable_scissor_test):
+        glEnable(GL_SCISSOR_TEST);
+    else:
         glDisable(GL_SCISSOR_TEST);
     glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3]);
     glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3]);
@@ -745,26 +791,26 @@ cmd_list = draw_data.CmdLists[n]
 
 ゲッターを実装する
 %extend ImDrawData {
-    ImDrawList* GetCmdList(int n){
-        return self->CmdLists[n];
-    }
+ImDrawList\* GetCmdList(int n){
+return self->CmdLists[n];
+}
 }
 
-templateの型定義が無い
+template の型定義が無い
 実装する型を明示する。
 %template(ImVectorDrawVert) ImVector<ImDrawVert>;
 %template(ImVectorDrawIdx) ImVector<ImDrawIdx>;
 %template(ImVectorDrawCmd) ImVector<ImDrawCmd>;
 
-Byte列を得る
+Byte 列を得る
 cmd_list.VtxBuffer.Data
 
 %typemap(in, numinputs=0) (unsigned char** out_bytes, int* out_size) (unsigned char *tempP, int tempSize) {
-    $1 = &tempP;
-    $2 = &tempSize;
+$1 = &tempP;
+$2 = &tempSize;
 }
 %typemap(argout)(unsigned char** out_bytes, int* out_size){
-    auto b = PyBytes_FromStringAndSize((const char *)*$1, *$2);
+auto b = PyBytes_FromStringAndSize((const char *)_$1, _$2);
 
     if ((!$result) || ($result == Py_None)) {
         $result = b;
@@ -787,6 +833,7 @@ cmd_list.VtxBuffer.Data
             Py_DECREF(tail);
         }
     }
+
 }
 
 // before
@@ -794,35 +841,35 @@ cmd_list.VtxBuffer.Data
 // after
 
 %extend ImDrawList {
-    void GetVtxBufferData(unsigned char **out_bytes, int *out_size){
-        *out_bytes=(unsigned char *)self->VtxBuffer.Data;
-        *out_size=self->VtxBuffer.Size * sizeof(self->VtxBuffer.Data[0]);
-    }
-    void GetIdxBufferData(unsigned char **out_bytes, int *out_size){
-        *out_bytes=(unsigned char *)self->IdxBuffer.Data;
-        *out_size=self->IdxBuffer.Size * sizeof(self->IdxBuffer.Data[0]);
-    }
+void GetVtxBufferData(unsigned char **out_bytes, int *out_size){
+*out_bytes=(unsigned char *)self->VtxBuffer.Data;
+*out_size=self->VtxBuffer.Size \* sizeof(self->VtxBuffer.Data[0]);
+}
+void GetIdxBufferData(unsigned char **out_bytes, int *out_size){
+*out_bytes=(unsigned char *)self->IdxBuffer.Data;
+*out_size=self->IdxBuffer.Size \* sizeof(self->IdxBuffer.Data[0]);
+}
 }
 
 glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-glBufferData(GL_ARRAY_BUFFER, cmd_list.VtxBuffer.Size * SIZEOF_ImDrawVert, cmd_list.GetVtxBufferData(), GL_STREAM_DRAW);
+glBufferData(GL_ARRAY_BUFFER, cmd_list.VtxBuffer.Size \* SIZEOF_ImDrawVert, cmd_list.GetVtxBufferData(), GL_STREAM_DRAW);
 
 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
-glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.IdxBuffer.Size * SIZEOF_Idx, cmd_list.GetIdxBufferData(), GL_STREAM_DRAW);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.IdxBuffer.Size \* SIZEOF_Idx, cmd_list.GetIdxBufferData(), GL_STREAM_DRAW);
 
-Shutdownの移植
+Shutdown の移植
 def Shutdown():
-    InvalidateDeviceObjects();
-    imgui.Shutdown();
+InvalidateDeviceObjects();
+imgui.Shutdown();
 
 def InvalidateDeviceObjects():
-    global g_VaoHandle
-    global g_VboHandle
-    global g_ElementsHandle
-    global g_ShaderHandle
-    global g_VertHandle
-    global g_FragHandle
-    global g_FontTexture
+global g_VaoHandle
+global g_VboHandle
+global g_ElementsHandle
+global g_ShaderHandle
+global g_VertHandle
+global g_FragHandle
+global g_FontTexture
 
     if (g_VaoHandle): glDeleteVertexArrays(1, g_VaoHandle);
     if (g_VboHandle): glDeleteBuffers(1, g_VboHandle);
@@ -845,10 +892,10 @@ def InvalidateDeviceObjects():
         imgui.GetIO().Fonts.SetTexID(0);
         g_FontTexture = 0;
 
-ProcessEventの移植
+ProcessEvent の移植
 def ProcessEvent(event):
-    global g_MouseWheel
-    global g_MousePressed
+global g_MouseWheel
+global g_MousePressed
 
     io = imgui.GetIO();
     if event.type==SDL_MOUSEWHEEL:
@@ -879,17 +926,18 @@ def ProcessEvent(event):
 io.KeysDown
 セッター
 %extend ImGuiIO {
-    void SetKeysDown(int k, int v)
-    {
-        ImGui::GetIO().KeysDown[k]=v;
-    }
+void SetKeysDown(int k, int v)
+{
+ImGui::GetIO().KeysDown[k]=v;
+}
 }
 
 かくしてほぼ動くようになった。
 
-実際には新しいWidgetをPythonから使用するたびに値をやりとりする部分を追加しなければならないが、そこはおいおいやっていく。
-VisualStudioのセットアップ
-こういうネイティブモジュールの開発ではないとクラッシュの原因を探すのが困難になるが、VisualStudioで普通にアタッチできるので便利。
-ひとつのsolutionにpythonプロジェクトと、c++のdllプロジェクトを同居させてデバッグできる。
+実際には新しい Widget を Python から使用するたびに値をやりとりする部分を追加しなければならないが、そこはおいおいやっていく。
+VisualStudio のセットアップ
+こういうネイティブモジュールの開発ではないとクラッシュの原因を探すのが困難になるが、VisualStudio で普通にアタッチできるので便利。
+ひとつの solution に python プロジェクトと、c++の dll プロジェクトを同居させてデバッグできる。
 
 あとで書く
+```

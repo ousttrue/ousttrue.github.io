@@ -4,8 +4,8 @@ date: 2017-06-10
 tags: []
 ---
 
-PythonのVersion3.4から始まったasyncio周りについてのメモ。
-環境は、Windows10上のpython3.6(64bit)。
+Python の Version3.4 から始まった asyncio 周りについてのメモ。
+環境は、Windows10 上の python3.6(64bit)。
 
 Version
 Python3.4
@@ -22,6 +22,7 @@ EventLoop
 
 https://docs.python.org/3/library/asyncio-eventloop.html
 
+```python
 import asyncio
 loop=asyncio.get_event_loop()
 print(loop)
@@ -29,12 +30,14 @@ print(loop)
 
 loop.run_forever()
 print('done')
+```
 
-ただし永遠(forever)走り続けるのでプロセスをkillしないと止まらず。
-Windows向けのloop
+ただし永遠(forever)走り続けるのでプロセスを kill しないと止まらず。
+Windows 向けの loop
 
 https://docs.python.org/3/library/asyncio-eventloops.html#asyncio.ProactorEventLoop
 
+```python
 import asyncio
 import sys
 
@@ -44,20 +47,26 @@ if sys.platform == 'win32':
     asyncio.set_event_loop(loop)
 else:
     loop = asyncio.get_event_loop()
+```
 
-以降、loopを得るコードを省略。
-EventLoopに関数を投入する
+以降、loop を得るコードを省略。
+EventLoop に関数を投入する
+
+```python
 def func(loop):
     loop.stop() # 停止
 
 loop.call_soon(func, loop)
 loop.run_forever()
 print('done')
+```
 
-asyncio.get_event_loopでloopを取得。loop.call_soonでloopに関数を投入できる。
-投入された関数は、loop.run_foreverで消化される。
-ついでに、loop.stopでrun_foreverから抜けることができる。
-EventLoopにgeneratorを投入する
+asyncio.get_event_loop で loop を取得。loop.call_soon で loop に関数を投入できる。
+投入された関数は、loop.run_forever で消化される。
+ついでに、loop.stop で run_forever から抜けることができる。
+EventLoop に generator を投入する
+
+```python
 def gen(loop, name, count):
     print(name, loop.time())
     for i in range(count):
@@ -80,9 +89,12 @@ a 2 534341.609
 b 2 534341.609
 a done
 b done
+```
 
-loop.stopで止まった。
-すべてのtaskが終わるのを待つ
+loop.stop で止まった。
+すべての task が終わるのを待つ
+
+```
 def gen(loop, name, count):
     print(name, loop.time())
     for i in range(count):
@@ -110,8 +122,11 @@ a done
 b 3 571911.359
 b 4 571911.359
 b done
+```
 
-loop.run_until_completeでfutureが終わるのを待つ
+loop.run_until_complete で future が終わるのを待つ
+
+```python
 def gen(loop, name, count):
     print(name, loop.time())
     for i in range(count):
@@ -123,13 +138,15 @@ futureB=asyncio.ensure_future(gen(loop, 'b', 5), loop=loop)
 future=asyncio.gather(futureA, futureB)
 
 loop.run_until_complete(future)
+```
 
-futureの終了を待ってloop.stopしたいならrun_until_completeするのが明瞭。
+future の終了を待って loop.stop したいなら run_until_complete するのが明瞭。
 PEP492 – Coroutines with async and await syntax(python3.5 09-Apr-2015)
 
-generatorを流用したcoroutineは紛らわしいので、coroutineに独自のシンタックスを導入するで。native coroutineと呼称する。Cで実装しているわけではない。
-関数内でawaitを使わなくてもcoroutineとして有効
+generator を流用した coroutine は紛らわしいので、coroutine に独自のシンタックスを導入するで。native coroutine と呼称する。C で実装しているわけではない。
+関数内で await を使わなくても coroutine として有効
 
+```python
 async def read_data(db):
     pass
 
@@ -147,9 +164,12 @@ taskB=asyncio.ensure_future(gen(loop, 'b', 5), loop=loop)
 future=asyncio.gather(taskA, taskB)
 
 loop.run_until_complete(future)
+```
 
-yieldをawait asyncio.sleep(0)で置き換えた。
-yieldのままだとTypeErrorになる。
+yield を await asyncio.sleep(0)で置き換えた。
+yield のままだと TypeError になる。
+
+```
 Traceback (most recent call last):
   File ".\exp.py", line 18, in <module>
     taskA=asyncio.ensure_future(gen(loop, 'a', 3), loop=loop)
@@ -158,7 +178,11 @@ Traceback (most recent call last):
 TypeError: A Future, a coroutine or an awaitable is required
 
 It is a TypeError if __await__ returns anything but an iterator.
+```
+
 実験。
+
+```python
 def it():
     yield
 
@@ -173,10 +197,11 @@ async def co():
 .\exp.py:22: RuntimeWarning: coroutine 'co' was never awaited
   print(type(co()))
 <class 'coroutine'>
+```
 
-async_generator…。async def内でyieldすると違うものになるのね。syntax errorにはできんな。
-自前のメインループにloopを組み込むとすれば
-loop.onceのような関数があると毎フレーム小出しにタスクを消化できるのだが。
+async_generator…。async def 内で yield すると違うものになるのね。syntax error にはできんな。
+自前のメインループに loop を組み込むとすれば
+loop.once のような関数があると毎フレーム小出しにタスクを消化できるのだが。
 ググってみた。
 
 https://stackoverflow.com/questions/29868372/python-asyncio-run-event-loop-once
@@ -184,6 +209,8 @@ https://stackoverflow.com/questions/29868372/python-asyncio-run-event-loop-once
 loop.stop(); loop.run_forever()
 
 なるほど。
+
+```python
 async def gen(loop, name, count):
     print(name, loop.time())
     for i in range(count):
@@ -225,5 +252,6 @@ b 4 579281.828
 b done
 7
 done
+```
 
 いいかんじになった。これなら付き合っていけそうだ。

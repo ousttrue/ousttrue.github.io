@@ -4,10 +4,10 @@ date: 2017-09-14
 tags: ["cpp", "uwp"]
 ---
 
-C++/CXを置き換えるよさげなライブラリC++WinRTを発見した。
+C++/CX を置き換えるよさげなライブラリ C++WinRT を発見した。
 
-C++/CXの機能を純粋なC++(C++17とか新しめの)で実装したものらしく、WinRTのC++バインディングのような位置。
-C++/CXで
+C++/CX の機能を純粋な C++(C++17 とか新しめの)で実装したものらしく、WinRT の C++バインディングのような位置。
+C++/CX で
 
 ```c++
 Windows::UI::Core::CoreWindow ^window;
@@ -22,16 +22,16 @@ winrt::Windows::UI::Core::Core window;
 
 のように置き換える。`-> `じゃなくて `.` を使うスマートポインタで実装されている。
 
-* Migrating C++/CX source code to C++/WinRT
+- Migrating C++/CX source code to C++/WinRT
 
-C++/CXでasync, awaitな非同期を実装する道具だったPPLもうまく置き換えているようだ。
+C++/CX で async, await な非同期を実装する道具だった PPL もうまく置き換えているようだ。
 
-* Using C++ co-routines with C++/WinRT asynchronous methods
+- Using C++ co-routines with C++/WinRT asynchronous methods
 
 やってみる
 clone
 https://github.com/Microsoft/cppwinrtをcloneしてincludeできるようにしておく。
-C++WinRTはヘッダオンリーライブラリである。
+C++WinRT はヘッダオンリーライブラリである。
 ビルド確認
 
 https://github.com/Microsoft/cppwinrt/tree/master/10.0.15063.0/Samples/CL
@@ -40,7 +40,7 @@ https://github.com/Microsoft/cppwinrt/tree/master/10.0.15063.0/Samples/CL
 
 ```c++
 // main.cpp
-#pragma comment(lib, "windowsapp") 
+#pragma comment(lib, "windowsapp")
 
 #include <winrt/base.h>
 
@@ -52,8 +52,9 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
 }
 ```
 
-あえてCMakeで。
+あえて CMake で。
 CMakeLists.txt
+
 ```cmake
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 PROJECT(RendererToolkit) # .sln
@@ -85,7 +86,7 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECTNAME} PUBLIC
     )
 ```
 
-UWPをターゲットにしたプロジェクトを生成する。
+UWP をターゲットにしたプロジェクトを生成する。
 
 ```
 > mkdir build
@@ -94,17 +95,23 @@ build> cmake.exe -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 -D
 ```
 
 ビルドすると警告が出る。
+
+```
 warning C4447: スレッド モデルのない 'main' シグネチャが見つかりました。'int main(Platform::Array<Platform::String^>^ args)' の使用を検討してください。
+```
 
 以下のように属性をつければ外せた。
+
+```
 [Platform::MTAThread]
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
+```
 
 Debug - X64 - ローカルコンピューター でアプリが起動して、即終了することが確認できればよし。
-UWPの作法で空のAppを作ってみる
+UWP の作法で空の App を作ってみる
 
 ```c++
-#pragma comment(lib, "windowsapp") 
+#pragma comment(lib, "windowsapp")
 
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.UI.Core.h>
@@ -160,11 +167,13 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
 ```
 
 警告とは無関係に、実行に
-[Platform::MTAThread]かwinrt::init_apartment();のどちらかが必要？
-IUnknown*を得る
+
+`[Platform::MTAThread]` か `winrt::init_apartment();` のどちらかが必要？
+
+IUnknown\*を得る
 winrt::get_abi
 メモ
 
 https://github.com/Kitware/CMake/blob/master/Tests/VSWinStorePhone/CMakeLists.txt
 
-VisualStudio2017のC++/CX Universal D3D11のテンプレートをC++/WinRTバージョンに改造できた。間違ってもコンパイルが通って実行時エラーになるのに難儀したが、C++/CXよりはだいぶ使い勝手がよさげな感じ。
+VisualStudio2017 の C++/CX Universal D3D11 のテンプレートを C++/WinRT バージョンに改造できた。間違ってもコンパイルが通って実行時エラーになるのに難儀したが、C++/CX よりはだいぶ使い勝手がよさげな感じ。

@@ -1,27 +1,29 @@
 ---
 title: "MediaSinkを実装する"
 date: 2017-08-27
-tags: ['d3d', 'mediafoundation']
+tags: ["d3d", "mediafoundation"]
 ---
 
-DX11VideoRendererを解読して、VideoRenderer要件を探る。
+DX11VideoRenderer を解読して、VideoRenderer 要件を探る。
 
-Microsoftのサンプルがあり参考になる。
+Microsoft のサンプルがあり参考になる。
 
 https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer
 
 これは結構がっつり作ってあるので、削って最低限必要な要素を探る。
-IMFMediaSinkを作る
-手抜きしてIMFActivate抜きで。
+IMFMediaSink を作る
+手抜きして IMFActivate 抜きで。
 https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h
 を参考に最低限を実装してみる。
-guidgen.exeでguidを決めた。
+guidgen.exe で guid を決めた。
 CustomVideoRenderer.h
+
+```cpp
 #pragma once
 #include <windows.h>
 
 // {8C5C51AD-F400-4B2A-BD36-4990D07420B4}
-DEFINE_GUID(CLSID_CustomVideoRenderer, 
+DEFINE_GUID(CLSID_CustomVideoRenderer,
 0x8c5c51ad, 0xf400, 0x4b2a, 0xbd, 0x36, 0x49, 0x90, 0xd0, 0x74, 0x20, 0xb4);
 
 STDAPI CreateCustomVideoRenderer(REFIID riid, void **ppvObject);
@@ -128,16 +130,19 @@ Creating Output Nodes
     {
         return hr;
     }
+```
 
-IMFStreamSinkがひとつは必要
+IMFStreamSink がひとつは必要
 作る。
+
+```cpp
 class CustomVideoStreamSink: public IMFStreamSink
 {
     ULONG m_nRefCount = 1;
 
     const DWORD                 STREAM_ID;
     CCritSec&                   m_critSec;                      // critical section for thread safety
-    Microsoft::WRL::ComPtr<IMFMediaSink>               m_pSink; 
+    Microsoft::WRL::ComPtr<IMFMediaSink>               m_pSink;
 
 public:
     CustomVideoStreamSink(DWORD dwStreamId, CCritSec& critSec
@@ -167,17 +172,22 @@ public:
     STDMETHODIMP GetEvent(DWORD dwFlags, __RPC__deref_out_opt IMFMediaEvent** ppEvent)override;
     STDMETHODIMP QueueEvent(MediaEventType met, __RPC__in REFGUID guidExtendedType, HRESULT hrStatus, __RPC__in_opt const PROPVARIANT* pvValue)override;
 };
+```
 
 メソッドの中身は
-return E_FAIL;
+
+`return E_FAIL;`
 
 でお茶を濁した。
-IMFMediaSink::AddStreamSink実装
-IMFMediaSink::GetStreamSinkById実装
-IMFMediaSink::GetStreamSinkByIndex実装
-IMFMediaSink::GetStreamSinkCount実装
-IMFMediaSink::RemoveStreamSink実装
+
+IMFMediaSink::AddStreamSink 実装
+IMFMediaSink::GetStreamSinkById 実装
+IMFMediaSink::GetStreamSinkByIndex 実装
+IMFMediaSink::GetStreamSinkCount 実装
+IMFMediaSink::RemoveStreamSink 実装
 実行してみる。
+
+```cpp
 // Handler for Media Session events.
 void OnPlayerEvent(HWND hwnd, WPARAM pUnkPtr)
 {
@@ -190,22 +200,25 @@ void OnPlayerEvent(HWND hwnd, WPARAM pUnkPtr)
     UpdateUI(hwnd, g_pPlayer->GetState());
 }
 
-    // Get the event status. If the operation that triggered the event 
+    // Get the event status. If the operation that triggered the event
     // did not succeed, the status is a failure code.
     HRESULT hrStatus = S_OK;
     hr = pEvent->GetStatus(&hrStatus);
 
     // Check if the async operation succeeded.
-    if (SUCCEEDED(hr) && FAILED(hrStatus)) 
+    if (SUCCEEDED(hr) && FAILED(hrStatus))
     {
         // ここに来る
         hr=hrStatus;
     }
+```
 
-デバッガで調べたらIMFStreamSink::GetMediaSinkの直後にエラーになることがわかった。
-IMFStreamSink::GetMediaSink実装
+デバッガで調べたら IMFStreamSink::GetMediaSink の直後にエラーになることがわかった。
+IMFStreamSink::GetMediaSink 実装
 たんたんとエラーを直していく。
-IMFStreamSink::GetMediaTypeHandler実装
+IMFStreamSink::GetMediaTypeHandler 実装
+
+```cpp
 HRESULT DX11VideoRenderer::CStreamSink::GetMediaTypeHandler(__RPC__deref_out_opt IMFMediaTypeHandler** ppHandler)
 {
     CAutoLock lock(&m_critSec);
@@ -225,11 +238,14 @@ HRESULT DX11VideoRenderer::CStreamSink::GetMediaTypeHandler(__RPC__deref_out_opt
 
     return hr;
 }
+```
 
-IMFMediaTypeHandlerが必要。
-StreamSinkにIMFMediaTypeHandlerを実装
-このインタフェースはStreamSinkが処理できるMediaTypeを示すので必要。
+IMFMediaTypeHandler が必要。
+StreamSink に IMFMediaTypeHandler を実装
+このインタフェースは StreamSink が処理できる MediaType を示すので必要。
 サポートするフォーマットを決める。
+
+```cpp
 // IMFMediaTypeHandler
 STDMETHODIMP GetCurrentMediaType(_Outptr_ IMFMediaType** ppMediaType);
 STDMETHODIMP GetMajorType(__RPC__out GUID* pguidMajorType);
@@ -251,32 +267,36 @@ STDMETHODIMP OnClockRestart(MFTIME hnsSystemTime);
 STDMETHODIMP OnClockSetRate(MFTIME hnsSystemTime, float flRate);
 STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset);
 STDMETHODIMP OnClockStop(MFTIME hnsSystemTime);
+```
 
 Data Flow
-ここまでの実装でIMFSession::Startの呼び出しに応じてIMFClockStateSink::OnClockStartが呼ばれるようになった。
+ここまでの実装で IMFSession::Start の呼び出しに応じて IMFClockStateSink::OnClockStart が呼ばれるようになった。
 Data Flow
 
 Media sinks use a pull model
 
-MesiaSink側からサンプルを取りに行かないといけない。
+MesiaSink 側からサンプルを取りに行かないといけない。
 
+```
 [1] The client sets the media types and the presentation clock. The media sink registers itself with the presentation clock to receive notifications about clock state changes.
 [2][3][4] はPreroll。ミニマムを目指す今回は省略。
 [5] The client calls IMFPresentationClock::Start to start the presentation clock.
 [6] The presentation clock notifies the media sink that the clock is starting, by calling IMFClockStateSink::OnClockStart.
 [7] To get more data, each stream sink sends MEStreamSinkRequestSample events. In response to each of these events, the client gets the next sample and calls ProcessSample. This step is repeated until the presentation ends.
+```
 
 State Changes
-IMFClockStateSinkの実装について。
+IMFClockStateSink の実装について。
 
 In addition, stream sinks must send the following events when they have completed the state transitions:
-
 
 OnClockStart, OnClockRestart: MEStreamSinkStarted event
 OnClockPause: MEStreamSinkPaused event
 OnClockStop: MEStreamSinkStopped event
 
 なるほど。
+
+```cpp
 STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset)override
 {
     CAutoLock lock(&m_csMediaSink);
@@ -296,25 +316,32 @@ STDMETHODIMP OnClockStart(MFTIME hnsSystemTime, LONGLONG llClockStartOffset)over
 
     return hr;
 }
+```
 
-ついにIMFStreamSink::ProcessSampleがコールされた。
-試しに下記のような実装にしてみたがこれではClock無視で最速でフレームを消化してしまうのでだめ。
+ついに IMFStreamSink::ProcessSample がコールされた。
+試しに下記のような実装にしてみたがこれでは Clock 無視で最速でフレームを消化してしまうのでだめ。
+
+```cpp
 int m_count = 0;
-STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
+STDMETHODIMP ProcessSample(**RPC**in_opt IMFSample\* pSample)override
 {
-    ++m_count;
+++m_count;
 
     auto hr = S_OK;
     hr = QueueEvent(MEStreamSinkRequestSample, GUID_NULL, hr, NULL);
 
     return hr;
-}
 
-MEStreamSinkRequestSampleをスケジューリングする
+}
+```
+
+MEStreamSinkRequestSample をスケジューリングする
 
 Scheduled Work Items
 
 これを使ってみる。
+
+```cpp
 BOOL NeedMoreSamples(void)
 {
     const DWORD cSamplesInFlight = /*m_SamplesToProcess.GetCount() +*/ m_cOutstandingSampleRequests;
@@ -373,13 +400,13 @@ STDMETHODIMP ProcessSample(__RPC__in_opt IMFSample* pSample)override
 
     return  S_OK;
 }
+```
 
-DX11VideoRenderer::CSchedulerを使えばよいと思う。
+DX11VideoRenderer::CScheduler を使えばよいと思う。
 だいたい仕組みがわかった。
-DX11VideoRendererから引き算して最小限の構成にする(ProcessSampleが何もしない)場合、
+DX11VideoRenderer から引き算して最小限の構成にする(ProcessSample が何もしない)場合、
 以下の部品を残す必要がありそう。
 
 Scheduler
 StreamSink: IMFStreamSink, IMFMediaTypeHandler
 MesiaSink: IMFMediaSink, IMFClockStateSink
-

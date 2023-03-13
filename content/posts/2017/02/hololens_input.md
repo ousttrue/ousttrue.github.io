@@ -4,8 +4,9 @@ date: 2017-02-18
 tags: ["hololens", "unity"]
 ---
 
-HololensのInputManagerの動きを読んでみた
+Hololens の InputManager の動きを読んでみた
 
+```
 HoloToolkit.Unity.InputModule.InputManager
 Assets/HoloToolkit/Input/Prefabs/InputManagerプレハブから見る。
 InputManager
@@ -62,3 +63,4 @@ IPointerUpHandler
 これだとButton等のクリックイベントを処理するタイプのものは動く。
 DragとかScrollイベントは別途イベント転送してやる必要がありそう。
 なるほど。
+```

@@ -4,56 +4,67 @@ date: 2017-05-05
 tags: ["hugo"]
 ---
 
-hugoの仕組みも気になることだし作ってみることにした。
+hugo の仕組みも気になることだし作ってみることにした。
 
-
-Hugoのテーマを何個か作ったので知見をまとめてみる
+Hugo のテーマを何個か作ったので知見をまとめてみる
 https://gohugo.io/tutorials/creating-a-new-theme/
 
 新しくテーマを作る
-$ hugo new theme hoge
 
-themes/hogeにテーマのテンプレートが作成される。
+```
+$ hugo new theme hoge
+```
+
+themes/hoge にテーマのテンプレートが作成される。
 ３つのテンプレート
 layout/index.html
+
+```html
 <!DOCTYPE html>
 <html>
-<body>
-  {{- range first 10 .Data.Pages }}
+  <body>
+    {{- range first 10 .Data.Pages }}
     <h4><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
-  {{- end }}
-</body>
+    {{- end }}
+  </body>
 </html>
+```
 
-layout/_default/single.html
+layout/\_default/single.html
+
+```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>{{ .Title }}</title>
-</head>
-<body>
-  <h1>{{ .Title }}</h1>
-  <h6>{{ .Date.Format "Mon, Jan 2, 2006" }}</h6>
-  {{ .Content }}
-  <h4><a href="{{ .Site.BaseURL }}">Home</a></h4>
-</body>
+  <head>
+    <title>{{ .Title }}</title>
+  </head>
+  <body>
+    <h1>{{ .Title }}</h1>
+    <h6>{{ .Date.Format "Mon, Jan 2, 2006" }}</h6>
+    {{ .Content }}
+    <h4><a href="{{ .Site.BaseURL }}">Home</a></h4>
+  </body>
 </html>
+```
 
-layout/_default/list.html
+layout/\_default/list.html
+
+```html
 <!DOCTYPE html>
 <html>
-<body>
-  <h1>Articles</h1>
-  {{- range first 10 .Data.Pages }}
+  <body>
+    <h1>Articles</h1>
+    {{- range first 10 .Data.Pages }}
     <h4><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
-  {{- end }}
-  <h4><a href="{{ .Site.BaseURL }}">Home</a></h4>
-</body>
+    {{- end }}
+    <h4><a href="{{ .Site.BaseURL }}">Home</a></h4>
+  </body>
 </html>
+```
 
-partial導入
-layout/_default/header.html
-layout/_default/footer.html
+partial 導入
+layout/\_default/header.html
+layout/\_default/footer.html
 bootstrap
 
 http://getbootstrap.com/
@@ -66,30 +77,37 @@ http://text.baldanders.info/hugo/section/
 http://text.baldanders.info/hugo/categories-and-tags-list/
 
 付ける
-frontmatterに
+frontmatter に
 tags = ["hugo"]
 
-のように書く。よくわからないがアルファベットの大文字は避けた方がよさげ。マルチバイト文字はOKぽい。
+のように書く。よくわからないがアルファベットの大文字は避けた方がよさげ。マルチバイト文字は OK ぽい。
 single
-.Params.tagsに格納されているので以下のようにして使う
+.Params.tags に格納されているので以下のようにして使う
+
+```
 {{ range .Params.tags }}
 <a href="/tags/{{ . | urlize }}/">{{ . }}</a>
 {{ end }}
+```
 
 list
-.Data.Pagesを列挙して中から取り出せる
+.Data.Pages を列挙して中から取り出せる
+
+```
 {{ range .Data.Pages }}
     <hr>
     {{ range .Params.tags }}
     <a href="/tags/{{ . | urlize }}/">{{ . }}</a>
     {{ end }}
 {{ end}}
+```
 
 サイトのタグ一覧
 
-Hugoでwebサイト構築(12) タグの列挙
+Hugo で web サイト構築(12) タグの列挙
 https://gohugo.io/taxonomies/ordering/
 
+```
 {{ range $name, $value := $.Site.Taxonomies.Alphabetical }}
     <li>
         <a href="{{ $.Site.BaseURL }}/tags/{{ $name }}/">
@@ -97,6 +115,7 @@ https://gohugo.io/taxonomies/ordering/
         </a>
     </li>
 {{ end }}
+```
 
 pagination
 

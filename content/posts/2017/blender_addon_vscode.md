@@ -1,8 +1,10 @@
-+++
-title = "BlenderのAddOnを、VSCodeでデバッグする"
-date = 2017-11-23
-tags = ["blender", "vscode"]
-+++
+---
+date: 2017-11-23
+tags:
+- blender
+- vscode
+title: BlenderのAddOnを、VSCodeでデバッグする
+---
 
 VSCodeのリモートデバッグを利用してBlenderのPythonにデバッガをアタッチする。
 

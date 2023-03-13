@@ -1,24 +1,26 @@
 ---
 title: "cmakeのfind_package"
 date: 2017-07-20
-tags: ['cmake']
+tags: ["cmake"]
 ---
 
-cmakeのFIND_PACKAGEわかりずらいよ。もやもやするものがある。
+cmake の FIND_PACKAGE わかりずらいよ。もやもやするものがある。
 
-GLUTの例
+GLUT の例
 検証用に小さい例を作ってみた。
 
 https://stackoverflow.com/questions/9460242/how-to-compile-glut-opengl-project-with-cmake-and-kdevelop-in-linux
 
 これを参考にしたのだけどちょっと手直しした。
 
-ADD_EXECUTABLEの前にINCLUDE_DIRECTORIESする必要がある
-OPENGL_INCLUDE_DIRSじゃなくてOPENGL_INCLUDE_DIR
-GLUT_INCLUDE_DIRSじゃなくてGLUT_INCLUDE_DIR
+ADD_EXECUTABLE の前に INCLUDE_DIRECTORIES する必要がある
+OPENGL_INCLUDE_DIRS じゃなくて OPENGL_INCLUDE_DIR
+GLUT_INCLUDE_DIRS じゃなくて GLUT_INCLUDE_DIR
 
-Linuxとかだとdistributionがcmakeファイルを管理してたりするかもしれん。
+Linux とかだと distribution が cmake ファイルを管理してたりするかもしれん。
 main.cpp
+
+```cpp
 #include <GL/glut.h>
 
 void display(void)
@@ -33,7 +35,9 @@ int main(int argc, char *argv[])
     glutMainLoop();
     return 0;
 }
+```
 
+```cmake
 CMakeLists.txt
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(hello)
@@ -53,40 +57,51 @@ INCLUDE_DIRECTORIES(
 ADD_DEFINITIONS(
     -DFREEGLUT_LIB_PRAGMAS=0 # avoid pragma
     )
-ADD_EXECUTABLE(hello 
+ADD_EXECUTABLE(hello
     main.cpp
     )
 TARGET_LINK_LIBRARIES(hello
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     )
+```
 
 実行時のメッセージ
+
+```
 -- glu32opengl32
 --
 -- D:/vcpkg/installed/x64-windows/lib/freeglut.lib
 -- D:/vcpkg/installed/x64-windows/include
 -- Configuring done
 -- Generating done
+```
 
-なぜかvcpkgのfreeglutを発見してくれた。
-vcpkgがcmakeの探索パスを追加しているぽい。レジストリとかか？
-まず、第1に
-FIND_PACKAGEの結果として如何なる変数が増えるのかが分からん。
+なぜか vcpkg の freeglut を発見してくれた。
+vcpkg が cmake の探索パスを追加しているぽい。レジストリとかか？
+まず、第 1 に
+FIND_PACKAGE の結果として如何なる変数が増えるのかが分からん。
 
 https://cmake.org/Wiki/CMake:How_To_Find_Libraries#How_package_finding_works
 
 慣例では、下記のようになっている。
 
+```
 _FOUND
 _INCLUDE_DIRS or _INCLUDES
 _LIBRARIES or _LIBRARIES or _LIBS
 _DEFINITIONS
+```
 
 強制じゃなくて規約なので各種表記ブレの余地が危険を醸し出している。
 大文字小文字(find_package(glut)に対して${GLUT_FOUND})、複数単数(DIR, DIRS)、短縮(LIBRARIES, LIBS)とか一貫性が。はまりそうだー。
 とりあえあず、標準のパッケージに関してはコマンドから問い合わせることができる。
+
+```
 > cmake --help-module OpenGL
+```
+
+```
 FindOpenGL
 ----------
 
@@ -187,9 +202,9 @@ MESSAGE(STATUS ${OPENGL_LIBRARIES})
 FIND_PACKAGE(GLUT)
 MESSAGE(STATUS ${GLUT_LIBRARY})
 STRING(REPLACE lib/freeglut.lib debug/lib/freeglutd.lib GLUT_LIBRARY_DEBUG ${GLUT_LIBRARY})
-SET(OPENGL_LIBS 
-    general ${OPENGL_LIBRARIES} 
-    optimized ${GLUT_LIBRARY} 
+SET(OPENGL_LIBS
+    general ${OPENGL_LIBRARIES}
+    optimized ${GLUT_LIBRARY}
     debug ${GLUT_LIBRARY_DEBUG}
     )
 TARGET_LINK_LIBRARIES(hello
@@ -202,3 +217,4 @@ alembicなどvcpkgでインストールしたパッケージをVCPKG_DIR/install
 CMakeを使ってみた (7) find_packageとpkg_check_modulesによるライブラリ探索
 
 あとで
+```
