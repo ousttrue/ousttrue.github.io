@@ -1,9 +1,9 @@
-name: Sphinx
+name: Gatsby
 
 on:
   push:
     branches:
-      - ablog
+      - gatsby
   workflow_dispatch:
 
 jobs:
@@ -13,14 +13,15 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - uses: actions/checkout@v1
-      - run: pip install -r requirements.txt
-      - run: pip install "Nikola[extras]"      
-      # - run: sphinx-build content html -b dirhtml
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm i
+      - run: npm i -g gatsby-cli
       - name: build
-        run: nikola build
+        run: gatsby build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # publish_dir: ./html
-          publish_dir: ./output
+          publish_dir: ./public
