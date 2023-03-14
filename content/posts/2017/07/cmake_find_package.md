@@ -4,6 +4,7 @@ date: 2017-07-20
 tags: ["cmake"]
 ---
 
+```
 cmake の FIND_PACKAGE わかりずらいよ。もやもやするものがある。
 
 GLUT の例
@@ -20,7 +21,7 @@ GLUT_INCLUDE_DIRS じゃなくて GLUT_INCLUDE_DIR
 Linux とかだと distribution が cmake ファイルを管理してたりするかもしれん。
 main.cpp
 
-```cpp
+cpp
 #include <GL/glut.h>
 
 void display(void)
@@ -35,9 +36,9 @@ int main(int argc, char *argv[])
     glutMainLoop();
     return 0;
 }
-```
 
-```cmake
+
+cmake
 CMakeLists.txt
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(hello)
@@ -64,18 +65,18 @@ TARGET_LINK_LIBRARIES(hello
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     )
-```
+
 
 実行時のメッセージ
 
-```
+
 -- glu32opengl32
 --
 -- D:/vcpkg/installed/x64-windows/lib/freeglut.lib
 -- D:/vcpkg/installed/x64-windows/include
 -- Configuring done
 -- Generating done
-```
+
 
 なぜか vcpkg の freeglut を発見してくれた。
 vcpkg が cmake の探索パスを追加しているぽい。レジストリとかか？
@@ -86,22 +87,22 @@ https://cmake.org/Wiki/CMake:How_To_Find_Libraries#How_package_finding_works
 
 慣例では、下記のようになっている。
 
-```
+
 _FOUND
 _INCLUDE_DIRS or _INCLUDES
 _LIBRARIES or _LIBRARIES or _LIBS
 _DEFINITIONS
-```
+
 
 強制じゃなくて規約なので各種表記ブレの余地が危険を醸し出している。
 大文字小文字(find_package(glut)に対して${GLUT_FOUND})、複数単数(DIR, DIRS)、短縮(LIBRARIES, LIBS)とか一貫性が。はまりそうだー。
 とりあえあず、標準のパッケージに関してはコマンドから問い合わせることができる。
 
-```
-> cmake --help-module OpenGL
-```
 
-```
+> cmake --help-module OpenGL
+
+
+
 FindOpenGL
 ----------
 

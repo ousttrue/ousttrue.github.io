@@ -1,9 +1,10 @@
 ---
 title: "UWPでNativeDllを使う"
 date: 2017-05-03
-tags: ['cmake', 'uwp']
+tags: ["cmake", "uwp"]
 ---
 
+```
 UWPでNativeのDLLを使うとどんな感じなのか試してみた。
 
 https://github.com/ousttrue/UwpNativeDllSample
@@ -56,7 +57,7 @@ C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Common
 -DCMAKE_CXX_FLAGS=/ZW /EHsc /DWIN32=1
 
 例
-zlib-1.2.11/build> cmake.exe .. -G Visual Studio 15 2017 -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 -DCMAKE_C_FLAGS=/ZW /EHsc /DWIN32=1 -DCMAKE_CXX_FLAGS=/ZW /EHsc /DWIN32=1 
+zlib-1.2.11/build> cmake.exe .. -G Visual Studio 15 2017 -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 -DCMAKE_C_FLAGS=/ZW /EHsc /DWIN32=1 -DCMAKE_CXX_FLAGS=/ZW /EHsc /DWIN32=1
 
 C#からDllImport
 Desktopの時と記述方法は同じ。dllの配置場所は上記の通りprojectに放り込むだけ。
@@ -71,4 +72,4 @@ Desktopの時と記述方法は同じ。dllの配置場所は上記の通りproj
 CMakeの場合はプロジェクト生成オプションさえわかれば、 デスクトップとそれほど使い勝手は変わらない。この煩雑な手順を記録しておくべく自動ビルドツール作成中。
 
 https://github.com/ousttrue/bldproc
-
+```

@@ -1,9 +1,10 @@
 ---
 title: "CMakeでBoost.Pythonを使う"
 date: 2017-08-09
-tags: ['cmake', 'boost', 'python']
+tags: ["cmake", "boost", "python"]
 ---
 
+```
 Windows上のCMakeでFIND_PACKAGE(Boost)する件について。
 
 Boost.Pythonのビルド
@@ -50,3 +51,4 @@ BOOST_ALL_NO_LIB を定義して Boost_LIBRARIESにリンクする
 Boost_LIBRARIESを使わずに、BoostのAutoLinkに従う
 
 のいずれかになるが、ネイティブモジュール開発では後者がおすすめか。
+```

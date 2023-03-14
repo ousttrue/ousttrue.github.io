@@ -1,8 +1,8 @@
 ---
 date: 2021-10-16
 tags:
-- ssg
-- python
+  - ssg
+  - python
 title: サイトジェネレーターを nikola にしてみる
 ---
 
@@ -10,36 +10,38 @@ title: サイトジェネレーターを nikola にしてみる
 
 https://getnikola.com/
 
+```
+
 # init
 
-```
+
 > pip install "Nikola[extras]"
 > nikola init .
-```
+
 
 https://github.com/github/gitignore/blob/master/community/Python/Nikola.gitignore
-```.gitignore
+.gitignore
 # nikola
 .doit.db*
 *.pyc
 /cache/
 /output/
-```
+
 
 `conf.py`
-```py
-# とりあえず 
+py
+# とりあえず
 POSTS = (
     ("content/*.rst", "posts", "post.tmpl"),
     ("content/*.md", "posts", "post.tmpl"),
     ("content/*.txt", "posts", "post.tmpl"),
     ("content/*.html", "posts", "post.tmpl"),
 )
-```
 
-```
+
+
 > nikola auto --browser
-```
+
 
 なんとなくプレビューできた。
 ええやん。
@@ -54,20 +56,20 @@ https://getnikola.com/handbook.html#metadata-fields
 * `taxonomies.tags` を `tags` に書き換える
 
 小文字強制
-```py
+py
 METADATA_VALUE_MAPPING = {
     "toml": {
         "tags": lambda ls: [x.lower() for x in ls]
      }
 }
-```
+
 # github action で gh-pages
 
 `.github/workflows/nikola.yml`
 
 こんなもんかな。
 
-```yml
+yml
 name: Nikola
 
 on:
@@ -91,7 +93,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./output
 
-```
+
 
 ## 動作
 
@@ -148,7 +150,7 @@ nikola は DoIt の task を生成する。
 
 ### base.tmpl
 
-```html
+html
 <html>
 
 <body>
@@ -164,11 +166,11 @@ nikola は DoIt の task を生成する。
 </body>
 
 </html>
-```
+
 
 ### index.tmpl
 
-```html
+html
 {% extends 'base.tmpl' %}
 
 {% block content %}
@@ -186,11 +188,11 @@ nikola は DoIt の task を生成する。
 <a href="{{ nextlink }}" rel="next">next</a>
 {% endif %}
 {% endblock %}
-```
+
 
 ### post.tmpl
 
-```html
+html
 {% extends 'base.tmpl' %}
 
 {% block content %}
@@ -199,27 +201,28 @@ nikola は DoIt の task を生成する。
 </h1>
 {{ post.text() }}
 {% endblock %}
-```
+
 
 ### THEME_NAME.theme
 
-```
+
 [Theme]
 engine = jinja
-```
+
 
 ## vscode
 
 `settings.json`
 
-```json
+json
     "files.associations": {
         "*.tmpl": "html",
     },
-```
+
 
 ## ToDo
 
 * Theme 調整
 * TOC
 * syntax highlight
+```
