@@ -1,4 +1,4 @@
-const content_path = "content/posts/";
+const content_path = "content/posts";
 
 module.exports = {
   siteMetadata: {

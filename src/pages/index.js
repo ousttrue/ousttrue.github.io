@@ -1,10 +1,6 @@
 import * as React from "react";
 import { Link, graphql } from "gatsby";
 
-// import Bio from "../components/bio";
-// import Layout from "../components/layout";
-// import Seo from "../components/seo";
-
 const BlogIndex = ({ data, location }) => {
   // const siteTitle = data.site.siteMetadata?.title || `Title`;
   const posts = data.allMdx.nodes;
@@ -33,11 +29,12 @@ const BlogIndex = ({ data, location }) => {
             >
               <header>
                 <h2>
-                  <Link to={post.fields.slug} itemProp="url">
+                  <Link to={`posts${post.fields.slug}`} itemProp="url">
                     <span itemProp="headline">{title}</span>
                   </Link>
                 </h2>
-                <small>{post.frontmatter.date}</small>
+                <div>{post.frontmatter.date}</div>
+                <div>{post.frontmatter.tags}</div>
               </header>
               <section>
                 <p
@@ -70,8 +67,9 @@ export const pageQuery = graphql`
           slug
         }
         frontmatter {
-          date(formatString: "MMMM D, YYYY")
+          date(formatString: "YYYY/MM/DD")
           title
+          tags
         }
         id
       }

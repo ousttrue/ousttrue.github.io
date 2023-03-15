@@ -36,8 +36,9 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `);
   data.allMdx.nodes.map((node) => {
+    const page_path = "/posts" + node.fields.slug;
     createPage({
-      path: node.fields.slug,
+      path: page_path,
       component: `${postTemplate}?__contentFilePath=${node.internal.contentFilePath}`,
       context: {
         id: node.id,
