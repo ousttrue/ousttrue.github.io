@@ -7,10 +7,16 @@ module.exports = {
     description: "",
   },
   plugins: [
+    `gatsby-remark-prismjs`,
     {
       resolve: `gatsby-plugin-mdx`,
       options: {
         extensions: [`.mdx`, `.md`],
+        gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-prismjs`,
+          },
+        ],
       },
     },
     // content_path

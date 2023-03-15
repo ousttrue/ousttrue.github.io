@@ -58,7 +58,7 @@ function PostTemplate({ data: { mdx }, children }) {}
 
 chidren を受けるには `createPages` を以下のようにする。
 
-```jsx
+```javascript
 // gatsby-node.js
 data.allMdx.nodes.forEach((node) => {
   actions.createPage({
@@ -75,7 +75,28 @@ data.allMdx.nodes.forEach((node) => {
 要するにドキュメントに書いてあるとおりにする必要があるのだが、
 内容を理解していないのと、古い情報との混在で難航したのであった。
 
+## gatsby-plugin-page-creator 無用
+
+無くても動く。
+というか `createPages` を変わりにやってくれるものぽい。
+
+```javascript
+exports.createPages = async ({ graphql, actions }) => {
+```
+
 ## かくして、白いサイトに戻った。
 
 はまったおかげで gatsby のデータの流れがわかってきた。
 適当に組み立てて行こう。
+
+## prism-react-renderer (syntax highlight) 導入
+
+- https://paulie.dev/posts/2022/08/syntax-highlighting-with-gatsby-mdx-and-prism-react-renderer/#mdx-2-rc-version
+
+- install prism-react-renderer
+- MDXProvider.components
+- gatsby-browser.js
+
+の３ステップ。
+これも難航したが、`MDX v2` の情報を見分けることが重要。
+`MDXProvider` 探索するべし。
