@@ -16,6 +16,7 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 };
 
 const path = require(`path`);
+const postTemplate = path.resolve(`./src/templates/post-template.js`);
 
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions;
@@ -23,32 +24,23 @@ exports.createPages = async ({ graphql, actions }) => {
     {
       allMdx {
         nodes {
-          body
+          id
           fields {
             slug
           }
-          frontmatter {
-            date(formatString: "MMMM D, YYYY")
-            title
+          internal {
+            contentFilePath
           }
         }
       }
     }
   `);
   data.allMdx.nodes.map((node) => {
-    // node.body = node.body.trim();
-    // if (!node.frontmatter.title) {
-    //   const { head, body } = node.body.split("\n", 1);
-    //   node.boyd = body;
-    //   node.frontmatter.title = head;
-    // }
-    console.log("[page]", node.fields.slug, node.frontmatter);
-
     createPage({
       path: node.fields.slug,
-      component: path.resolve("src/templates/post-template.js"),
+      component: `${postTemplate}?__contentFilePath=${node.internal.contentFilePath}`,
       context: {
-        slug: node.fields.slug,
+        id: node.id,
       },
     });
   });

@@ -21,11 +21,5 @@ module.exports = {
         path: `${__dirname}/${content_path}`,
       },
     },
-    {
-      resolve: `gatsby-plugin-page-creator`,
-      options: {
-        path: `${__dirname}/${content_path}`,
-      },
-    },
   ],
 };

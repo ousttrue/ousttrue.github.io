@@ -1,13 +1,23 @@
 import React from "react";
-import { MDXRenderer } from "gatsby-plugin-mdx";
+import { graphql } from "gatsby";
 import Layout from "../components/layout.js";
+import { MDXProvider } from "@mdx-js/react";
 
-export default function PostTempalte({ pageContext }) {
-  const { node } = pageContext;
+export default function PostTempalte({ data, children }) {
   return (
-    <Layout>
-      <h2>{node.frontmatter.title}</h2>
-      <MDXRenderer>{node.body}</MDXRenderer>
-    </Layout>
+    <>
+      <h1>{data.mdx.frontmatter.title}</h1>
+      <MDXProvider>{children}</MDXProvider>
+    </>
   );
 }
+
+export const query = graphql`
+  query ($id: String!) {
+    mdx(id: { eq: $id }) {
+      frontmatter {
+        title
+      }
+    }
+  }
+`;
