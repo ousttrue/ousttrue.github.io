@@ -81,7 +81,7 @@ data.allMdx.nodes.forEach((node) => {
 というか `createPages` を変わりにやってくれるものぽい。
 
 ```javascript
-exports.createPages = async ({ graphql, actions }) => {
+exports.createPages = async ({ graphql, actions }) => {};
 ```
 
 # かくして、白いサイトに戻った。
@@ -110,3 +110,8 @@ exports.createPages = async ({ graphql, actions }) => {
 # tags
 
 - https://www.gatsbyjs.com/docs/adding-tags-and-categories-to-blog-posts/
+
+tag できた。
+gatsby の component システム、`jinja` や `hugo` の template と比べて
+わかりやすくてパワーがあるね。
+`nvim` で作業しているのだけど、 LanguageServer の支援が受けられてすごい快適だ。
