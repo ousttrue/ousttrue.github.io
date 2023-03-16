@@ -19,10 +19,10 @@ const components = {
 
 export default function PostTempalte({ data, children }) {
   return (
-    <>
+    <Layout>
       <h1>{data.mdx.frontmatter.title}</h1>
       <MDXProvider components={components}>{children}</MDXProvider>
-    </>
+    </Layout>
   );
 }
 

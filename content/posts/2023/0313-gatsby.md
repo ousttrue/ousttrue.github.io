@@ -20,7 +20,7 @@ tags: ["ssg"]
 - 正規表現で `<url> 記法` 除去
 - frontmatter.title が無い場合に先頭の見出しを title に付け替える(sphinx の myst 向けの記事？)
 
-## MDXRenderer 無くなっているぽい
+# MDXRenderer 無くなっているぽい
 
 breaking change w
 
@@ -75,7 +75,7 @@ data.allMdx.nodes.forEach((node) => {
 要するにドキュメントに書いてあるとおりにする必要があるのだが、
 内容を理解していないのと、古い情報との混在で難航したのであった。
 
-## gatsby-plugin-page-creator 無用
+# gatsby-plugin-page-creator 無用
 
 無くても動く。
 というか `createPages` を変わりにやってくれるものぽい。
@@ -84,12 +84,12 @@ data.allMdx.nodes.forEach((node) => {
 exports.createPages = async ({ graphql, actions }) => {
 ```
 
-## かくして、白いサイトに戻った。
+# かくして、白いサイトに戻った。
 
 はまったおかげで gatsby のデータの流れがわかってきた。
 適当に組み立てて行こう。
 
-## prism-react-renderer (syntax highlight) 導入
+# prism-react-renderer (syntax highlight) 導入
 
 - https://paulie.dev/posts/2022/08/syntax-highlighting-with-gatsby-mdx-and-prism-react-renderer/#mdx-2-rc-version
 
@@ -100,3 +100,13 @@ exports.createPages = async ({ graphql, actions }) => {
 の３ステップ。
 これも難航したが、`MDX v2` の情報を見分けることが重要。
 `MDXProvider` 探索するべし。
+
+# layout
+
+## list
+
+## post
+
+# tags
+
+- https://www.gatsbyjs.com/docs/adding-tags-and-categories-to-blog-posts/
