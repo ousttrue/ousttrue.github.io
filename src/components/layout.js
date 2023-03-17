@@ -5,7 +5,9 @@ import "../styles/layout.css";
 const Header = () => (
   <header>
     <Link to="/">三次元日誌(gatsby v5)</Link>
+    <Link to="/about/">about</Link>
     <Link to="/tags/">tags</Link>
+    <Link to="/books/">books</Link>
   </header>
 );
 

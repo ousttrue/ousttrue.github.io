@@ -1,5 +1,3 @@
-const content_path = "content/posts";
-
 module.exports = {
   siteMetadata: {
     title: "三次元日誌(Gatsby)",
@@ -19,12 +17,18 @@ module.exports = {
         ],
       },
     },
-    // content_path
     {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `content`,
-        path: `${__dirname}/${content_path}`,
+        path: `${__dirname}/content/posts`,
+      },
+    },
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `content`,
+        path: `${__dirname}/content/pages`,
       },
     },
   ],

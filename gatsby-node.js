@@ -1,12 +1,22 @@
 const { createFilePath } = require(`gatsby-source-filesystem`);
 
+function get_prefix(internal_path) {
+  if (internal_path.includes("/posts/")) {
+    return "/posts";
+  } else {
+    return "";
+  }
+}
+
 exports.onCreateNode = ({ node, getNode, actions }) => {
   const { createNodeField } = actions;
   //fmImagesToRelative(node)
 
   if (node.internal.type === `Mdx`) {
     console.log("[node]", node.frontmatter);
-    const slug = "/posts" + createFilePath({ node, getNode });
+    const slug =
+      get_prefix(node.internal.contentFilePath) +
+      createFilePath({ node, getNode });
     createNodeField({
       node,
       name: "slug",

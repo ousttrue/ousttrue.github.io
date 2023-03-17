@@ -4,22 +4,20 @@ date: 3000-01-01
 tags: []
 ---
 
-# About Me
-
 プログラマー。
 
-## [バーチャルキャスト](https://virtualcast.jp/)
+# [バーチャルキャスト](https://virtualcast.jp/)
 
-## [VRM](https://github.com/vrm-c/)
+# [VRM](https://github.com/vrm-c/)
 
-* <https://github.com/vrm-c/vrm.dev> VRMドキュメント
-* <https://github.com/vrm-c/vrm-specification> VRM仕様
-* <https://github.com/vrm-c/UniVRM> (Unity3D) VRM実装
+- https://github.com/vrm-c/vrm.dev VRM ドキュメント
+- https://github.com/vrm-c/vrm-specification VRM 仕様
+- https://github.com/vrm-c/UniVRM (Unity3D) VRM 実装
 
-## [github](https://github.com/ousttrue/)
+# [github](https://github.com/ousttrue/)
 
-* [repositories](/categories/repository/)
+- [repositories](/categories/repository/)
 
-## [qiita](https://qiita.com/ousttrue)
+# [qiita](https://qiita.com/ousttrue)
 
-* [articles](/categories/qiita/)
+- [articles](/categories/qiita/)
