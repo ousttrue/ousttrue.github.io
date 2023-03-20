@@ -2,6 +2,7 @@ import React from "react";
 import { graphql } from "gatsby";
 import Layout from "../components/layout.js";
 import { MDXProvider } from "@mdx-js/react";
+import { Link } from "gatsby";
 
 import PrismSyntaxHighlight from "../components/prism-syntax-highlight";
 
@@ -18,9 +19,21 @@ const components = {
 };
 
 export default function PostTempalte({ data, children }) {
+  const frontmatter = data.mdx.frontmatter;
   return (
     <Layout>
-      <h1>{data.mdx.frontmatter.title}</h1>
+      <h1>{frontmatter.title}</h1>
+      <div className="tags-index">
+        {frontmatter.tags &&
+          frontmatter.tags.length > 0 &&
+          frontmatter.tags.map((tag) => {
+            return (
+              <Link to={`/tags/${tag}/`} itemProp="url">
+                <button>{tag}</button>
+              </Link>
+            );
+          })}
+      </div>
       <MDXProvider components={components}>{children}</MDXProvider>
     </Layout>
   );
@@ -31,6 +44,7 @@ export const query = graphql`
     mdx(id: { eq: $id }) {
       frontmatter {
         title
+        tags
       }
     }
   }

@@ -115,3 +115,24 @@ tag できた。
 gatsby の component システム、`jinja` や `hugo` の template と比べて
 わかりやすくてパワーがあるね。
 `nvim` で作業しているのだけど、 LanguageServer の支援が受けられてすごい快適だ。
+
+## /tags/tag
+
+各 tag から post へのリンク
+
+## /tags
+
+tag の一覧
+
+## /posts/post to tag
+
+各 post から tag へのリンク。
+これだけ難易度が一個上。
+
+# gfm
+
+- https://bel-itigo.com/gatsby-migrate-from-markdown-to-mdx/
+
+# gatsby-transform-json
+
+tag 同士の関連付け実験。
