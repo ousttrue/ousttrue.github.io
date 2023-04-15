@@ -4,10 +4,22 @@ import "../styles/layout.css";
 
 const Header = () => (
   <header>
-    <Link to="/">三次元日誌(gatsby v5)</Link>
-    <Link to="/about/">about</Link>
-    <Link to="/tags/">tags</Link>
-    <Link to="/books/">books</Link>
+    <nav>
+      <ul>
+        <li>
+          <Link to="/">三次元日誌(gatsby v5)</Link>
+        </li>
+        <li>
+          <Link to="/about/">about</Link>
+        </li>
+        <li>
+          <Link to="/tags/">tags</Link>
+        </li>
+        <li>
+          <Link to="/books/">books</Link>
+        </li>
+      </ul>
+    </nav>
   </header>
 );
 

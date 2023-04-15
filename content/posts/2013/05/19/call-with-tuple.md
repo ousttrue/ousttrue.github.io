@@ -4,168 +4,207 @@ date: 2013-05-19
 tags: ["cpp", "msgpack"]
 ---
 
-msgpack-rpc-asio の関数登録と実行
-msgpack-rpc のリクエストは、によると
+(記事復旧のついでに少し修正)
 
-```
-[type, msgid, method, params]
-```
+msgpack-rpcのリクエストは、によると
 
-という形式なので method 名を std::string として params を std::tuple として得られる。
+ `[type, msgid, method, params]`
+
+という形式なのでmethod名をstd::stringとしてparamsをstd::tupleとして得られる。 
 これをサーバ側で如何に呼び出すかについて。
+
 単純な実装だと以下のようにメソッド名をキーにして分岐することになる。
 
-```c++
+```cpp
 int and(int, int);
-class dispatcher { void dispatch(int msgid, const std::string &method,
-const msgpack::object &params) { if(method==“add”){ // 引数展開
-std::tuple t; params.convert(&t);
-// 関数実行
-int result=add(std::get<0>(t), std::get<1>(t));
 
-// 結果のパッキング
-// response [type, msgid, error, result]
-msgpack::sbuffer response;
-msgpack::packer<msgpack::sbuffer> pk(&response);
-pk.pack_array(4)
-pk.pack(1);
-pk.pack(msgid);
-pk.pack_nil();
-pk.pack(result);
+class dispatcher {
 
-// responseを送り返す
+    void dispatch(int msgid, const std::string &method, const msgpack::object &params)
+    {
+        if(method==“add”){ // 引数展開
+            std::tuple t; params.convert(&t);
 
+            // 関数実行
+            int result=add(std::get<0>(t), std::get<1>(t));
 
-} else{ throw “unknown func”; }
+            // 結果のパッキング
+            // response [type, msgid, error, result]
+            msgpack::sbuffer response;
+            msgpack::packer<msgpack::sbuffer> pk(&response);
+            pk.pack_array(4)
+            pk.pack(1);
+            pk.pack(msgid);
+            pk.pack_nil();
+            pk.pack(result);
 
-}
+            // responseを送り返す
+        }
+        else{
+            throw “unknown func”;
+        }
+    }
+
+};
 ```
 
 引数展開、関数呼び出し、結果のパッキングと一連の操作を定型処理として括りだすと下記のように書ける。
 
-```c++
-// ２引数展開用 class dispatcher { // 実行 void dispatcher::dispatch(int
-msgid, const std::string &method, const msgpack::object &params) {
-if(method==“add”){ msgpack::sbuffer response=unpack_exec_pack(msgid,
-add, params);
-// responseを送り返す
+```cpp
+// ２引数展開用
+class dispatcher {
+    // 実行
+    void dispatch(int msgid, const std::string &method, const msgpack::object &params)
+    {
+        if(method==“add”)
+        {
+            msgpack::sbuffer response=unpack_exec_pack(msgid, add, params);
 
-
-} else{ throw “unknown func”; }
-
-}
-// ヘルパー template msgpack::sbuffer unpack_exec_pack(int msgid,
-R(*f)(A1, A2), const msgpack::object &params) { // 引数展開 std::tuple
-t; params.convert(&t);
-// 関数実行
-R result=add(std::get<0>(t), std::get<1>(t));
-
-// 結果のパッキング
-// response [type, msgid, error, result]
-msgpack::sbuffer response;
-msgpack::packer<msgpack::sbuffer> pk(&response);
-pk.pack_array(4)
-pk.pack(1);
-pk.pack(msgid);
-pk.pack_nil();
-pk.pack(result);
-
-return response;
-
-}
-```
-
-１引数関数から９引数くらいまでと返り値 void 版を作ってやればだいたいの関数を登録することができる。
-さらに 関数の登録と実行を分けるべく次のように拡張した。
-
-```c++
-class
-dispatcher { std::map m_map;
-// 実行 void dispatch(int msgid, const std::string &method, const
-msgpack::object &params) { std::function f=m_map.find(method);
-if(f!=m_map.end()){ // 関数実行 msgpack::sbuffer resonse=f(msgid,
-params);
-// responseを送り返す
-
-
-} else{ throw “unknown func”; }
-
-}
-// 登録 template void add_handler(const std::string &method, R(*f)(A1,
-A2)) {
-m_map[method]=f->msgpack::sbuffer{
-// 引数展開
-std::tuple<A1, A2> t;
-params.convert(&t);
-
-// 実行
-R result=f(std::get<0>(t), std::get<1>(t));
-
-// 結果のパッキング
-// response [type, msgid, error, result]
-msgpack::sbuffer response;
-msgpack::packer<msgpack::sbuffer> pk(&response);
-pk.pack_array(4)
-pk.pack(1);
-pk.pack(msgid);
-pk.pack_nil();
-pk.pack(result);
-
-return response;
-
-
+            // responseを送り返す
+        }
+        else{
+            throw “unknown func”;
+        }
+    }
 };
 
+// ヘルパー
+template msgpack::sbuffer unpack_exec_pack(
+    int msgid, R(*f)(A1, A2), const msgpack::object &params)
+{
+    // 引数展開
+    std::tuple t; params.convert(&t);
+
+    // 関数実行
+    R result=add(std::get<0>(t), std::get<1>(t));
+
+    // 結果のパッキング
+    // response [type, msgid, error, result]
+    msgpack::sbuffer response;
+    msgpack::packer<msgpack::sbuffer> pk(&response);
+    pk.pack_array(4)
+    pk.pack(1);
+    pk.pack(msgid);
+    pk.pack_nil();
+    pk.pack(result);
+
+    return response;
 }
 ```
 
-`msgpack->引数展開->c++関数呼び出し->msgpack` への一連の操作を 同一のシグネチャの `std::function` に封じ込めることができる。
-次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。
-まず、std::function から実装。
+１引数関数から９引数くらいまでと返り値void版を作ってやればだいたいの関数を登録することができる。
 
-```
-c++   // std::function用   template<typname R, typename A1, typename A2>   void add_handler(contt std::string &method, std::function<R(A1, A2)> f)   {     // 中身同じ   }
+さらに 関数の登録と実行を分けるべく次のように拡張した。
+
+```cpp
+class dispatcher {
+    std::map m_map;
+
+    // 実行
+    void dispatch(int msgid, const std::string &method, const msgpack::object &params)
+    {
+        std::function f=m_map.find(method);
+        if(f!=m_map.end()){
+            // 関数実行
+            msgpack::sbuffer resonse=f(msgid, params);
+
+            // responseを送り返す
+        }
+        else{
+            throw “unknown func”;
+        }
+    }
+
+    // 登録
+    template void add_handler(const std::string &method, R(*f)(A1, A2))
+    {
+        m_map[method]=f->msgpack::sbuffer{
+
+            // 引数展開
+            std::tuple<A1, A2> t;
+            params.convert(&t);
+
+            // 実行
+            R result=f(std::get<0>(t), std::get<1>(t));
+
+            // 結果のパッキング
+            // response [type, msgid, error, result]
+            msgpack::sbuffer response;
+            msgpack::packer<msgpack::sbuffer> pk(&response);
+            pk.pack_array(4)
+            pk.pack(1);
+            pk.pack(msgid);
+            pk.pack_nil();
+            pk.pack(result);
+
+            return response;
+        };
+    }
+};
 ```
 
-呼び出し時に std::function を経由するようにすればあらゆる関数呼び出しを登録できる。
-例えば、ラムダ関数も以下のように登録できる。
+`msgpack->引数展開->cpp関数呼び出し->msgpack` への一連の操作を 同一のシグネチャの`std::function` に 封じ込めることができる。
 
+次にこれを関数ポインタ以外に関数オブジェクトを受け付けるように拡張したい。 まず、std::functionから実装。
+
+```cpp
+// std::function用
+template<typname R, typename A1, typename A2>
+void add_handler(contt std::string &method, std::function<R(A1, A2)> f)
+{
+    // 中身同じ
+}
 ```
-c++ // ラムダ登録 dispatcher d; d.add_handler("add",      std::function<int(int, int)>(       [](int a, int b)->int{          return a+b;        }));
+
+呼び出し時に `std::function` を経由するようにすればあらゆる関数呼び出しを登録できる。 例えば、ラムダ関数も以下のように登録できる。
+
+```cpp
+// ラムダ登録
+dispatcher d;
+d.add_handler("add", std::function<int(int, int)>(
+    [](int a, int b)->int{ return a+b; }
+));
 ```
 
 しかし、どうせなら
 
-```
-c++ dispatcher d; d.add_handler("add",      [](int a, int b)->int{        return a+b;      });
+```cpp
+dispatcher d;
+d.add_handler("add", [](int a, int b)->int{ return a+b; });
 ```
 
 と書きたい。
+
 となると下記のような登録関数を書かねばならぬが関数のシグネチャがわからないので中身を記述することができない。
 
-```c++
+```cpp
 // ラムダの登録
 template<typname F>
-void add_handler(const std::string &method, F f)   {     // 型がわからぬ   }
+void add_handler(const std::string &method, F f)
+{
+    // 型がわからぬ
+}
 ```
 
-ここで関数オブジェクトの operator()へのポインタを型推論することで F のシグネチャを得ることができる。
+ ここで関数オブジェクトのoperator()へのポインタを型推論することでFのシグネチャを得ることができる。
 
-```c++
-template void add_handler(const std::string &method, F f,
-R(C::*)(A1, A2)const) { // 中身同じ }
-// ラムダの登録 // std::functionも受けられる // std::bindは無理だった //
-```
+```cpp
+ template
+ void add_handler(const std::string &method, F f, R(C::*)(A1, A2)const) {
+     // 中身同じ
+ }
+// ラムダの登録
+// std::functionも受けられる
+// std::bindは無理だった
+// operator()がひとつしかない関数オブジェクトを受け付けられる？
 
-operator()がひとつしかない関数オブジェクトを受け付けられる？
-
-```c++
-template
-void add_handler(const std::string &method, F f) {
-// 上の関数で型推論させる
-add_handler(method, f, &F::operator()); }
+template void add_handler(const std::string &method, F f)
+{
+    // 上の関数で型推論させる
+    add_handler(method, f, &F::operator());
+}
 ```
 
 これでめでたくラムダも直接登録できるようになった。
-ただし、operator()のオーバーロードが解決できないらしく std::bind が登録できない。
-std::bind に関しては、ラムダで代用できるし std::function でラップできるのでおいておくことにした。
+ただし、operator()のオーバーロードが解決できないらしくstd::bindが登録できない。 std::bindに関しては、ラムダで代用できるしstd::functionでラップできるのでおいておくことにした。
+

@@ -4,7 +4,7 @@ date: 2017-06-03
 tags: ['cpp', 'msgpack']
 ---
 
-最近のC++(-std=c++14)でMessagePack-RPCを再実装してみる。
+最近の `C++(-std=c++14)` で `MessagePack-RPC` を再実装してみる。
 
 # 基本設計
 
@@ -93,7 +93,6 @@ REQUIRE(3 == msgpack_procedurecall([](int a, int b){ return a+b; }, 1, 2));
 ステップ毎に説明しようと思っていたが分かりにくいので、コードにコメントを追加することにした。
 
 ```cpp
-make_procedurecall
 template<typename F, typename R, typename C, typename ...AS, std::size_t... IS>
 procedurecall _make_procedurecall(const F &f
     , R(C::*)(AS...)const // template引数R, C, ASを受け付けるためのダミー
