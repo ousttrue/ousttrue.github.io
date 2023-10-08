@@ -44,7 +44,20 @@ end
 
 function Path:get_stem_ext()
   return self.path:match "(.-)%.([^%.]*)$"
-  -- return stem, ext
+end
+
+---@return string?
+---@return string?
+function Path:get_dir_base()
+  return self.path:match "(.-)/([^/]*)$"
+end
+
+---@return Path?
+function Path:parent()
+  local dir, _ = self:get_dir_base()
+  if dir then
+    return Path.new(dir)
+  end
 end
 
 function Path:rmdir()
@@ -52,16 +65,14 @@ function Path:rmdir()
 end
 
 ---@param path Path
----@return Path?
+---@return Path
 function Path:make_relative_path(path)
   local base = self.path .. "/"
   local sub = string.sub(path.path, 1, #self.path + 1)
-  if sub == base then
-    local ret = string.sub(path.path, #base + 1)
-    -- print(base, path, sub, sub == base, ret)
-    return Path.new(ret)
-  end
-  assert(false)
+  assert(sub == base)
+  local ret = string.sub(path.path, #base + 1)
+  -- print(base, path, sub, sub == base, ret)
+  return Path.new(ret)
 end
 
 ---@param callback fun(string)
@@ -86,6 +97,48 @@ function Path:traverse(callback, indent)
       end
     end
   end
+end
+
+---@return string?
+function Path:read()
+  local r = io.open(self.path, "r")
+  assert(r, "read: fail to open: " .. self.path)
+  if r then
+    local content = r:read "*a"
+    r:close()
+    return content
+  end
+end
+
+---@param data string
+function Path:write(data)
+  local dir = self:parent()
+  assert(dir)
+  if not dir:is_exists() then
+    dir:mkdir()
+  end
+
+  local w = io.open(self.path, "w")
+  assert(w, "write: fail to open: " .. self.path)
+  if w then
+    w:write(data)
+    w:close()
+  end
+end
+
+function Path:mkdir()
+  print("mkdir", self.path)
+  while true do
+    local parent = self:parent()
+    if not parent then
+      break
+    end
+    if parent:is_exists() then
+      break
+    end
+    parent:mkdir()
+  end
+  uv.fs_mkdir(self.path, tonumber("755", 8))
 end
 
 return Path
