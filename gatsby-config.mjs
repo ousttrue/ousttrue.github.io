@@ -1,4 +1,9 @@
-module.exports = {
+import * as remark_gfm from 'remark-gfm'
+import { dirname } from "path"
+import { fileURLToPath } from "url"
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+const config = {
     siteMetadata: {
         title: "三次元日誌(Gatsby)",
         author: "ousttrue",
@@ -18,7 +23,7 @@ module.exports = {
                 mdxOptions: {
                     remarkPlugins: [
                         // Add GitHub Flavored Markdown (GFM) support
-                        require(`remark-gfm`),
+                        remark_gfm,
                     ],
                 },
             },
@@ -46,3 +51,5 @@ module.exports = {
         },
     ],
 };
+
+export default config;
