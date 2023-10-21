@@ -10,7 +10,6 @@ const config = {
         description: "",
     },
     plugins: [
-        `gatsby-remark-prismjs`,
         {
             resolve: `gatsby-plugin-mdx`,
             options: {
@@ -18,6 +17,9 @@ const config = {
                 gatsbyRemarkPlugins: [
                     {
                         resolve: `gatsby-remark-prismjs`,
+                        options: {
+                            noInlineHighlight: true,
+                        },
                     },
                 ],
                 mdxOptions: {
