@@ -8,6 +8,8 @@ add_lua_path "lua_modules/share/lua/5.1"
 
 local yaml = require "tinyyaml"
 local etlua = require "etlua"
+local markdown = require "markdown"
+
 local INDEX = etlua.compile [[<!doctype html>
 <html>
   <head>
@@ -101,13 +103,11 @@ function Site:process(src)
     assert(frontmatter, string.format("%s\n%s", src, content:sub(1, 32)))
     frontmatter.path = dst_rel.path
 
-    -- TODO: markdown to html
-
     if content then
       dst:write(CONTENT {
         title = frontmatter.title,
         date = frontmatter.date,
-        content = body,
+        content = markdown(body),
       })
       table.insert(self.articles, frontmatter)
     end
