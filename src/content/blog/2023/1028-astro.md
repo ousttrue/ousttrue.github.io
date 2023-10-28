@@ -65,20 +65,8 @@ const blogCollection = defineCollection({
 
 結果、 `svelte` や `tailwind` といった知らないライブラリーが入ったが、
 動いた。
-
-# `.astro` の nvim 設定
-- lap
-- syntax highlight
-
-# gh-action => gh-pages
-
-build で エラーに遭遇。
-
-```
-> npm run build
-
-`getStaticPaths()` function is required for dynamic routes. Make sure that you `export` a `getStaticPaths` function from your dynamic route.
-```
+のだが gh-pages に deploy したら動いてなかった。
+どうも `SSR` 向けの `theme` らしい。
 
 ```js
 // astron.config.mjs
@@ -86,33 +74,25 @@ build で エラーに遭遇。
     adapter: vercel(),
 ```
 
-とかで `npm build` が通ったと思いきやうまくいってない。
-`npm run dev` のほうが動かなくなった。
+```
+> npm run build
 
-https://github.com/withastro/astro/issues/6768
-
-## SSG と SSR ?
+`getStaticPaths()` function is required for dynamic routes. Make sure that you `export` a `getStaticPaths` function from your dynamic route.
+```
 
 - https://docs.astro.build/ja/guides/server-side-rendering/
 
-## getStaticPaths()
-
 https://docs.astro.build/ja/core-concepts/routing/#%E9%9D%99%E7%9A%84ssg%E3%83%A2%E3%83%BC%E3%83%89
+
+なんとなく動いた。
 
 # memo
 
-web frontend は大変そうなので避けていたのだが、
-`JSX` のよさみは腑に落ちた。
+しかし素の JSX(tsx) を練習したいので、
+他のにするかもしぬ。
+(astro は `.astro` 形式)
 
-`JSX` + `ESModule` + `TypeScript` => `Vite`
+https://vike.dev/
 
-という組み合わせが気に入ったのである。
-JSX を LanguageServer の支援で型チェックされる 
-HTML Template として使うというのは快適そう。
-そういう観点から `A-Frame` より `react-xr` やってみようと。
-
-ただ、完全に動くように環境を整備するのは骨が降れる。
-動くけどエディタのlintが正しくない、とかその逆になってしまいがち。
-実際、 `*.astro` の import でエラー表示が出ている。
-ビルドの設定と language-server の設定が二重になってしまうところがある。
+が気になっている。
 
