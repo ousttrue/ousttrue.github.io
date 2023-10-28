@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en" class="astro-BVZIHDZO">
+	<head>
+		<!-- Use Google Fonts, if you don't wanna prefer a self-hosted version --><!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet"> --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MongoDBでCRUD</title>
+<meta name="title" content="MongoDBでCRUD">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="shortcut icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<!-- Open Graph Tags (Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="MongoDBでCRUD">
+
+
+
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="MongoDBでCRUD">
+
+
+
+
+
+<script>
+  const theme = (() => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  })();
+
+  if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
+  }
+</script>
+		
+	<link rel="stylesheet" href="/_astro/about.6111bb3a.css" />
+<link rel="stylesheet" href="/_astro/about.657f8f57.css" />
+<link rel="stylesheet" href="/_astro/about.ee60a110.css" />
+<link rel="stylesheet" href="/_astro/about.dcb84f3d.css" /><script type="module" src="/_astro/hoisted.e6960f2c.js"></script></head>
+
+	<body class="astro-BVZIHDZO">
+		<header class="header astro-3EF6KSR2">
+    <div class="header__logo astro-3EF6KSR2">
+        <a href="/" class="avatar astro-3EF6KSR2">
+            <img class="header__logo-img astro-3EF6KSR2" src="/assets/logo.svg" alt="Astro logo">
+        </a>
+    </div>
+    <div class="header__meta flex-1 astro-3EF6KSR2">
+        <h3 class="header__title dark:text-theme-dark-secondary astro-3EF6KSR2">
+            <a href="" class="astro-3EF6KSR2">三次元日誌(astro)</a>
+        </h3>
+        <div class="header__meta-more flex astro-3EF6KSR2">
+            <p class="header__desc astro-3EF6KSR2">
+                Crisp, minimal, personal blog theme for Astro
+            </p>
+            <nav class="header__nav flex astro-3EF6KSR2">
+                <ul class="header__ref-list astro-3EF6KSR2">
+                    <li class="astro-3EF6KSR2">
+                        <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var r=(i,c,n)=>{let s=async()=>{await(await i())()},t=new IntersectionObserver(e=>{for(let o of e)if(o.isIntersecting){t.disconnect(),s();break}});for(let e of n.children)t.observe(e)};(self.Astro||(self.Astro={})).visible=r;window.dispatchEvent(new Event("astro:visible"));})();;(()=>{var d;{let p={0:t=>u(t),1:t=>l(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(l(t)),5:t=>new Set(l(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t)},h=t=>{let[e,n]=t;return e in p?p[e](n):void 0},l=t=>t.map(h),u=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([e,n])=>[e,h(n)]));customElements.get("astro-island")||customElements.define("astro-island",(d=class extends HTMLElement{constructor(){super(...arguments);this.hydrate=async()=>{var i;if(!this.hydrator||!this.isConnected)return;let e=(i=this.parentElement)==null?void 0:i.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let n=this.querySelectorAll("astro-slot"),o={},a=this.querySelectorAll("template[data-astro-template]");for(let r of a){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of n){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("name")||"default"]=r.innerHTML)}let c;try{c=this.hasAttribute("props")?u(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",y=this.getAttribute("component-export");throw y&&(s+=` (export ${y})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}await this.hydrator(this)(this.Component,c,o,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))}}connectedCallback(){!this.hasAttribute("await-children")||this.firstChild?this.childrenConnectedCallback():new MutationObserver((e,n)=>{n.disconnect(),setTimeout(()=>this.childrenConnectedCallback(),0)}).observe(this,{childList:!0})}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}start(){let e=JSON.parse(this.getAttribute("opts")),n=this.getAttribute("client");if(Astro[n]===void 0){window.addEventListener(`astro:${n}`,()=>this.start(),{once:!0});return}Astro[n](async()=>{let o=this.getAttribute("renderer-url"),[a,{default:c}]=await Promise.all([import(this.getAttribute("component-url")),o?import(o):()=>()=>{}]),i=this.getAttribute("component-export")||"default";if(!i.includes("."))this.Component=a[i];else{this.Component=a;for(let r of i.split("."))this.Component=this.Component[r]}return this.hydrator=c,this.hydrate},e,this)}attributeChangedCallback(){this.hydrate()}},d.observedAttributes=["props"],d))}})();</script><astro-island uid="2iKzVC" component-url="/_astro/SearchBtn.984510f3.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;SearchBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path fill-rule="evenodd" clip-rule="evenodd" d="M16.2071 4.89344C19.0923 7.77862 19.3131 12.3193 16.8693 15.4578C16.8846 15.4713 16.8996 15.4854 16.9143 15.5L21.1569 19.7427C21.5474 20.1332 21.5474 20.7664 21.1569 21.1569C20.7664 21.5474 20.1332 21.5474 19.7427 21.1569L15.5 16.9143C15.4854 16.8996 15.4713 16.8846 15.4578 16.8693C12.3193 19.3131 7.77862 19.0923 4.89344 16.2071C1.76924 13.083 1.76924 8.01763 4.89344 4.89344C8.01763 1.76924 13.083 1.76924 16.2071 4.89344ZM14.7929 14.7929C17.1361 12.4498 17.1361 8.6508 14.7929 6.30765C12.4498 3.96451 8.6508 3.96451 6.30765 6.30765C3.96451 8.6508 3.96451 12.4498 6.30765 14.7929C8.6508 17.1361 12.4498 17.1361 14.7929 14.7929Z" fill="currentColor"></path></svg></button></astro-island>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" class="astro-3EF6KSR2"></path>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="/rss.xml" title="RSS" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M4 11a9 9 0 0 1 9 9" class="astro-3EF6KSR2"></path>
+                                <path d="M4 4a16 16 0 0 1 16 16" class="astro-3EF6KSR2"></path>
+                                <circle cx="5" cy="19" r="1" class="astro-3EF6KSR2"></circle>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <astro-island uid="h8S6z" component-url="/_astro/ModeSwitcherBtn.0ddc5d6d.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;ModeSwitcherBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle> <line x1="12" y1="1" x2="12" y2="3"></line> <line x1="12" y1="21" x2="12" y2="23"></line> <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line> <line x1="1" y1="12" x2="3" y2="12"></line> <line x1="21" y1="12" x2="23" y2="12"></line> <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button></astro-island>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+		<main class="astro-BVZIHDZO">
+			<article class="astro-BVZIHDZO">
+				<div class="hero-image astro-BVZIHDZO">
+					
+				</div>
+				<div class="prose astro-BVZIHDZO">
+					<div class="title astro-BVZIHDZO">
+						<div class="date astro-BVZIHDZO">
+							<time datetime="2015-11-21T00:00:00.000Z">
+	Nov 21, 2015
+</time>
+							
+						</div>
+						<h1 class="astro-BVZIHDZO">MongoDBでCRUD</h1>
+						<hr class="astro-BVZIHDZO">
+					</div>
+					
+	<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #e1e4e8">“シングルページWebアプリケーション”に説明されている</span></span>
+<span class="line"><span style="color: #e1e4e8">mongodbをバックエンドに、node.js + expressをフロントエンドにする構成のおさらい。</span></span>
+<span class="line"><span style="color: #e1e4e8">MongoDB &#x3C;-> node.js Express &#x3C;-> Browser</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">グローバルなnpmパッケージ</span></span>
+<span class="line"><span style="color: #e1e4e8">> npm install -g gulp typescript tsd bower</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">Windowsの場合、</span></span>
+<span class="line"><span style="color: #e1e4e8">%USERPROFILE%\AppData\Roaming\npm</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">にインストールされるのでパスを通しておく。</span></span>
+<span class="line"><span style="color: #e1e4e8">Expressの準備</span></span>
+<span class="line"><span style="color: #e1e4e8">app.js</span></span>
+<span class="line"><span style="color: #e1e4e8">> mkdir mongocrud</span></span>
+<span class="line"><span style="color: #e1e4e8">> cd mongocrud</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> npm init -y</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> npm install express --save</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// app.js</span></span>
+<span class="line"><span style="color: #e1e4e8">var http=require('http');</span></span>
+<span class="line"><span style="color: #e1e4e8">var express=require('express');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">var port=process.env.port || 3000;</span></span>
+<span class="line"><span style="color: #e1e4e8">var app=express();</span></span>
+<span class="line"><span style="color: #e1e4e8">var server=http.createServer(app);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/', function(request, response){</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.send('Hello Express');</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">server.listen(port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">起動</span></span>
+<span class="line"><span style="color: #e1e4e8">> node app.js</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">http://localhost:3000</span></span>
+<span class="line"><span style="color: #e1e4e8">で動作を確認する。</span></span>
+<span class="line"><span style="color: #e1e4e8">loggerや静的ファイル提供などのミドルウェアを追加</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> npm install body-parser method-override connect-logger errorhandler serve-static --save</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// app.js</span></span>
+<span class="line"><span style="color: #e1e4e8">// app.getの前</span></span>
+<span class="line"><span style="color: #e1e4e8">var bodyparser=require('body-parser');</span></span>
+<span class="line"><span style="color: #e1e4e8">var methodoverride = require('method-override');</span></span>
+<span class="line"><span style="color: #e1e4e8">var logger = require('connect-logger');</span></span>
+<span class="line"><span style="color: #e1e4e8">var errorhandler = require('errorhandler');</span></span>
+<span class="line"><span style="color: #e1e4e8">var servestatic = require('serve-static');</span></span>
+<span class="line"><span style="color: #e1e4e8">var serve_dir=__dirname + "/client";</span></span>
+<span class="line"><span style="color: #e1e4e8">console.log("serve %s", serve_dir);</span></span>
+<span class="line"><span style="color: #e1e4e8">app</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(bodyparser())</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(methodoverride())</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(logger())</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(errorhandler({</span></span>
+<span class="line"><span style="color: #e1e4e8">    dumpExceptioons: true,</span></span>
+<span class="line"><span style="color: #e1e4e8">    showStack: true</span></span>
+<span class="line"><span style="color: #e1e4e8">}));</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(servestatic(serve_dir))</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulpで静的なファイルを’./build/client’下にコピーするタスクを定義する</span></span>
+<span class="line"><span style="color: #e1e4e8"># gulpfile.coffeeにタスクを追加</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8"># client</span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'client', -></span></span>
+<span class="line"><span style="color: #e1e4e8">    gulp.src config.src_client</span></span>
+<span class="line"><span style="color: #e1e4e8">        .pipe gulp.dest config.dst_client</span></span>
+<span class="line"><span style="color: #e1e4e8">        .pipe browserSync.stream()</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8"># tasks</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'watch', -></span></span>
+<span class="line"><span style="color: #e1e4e8">    gulp.watch config.src_ts, ['ts']</span></span>
+<span class="line"><span style="color: #e1e4e8">    gulp.watch config.src_client, ['client']</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulpでサーバー起動とブラウザの自動オープンタスクを定義する</span></span>
+<span class="line"><span style="color: #e1e4e8">いろいろ入用になるのでgulpを準備する。</span></span>
+<span class="line"><span style="color: #e1e4e8">まずは、nodemonとbrowser-syncを導入して</span></span>
+<span class="line"><span style="color: #e1e4e8">app.js起動と起動したアプリをブラウザで自動で開くタスクを定義する。</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// gulpfile.js</span></span>
+<span class="line"><span style="color: #e1e4e8">var gulp = require('gulp');</span></span>
+<span class="line"><span style="color: #e1e4e8">var $ = require("gulp-load-plugins")();</span></span>
+<span class="line"><span style="color: #e1e4e8">var browserSync = require("browser-sync").create();</span></span>
+<span class="line"><span style="color: #e1e4e8">var port = 5000;</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task('serve', function () {</span></span>
+<span class="line"><span style="color: #e1e4e8">    $.nodemon({</span></span>
+<span class="line"><span style="color: #e1e4e8">        script: 'app.js',</span></span>
+<span class="line"><span style="color: #e1e4e8">        exp: 'js',</span></span>
+<span class="line"><span style="color: #e1e4e8">        ignore: [],</span></span>
+<span class="line"><span style="color: #e1e4e8">        env: {</span></span>
+<span class="line"><span style="color: #e1e4e8">            port: port</span></span>
+<span class="line"><span style="color: #e1e4e8">        }</span></span>
+<span class="line"><span style="color: #e1e4e8">    })</span></span>
+<span class="line"><span style="color: #e1e4e8">    .on('restart', function () { browserSync.reload(); });</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task('browser-sync', ['serve'], function () {</span></span>
+<span class="line"><span style="color: #e1e4e8">    browserSync.init({</span></span>
+<span class="line"><span style="color: #e1e4e8">        proxy: "localhost:" + port</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task('default', ['browser-sync']);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">BrowserSyncのReloadが動くには出力がhtmlである必要がある(bodyタグの中に細工をするため)。</span></span>
+<span class="line"><span style="color: #e1e4e8">// app.jsの修正</span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/', function(request, response){</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.setHeader('content-type', 'text/html');</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.send('&#x3C;html>&#x3C;head>&#x3C;/head>&#x3C;body>Hello html&#x3C;/body>&#x3C;/html>');</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> gulp</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">でnodemonが起動してブラウザが自動で開始される。</span></span>
+<span class="line"><span style="color: #e1e4e8">app.jsの内容を変えるとブラウザがリロードされる。</span></span>
+<span class="line"><span style="color: #e1e4e8">が、リロードが速すぎて内容が更新されないことが判明。</span></span>
+<span class="line"><span style="color: #e1e4e8">リロードを遅延させる策を講じる。</span></span>
+<span class="line"><span style="color: #e1e4e8">// app.jsの最後尾に追加</span></span>
+<span class="line"><span style="color: #e1e4e8">console.log('start %d', port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">app.jsからのコンソール出力を監視する。</span></span>
+<span class="line"><span style="color: #e1e4e8">// gulpfile.jsの修正</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">    $.nodemon({</span></span>
+<span class="line"><span style="color: #e1e4e8">        script: config.app_entry,</span></span>
+<span class="line"><span style="color: #e1e4e8">        exp: 'js',</span></span>
+<span class="line"><span style="color: #e1e4e8">        ignore: [],</span></span>
+<span class="line"><span style="color: #e1e4e8">        env: {</span></span>
+<span class="line"><span style="color: #e1e4e8">            port: config.app_port</span></span>
+<span class="line"><span style="color: #e1e4e8">        },</span></span>
+<span class="line"><span style="color: #e1e4e8">        stdout: false // &#x3C;- 必要</span></span>
+<span class="line"><span style="color: #e1e4e8">    })</span></span>
+<span class="line"><span style="color: #e1e4e8">    //.on('restart', function () { browserSync.reload(); });</span></span>
+<span class="line"><span style="color: #e1e4e8">    .on('readable', function(){</span></span>
+<span class="line"><span style="color: #e1e4e8">        this.stdout.on('data', function(chunk){</span></span>
+<span class="line"><span style="color: #e1e4e8">            if (/^start /.test(chunk)){</span></span>
+<span class="line"><span style="color: #e1e4e8">                console.log('reloading...');</span></span>
+<span class="line"><span style="color: #e1e4e8">                browserSync.reload();</span></span>
+<span class="line"><span style="color: #e1e4e8">            }</span></span>
+<span class="line"><span style="color: #e1e4e8">            process.stdout.write(chunk);</span></span>
+<span class="line"><span style="color: #e1e4e8">        });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulpfile.jsをgulpfile.coffeeにする</span></span>
+<span class="line"><span style="color: #e1e4e8">gulpcrud> npm install coffee-script -D</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulpfile.jsを書き換える。gulp-3.9.0では既にcoffee script対応が成されているようで、</span></span>
+<span class="line"><span style="color: #e1e4e8">gulpfile.jsの拡張子を変えてgulpfile.coffeeとリネームして中身を書き換えてから</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> gulp</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">としたら特にオプション等を指定することなくgulpはgulpfile.coffeeを見つけてくれて動いた。</span></span>
+<span class="line"><span style="color: #e1e4e8"># gulpfile.coffee</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp = require('gulp');</span></span>
+<span class="line"><span style="color: #e1e4e8">$ = require("gulp-load-plugins")();</span></span>
+<span class="line"><span style="color: #e1e4e8">browserSync = require("browser-sync").create();</span></span>
+<span class="line"><span style="color: #e1e4e8">port = 5000;</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'serve', -></span></span>
+<span class="line"><span style="color: #e1e4e8">    $.nodemon({</span></span>
+<span class="line"><span style="color: #e1e4e8">        script: 'app.js',</span></span>
+<span class="line"><span style="color: #e1e4e8">        exp: 'js',</span></span>
+<span class="line"><span style="color: #e1e4e8">        ignore: [],</span></span>
+<span class="line"><span style="color: #e1e4e8">        env: {</span></span>
+<span class="line"><span style="color: #e1e4e8">            port: port</span></span>
+<span class="line"><span style="color: #e1e4e8">        }</span></span>
+<span class="line"><span style="color: #e1e4e8">    })</span></span>
+<span class="line"><span style="color: #e1e4e8">    .on 'readable', -></span></span>
+<span class="line"><span style="color: #e1e4e8">        this.stdout.on 'data', (chunk) -></span></span>
+<span class="line"><span style="color: #e1e4e8">            if (/^start /.test(chunk))</span></span>
+<span class="line"><span style="color: #e1e4e8">                console.log('reloading...')</span></span>
+<span class="line"><span style="color: #e1e4e8">                browserSync.reload()</span></span>
+<span class="line"><span style="color: #e1e4e8">            process.stdout.write(chunk);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'browser-sync', ['serve'], -></span></span>
+<span class="line"><span style="color: #e1e4e8">    browserSync.init({</span></span>
+<span class="line"><span style="color: #e1e4e8">        proxy: "localhost:" + port</span></span>
+<span class="line"><span style="color: #e1e4e8">    })</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task('default', ['browser-sync']);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">TypeScriptにする</span></span>
+<span class="line"><span style="color: #e1e4e8">app.jsをsrc/app.tsに移動する。</span></span>
+<span class="line"><span style="color: #e1e4e8">// src/app.ts</span></span>
+<span class="line"><span style="color: #e1e4e8">declare function require(name: string):any;</span></span>
+<span class="line"><span style="color: #e1e4e8">declare var process;</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">var http=require('http');</span></span>
+<span class="line"><span style="color: #e1e4e8">var express=require('express');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">var port=process.env.port || 3000;</span></span>
+<span class="line"><span style="color: #e1e4e8">var app=express();</span></span>
+<span class="line"><span style="color: #e1e4e8">var server=http.createServer(app);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/', function(request, response){</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.setHeader('content-type', 'text/html');</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.send('&#x3C;html>&#x3C;head>&#x3C;/head>&#x3C;body>Hello&#x3C;/body>&#x3C;/html>');</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">server.listen(port);</span></span>
+<span class="line"><span style="color: #e1e4e8">console.log('start %d', port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">コンパイルが通るようにアンビエント宣言を追加した。</span></span>
+<span class="line"><span style="color: #e1e4e8">gulpにコンパイルタスクを定義する。</span></span>
+<span class="line"><span style="color: #e1e4e8">serveタスクの前にtsタスクを実行し、</span></span>
+<span class="line"><span style="color: #e1e4e8">tsファイルの更新をwatchしてtsタスクを起動するように調整した。</span></span>
+<span class="line"><span style="color: #e1e4e8"># gulpfile.coffee</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp = require('gulp');</span></span>
+<span class="line"><span style="color: #e1e4e8">$ = require("gulp-load-plugins")();</span></span>
+<span class="line"><span style="color: #e1e4e8">browserSync = require("browser-sync").create();</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">config = {</span></span>
+<span class="line"><span style="color: #e1e4e8">    src_ts: './src/**/*.ts',</span></span>
+<span class="line"><span style="color: #e1e4e8">    dst_js_dir: './build/js',</span></span>
+<span class="line"><span style="color: #e1e4e8">    dst_watch: './build/**/*.js',</span></span>
+<span class="line"><span style="color: #e1e4e8">    app_entry: './build/js/app.js',</span></span>
+<span class="line"><span style="color: #e1e4e8">    app_port: 5000</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8"># compile typescript</span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'ts', -></span></span>
+<span class="line"><span style="color: #e1e4e8">  gulp.src config.src_ts</span></span>
+<span class="line"><span style="color: #e1e4e8">    .pipe $.typescript({</span></span>
+<span class="line"><span style="color: #e1e4e8">      target: 'ES6'</span></span>
+<span class="line"><span style="color: #e1e4e8">      removeComments: true</span></span>
+<span class="line"><span style="color: #e1e4e8">    }).js</span></span>
+<span class="line"><span style="color: #e1e4e8">    .pipe gulp.dest config.dst_js_dir</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8"># start js app</span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'serve', ['ts'], -></span></span>
+<span class="line"><span style="color: #e1e4e8">    $.nodemon({</span></span>
+<span class="line"><span style="color: #e1e4e8">        script: config.app_entry,</span></span>
+<span class="line"><span style="color: #e1e4e8">        exp: 'js',</span></span>
+<span class="line"><span style="color: #e1e4e8">        ignore: [],</span></span>
+<span class="line"><span style="color: #e1e4e8">        env: {</span></span>
+<span class="line"><span style="color: #e1e4e8">            port: config.app_port</span></span>
+<span class="line"><span style="color: #e1e4e8">        },</span></span>
+<span class="line"><span style="color: #e1e4e8">        stdout: false</span></span>
+<span class="line"><span style="color: #e1e4e8">    })</span></span>
+<span class="line"><span style="color: #e1e4e8">    #.on 'restart', -></span></span>
+<span class="line"><span style="color: #e1e4e8">    #    browserSync.reload();</span></span>
+<span class="line"><span style="color: #e1e4e8">    .on 'readable', -></span></span>
+<span class="line"><span style="color: #e1e4e8">        this.stdout.on 'data', (chunk) -></span></span>
+<span class="line"><span style="color: #e1e4e8">            if (/^start /.test(chunk))</span></span>
+<span class="line"><span style="color: #e1e4e8">                console.log('reloading...')</span></span>
+<span class="line"><span style="color: #e1e4e8">                browserSync.reload()</span></span>
+<span class="line"><span style="color: #e1e4e8">            process.stdout.write(chunk);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8"># start browser-sync</span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'browser-sync', ['serve'], -></span></span>
+<span class="line"><span style="color: #e1e4e8">    browserSync.init({</span></span>
+<span class="line"><span style="color: #e1e4e8">        proxy: "http://localhost:" + config.app_port</span></span>
+<span class="line"><span style="color: #e1e4e8">    })</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8"># tasks</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'watch', -></span></span>
+<span class="line"><span style="color: #e1e4e8">    gulp.watch config.src_ts, ['ts']</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task('default', ['watch', 'browser-sync']);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">typescriptを型安全にする</span></span>
+<span class="line"><span style="color: #e1e4e8">コンパイラオプションを定義するtsconfig.jsonを生成する(要tsc-1.6以上)。</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> tsc --init</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">手で作ってもよし</span></span>
+<span class="line"><span style="color: #e1e4e8">tsconfig.json</span></span>
+<span class="line"><span style="color: #e1e4e8">{</span></span>
+<span class="line"><span style="color: #e1e4e8">    "compilerOptions": {</span></span>
+<span class="line"><span style="color: #e1e4e8">        "module": "commonjs",</span></span>
+<span class="line"><span style="color: #e1e4e8">        "target": "es5",</span></span>
+<span class="line"><span style="color: #e1e4e8">        "noImplicitAny": true,</span></span>
+<span class="line"><span style="color: #e1e4e8">        "outDir": "build",</span></span>
+<span class="line"><span style="color: #e1e4e8">        "rootDir": ".",</span></span>
+<span class="line"><span style="color: #e1e4e8">        "sourceMap": false</span></span>
+<span class="line"><span style="color: #e1e4e8">    },</span></span>
+<span class="line"><span style="color: #e1e4e8">    "filesGlob": [</span></span>
+<span class="line"><span style="color: #e1e4e8">        "./typings/**/*.d.ts",</span></span>
+<span class="line"><span style="color: #e1e4e8">        "./src/**/*.ts"</span></span>
+<span class="line"><span style="color: #e1e4e8">    ]</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">VSCodeの場合、tsconfig.jsonを変えたらVSCodeを再起動するべし。</span></span>
+<span class="line"><span style="color: #e1e4e8">filesGlobは必要で、無いとインテリセンスが遅くなる(Loading…)。</span></span>
+<span class="line"><span style="color: #e1e4e8">tsタスクがtsconfig.jsonを使うようにする。</span></span>
+<span class="line"><span style="color: #e1e4e8"># gulpfile.coffee</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'ts', -></span></span>
+<span class="line"><span style="color: #e1e4e8">  tsconfig = require('tsconfig.json')</span></span>
+<span class="line"><span style="color: #e1e4e8">  gulp.src config.src_ts</span></span>
+<span class="line"><span style="color: #e1e4e8">    .pipe $.typescript(tsconfig.compilerOptions).js</span></span>
+<span class="line"><span style="color: #e1e4e8">    .pipe gulp.dest config.dst_js_dir</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">tsdを初期化して、node.jsとexpressのtypescript定義を取得する。</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> tsd init</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> tsd query node express -rosa install</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">src/app.ts</span></span>
+<span class="line"><span style="color: #e1e4e8">/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span style="color: #e1e4e8">import http = require('http');</span></span>
+<span class="line"><span style="color: #e1e4e8">import express=require('express');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">var port=process.env.port || 3000;</span></span>
+<span class="line"><span style="color: #e1e4e8">var app=express();</span></span>
+<span class="line"><span style="color: #e1e4e8">var server=http.createServer(app);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/', (request, response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.setHeader('content-type', 'text/html');</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.send('&#x3C;html>&#x3C;head>&#x3C;/head>&#x3C;body>Hello ts&#x3C;/body>&#x3C;/html>');</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">server.listen(port);</span></span>
+<span class="line"><span style="color: #e1e4e8">console.log('start %d', port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">MongoDBのCRUDを定義する</span></span>
+<span class="line"><span style="color: #e1e4e8">mongodbをインストールする。</span></span>
+<span class="line"><span style="color: #e1e4e8">Windowsの場合、MongoDBがデフォルトの”Program Files”にインストールされるとパスにスペースが入って</span></span>
+<span class="line"><span style="color: #e1e4e8">gulpからの起動時にエスケープと戦う必要が生じるので、</span></span>
+<span class="line"><span style="color: #e1e4e8">C:\MongoDB</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">にインストールした。</span></span>
+<span class="line"><span style="color: #e1e4e8">gulpでmongodbを起動する</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> npm i sprintf-js -D</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8"># gulpfile.coffee</span></span>
+<span class="line"><span style="color: #e1e4e8">MONGO_EXE = 'C:/MongoDB/bin/mongod.exe';</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8"># Running mongo</span></span>
+<span class="line"><span style="color: #e1e4e8">#</span></span>
+<span class="line"><span style="color: #e1e4e8"># http://stackoverflow.com/a/28048696/46810</span></span>
+<span class="line"><span style="color: #e1e4e8">sprintf = require('sprintf-js').sprintf;</span></span>
+<span class="line"><span style="color: #e1e4e8">fs = require('fs');</span></span>
+<span class="line"><span style="color: #e1e4e8">exec = require('child_process').exec;</span></span>
+<span class="line"><span style="color: #e1e4e8">gulp.task 'mongodb:start', (cb)-></span></span>
+<span class="line"><span style="color: #e1e4e8">    command=sprintf('%s --dbpath %s'</span></span>
+<span class="line"><span style="color: #e1e4e8">        , MONGO_EXE, config.mongo_data);</span></span>
+<span class="line"><span style="color: #e1e4e8">    if(!fs.existsSync(config.mongo_data))</span></span>
+<span class="line"><span style="color: #e1e4e8">        fs.mkdirSync(config.mongo_data);</span></span>
+<span class="line"><span style="color: #e1e4e8">    exec command, (err, stdout, stderr) -></span></span>
+<span class="line"><span style="color: #e1e4e8">        console.log(stdout);</span></span>
+<span class="line"><span style="color: #e1e4e8">        console.log(stderr);</span></span>
+<span class="line"><span style="color: #e1e4e8">    cb();</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">app.tsからmongodbにアクセスする</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> npm install mongodb --save</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> tsd query mongodb -rosa install</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">src/app.ts</span></span>
+<span class="line"><span style="color: #e1e4e8">/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// mongodb</span></span>
+<span class="line"><span style="color: #e1e4e8">import mongodb = require('mongodb');</span></span>
+<span class="line"><span style="color: #e1e4e8">let mongoServer = new mongodb.Server(</span></span>
+<span class="line"><span style="color: #e1e4e8">    'localhost', 27017</span></span>
+<span class="line"><span style="color: #e1e4e8">);</span></span>
+<span class="line"><span style="color: #e1e4e8">let dbHandle = new mongodb.Db(</span></span>
+<span class="line"><span style="color: #e1e4e8">    'crud', mongoServer, {w: 1}</span></span>
+<span class="line"><span style="color: #e1e4e8">);</span></span>
+<span class="line"><span style="color: #e1e4e8">dbHandle.open(()=>{</span></span>
+<span class="line"><span style="color: #e1e4e8">   console.log("connected to mongoDB");</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// http</span></span>
+<span class="line"><span style="color: #e1e4e8">import http = require('http');</span></span>
+<span class="line"><span style="color: #e1e4e8">import express = require('express');</span></span>
+<span class="line"><span style="color: #e1e4e8">let port = process.env.port || 3000;</span></span>
+<span class="line"><span style="color: #e1e4e8">let app = express();</span></span>
+<span class="line"><span style="color: #e1e4e8">let server = http.createServer(app);</span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/', (request, response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.setHeader('content-type', 'text/html');</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.send('&#x3C;html>&#x3C;head>&#x3C;/head>&#x3C;body>Hello ts&#x3C;/body>&#x3C;/html>');</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">server.listen(port);</span></span>
+<span class="line"><span style="color: #e1e4e8">console.log('start %d', port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">CRUDを定義する</span></span>
+<span class="line"><span style="color: #e1e4e8">Creating a REST API using Node.js, Express, and MongoDB</span></span>
+<span class="line"><span style="color: #e1e4e8">を参考に実装。</span></span>
+<span class="line"><span style="color: #e1e4e8">src/app.tsのデータにアクセスする部分をsrc/mongodb.tsに分離した。</span></span>
+<span class="line"><span style="color: #e1e4e8">src/app.ts</span></span>
+<span class="line"><span style="color: #e1e4e8">/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span style="color: #e1e4e8">import mongocrud = require('./mongocrud');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">//</span></span>
+<span class="line"><span style="color: #e1e4e8">// Express</span></span>
+<span class="line"><span style="color: #e1e4e8">//</span></span>
+<span class="line"><span style="color: #e1e4e8">import http = require('http');</span></span>
+<span class="line"><span style="color: #e1e4e8">import express = require('express');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">let port = process.env.port || 3000;</span></span>
+<span class="line"><span style="color: #e1e4e8">let app = express();</span></span>
+<span class="line"><span style="color: #e1e4e8">let server = http.createServer(app);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">let bodyparser=require('body-parser');</span></span>
+<span class="line"><span style="color: #e1e4e8">let methodoverride = require('method-override');</span></span>
+<span class="line"><span style="color: #e1e4e8">let logger = require('connect-logger');</span></span>
+<span class="line"><span style="color: #e1e4e8">let errorhandler = require('errorhandler');</span></span>
+<span class="line"><span style="color: #e1e4e8">app</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(bodyparser())</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(methodoverride())</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(logger())</span></span>
+<span class="line"><span style="color: #e1e4e8">.use(errorhandler({</span></span>
+<span class="line"><span style="color: #e1e4e8">    dumpExceptioons: true,</span></span>
+<span class="line"><span style="color: #e1e4e8">    showStack: true</span></span>
+<span class="line"><span style="color: #e1e4e8">}));</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/', (request, response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.setHeader('content-type', 'text/html');</span></span>
+<span class="line"><span style="color: #e1e4e8">    response.send('&#x3C;html>&#x3C;head>&#x3C;/head>&#x3C;body>Hello ts&#x3C;/body>&#x3C;/html>');</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8">server.listen(port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// restful</span></span>
+<span class="line"><span style="color: #e1e4e8">app.all('/api/:obj_type/*', (req, res, next)=>{</span></span>
+<span class="line"><span style="color: #e1e4e8">   res.contentType('json');</span></span>
+<span class="line"><span style="color: #e1e4e8">   next();</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/api/:obj_type', mongocrud.findAll);</span></span>
+<span class="line"><span style="color: #e1e4e8">app.get('/api/:obj_type/:id', mongocrud.findById);</span></span>
+<span class="line"><span style="color: #e1e4e8">app.post('/api/:obj_type', mongocrud.add);</span></span>
+<span class="line"><span style="color: #e1e4e8">app.put('/api/:obj_type/:id', mongocrud.update);</span></span>
+<span class="line"><span style="color: #e1e4e8">app.delete('/api/:obj_type/:id', mongocrud.del);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// launchded</span></span>
+<span class="line"><span style="color: #e1e4e8">console.log('start %d', port);</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">src/mongocrud.ts</span></span>
+<span class="line"><span style="color: #e1e4e8">/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span style="color: #e1e4e8">//</span></span>
+<span class="line"><span style="color: #e1e4e8">// MongoDB</span></span>
+<span class="line"><span style="color: #e1e4e8">//</span></span>
+<span class="line"><span style="color: #e1e4e8">import mongodb = require('mongodb');</span></span>
+<span class="line"><span style="color: #e1e4e8">let mongoServer = new mongodb.Server(</span></span>
+<span class="line"><span style="color: #e1e4e8">    'localhost', 27017</span></span>
+<span class="line"><span style="color: #e1e4e8">);</span></span>
+<span class="line"><span style="color: #e1e4e8">let db = new mongodb.Db(</span></span>
+<span class="line"><span style="color: #e1e4e8">    'crud', mongoServer, { w: 1 }</span></span>
+<span class="line"><span style="color: #e1e4e8">);</span></span>
+<span class="line"><span style="color: #e1e4e8">db.open(() => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log("connected to mongoDB");</span></span>
+<span class="line"><span style="color: #e1e4e8">    populateDB();</span></span>
+<span class="line"><span style="color: #e1e4e8">});</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">//</span></span>
+<span class="line"><span style="color: #e1e4e8">// CRUD</span></span>
+<span class="line"><span style="color: #e1e4e8">//</span></span>
+<span class="line"><span style="color: #e1e4e8">import express = require('express');</span></span>
+<span class="line"><span style="color: #e1e4e8">export var findById = (req: express.Request, res: express.Response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    let obj_type = req.params.obj_type;</span></span>
+<span class="line"><span style="color: #e1e4e8">    let id = req.params.id;</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log('Retrieving %s: %s', obj_type, id);</span></span>
+<span class="line"><span style="color: #e1e4e8">    db.collection(obj_type, (err, collection) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">        collection.findOne({ '_id': new mongodb.ObjectID(id) }, (err, item) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">            res.send(item);</span></span>
+<span class="line"><span style="color: #e1e4e8">        });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">};</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">export var findAll = (req: express.Request, res: express.Response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    let obj_type = req.params.obj_type;</span></span>
+<span class="line"><span style="color: #e1e4e8">    db.collection(obj_type, (err, collection) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">        collection.find().toArray((err, items) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">            res.send(items);</span></span>
+<span class="line"><span style="color: #e1e4e8">        });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">};</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">export var add = (req: express.Request, res: express.Response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    let obj_type = req.params.obj_type;</span></span>
+<span class="line"><span style="color: #e1e4e8">    let body = req.body;</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log('Adding %s: %s', obj_type, JSON.stringify(body));</span></span>
+<span class="line"><span style="color: #e1e4e8">    db.collection(obj_type, (err, collection) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">        collection.insert(body, { safe: true }, (err, result) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">            if (err) {</span></span>
+<span class="line"><span style="color: #e1e4e8">                res.send({ 'error': 'An error has occurred' });</span></span>
+<span class="line"><span style="color: #e1e4e8">            } else {</span></span>
+<span class="line"><span style="color: #e1e4e8">                console.log('Success: ' + JSON.stringify(result[0]));</span></span>
+<span class="line"><span style="color: #e1e4e8">                res.send(result[0]);</span></span>
+<span class="line"><span style="color: #e1e4e8">            }</span></span>
+<span class="line"><span style="color: #e1e4e8">        });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">export var update = (req: express.Request, res: express.Response) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">    let obj_type = req.params.obj_type;</span></span>
+<span class="line"><span style="color: #e1e4e8">    let id = req.params.id;</span></span>
+<span class="line"><span style="color: #e1e4e8">    let body = req.body;</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log('Updating %s: %s', obj_type, id);</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log(JSON.stringify(body));</span></span>
+<span class="line"><span style="color: #e1e4e8">    db.collection('wines', (err, collection) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">        collection.update({ '_id': new mongodb.ObjectID(id) },</span></span>
+<span class="line"><span style="color: #e1e4e8">            body, { safe: true }, (err, result) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">                if (err) {</span></span>
+<span class="line"><span style="color: #e1e4e8">                    console.log('Error updating wine: ' + err);</span></span>
+<span class="line"><span style="color: #e1e4e8">                    res.send({ 'error': 'An error has occurred' });</span></span>
+<span class="line"><span style="color: #e1e4e8">                } else {</span></span>
+<span class="line"><span style="color: #e1e4e8">                    console.log('%s document(s) updated', result);</span></span>
+<span class="line"><span style="color: #e1e4e8">                    res.send(body);</span></span>
+<span class="line"><span style="color: #e1e4e8">                }</span></span>
+<span class="line"><span style="color: #e1e4e8">            });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">export function del(req: express.Request, res: express.Response){</span></span>
+<span class="line"><span style="color: #e1e4e8">    let obj_type = req.params.obj_type;</span></span>
+<span class="line"><span style="color: #e1e4e8">    var id = req.params.id;</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log('Deleting %s: %s', obj_type, id);</span></span>
+<span class="line"><span style="color: #e1e4e8">    db.collection(obj_type, (err, collection) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">        collection.remove({ '_id': new mongodb.ObjectID(id) },</span></span>
+<span class="line"><span style="color: #e1e4e8">            { safe: true }, (err, result) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">                if (err) {</span></span>
+<span class="line"><span style="color: #e1e4e8">                    res.send({ 'error': 'An error has occurred - ' + err });</span></span>
+<span class="line"><span style="color: #e1e4e8">                } else {</span></span>
+<span class="line"><span style="color: #e1e4e8">                    console.log('%s document(s) deleted', result);</span></span>
+<span class="line"><span style="color: #e1e4e8">                    res.send(req.body);</span></span>
+<span class="line"><span style="color: #e1e4e8">                }</span></span>
+<span class="line"><span style="color: #e1e4e8">            });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">// Populate database with sample data -- Only used once: the first time the application is started.</span></span>
+<span class="line"><span style="color: #e1e4e8">// You'd typically not find this code in a real-life app, since the database would already exist.</span></span>
+<span class="line"><span style="color: #e1e4e8">function populateDB() {</span></span>
+<span class="line"><span style="color: #e1e4e8">    console.log('populateDB...');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">    var wines = [</span></span>
+<span class="line"><span style="color: #e1e4e8">        {</span></span>
+<span class="line"><span style="color: #e1e4e8">            name: "CHATEAU DE SAINT COSME",</span></span>
+<span class="line"><span style="color: #e1e4e8">            year: "2009",</span></span>
+<span class="line"><span style="color: #e1e4e8">            grapes: "Grenache / Syrah",</span></span>
+<span class="line"><span style="color: #e1e4e8">            country: "France",</span></span>
+<span class="line"><span style="color: #e1e4e8">            region: "Southern Rhone",</span></span>
+<span class="line"><span style="color: #e1e4e8">            description: "The aromas of fruit and spice...",</span></span>
+<span class="line"><span style="color: #e1e4e8">            picture: "saint_cosme.jpg"</span></span>
+<span class="line"><span style="color: #e1e4e8">        },</span></span>
+<span class="line"><span style="color: #e1e4e8">        {</span></span>
+<span class="line"><span style="color: #e1e4e8">            name: "LAN RIOJA CRIANZA",</span></span>
+<span class="line"><span style="color: #e1e4e8">            year: "2006",</span></span>
+<span class="line"><span style="color: #e1e4e8">            grapes: "Tempranillo",</span></span>
+<span class="line"><span style="color: #e1e4e8">            country: "Spain",</span></span>
+<span class="line"><span style="color: #e1e4e8">            region: "Rioja",</span></span>
+<span class="line"><span style="color: #e1e4e8">            description: "A resurgence of interest in boutique vineyards...",</span></span>
+<span class="line"><span style="color: #e1e4e8">            picture: "lan_rioja.jpg"</span></span>
+<span class="line"><span style="color: #e1e4e8">        }];</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">    db.collection('wines', (err, collection) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">        collection.find().toArray((err, items) => {</span></span>
+<span class="line"><span style="color: #e1e4e8">            if(items.length==0){</span></span>
+<span class="line"><span style="color: #e1e4e8">                // if empty</span></span>
+<span class="line"><span style="color: #e1e4e8">                console.log('insert wines: ' + JSON.stringify(wines));</span></span>
+<span class="line"><span style="color: #e1e4e8">                db.collection('wines', function(err, collection) {</span></span>
+<span class="line"><span style="color: #e1e4e8">                    collection.insert(wines, { safe: true }, function(err, result) { });</span></span>
+<span class="line"><span style="color: #e1e4e8">                });</span></span>
+<span class="line"><span style="color: #e1e4e8">            }</span></span>
+<span class="line"><span style="color: #e1e4e8">        });</span></span>
+<span class="line"><span style="color: #e1e4e8">    });</span></span>
+<span class="line"><span style="color: #e1e4e8">};</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">ブラウザ向けのGUIを作る</span></span>
+<span class="line"><span style="color: #e1e4e8">ざっくりレイアウト</span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;!DOCTYPE html></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;html lang="en"></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;head></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;meta charset="UTF-8"></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;title>Document&#x3C;/title></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;link rel="stylesheet" href="css/style.css"></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;script src="js/client.js">&#x3C;/script></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;/head></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;body></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;div class="header"></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;form action="select"></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;span class="label">collection name&#x3C;/span></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;input type="text"></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;button>Select&#x3C;/button></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;/form></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;/div></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;div class="body"></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;div class="left"></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;div class="list"></span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;/div></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;form action="add"></span></span>
+<span class="line"><span style="color: #e1e4e8">            &#x3C;button>Add&#x3C;/button></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;/form></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;/div></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;div class="right"></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;form></span></span>
+<span class="line"><span style="color: #e1e4e8">            &#x3C;textarea name="detail"></span></span>
+<span class="line"><span style="color: #e1e4e8">            &#x3C;/textarea></span></span>
+<span class="line"><span style="color: #e1e4e8">            &#x3C;button>Load&#x3C;/button></span></span>
+<span class="line"><span style="color: #e1e4e8">            &#x3C;button>Save&#x3C;/button></span></span>
+<span class="line"><span style="color: #e1e4e8">        &#x3C;/form></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;/div></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;/div></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;div class="footer"></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;ul class="log"></span></span>
+<span class="line"><span style="color: #e1e4e8">    &#x3C;/ul></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;/div></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;/body></span></span>
+<span class="line"><span style="color: #e1e4e8">&#x3C;/html></span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">* {</span></span>
+<span class="line"><span style="color: #e1e4e8">margin: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">padding: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">html{</span></span>
+<span class="line"><span style="color: #e1e4e8">    font-size: 62.5%;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">*, *::before, *::after {</span></span>
+<span class="line"><span style="color: #e1e4e8">    box-sizing: border-box;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">.header{</span></span>
+<span class="line"><span style="color: #e1e4e8">    position: absolute;</span></span>
+<span class="line"><span style="color: #e1e4e8">    top: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    left: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    right: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    height: 64px;</span></span>
+<span class="line"><span style="color: #e1e4e8">    background-color: #faa;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8">.body{</span></span>
+<span class="line"><span style="color: #e1e4e8">    position: absolute;</span></span>
+<span class="line"><span style="color: #e1e4e8">    top: 64px;</span></span>
+<span class="line"><span style="color: #e1e4e8">    left: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    right: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    bottom: 128px;</span></span>
+<span class="line"><span style="color: #e1e4e8">    background-color: #afa;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8">.body .left {</span></span>
+<span class="line"><span style="color: #e1e4e8">    position: absolute;</span></span>
+<span class="line"><span style="color: #e1e4e8">    left: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    width: 200px;</span></span>
+<span class="line"><span style="color: #e1e4e8">    top: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    bottom: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    background-color: #282;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8">.body .right {</span></span>
+<span class="line"><span style="color: #e1e4e8">    position: absolute;</span></span>
+<span class="line"><span style="color: #e1e4e8">    left: 200px;</span></span>
+<span class="line"><span style="color: #e1e4e8">    right: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    top: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    bottom: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    background-color: #828;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8">.footer{</span></span>
+<span class="line"><span style="color: #e1e4e8">    position: absolute;</span></span>
+<span class="line"><span style="color: #e1e4e8">    left: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    right: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    bottom: 0;</span></span>
+<span class="line"><span style="color: #e1e4e8">    height: 128px;</span></span>
+<span class="line"><span style="color: #e1e4e8">    background-color: #aaf;</span></span>
+<span class="line"><span style="color: #e1e4e8">}</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">alert('hello');</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">jqueryを追加</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud> cd client</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud/client> bower init</span></span>
+<span class="line"><span style="color: #e1e4e8">mongocrud/client> bower install jquery --save</span></span>
+<span class="line"><span style="color: #e1e4e8"></span></span>
+<span class="line"><span style="color: #e1e4e8">まとまりが無くなってきた。</span></span>
+<span class="line"><span style="color: #e1e4e8">別のページに整理しなおそう。</span></span>
+<span class="line"><span style="color: #e1e4e8">あとから、coffee-scriptやtypescritpを導入すると手順としては冗長になりすぎるな。</span></span>
+<span class="line"><span style="color: #e1e4e8">最初から、NoDemon, Express, BrowserSyync, gulpfile.coffee, typescript, scssの構成にしよう。</span></span></code></pre>
+
+				</div>
+			</article>
+		</main>
+		<footer class="footer astro-SZ7XMLTE">
+    <nav class="nav astro-SZ7XMLTE">
+        <div class="astro-SZ7XMLTE">2021  &copy; Copyright notice |  <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-SZ7XMLTE">三次元日誌(astro)</a>
+        <script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><astro-island uid="1QEdto" component-url="/_astro/ModeLabel.e3ff75e7.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;ModeLabel&quot;,&quot;value&quot;:true}" await-children=""><span slot="dark" data-svelte-h="svelte-14ov3lc">(dark)</span></astro-island> theme on <a href="https://astro.build/" class="astro-SZ7XMLTE">Astro</a></div>
+        <astro-island uid="1I86to" component-url="/_astro/NetlifyIdentity.94b8edb0.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;NetlifyIdentity&quot;,&quot;value&quot;:true}"></astro-island>
+    </nav>
+</footer>
+	</body></html>

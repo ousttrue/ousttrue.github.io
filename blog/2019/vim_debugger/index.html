@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" class="astro-BVZIHDZO">
+	<head>
+		<!-- Use Google Fonts, if you don't wanna prefer a self-hosted version --><!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet"> --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>vim で DebugAdapterProtocol する</title>
+<meta name="title" content="vim で DebugAdapterProtocol する">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="shortcut icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<!-- Open Graph Tags (Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="vim で DebugAdapterProtocol する">
+
+
+
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="vim で DebugAdapterProtocol する">
+
+
+
+
+
+<script>
+  const theme = (() => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  })();
+
+  if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
+  }
+</script>
+		
+	<link rel="stylesheet" href="/_astro/about.6111bb3a.css" />
+<link rel="stylesheet" href="/_astro/about.657f8f57.css" />
+<link rel="stylesheet" href="/_astro/about.ee60a110.css" />
+<link rel="stylesheet" href="/_astro/about.dcb84f3d.css" /><script type="module" src="/_astro/hoisted.e6960f2c.js"></script></head>
+
+	<body class="astro-BVZIHDZO">
+		<header class="header astro-3EF6KSR2">
+    <div class="header__logo astro-3EF6KSR2">
+        <a href="/" class="avatar astro-3EF6KSR2">
+            <img class="header__logo-img astro-3EF6KSR2" src="/assets/logo.svg" alt="Astro logo">
+        </a>
+    </div>
+    <div class="header__meta flex-1 astro-3EF6KSR2">
+        <h3 class="header__title dark:text-theme-dark-secondary astro-3EF6KSR2">
+            <a href="" class="astro-3EF6KSR2">三次元日誌(astro)</a>
+        </h3>
+        <div class="header__meta-more flex astro-3EF6KSR2">
+            <p class="header__desc astro-3EF6KSR2">
+                Crisp, minimal, personal blog theme for Astro
+            </p>
+            <nav class="header__nav flex astro-3EF6KSR2">
+                <ul class="header__ref-list astro-3EF6KSR2">
+                    <li class="astro-3EF6KSR2">
+                        <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var r=(i,c,n)=>{let s=async()=>{await(await i())()},t=new IntersectionObserver(e=>{for(let o of e)if(o.isIntersecting){t.disconnect(),s();break}});for(let e of n.children)t.observe(e)};(self.Astro||(self.Astro={})).visible=r;window.dispatchEvent(new Event("astro:visible"));})();;(()=>{var d;{let p={0:t=>u(t),1:t=>l(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(l(t)),5:t=>new Set(l(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t)},h=t=>{let[e,n]=t;return e in p?p[e](n):void 0},l=t=>t.map(h),u=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([e,n])=>[e,h(n)]));customElements.get("astro-island")||customElements.define("astro-island",(d=class extends HTMLElement{constructor(){super(...arguments);this.hydrate=async()=>{var i;if(!this.hydrator||!this.isConnected)return;let e=(i=this.parentElement)==null?void 0:i.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let n=this.querySelectorAll("astro-slot"),o={},a=this.querySelectorAll("template[data-astro-template]");for(let r of a){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of n){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("name")||"default"]=r.innerHTML)}let c;try{c=this.hasAttribute("props")?u(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",y=this.getAttribute("component-export");throw y&&(s+=` (export ${y})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}await this.hydrator(this)(this.Component,c,o,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))}}connectedCallback(){!this.hasAttribute("await-children")||this.firstChild?this.childrenConnectedCallback():new MutationObserver((e,n)=>{n.disconnect(),setTimeout(()=>this.childrenConnectedCallback(),0)}).observe(this,{childList:!0})}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}start(){let e=JSON.parse(this.getAttribute("opts")),n=this.getAttribute("client");if(Astro[n]===void 0){window.addEventListener(`astro:${n}`,()=>this.start(),{once:!0});return}Astro[n](async()=>{let o=this.getAttribute("renderer-url"),[a,{default:c}]=await Promise.all([import(this.getAttribute("component-url")),o?import(o):()=>()=>{}]),i=this.getAttribute("component-export")||"default";if(!i.includes("."))this.Component=a[i];else{this.Component=a;for(let r of i.split("."))this.Component=this.Component[r]}return this.hydrator=c,this.hydrate},e,this)}attributeChangedCallback(){this.hydrate()}},d.observedAttributes=["props"],d))}})();</script><astro-island uid="2iKzVC" component-url="/_astro/SearchBtn.984510f3.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;SearchBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path fill-rule="evenodd" clip-rule="evenodd" d="M16.2071 4.89344C19.0923 7.77862 19.3131 12.3193 16.8693 15.4578C16.8846 15.4713 16.8996 15.4854 16.9143 15.5L21.1569 19.7427C21.5474 20.1332 21.5474 20.7664 21.1569 21.1569C20.7664 21.5474 20.1332 21.5474 19.7427 21.1569L15.5 16.9143C15.4854 16.8996 15.4713 16.8846 15.4578 16.8693C12.3193 19.3131 7.77862 19.0923 4.89344 16.2071C1.76924 13.083 1.76924 8.01763 4.89344 4.89344C8.01763 1.76924 13.083 1.76924 16.2071 4.89344ZM14.7929 14.7929C17.1361 12.4498 17.1361 8.6508 14.7929 6.30765C12.4498 3.96451 8.6508 3.96451 6.30765 6.30765C3.96451 8.6508 3.96451 12.4498 6.30765 14.7929C8.6508 17.1361 12.4498 17.1361 14.7929 14.7929Z" fill="currentColor"></path></svg></button></astro-island>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" class="astro-3EF6KSR2"></path>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="/rss.xml" title="RSS" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M4 11a9 9 0 0 1 9 9" class="astro-3EF6KSR2"></path>
+                                <path d="M4 4a16 16 0 0 1 16 16" class="astro-3EF6KSR2"></path>
+                                <circle cx="5" cy="19" r="1" class="astro-3EF6KSR2"></circle>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <astro-island uid="h8S6z" component-url="/_astro/ModeSwitcherBtn.0ddc5d6d.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;ModeSwitcherBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle> <line x1="12" y1="1" x2="12" y2="3"></line> <line x1="12" y1="21" x2="12" y2="23"></line> <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line> <line x1="1" y1="12" x2="3" y2="12"></line> <line x1="21" y1="12" x2="23" y2="12"></line> <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button></astro-island>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+		<main class="astro-BVZIHDZO">
+			<article class="astro-BVZIHDZO">
+				<div class="hero-image astro-BVZIHDZO">
+					
+				</div>
+				<div class="prose astro-BVZIHDZO">
+					<div class="title astro-BVZIHDZO">
+						<div class="date astro-BVZIHDZO">
+							<time datetime="2019-04-27T10:00:26.000Z">
+	Apr 27, 2019
+</time>
+							
+						</div>
+						<h1 class="astro-BVZIHDZO">vim で DebugAdapterProtocol する</h1>
+						<hr class="astro-BVZIHDZO">
+					</div>
+					
+	<p>vimで <code>breakpoint</code> を設置してステップ実行できるようなデバッガを調べた。</p>
+<h1 id="vim-上のデバッガ">vim 上のデバッガ</h1>
+<h2 id="lldbnvim">lldb.nvim</h2>
+<ul>
+<li><a href="https://github.com/dbgx/lldb.nvim">https://github.com/dbgx/lldb.nvim</a></li>
+</ul>
+<h2 id="vim-vebugger">vim-vebugger</h2>
+<ul>
+<li><a href="https://github.com/idanarye/vim-vebugger">https://github.com/idanarye/vim-vebugger</a></li>
+</ul>
+<p>なんか動きそうなのだが、 <code>vimproc</code> を使っていたので動かせなかった
+kaoriya 版の Vim を使うなどしてみたがよくわからず。</p>
+<h2 id="pyclewn">pyclewn</h2>
+<ul>
+<li><a href="https://github.com/Mistobaan/pyclewn">https://github.com/Mistobaan/pyclewn</a></li>
+</ul>
+<p>gdb と pdb のvimフロントエンド？</p>
+<h2 id="pubd">pubd</h2>
+<p>pythonのpdb.</p>
+<ul>
+<li><a href="https://github.com/inducer/pudb">https://github.com/inducer/pudb</a></li>
+</ul>
+<h2 id="vim-breakpts">vim-breakpts</h2>
+<p>vim スクリプト用？</p>
+<ul>
+<li><a href="https://github.com/albfan/vim-breakpts">https://github.com/albfan/vim-breakpts</a></li>
+</ul>
+<h2 id="vimspector">vimspector</h2>
+<ul>
+<li><a href="https://github.com/puremourning/vimspector">https://github.com/puremourning/vimspector</a></li>
+</ul>
+<p>VSCodeの <code>DebugAdapterProtocol</code> を使うものらしい。</p>
+<blockquote>
+<p>While Language Server Protocol is well known, the Debug Adapter Protocol is less well known, but achieves a similar goal: language agnostic API abstracting debuggers from clients.</p>
+</blockquote>
+<p>動かし方よくわからず。</p>
+<h1 id="debugadapterprotocol">DebugAdapterProtocol</h1>
+<ul>
+<li><a href="https://code.visualstudio.com/blogs/2018/08/07/debug-adapter-protocol-website">DebugAdapterProtocol</a>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-debugadapter-node">旧サイト・リポジトリ</a></li>
+</ul>
+</li>
+</ul>
+<p>読む。</p>
+<blockquote>
+<p>The “deep understanding of a language” is surfaced by the Language Server Protocol (LSP) and the “debugging support” by the Debug Adapter Protocol (DAP).</p>
+</blockquote>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #e1e4e8">editor &#x3C;=> adapter &#x3C;=> gdb</span></span>
+<span class="line"><span style="color: #e1e4e8">              ||</span></span>
+<span class="line"><span style="color: #e1e4e8">              ++=====> pdb</span></span></code></pre>
+<p>adapterでラップして同じに見えるようにする。</p>
+<p>adapterの起動設定は、 <code>.vscode/launch.json</code> にというわけか。</p>
+<blockquote>
+<p>The Debug Adapter Protocol is not tied to VS Code and can be used as the foundation for a generic debugger UI in other development tools.</p>
+</blockquote>
+<p>新サイトで仕様を公開していくで、って書いてあるね。</p>
+<ul>
+<li>新サイト <a href="https://microsoft.github.io/debug-adapter-protocol/">https://microsoft.github.io/debug-adapter-protocol/</a>
+<ul>
+<li>新リポジトリ <a href="https://github.com/Microsoft/debug-adapter-protocol">https://github.com/Microsoft/debug-adapter-protocol</a></li>
+</ul>
+</li>
+</ul>
+<p>読む。</p>
+<ul>
+<li><a href="https://microsoft.github.io/debug-adapter-protocol/overview">https://microsoft.github.io/debug-adapter-protocol/overview</a></li>
+</ul>
+<blockquote>
+<p>single session mode: in this mode, the development tool starts a debug adapter as a standalone process and communicates with it through stdin and stdout.</p>
+</blockquote>
+<blockquote>
+<p>multi session mode: in this mode, the development tool does not start the debug adapter but assumes that it is already running and that it listens on a specific port for connections attempts.</p>
+</blockquote>
+<h2 id="dapの仕様">DAPの仕様</h2>
+<ul>
+<li><a href="https://microsoft.github.io/debug-adapter-protocol/specification">https://microsoft.github.io/debug-adapter-protocol/specification</a></li>
+</ul>
+<h2 id="dapの実装">DAPの実装</h2>
+<ul>
+<li><a href="https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/">https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/</a></li>
+</ul>
+<p>ネイティブコンパイルするタイプは言語ごとではなく、ネイティブコンパイルの様式ごとに違うものになる。例えば、 <code>vc</code> , <code>gcc</code> , <code>llvm</code> のように。</p>
+<p>となるとVMタイプのものは、 <code>.Net</code>, <code>Mono</code>, <code>java</code> といった分類になるのだろうか。
+<code>C#</code>, <code>F#</code> が両方デバッグできたりしそうではある。</p>
+<p>インタープリター型はそれぞれの言語ごとになる。</p>
+<p>あとは、リモートデバッグの事情を調べる。</p>
+<h3 id="native-debug">native debug</h3>
+<p>c++やd, rustなんかのnativeコードを出力するものをまとめて面倒見れるという理解であったいるのかな。ビルド形式とデバッグビルドに付加される情報のフォーマットに対応してデバッガを選択する必要があると。</p>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-cpptools">https://github.com/Microsoft/vscode-cpptools</a></li>
+</ul>
+<p>LLVM</p>
+<ul>
+<li><a href="https://github.com/vadimcn/vscode-lldb">https://github.com/vadimcn/vscode-lldb</a></li>
+</ul>
+<h3 id="net">.Net</h3>
+<blockquote>
+<p>Mono debugging is not supported.</p>
+</blockquote>
+<p>ILは互換性があるにしても、VMのデバッグインタフェースは互換性が無いということなのかな。</p>
+<ul>
+<li><a href="https://github.com/OmniSharp/omnisharp-vscode">https://github.com/OmniSharp/omnisharp-vscode</a></li>
+</ul>
+<h3 id="mono">Mono</h3>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-mono-debug">https://github.com/Microsoft/vscode-mono-debug</a></li>
+</ul>
+<h3 id="unity">Unity</h3>
+<ul>
+<li><a href="https://github.com/Unity-Technologies/vscode-unity-debug">https://github.com/Unity-Technologies/vscode-unity-debug</a></li>
+</ul>
+<p>UnityEditorにアタッチできるらしい。
+Unity版のMonoにアタッチできるということかしら。</p>
+<h3 id="lua--ravi">lua / ravi</h3>
+<ul>
+<li><a href="https://github.com/dibyendumajumdar/ravi-vscode-debugger">https://github.com/dibyendumajumdar/ravi-vscode-debugger</a></li>
+</ul>
+<p>こんなのあるのか・・・</p>
+<h3 id="powershell">powershell</h3>
+<ul>
+<li><a href="https://github.com/PowerShell/vscode-powershell">https://github.com/PowerShell/vscode-powershell</a></li>
+</ul>
+<h3 id="python">python</h3>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-python">https://github.com/Microsoft/vscode-python</a></li>
+</ul>
+<h1 id="vimspectorの実装">vimspectorの実装</h1>
+<ul>
+<li><a href="https://github.com/puremourning/vimspector">https://github.com/puremourning/vimspector</a></li>
+</ul>
+<p>読む。</p>
+<p><code>.\install_gadget.py</code></p>
+<p>を実行することで、 <code>VSCode</code> の <code>extension</code> を <code>download</code> する。
+<code>extension</code> に、 <code>DAP</code> が含まれているのでこれを使う。</p>
+<p><code>autoload/vimspector.vim</code></p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F97583">function!</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">vimspector#Launch</span><span style="color: #E1E4E8">() </span><span style="color: #F97583">abort</span></span>
+<span class="line"><span style="color: #E1E4E8">  py3 </span><span style="color: #B392F0">_vimspector_session.Start</span><span style="color: #E1E4E8">()</span></span>
+<span class="line"><span style="color: #F97583">endfunction</span></span></code></pre>
+<p><code>python3/vimspector/debug_session.py</code></p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F97583">class</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">DebugSession</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">  </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">Start</span><span style="color: #E1E4E8">():</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">pass</span></span>
+<span class="line"></span></code></pre>
+<p><code>vim.bindeval</code> を使っているので、 <code>vim8</code> 専用。
+<code>nvim</code> では回避する必要がある。</p>
+<p><code>.vimspector.json</code></p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #E1E4E8">{</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #79B8FF">"adapters"</span><span style="color: #E1E4E8">: {</span></span>
+<span class="line"><span style="color: #E1E4E8">    },</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #79B8FF">"configurations"</span><span style="color: #E1E4E8">: {</span></span>
+<span class="line"><span style="color: #E1E4E8">    }</span></span>
+<span class="line"><span style="color: #E1E4E8">}</span></span></code></pre>
+<p>の <code>configurations</code> からデバッグセッションの起動方法を取得して、
+デバッグアダプターを <code>vim</code> の <code>job</code> か <code>channel</code> 経由で起動する。
+<code>configurations</code> が <code>.vscode/launch.json</code> に相当するようだ。
+<code>adapters</code> は、インストールされている <code>DebugAdapter</code> のリスト。</p>
+<p><code>call vimspector#Launch()</code> <code>simple_python - launch</code> <code>/Users/ousttrue</code> と入力することでjobが、アダプター開始するところまでできた。
+しかし、アダプターがすぐに死んでいる様子。</p>
+<p>アダプターを手動起動してみる。</p>
+<p><code>node .\.vscode\extensions\ms-python.python-2019.4.11987\out\client\debugger\debugAdapter\main.js</code></p>
+<p><code>.vimspector.json</code> に書いてあるのとバージョンが違う。
+<code>file not found</code> か。</p>
+<p><code>path</code> をなおしたら動いた😃</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #e1e4e8">-          "$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js"</span></span>
+<span class="line"><span style="color: #e1e4e8">+          "$HOME/.vscode/extensions/ms-python.python-2019.4.11987/out/client/debugger/debugAdapter/Main.js"</span></span></code></pre>
+<p><code>neovim</code> の <code>rplugin</code> での構成を考えてみようか。</p>
+<h1 id="python3-で-adapter-を起動してみる">python3 で Adapter を起動してみる</h1>
+<p><code>AdapterAdapter</code> というか <code>AdapterBridge</code> という感じになりそうだけど、
+<code>vim</code> で込み入った実装をするのは手に余るので、可能な限り <code>python</code> で事を進めよう。
+pythonでprotocl実験。</p>
+<p><a href="https://github.com/ousttrue/daplauncher">https://github.com/ousttrue/daplauncher</a></p>
+<ul>
+<li><a href="http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html">http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html</a></li>
+<li><a href="https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/">https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/</a></li>
+<li><a href="https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/">https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/</a></li>
+</ul>
+<p>launchRequestの後で固まると思ったら、サイトに記述されていないパラメーターがあった。
+<code>console</code> どこに書いてあるのか・・・</p>
+<p><a href="https://github.com/Microsoft/vscode-debugadapter-node/blob/master/debugProtocol.json">https://github.com/Microsoft/vscode-debugadapter-node/blob/master/debugProtocol.json</a></p>
+<p><a href="https://github.com/Microsoft/vscode-python/issues/3762">https://github.com/Microsoft/vscode-python/issues/3762</a></p>
+<p>わかった。</p>
+<p><a href="https://github.com/Microsoft/vscode-go/issues/219">https://github.com/Microsoft/vscode-go/issues/219</a></p>
+<p>vscodeの <code>.vscode/launch.json</code> の起動設定を <code>launch</code> の引数に合体するのだ。</p>
+<p><a href="https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes">https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes</a></p>
+<p>書いとけよー。</p>
+
+				</div>
+			</article>
+		</main>
+		<footer class="footer astro-SZ7XMLTE">
+    <nav class="nav astro-SZ7XMLTE">
+        <div class="astro-SZ7XMLTE">2021  &copy; Copyright notice |  <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-SZ7XMLTE">三次元日誌(astro)</a>
+        <script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><astro-island uid="1QEdto" component-url="/_astro/ModeLabel.e3ff75e7.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;ModeLabel&quot;,&quot;value&quot;:true}" await-children=""><span slot="dark" data-svelte-h="svelte-14ov3lc">(dark)</span></astro-island> theme on <a href="https://astro.build/" class="astro-SZ7XMLTE">Astro</a></div>
+        <astro-island uid="1I86to" component-url="/_astro/NetlifyIdentity.94b8edb0.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;NetlifyIdentity&quot;,&quot;value&quot;:true}"></astro-island>
+    </nav>
+</footer>
+	</body></html>

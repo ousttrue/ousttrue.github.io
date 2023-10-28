@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" class="astro-BVZIHDZO">
+	<head>
+		<!-- Use Google Fonts, if you don't wanna prefer a self-hosted version --><!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet"> --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>PyOpenGLのglBufferDataにはどんなデータが渡せるのか</title>
+<meta name="title" content="PyOpenGLのglBufferDataにはどんなデータが渡せるのか">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="shortcut icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<!-- Open Graph Tags (Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="PyOpenGLのglBufferDataにはどんなデータが渡せるのか">
+
+
+
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="PyOpenGLのglBufferDataにはどんなデータが渡せるのか">
+
+
+
+
+
+<script>
+  const theme = (() => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  })();
+
+  if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
+  }
+</script>
+		
+	<link rel="stylesheet" href="/_astro/about.6111bb3a.css" />
+<link rel="stylesheet" href="/_astro/about.657f8f57.css" />
+<link rel="stylesheet" href="/_astro/about.ee60a110.css" />
+<link rel="stylesheet" href="/_astro/about.dcb84f3d.css" /><script type="module" src="/_astro/hoisted.e6960f2c.js"></script></head>
+
+	<body class="astro-BVZIHDZO">
+		<header class="header astro-3EF6KSR2">
+    <div class="header__logo astro-3EF6KSR2">
+        <a href="/" class="avatar astro-3EF6KSR2">
+            <img class="header__logo-img astro-3EF6KSR2" src="/assets/logo.svg" alt="Astro logo">
+        </a>
+    </div>
+    <div class="header__meta flex-1 astro-3EF6KSR2">
+        <h3 class="header__title dark:text-theme-dark-secondary astro-3EF6KSR2">
+            <a href="" class="astro-3EF6KSR2">三次元日誌(astro)</a>
+        </h3>
+        <div class="header__meta-more flex astro-3EF6KSR2">
+            <p class="header__desc astro-3EF6KSR2">
+                Crisp, minimal, personal blog theme for Astro
+            </p>
+            <nav class="header__nav flex astro-3EF6KSR2">
+                <ul class="header__ref-list astro-3EF6KSR2">
+                    <li class="astro-3EF6KSR2">
+                        <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var r=(i,c,n)=>{let s=async()=>{await(await i())()},t=new IntersectionObserver(e=>{for(let o of e)if(o.isIntersecting){t.disconnect(),s();break}});for(let e of n.children)t.observe(e)};(self.Astro||(self.Astro={})).visible=r;window.dispatchEvent(new Event("astro:visible"));})();;(()=>{var d;{let p={0:t=>u(t),1:t=>l(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(l(t)),5:t=>new Set(l(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t)},h=t=>{let[e,n]=t;return e in p?p[e](n):void 0},l=t=>t.map(h),u=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([e,n])=>[e,h(n)]));customElements.get("astro-island")||customElements.define("astro-island",(d=class extends HTMLElement{constructor(){super(...arguments);this.hydrate=async()=>{var i;if(!this.hydrator||!this.isConnected)return;let e=(i=this.parentElement)==null?void 0:i.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let n=this.querySelectorAll("astro-slot"),o={},a=this.querySelectorAll("template[data-astro-template]");for(let r of a){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of n){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("name")||"default"]=r.innerHTML)}let c;try{c=this.hasAttribute("props")?u(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",y=this.getAttribute("component-export");throw y&&(s+=` (export ${y})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}await this.hydrator(this)(this.Component,c,o,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))}}connectedCallback(){!this.hasAttribute("await-children")||this.firstChild?this.childrenConnectedCallback():new MutationObserver((e,n)=>{n.disconnect(),setTimeout(()=>this.childrenConnectedCallback(),0)}).observe(this,{childList:!0})}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}start(){let e=JSON.parse(this.getAttribute("opts")),n=this.getAttribute("client");if(Astro[n]===void 0){window.addEventListener(`astro:${n}`,()=>this.start(),{once:!0});return}Astro[n](async()=>{let o=this.getAttribute("renderer-url"),[a,{default:c}]=await Promise.all([import(this.getAttribute("component-url")),o?import(o):()=>()=>{}]),i=this.getAttribute("component-export")||"default";if(!i.includes("."))this.Component=a[i];else{this.Component=a;for(let r of i.split("."))this.Component=this.Component[r]}return this.hydrator=c,this.hydrate},e,this)}attributeChangedCallback(){this.hydrate()}},d.observedAttributes=["props"],d))}})();</script><astro-island uid="2iKzVC" component-url="/_astro/SearchBtn.984510f3.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;SearchBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path fill-rule="evenodd" clip-rule="evenodd" d="M16.2071 4.89344C19.0923 7.77862 19.3131 12.3193 16.8693 15.4578C16.8846 15.4713 16.8996 15.4854 16.9143 15.5L21.1569 19.7427C21.5474 20.1332 21.5474 20.7664 21.1569 21.1569C20.7664 21.5474 20.1332 21.5474 19.7427 21.1569L15.5 16.9143C15.4854 16.8996 15.4713 16.8846 15.4578 16.8693C12.3193 19.3131 7.77862 19.0923 4.89344 16.2071C1.76924 13.083 1.76924 8.01763 4.89344 4.89344C8.01763 1.76924 13.083 1.76924 16.2071 4.89344ZM14.7929 14.7929C17.1361 12.4498 17.1361 8.6508 14.7929 6.30765C12.4498 3.96451 8.6508 3.96451 6.30765 6.30765C3.96451 8.6508 3.96451 12.4498 6.30765 14.7929C8.6508 17.1361 12.4498 17.1361 14.7929 14.7929Z" fill="currentColor"></path></svg></button></astro-island>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" class="astro-3EF6KSR2"></path>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="/rss.xml" title="RSS" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M4 11a9 9 0 0 1 9 9" class="astro-3EF6KSR2"></path>
+                                <path d="M4 4a16 16 0 0 1 16 16" class="astro-3EF6KSR2"></path>
+                                <circle cx="5" cy="19" r="1" class="astro-3EF6KSR2"></circle>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <astro-island uid="h8S6z" component-url="/_astro/ModeSwitcherBtn.0ddc5d6d.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;ModeSwitcherBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle> <line x1="12" y1="1" x2="12" y2="3"></line> <line x1="12" y1="21" x2="12" y2="23"></line> <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line> <line x1="1" y1="12" x2="3" y2="12"></line> <line x1="21" y1="12" x2="23" y2="12"></line> <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button></astro-island>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+		<main class="astro-BVZIHDZO">
+			<article class="astro-BVZIHDZO">
+				<div class="hero-image astro-BVZIHDZO">
+					
+				</div>
+				<div class="prose astro-BVZIHDZO">
+					<div class="title astro-BVZIHDZO">
+						<div class="date astro-BVZIHDZO">
+							<time datetime="2017-08-01T00:00:00.000Z">
+	Aug 1, 2017
+</time>
+							
+						</div>
+						<h1 class="astro-BVZIHDZO">PyOpenGLのglBufferDataにはどんなデータが渡せるのか</h1>
+						<hr class="astro-BVZIHDZO">
+					</div>
+					
+	<p>glBufferDataに数字のlistを渡す場合以下のように渡せるがどうゆう実装なのか。</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #E1E4E8">vertices</span><span style="color: #F97583">=</span><span style="color: #E1E4E8">[</span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">1</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">2</span><span style="color: #E1E4E8">] </span><span style="color: #6A737D"># x, y, z</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E1E4E8">glBufferData(</span><span style="color: #79B8FF">GL_ARRAY_BUFFER</span><span style="color: #E1E4E8">, </span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #79B8FF">len</span><span style="color: #E1E4E8">(vertices)</span><span style="color: #F97583">*</span><span style="color: #79B8FF">4</span><span style="color: #E1E4E8">,  </span><span style="color: #6A737D"># byte size</span></span>
+<span class="line"><span style="color: #E1E4E8">        (ctypes.c_float</span><span style="color: #F97583">*</span><span style="color: #79B8FF">len</span><span style="color: #E1E4E8">(vertices))(</span><span style="color: #F97583">*</span><span style="color: #E1E4E8">vertices), </span><span style="color: #6A737D"># 謎のctypes</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #79B8FF">GL_STATIC_DRAW</span><span style="color: #E1E4E8">)</span></span></code></pre>
+<p>非常に読み辛かったがVisualStudioでステップ実行して動きを追ってみた。</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #6A737D"># site-packages/OpenGL/GL/VERSION/GL_1_5.py</span></span>
+<span class="line"><span style="color: #B392F0">@_lazy</span><span style="color: #E1E4E8">( glBufferData )</span></span>
+<span class="line"><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">glBufferData</span><span style="color: #E1E4E8">( baseOperation, target, size, data</span><span style="color: #F97583">=</span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8">, usage</span><span style="color: #F97583">=</span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">"""Copy given data into the currently bound vertex-buffer-data object</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #9ECBFF">    target -- the symbolic constant indicating which buffer type is intended</span></span>
+<span class="line"><span style="color: #9ECBFF">    size -- if provided, the count-in-bytes of the array</span></span>
+<span class="line"><span style="color: #9ECBFF">    data -- data-pointer to be used, may be None to initialize without</span></span>
+<span class="line"><span style="color: #9ECBFF">        copying over a data-set</span></span>
+<span class="line"><span style="color: #9ECBFF">    usage -- hint to the driver as to how to set up access to the buffer</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #9ECBFF">    Note: parameter "size" can be omitted, which makes the signature</span></span>
+<span class="line"><span style="color: #9ECBFF">        glBufferData( target, data, usage )</span></span>
+<span class="line"><span style="color: #9ECBFF">    instead of:</span></span>
+<span class="line"><span style="color: #9ECBFF">        glBufferData( target, size, data, usage )</span></span>
+<span class="line"><span style="color: #9ECBFF">    """</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> usage </span><span style="color: #F97583">is</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">        usage </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> data</span></span>
+<span class="line"><span style="color: #E1E4E8">        data </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> size</span></span>
+<span class="line"><span style="color: #E1E4E8">        size </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">None</span></span>
+<span class="line"><span style="color: #E1E4E8">    data </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> ArrayDatatype.asArray( data ) </span><span style="color: #6A737D"># &#x3C;- ここでPythonの型をOpenGLに渡せるように変換</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> size </span><span style="color: #F97583">is</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">        size </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> ArrayDatatype.arrayByteCount( data )</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">return</span><span style="color: #E1E4E8"> baseOperation( target, size, data, usage )</span></span></code></pre>
+<p>難関。デバッガ無しでは追えませんでした。</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #6A737D"># site-packages/OpenGL/arrays/arraydatatype.py</span></span>
+<span class="line"><span style="color: #F97583">class</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">HandlerRegistry</span><span style="color: #E1E4E8">( </span><span style="color: #79B8FF">dict</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">__init__</span><span style="color: #E1E4E8">( self, plugin_match ):</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8">.match </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> plugin_match</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">__call__</span><span style="color: #E1E4E8">( self, value ): </span><span style="color: #6A737D"># 4</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">"""Lookup of handler for given value"""</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">try</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">            typ </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> value.</span><span style="color: #79B8FF">__class__</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">except</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">AttributeError</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">as</span><span style="color: #E1E4E8"> err:</span></span>
+<span class="line"><span style="color: #E1E4E8">            typ </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">type</span><span style="color: #E1E4E8">(value)</span></span>
+<span class="line"><span style="color: #E1E4E8">        handler </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8">.get( typ )</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">not</span><span style="color: #E1E4E8"> handler:</span></span>
+<span class="line"><span style="color: #E1E4E8">            </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">hasattr</span><span style="color: #E1E4E8">( typ, </span><span style="color: #9ECBFF">'__mro__'</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">                </span><span style="color: #F97583">for</span><span style="color: #E1E4E8"> base </span><span style="color: #F97583">in</span><span style="color: #E1E4E8"> typ.</span><span style="color: #79B8FF">__mro__</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">                    handler </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8">.get( base )</span></span>
+<span class="line"><span style="color: #E1E4E8">                    </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">not</span><span style="color: #E1E4E8"> handler:</span></span>
+<span class="line"><span style="color: #E1E4E8">                        handler </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8">.match( base ) </span><span style="color: #6A737D"># 5</span></span>
+<span class="line"><span style="color: #E1E4E8">                        </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> handler:</span></span>
+<span class="line"><span style="color: #E1E4E8">                            handler </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> handler.load()</span></span>
+<span class="line"><span style="color: #E1E4E8">                            </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> handler:</span></span>
+<span class="line"><span style="color: #E1E4E8">                                handler </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> handler()</span></span>
+<span class="line"><span style="color: #E1E4E8">                    </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> handler:</span></span>
+<span class="line"><span style="color: #E1E4E8">                        </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8">[ typ ] </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> handler</span></span>
+<span class="line"><span style="color: #E1E4E8">                        </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">hasattr</span><span style="color: #E1E4E8">( handler, </span><span style="color: #9ECBFF">'registerEquivalent'</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">                            handler.registerEquivalent( typ, base )</span></span>
+<span class="line"><span style="color: #E1E4E8">                        </span><span style="color: #F97583">return</span><span style="color: #E1E4E8"> handler</span></span>
+<span class="line"><span style="color: #E1E4E8">            </span><span style="color: #F97583">raise</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">TypeError</span><span style="color: #E1E4E8">(</span></span>
+<span class="line"><span style="color: #E1E4E8">                    </span><span style="color: #9ECBFF">"""No array-type handler for type </span><span style="color: #79B8FF">%s</span><span style="color: #9ECBFF">.</span><span style="color: #79B8FF">%s</span><span style="color: #9ECBFF"> (value: </span><span style="color: #79B8FF">%s</span><span style="color: #9ECBFF">) registered"""</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">(</span></span>
+<span class="line"><span style="color: #E1E4E8">                        typ.</span><span style="color: #79B8FF">__module__</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">type</span><span style="color: #E1E4E8">.</span><span style="color: #79B8FF">__name__</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">repr</span><span style="color: #E1E4E8">(value)[:</span><span style="color: #79B8FF">50</span><span style="color: #E1E4E8">]</span></span>
+<span class="line"><span style="color: #E1E4E8">                        )</span></span>
+<span class="line"><span style="color: #E1E4E8">                    )</span></span>
+<span class="line"><span style="color: #E1E4E8">            </span><span style="color: #F97583">return</span><span style="color: #E1E4E8"> handler</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #79B8FF">GLOBAL_REGISTRY</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> HandlerRegistry(</span></span>
+<span class="line"><span style="color: #E1E4E8">    plugins.FormatHandler.match </span><span style="color: #6A737D"># 6 -> plugins.pyに進む</span></span>
+<span class="line"><span style="color: #E1E4E8">    ) </span><span style="color: #6A737D"># 3</span></span>
+<span class="line"><span style="color: #F97583">class</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">ArrayDatatype</span><span style="color: #E1E4E8">( </span><span style="color: #79B8FF">object</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">    getHandler </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">GLOBAL_REGISTRY</span><span style="color: #E1E4E8">.</span><span style="color: #79B8FF">__call__</span><span style="color: #E1E4E8"> </span><span style="color: #6A737D"># 2</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">asArray</span><span style="color: #E1E4E8">( cls, value, typeCode</span><span style="color: #F97583">=</span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8"> ): </span><span style="color: #6A737D"># 0 &#x3C;- glBufferDataから呼ばれる</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">"""Given a value, convert to preferred array representation"""</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">return</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">cls</span><span style="color: #E1E4E8">.getHandler(value).asArray( value, typeCode </span><span style="color: #F97583">or</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">cls</span><span style="color: #E1E4E8">.typeConstant ) </span><span style="color: #6A737D"># 1</span></span>
+<span class="line"><span style="color: #E1E4E8">    asArray </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">classmethod</span><span style="color: #E1E4E8">( logs.logOnFail( asArray, _log ) )</span></span></code></pre>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #6A737D"># site-packages/OpenGL/plugins.py</span></span>
+<span class="line"><span style="color: #F97583">class</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">Plugin</span><span style="color: #E1E4E8">( </span><span style="color: #79B8FF">object</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">"""Base class for plugins to be loaded"""</span></span>
+<span class="line"><span style="color: #E1E4E8">    loaded </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">False</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">__init__</span><span style="color: #E1E4E8">( self, name, import_path, check </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8">, </span><span style="color: #F97583">**</span><span style="color: #E1E4E8">named ):</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">"""Register the plug-in"""</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8">.registry.append( </span><span style="color: #79B8FF">self</span><span style="color: #E1E4E8"> ) </span><span style="color: #6A737D"># &#x3C;-  FormatHandlerのインスタンスが登録される</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F97583">class</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">FormatHandler</span><span style="color: #E1E4E8">( </span><span style="color: #B392F0">Plugin</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">"""Data-type storage-format handler"""</span></span>
+<span class="line"><span style="color: #E1E4E8">    registry </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> [] </span><span style="color: #6A737D"># &#x3C;- OpenGL/__init__.pyで初期化される</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #B392F0">@</span><span style="color: #79B8FF">classmethod</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">match</span><span style="color: #E1E4E8">( cls, value ): </span><span style="color: #6A737D"># 7</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">"""Lookup appropriate handler based on value (a type)"""</span></span>
+<span class="line"><span style="color: #E1E4E8">        key </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #9ECBFF">'</span><span style="color: #79B8FF">%s</span><span style="color: #9ECBFF">.</span><span style="color: #79B8FF">%s</span><span style="color: #9ECBFF">'</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">( value.</span><span style="color: #79B8FF">__module__</span><span style="color: #E1E4E8">, value.</span><span style="color: #79B8FF">__name__</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">for</span><span style="color: #E1E4E8"> plugin </span><span style="color: #F97583">in</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">cls</span><span style="color: #E1E4E8">.registry: </span><span style="color: #6A737D"># &#x3C;- ここにハンドラのリストがある</span></span>
+<span class="line"><span style="color: #E1E4E8">            </span><span style="color: #79B8FF">set</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">getattr</span><span style="color: #E1E4E8">( plugin, </span><span style="color: #9ECBFF">'check'</span><span style="color: #E1E4E8">, ())</span></span>
+<span class="line"><span style="color: #E1E4E8">            </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">set</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">and</span><span style="color: #E1E4E8"> key </span><span style="color: #F97583">in</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">set</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">                </span><span style="color: #F97583">return</span><span style="color: #E1E4E8"> plugin</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">return</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">None</span></span></code></pre>
+<p>これらがimport時にFormatHandlerとして登録される。</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #6A737D"># site-packages/OpenGL/__init__.py</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'none'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.nones.NoneHandler'</span><span style="color: #E1E4E8">, [ _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.NoneType'</span><span style="color: #E1E4E8">],</span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F97583">if</span><span style="color: #E1E4E8"> sys.version_info[</span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">] </span><span style="color: #F97583">&#x3C;</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">3</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">    FormatHandler( </span><span style="color: #9ECBFF">'str'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.strings.StringHandler'</span><span style="color: #E1E4E8">,[_bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.str'</span><span style="color: #E1E4E8">], </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">    FormatHandler( </span><span style="color: #9ECBFF">'unicode'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.strings.UnicodeHandler'</span><span style="color: #E1E4E8">,[_bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.unicode'</span><span style="color: #E1E4E8">], </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #F97583">else</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">    FormatHandler( </span><span style="color: #9ECBFF">'bytes'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.strings.StringHandler'</span><span style="color: #E1E4E8">,[_bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.bytes'</span><span style="color: #E1E4E8">], </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">    FormatHandler( </span><span style="color: #9ECBFF">'str'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.strings.UnicodeHandler'</span><span style="color: #E1E4E8">,[_bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.str'</span><span style="color: #E1E4E8">], </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'list'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.lists.ListHandler'</span><span style="color: #E1E4E8">, [</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.list'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.tuple'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">], </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'numbers'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.numbers.NumberHandler'</span><span style="color: #E1E4E8">, [</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.int'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.float'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.long'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">], </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler(</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'ctypesarrays'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.ctypesarrays.CtypesArrayHandler'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    [</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'_ctypes.ArrayType'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'_ctypes.PyCArrayType'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'_ctypes.Array'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'_ctypes.array.Array'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    ],</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">True</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">)</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler(</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'ctypesparameter'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'OpenGL.arrays.ctypesparameters.CtypesParameterHandler'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    [</span></span>
+<span class="line"><span style="color: #E1E4E8">        _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.CArgObject'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_uint'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_int'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_float'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_double'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_ulong'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_long'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'ctypes.c_longlong'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    ],</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">True</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">)</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'ctypespointer'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.ctypespointers.CtypesPointerHandler'</span><span style="color: #E1E4E8">,[</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'ctypes.c_void_p'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'_ctypes._Pointer'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'ctypes.c_char_p'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'_ctypes.pointer._Pointer'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">],</span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'numpy'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.numpymodule.NumpyHandler'</span><span style="color: #E1E4E8">, [</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'numpy.ndarray'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'numpy.core.memmap.memmap'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">],</span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">True</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'buffer'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.buffers.BufferHandler'</span><span style="color: #E1E4E8">, [</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #9ECBFF">'OpenGL.arrays._buffers.Py_buffer'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.memoryview'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">    _bi</span><span style="color: #F97583">+</span><span style="color: #9ECBFF">'.bytearray'</span><span style="color: #E1E4E8">,</span></span>
+<span class="line"><span style="color: #E1E4E8">],</span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">True</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'vbo'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.vbo.VBOHandler'</span><span style="color: #E1E4E8">, [</span><span style="color: #9ECBFF">'OpenGL.arrays.vbo.VBO'</span><span style="color: #E1E4E8">,</span><span style="color: #9ECBFF">'OpenGL_accelerate.vbo.VBO'</span><span style="color: #E1E4E8">],</span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span>
+<span class="line"><span style="color: #E1E4E8">FormatHandler( </span><span style="color: #9ECBFF">'vbooffset'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'OpenGL.arrays.vbo.VBOOffsetHandler'</span><span style="color: #E1E4E8">, [</span><span style="color: #9ECBFF">'OpenGL.arrays.vbo.VBOOffset'</span><span style="color: #E1E4E8">,</span><span style="color: #9ECBFF">'OpenGL_accelerate.vbo.VBOOffset'</span><span style="color: #E1E4E8">],</span><span style="color: #FFAB70">isOutput</span><span style="color: #F97583">=</span><span style="color: #79B8FF">False</span><span style="color: #E1E4E8"> )</span></span></code></pre>
+<p>numpyとか定義されているね。なるほど。</p>
+<p><code>(ctypes.c_float*len(vertices))(*vertices)</code> は <code>ctypes.c_float</code> にマッチして、<code>CtypesArrayHandler</code> によって処理される。
+一方、単なるPythonのlistであるverticesは、<code>OpenGL.arrays.lists.ListHandler</code> によって処理されて <code>NotImplementedError</code> に落ちるのであった。</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F97583">class</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">ListHandler</span><span style="color: #E1E4E8">( </span><span style="color: #B392F0">formathandler</span><span style="color: #E1E4E8">.</span><span style="color: #B392F0">FormatHandler</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #B392F0">@</span><span style="color: #79B8FF">classmethod</span></span>
+<span class="line"><span style="color: #E1E4E8">    </span><span style="color: #F97583">def</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">asArray</span><span style="color: #E1E4E8">( cls, value, typeCode</span><span style="color: #F97583">=</span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8"> ):</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">"""Convert given value to a ctypes array value of given typeCode</span></span>
+<span class="line"><span style="color: #9ECBFF">        </span></span>
+<span class="line"><span style="color: #9ECBFF">        This does a *lot* of work just to get the data into the correct</span></span>
+<span class="line"><span style="color: #9ECBFF">        format.  It's not going to be anywhere near as fast as a numpy</span></span>
+<span class="line"><span style="color: #9ECBFF">        or similar approach!</span></span>
+<span class="line"><span style="color: #9ECBFF">        """</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #F97583">if</span><span style="color: #E1E4E8"> typeCode </span><span style="color: #F97583">is</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">None</span><span style="color: #E1E4E8">:</span></span>
+<span class="line"><span style="color: #E1E4E8">            </span><span style="color: #F97583">raise</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">NotImplementedError</span><span style="color: #E1E4E8">( </span><span style="color: #9ECBFF">"""Haven't implemented type-inference for lists yet"""</span><span style="color: #E1E4E8"> )</span></span></code></pre>
+<p>確かにlistだと中身の型が決められんね。なるほど。</p>
+
+				</div>
+			</article>
+		</main>
+		<footer class="footer astro-SZ7XMLTE">
+    <nav class="nav astro-SZ7XMLTE">
+        <div class="astro-SZ7XMLTE">2021  &copy; Copyright notice |  <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-SZ7XMLTE">三次元日誌(astro)</a>
+        <script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><astro-island uid="1QEdto" component-url="/_astro/ModeLabel.e3ff75e7.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;ModeLabel&quot;,&quot;value&quot;:true}" await-children=""><span slot="dark" data-svelte-h="svelte-14ov3lc">(dark)</span></astro-island> theme on <a href="https://astro.build/" class="astro-SZ7XMLTE">Astro</a></div>
+        <astro-island uid="1I86to" component-url="/_astro/NetlifyIdentity.94b8edb0.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;NetlifyIdentity&quot;,&quot;value&quot;:true}"></astro-island>
+    </nav>
+</footer>
+	</body></html>

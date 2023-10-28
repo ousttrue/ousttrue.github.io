@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" class="astro-BVZIHDZO">
+	<head>
+		<!-- Use Google Fonts, if you don't wanna prefer a self-hosted version --><!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet"> --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>lua による imgui 計画</title>
+<meta name="title" content="lua による imgui 計画">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="shortcut icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<!-- Open Graph Tags (Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="lua による imgui 計画">
+
+
+
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="lua による imgui 計画">
+
+
+
+
+
+<script>
+  const theme = (() => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  })();
+
+  if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
+  }
+</script>
+		
+	<link rel="stylesheet" href="/_astro/about.6111bb3a.css" />
+<link rel="stylesheet" href="/_astro/about.657f8f57.css" />
+<link rel="stylesheet" href="/_astro/about.ee60a110.css" />
+<link rel="stylesheet" href="/_astro/about.dcb84f3d.css" /><script type="module" src="/_astro/hoisted.e6960f2c.js"></script></head>
+
+	<body class="astro-BVZIHDZO">
+		<header class="header astro-3EF6KSR2">
+    <div class="header__logo astro-3EF6KSR2">
+        <a href="/" class="avatar astro-3EF6KSR2">
+            <img class="header__logo-img astro-3EF6KSR2" src="/assets/logo.svg" alt="Astro logo">
+        </a>
+    </div>
+    <div class="header__meta flex-1 astro-3EF6KSR2">
+        <h3 class="header__title dark:text-theme-dark-secondary astro-3EF6KSR2">
+            <a href="" class="astro-3EF6KSR2">三次元日誌(astro)</a>
+        </h3>
+        <div class="header__meta-more flex astro-3EF6KSR2">
+            <p class="header__desc astro-3EF6KSR2">
+                Crisp, minimal, personal blog theme for Astro
+            </p>
+            <nav class="header__nav flex astro-3EF6KSR2">
+                <ul class="header__ref-list astro-3EF6KSR2">
+                    <li class="astro-3EF6KSR2">
+                        <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var r=(i,c,n)=>{let s=async()=>{await(await i())()},t=new IntersectionObserver(e=>{for(let o of e)if(o.isIntersecting){t.disconnect(),s();break}});for(let e of n.children)t.observe(e)};(self.Astro||(self.Astro={})).visible=r;window.dispatchEvent(new Event("astro:visible"));})();;(()=>{var d;{let p={0:t=>u(t),1:t=>l(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(l(t)),5:t=>new Set(l(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t)},h=t=>{let[e,n]=t;return e in p?p[e](n):void 0},l=t=>t.map(h),u=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([e,n])=>[e,h(n)]));customElements.get("astro-island")||customElements.define("astro-island",(d=class extends HTMLElement{constructor(){super(...arguments);this.hydrate=async()=>{var i;if(!this.hydrator||!this.isConnected)return;let e=(i=this.parentElement)==null?void 0:i.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let n=this.querySelectorAll("astro-slot"),o={},a=this.querySelectorAll("template[data-astro-template]");for(let r of a){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of n){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(o[r.getAttribute("name")||"default"]=r.innerHTML)}let c;try{c=this.hasAttribute("props")?u(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",y=this.getAttribute("component-export");throw y&&(s+=` (export ${y})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}await this.hydrator(this)(this.Component,c,o,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))}}connectedCallback(){!this.hasAttribute("await-children")||this.firstChild?this.childrenConnectedCallback():new MutationObserver((e,n)=>{n.disconnect(),setTimeout(()=>this.childrenConnectedCallback(),0)}).observe(this,{childList:!0})}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}start(){let e=JSON.parse(this.getAttribute("opts")),n=this.getAttribute("client");if(Astro[n]===void 0){window.addEventListener(`astro:${n}`,()=>this.start(),{once:!0});return}Astro[n](async()=>{let o=this.getAttribute("renderer-url"),[a,{default:c}]=await Promise.all([import(this.getAttribute("component-url")),o?import(o):()=>()=>{}]),i=this.getAttribute("component-export")||"default";if(!i.includes("."))this.Component=a[i];else{this.Component=a;for(let r of i.split("."))this.Component=this.Component[r]}return this.hydrator=c,this.hydrate},e,this)}attributeChangedCallback(){this.hydrate()}},d.observedAttributes=["props"],d))}})();</script><astro-island uid="2iKzVC" component-url="/_astro/SearchBtn.984510f3.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;SearchBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path fill-rule="evenodd" clip-rule="evenodd" d="M16.2071 4.89344C19.0923 7.77862 19.3131 12.3193 16.8693 15.4578C16.8846 15.4713 16.8996 15.4854 16.9143 15.5L21.1569 19.7427C21.5474 20.1332 21.5474 20.7664 21.1569 21.1569C20.7664 21.5474 20.1332 21.5474 19.7427 21.1569L15.5 16.9143C15.4854 16.8996 15.4713 16.8846 15.4578 16.8693C12.3193 19.3131 7.77862 19.0923 4.89344 16.2071C1.76924 13.083 1.76924 8.01763 4.89344 4.89344C8.01763 1.76924 13.083 1.76924 16.2071 4.89344ZM14.7929 14.7929C17.1361 12.4498 17.1361 8.6508 14.7929 6.30765C12.4498 3.96451 8.6508 3.96451 6.30765 6.30765C3.96451 8.6508 3.96451 12.4498 6.30765 14.7929C8.6508 17.1361 12.4498 17.1361 14.7929 14.7929Z" fill="currentColor"></path></svg></button></astro-island>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" class="astro-3EF6KSR2"></path>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <a href="/rss.xml" title="RSS" class="astro-3EF6KSR2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+                                <path d="M4 11a9 9 0 0 1 9 9" class="astro-3EF6KSR2"></path>
+                                <path d="M4 4a16 16 0 0 1 16 16" class="astro-3EF6KSR2"></path>
+                                <circle cx="5" cy="19" r="1" class="astro-3EF6KSR2"></circle>
+                            
+</svg>
+                        </a>
+                    </li>
+                    <li class="astro-3EF6KSR2">
+                        <astro-island uid="h8S6z" component-url="/_astro/ModeSwitcherBtn.0ddc5d6d.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-3EF6KSR2&quot;]}" ssr="" client="visible" opts="{&quot;name&quot;:&quot;ModeSwitcherBtn&quot;,&quot;value&quot;:true}" await-children=""><button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle> <line x1="12" y1="1" x2="12" y2="3"></line> <line x1="12" y1="21" x2="12" y2="23"></line> <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line> <line x1="1" y1="12" x2="3" y2="12"></line> <line x1="21" y1="12" x2="23" y2="12"></line> <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button></astro-island>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+		<main class="astro-BVZIHDZO">
+			<article class="astro-BVZIHDZO">
+				<div class="hero-image astro-BVZIHDZO">
+					
+				</div>
+				<div class="prose astro-BVZIHDZO">
+					<div class="title astro-BVZIHDZO">
+						<div class="date astro-BVZIHDZO">
+							<time datetime="2021-07-17T00:00:00.000Z">
+	Jul 17, 2021
+</time>
+							
+						</div>
+						<h1 class="astro-BVZIHDZO">lua による imgui 計画</h1>
+						<hr class="astro-BVZIHDZO">
+					</div>
+					
+	<h2 id="rust-で-d3d11-レンダラを進めてきたが">rust で D3D11 レンダラを進めてきたが・・・</h2>
+<p>当初 <code>rust</code> で <code>d3d11</code> のレンダラーを作ろうとして作業を進めていた。
+<code>imgui</code> を組み込んで、 <code>glTF</code> をロードして <code>unlit</code> で描画するところまで作ったが、
+<code>GUI</code> の作りこみが大変そうな感じだった。
+<code>rust</code> は関数オーバーロードが無いので　<code>imgui</code> のラッパーの使い勝手が <code>c++</code> より落ちるなど。
+ポインターを渡せるのは素敵なのだが。</p>
+<h2 id="nvim-05-はおもしろい">nvim-0.5 はおもしろい</h2>
+<p>ここで寄り道して、 <code>nvim</code> をいじり始めた。
+ちょうどバージョン <code>0.5</code> がリリースされるタイミングで、<code>0.5</code> になると lua サポートが強化されて、設定が lua で書けるとのこと。</p>
+<ul>
+<li><a href="https://zenn.dev/hituzi_no_sippo/articles/871c06cdbc45b53181e3">NeovimとLua</a></li>
+</ul>
+<p>ということで Windows 向けのソースからのビルドシステムを作って <code>nvim</code> 環境を整備してみた。
+lua で記述された plugin をなるべく採用。</p>
+<p><a href="https://github.com/ousttrue/my_nvim">https://github.com/ousttrue/my_nvim</a></p>
+<p>最近常用していた、 <code>vscode</code> の便利さにどこまで追いつけるか。</p>
+<ul>
+<li>Language Server Protocol。nvim-0.5 から nvim-lsp (luaで書いてある) がある。組み込み</li>
+<li>Debug Adapter Protocol。nvim-0.5 から nvim-dap (lulで書いてある) がある。<a href="https://github.com/mfussenegger/nvim-dap">https://github.com/mfussenegger/nvim-dap</a></li>
+</ul>
+<p>vscode から <code>lsp</code> と <code>dap</code> という重要な資産を持ってこれるので慣れればいけそうである。
+調べたところ下記のようだった。</p>
+<ul>
+<li>codelldb(native debugger c++ や rust) は nvim-dap を改造すれば使えた <a href="https://github.com/ousttrue/nvim-dap">https://github.com/ousttrue/nvim-dap</a></li>
+<li>rust-analyzer 動いた</li>
+<li>python: lsp, dap ともに動きそう</li>
+<li>lua: lsp, dap ともに動きそう</li>
+<li>csharp: lsp, dap ともに動きそう(Unityはうまくいかず)</li>
+</ul>
+<p>nvim-lsp も nvim-dap も lua で簡単に記述されているので、コードを読めば、たぶんわかる。
+あとは、タスクランナーを整備すれば開発環境に使えそう。</p>
+<h2 id="luarocks-の-windows-運用">luarocks の Windows 運用</h2>
+<p>lua で記述された nvim のパッケージマネージャー <a href="https://github.com/wbthomason/packer.nvim">https://github.com/wbthomason/packer.nvim</a> を採用したのだが、
+Windows で luarocks 機能が動かなかった。<a href="https://luarocks.org/">https://luarocks.org/</a> は <code>lua</code> のパッケージマネージャー。
+ちょっと、古め(vc2017より前)の vc でないとだめぽい。
+改造した。</p>
+<ul>
+<li><a href="https://github.com/ousttrue/packer.nvim">https://github.com/ousttrue/packer.nvim</a></li>
+<li><a href="https://github.com/ousttrue/hererocks">https://github.com/ousttrue/hererocks</a></li>
+</ul>
+<p>hererocks は、luarocks のインストーラー。
+<code>LUA_PATH</code> <code>package.path</code> を理解した。</p>
+<h2 id="スタンドアロンの-lua-インタプリタによるプロジェクト">スタンドアロンの lua インタプリタによるプロジェクト</h2>
+<p>luarocks が無事に Windows で運用できるようになったので、プロジェクトローカルに必要なライブラリをインストールして、
+スタンドアロンの lua インタープリターを起点にしたアプリ開発ができないか探ってみた。
+lua インタプリタがアプリ組み込みだと dap の運用がしづらい(port 開けて attach とかになる)のでスタンドアロンの lua インタープリターを推す。</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #e1e4e8"># フォルダ構成</span></span>
+<span class="line"><span style="color: #e1e4e8">project_root</span></span>
+<span class="line"><span style="color: #e1e4e8">  + lua(.gitignore) # hererocks でローカルビルドする</span></span>
+<span class="line"><span style="color: #e1e4e8">  + main.lua</span></span></code></pre>
+<p>これで、 <code>lsp</code> と <code>dap</code> が利用できれば快適になるのではないか。</p>
+<h3 id="lua-の-languageserver">lua の LanguageServer</h3>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=sumneko.lua">https://marketplace.visualstudio.com/items?itemName=sumneko.lua</a>
+<ul>
+<li><a href="https://github.com/sumneko/lua-language-server">https://github.com/sumneko/lua-language-server</a></li>
+</ul>
+</li>
+</ul>
+<p>がしっかり動き、<code>EmmyLua</code> の型ヒントを活用できることが分かった。</p>
+<p><a href="https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua">https://github.com/neovim/nvim-lspconfig/blob/a21a509417aa530fb7b54020f590fa5ccc67de77/CONFIG.md#sumneko_lua</a> に例があって、</p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #79B8FF">require</span><span style="color: #9ECBFF">'lspconfig'</span><span style="color: #E1E4E8">.</span><span style="color: #B392F0">sumneko_lua</span><span style="color: #E1E4E8">.</span><span style="color: #79B8FF">setup</span><span style="color: #E1E4E8"> {</span></span>
+<span class="line"><span style="color: #E1E4E8">  settings </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> {</span></span>
+<span class="line"><span style="color: #E1E4E8">    Lua </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> {</span></span>
+<span class="line"><span style="color: #E1E4E8">      workspace </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> {</span></span>
+<span class="line"><span style="color: #E1E4E8">        </span><span style="color: #6A737D">-- Make the server aware of Neovim runtime files</span></span>
+<span class="line"><span style="color: #E1E4E8">        library </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> {</span></span>
+<span class="line"><span style="color: #E1E4E8">          [vim.</span><span style="color: #B392F0">fn</span><span style="color: #E1E4E8">.</span><span style="color: #79B8FF">expand</span><span style="color: #E1E4E8">(</span><span style="color: #9ECBFF">'$VIMRUNTIME/lua'</span><span style="color: #E1E4E8">)] </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">true</span><span style="color: #E1E4E8">, </span><span style="color: #6A737D">-- lua標準の型定義がある</span></span>
+<span class="line"><span style="color: #E1E4E8">          [vim.</span><span style="color: #B392F0">fn</span><span style="color: #E1E4E8">.</span><span style="color: #79B8FF">expand</span><span style="color: #E1E4E8">(</span><span style="color: #9ECBFF">'$VIMRUNTIME/lua/vim/lsp'</span><span style="color: #E1E4E8">)] </span><span style="color: #F97583">=</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">true</span><span style="color: #E1E4E8">, </span><span style="color: #6A737D">-- Vimの型定義がある</span></span>
+<span class="line"><span style="color: #E1E4E8">        },</span></span>
+<span class="line"><span style="color: #E1E4E8">      },</span></span>
+<span class="line"><span style="color: #E1E4E8">    },</span></span>
+<span class="line"><span style="color: #E1E4E8">  },</span></span>
+<span class="line"><span style="color: #E1E4E8">}</span></span></code></pre>
+<p>インテリセンスが効くし、組み込み関数の型ヒントも追加できる。</p>
+<h3 id="lua-の-debugadapter">lua の DebugAdapter</h3>
+<p>DebugAdapter も問題なく動いた。
+luajit の場合は対応しているものを使うべし。</p>
+<h4 id="lua-debug">Lua Debug</h4>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug">https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug</a>
+<ul>
+<li><a href="https://github.com/actboy168/lua-debug">https://github.com/actboy168/lua-debug</a></li>
+</ul>
+</li>
+</ul>
+<p><a href="https://github.com/actboy168/bee.lua">https://github.com/actboy168/bee.lua</a> の</p>
+<ul>
+<li>Add error hook (for debugger)</li>
+<li>Add resume/yield hook (for debugger)</li>
+</ul>
+<p>謎の機能で実装されているぽい。</p>
+<h4 id="local-lua-debugger">Local Lua Debugger</h4>
+<ul>
+<li>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode">https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode</a></p>
+<ul>
+<li><a href="https://github.com/tomblind/local-lua-debugger-vscode">https://github.com/tomblind/local-lua-debugger-vscode</a></li>
+</ul>
+</li>
+<li>
+<p>luajit でも動く</p>
+</li>
+<li>
+<p>TypeScriptToLua で書かれている</p>
+</li>
+</ul>
+<h2 id="lua-で-3d">lua で 3D</h2>
+<p>ちょっと試したところ、 luajit の <a href="https://luajit.org/ext_ffi.html">FFI</a> を使うのが有望そうという感触を得た。
+d3d は lua でやっている人があまりいなかった。</p>
+<ul>
+<li><a href="https://github.com/sonoro1234/LuaJIT-GLFW">https://github.com/sonoro1234/LuaJIT-GLFW</a></li>
+<li><a href="https://github.com/sonoro1234/LuaJIT-ImGui">https://github.com/sonoro1234/LuaJIT-ImGui</a></li>
+</ul>
+<p>最新の luajit-2.1.0-beta3(lua-5.1仕様) でいく。</p>
+<h2 id="imgui-の-ffi">imgui の ffi</h2>
+<p><code>cimgui</code> ではなく 素の <code>imgui</code> の luajit ffi できるか実験した。</p>
+<p><a href="https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi">https://stackoverflow.com/questions/6691651/is-it-possible-to-use-functions-from-c-namespaces-with-luajit-ffi</a></p>
+<pre is:raw="" class="astro-code github-dark" style="background-color: #24292e; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #E1E4E8">ffi.</span><span style="color: #79B8FF">cdef</span><span style="color: #9ECBFF">[[</span></span>
+<span class="line"><span style="color: #F97583">void</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">Test1_Method1</span><span style="color: #E1E4E8">(</span><span style="color: #F97583">void</span><span style="color: #E1E4E8">) </span><span style="color: #F97583">asm</span><span style="color: #E1E4E8">(</span><span style="color: #9ECBFF">"</span><span style="color: #9ECBFF">_ZN5Test17Method1Ev</span><span style="color: #9ECBFF">"</span><span style="color: #E1E4E8">);</span></span>
+<span class="line"><span style="color: #9ECBFF">]]</span></span></code></pre>
+<p>のように mangling に対応すればできそう。</p>
+<h2 id="libclang-による-コード生成">libclang による コード生成</h2>
+<p>ということで、 <code>luajit</code> + <code>FFI</code> を中心に <code>imgui</code> ラッパーを作ってレンダラーというか 3D ツールのインフラとなる、
+簡単なレンダラーと <code>Gizmo</code> に対応したツールキットを作るという方向になってきた。</p>
+<p><code>imgui</code> の <code>luajit</code> <code>FFI</code> の使い勝手が重要。</p>
+<p><a href="https://github.com/ousttrue/limgui">https://github.com/ousttrue/limgui</a></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> libclang で <code>imgui.h</code> をパースして、luajit FFI 生成と <code>lsp</code> への EmmyLua アノテーション生成を同時にやるツール。</li>
+</ul>
+
+				</div>
+			</article>
+		</main>
+		<footer class="footer astro-SZ7XMLTE">
+    <nav class="nav astro-SZ7XMLTE">
+        <div class="astro-SZ7XMLTE">2021  &copy; Copyright notice |  <a href="https://github.com/one-aalam/astro-ink" title="三次元日誌(astro)'s Github URL'" class="astro-SZ7XMLTE">三次元日誌(astro)</a>
+        <script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><astro-island uid="1QEdto" component-url="/_astro/ModeLabel.e3ff75e7.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;ModeLabel&quot;,&quot;value&quot;:true}" await-children=""><span slot="dark" data-svelte-h="svelte-14ov3lc">(dark)</span></astro-island> theme on <a href="https://astro.build/" class="astro-SZ7XMLTE">Astro</a></div>
+        <astro-island uid="1I86to" component-url="/_astro/NetlifyIdentity.94b8edb0.js" component-export="default" renderer-url="/_astro/client.cb726945.js" props="{&quot;class&quot;:[0,&quot;astro-SZ7XMLTE&quot;]}" ssr="" client="load" opts="{&quot;name&quot;:&quot;NetlifyIdentity&quot;,&quot;value&quot;:true}"></astro-island>
+    </nav>
+</footer>
+	</body></html>
