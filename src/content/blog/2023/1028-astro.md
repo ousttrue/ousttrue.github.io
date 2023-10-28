@@ -80,6 +80,25 @@ build で エラーに遭遇。
 `getStaticPaths()` function is required for dynamic routes. Make sure that you `export` a `getStaticPaths` function from your dynamic route.
 ```
 
+```js
+// astron.config.mjs
+    output: 'server',
+    adapter: vercel(),
+```
+
+とかで `npm build` が通ったと思いきやうまくいってない。
+`npm run dev` のほうが動かなくなった。
+
+https://github.com/withastro/astro/issues/6768
+
+## SSG と SSR ?
+
+- https://docs.astro.build/ja/guides/server-side-rendering/
+
+## getStaticPaths()
+
+https://docs.astro.build/ja/core-concepts/routing/#%E9%9D%99%E7%9A%84ssg%E3%83%A2%E3%83%BC%E3%83%89
+
 # memo
 
 web frontend は大変そうなので避けていたのだが、

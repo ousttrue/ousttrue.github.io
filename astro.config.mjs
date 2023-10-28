@@ -12,9 +12,9 @@ const __dirname = dirname(__filename);
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://example.com',
-    output: 'server',
-    adapter: vercel(),
+    site: 'https://ousttrue.github.io',
+    // output: 'server',
+    // adapter: vercel(),
     integrations: [mdx(),
     svelte(), tailwind({
         config: {
