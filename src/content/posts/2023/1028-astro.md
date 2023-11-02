@@ -94,3 +94,18 @@ https://docs.astro.build/ja/guides/content-collections/
 
 に目を通してシンプル化した。
 
+# nvim 設定
+
+neoformat で `prettier-plugin-astro` が動くように
+`npx prettier` になるようした。
+
+```lua
+  -- astro
+  vim.g.neoformat_astro_prettier = {
+    exe = 'npx',
+    args = { "prettier", "--stdin-filepath", '"%:p"' },
+    stdin = 1,
+    try_node_exe = 1,
+  }
+```
+
