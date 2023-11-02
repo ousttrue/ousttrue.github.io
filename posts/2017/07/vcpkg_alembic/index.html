@@ -1,0 +1,433 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2017/07/vcpkg_alembic/"><!-- Primary Meta Tags --><title>vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる</title><meta name="title" content="vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2017/07/vcpkg_alembic/"><meta property="og:title" content="vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2017/07/vcpkg_alembic/"><meta property="twitter:title" content="vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2017-07-18T00:00:00.000Z">2017
+-07
+-18</time></div><h1 data-astro-cid-bvzihdzo>vcpkgのAlembicパッケージ(USE_HDF5)を作ってみる</h1><hr data-astro-cid-bvzihdzo></div><p>mmdbridgeのvcpkgを使ったビルド手順を作ったついでにAlembicのvcpkg向けパッケージを作ってみる。</p>
+<p>情報収集</p>
+<ul>
+<li><a href="https://github.com/Microsoft/vcpkg/blob/master/docs/examples/packaging-zlib.md">https://github.com/Microsoft/vcpkg/blob/master/docs/examples/packaging-zlib.md</a></li>
+</ul>
+<p>読んだ。</p>
+<p><code>vcpkg create url</code> で雛形が作れる。</p>
+<p>実験</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#79B8FF">.</span><span style="color:#E1E4E8">\vcpkg.exe </span><span style="color:#9ECBFF">create</span><span style="color:#9ECBFF"> alembic</span><span style="color:#9ECBFF"> https://github.com/alembic/alembic/archive/1.7.1.tar.gz</span></span>
+<span class="line"><span style="color:#B392F0">CMake</span><span style="color:#9ECBFF"> Error</span><span style="color:#9ECBFF"> at</span><span style="color:#9ECBFF"> scripts/ports.cmake:101</span><span style="color:#E1E4E8"> (message):</span></span>
+<span class="line"><span style="color:#B392F0">  Portfile</span><span style="color:#9ECBFF"> already</span><span style="color:#9ECBFF"> exists:</span><span style="color:#9ECBFF"> 'D:\vcpkg\ports\alembic\portfile.cmake'</span></span></code></pre>
+<p>すでにあるだと！？
+最近できたらしい。</p>
+<ul>
+<li><a href="https://github.com/Microsoft/vcpkg/tree/master/ports/alembic">https://github.com/Microsoft/vcpkg/tree/master/ports/alembic</a></li>
+</ul>
+<p>しかし、hdf非対応みたいなので作ってみる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#79B8FF">.</span><span style="color:#E1E4E8">\vcpkg.exe </span><span style="color:#9ECBFF">create</span><span style="color:#9ECBFF"> alembic-hdf</span><span style="color:#9ECBFF"> https://github.com/alembic/alembic/archive/1.7.1.tar.gz</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">VCPKG_DIR</span></span>
+<span class="line"><span style="color:#B392F0">    ports</span></span>
+<span class="line"><span style="color:#B392F0">        alembic-hdf</span></span>
+<span class="line"><span style="color:#B392F0">            CONTROL</span></span>
+<span class="line"><span style="color:#B392F0">            portfile.cmake</span></span></code></pre>
+<p>ができた。
+簡単なCONTROLから。
+こっちはパッケージ情報を決めるだけなのでさくっと。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#B392F0">Source:</span><span style="color:#9ECBFF"> alembic-hdf</span></span>
+<span class="line"><span style="color:#B392F0">Version:</span><span style="color:#79B8FF"> 1.7</span><span style="color:#9ECBFF">.1</span></span>
+<span class="line"><span style="color:#B392F0">Description:</span><span style="color:#9ECBFF"> alembic</span><span style="color:#9ECBFF"> with</span><span style="color:#9ECBFF"> hdf5</span></span>
+<span class="line"><span style="color:#B392F0">Build-Depends:</span><span style="color:#9ECBFF"> hdf5</span></span></code></pre>
+<p>本題のportfile.cmake。
+そのままだとエラーになるの。最低限以下が必要なようだ。
+アーカイブを展開パスの指定。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#F97583">set</span><span style="color:#E1E4E8">(SOURCE_PATH </span><span style="color:#F97583">${CURRENT_BUILDTREES_DIR}</span><span style="color:#E1E4E8">/src/1.7.1)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># ↓ 修正する</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">set</span><span style="color:#E1E4E8">(SOURCE_PATH </span><span style="color:#F97583">${CURRENT_BUILDTREES_DIR}</span><span style="color:#E1E4E8">/src/alembic-1.7.1)</span></span></code></pre>
+<p>実行してみる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#F97583">></span><span style="color:#E1E4E8"> ./vcpkg install alembic-hdf:x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> packages</span><span style="color:#9ECBFF"> will</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> built</span><span style="color:#9ECBFF"> and</span><span style="color:#9ECBFF"> installed:</span></span>
+<span class="line"><span style="color:#B392F0">    alembic-hdf:x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">Building</span><span style="color:#9ECBFF"> package</span><span style="color:#9ECBFF"> alembic-hdf:x64-windows...</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_INSTALLED_DIR=D:/vcpkg/installed/x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> DOWNLOADS=D:/vcpkg/downloads</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_PACKAGES_DIR=D:/vcpkg/packages/alembic-hdf_x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_BUILDTREES_DIR=D:/vcpkg/buildtrees/alembic-hdf</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_PORT_DIR=D:/vcpkg/ports/alembic-hdf/.</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Using</span><span style="color:#9ECBFF"> cached</span><span style="color:#9ECBFF"> D:/vcpkg/downloads/1.7.1.tar.gz</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Testing</span><span style="color:#9ECBFF"> integrity</span><span style="color:#9ECBFF"> of</span><span style="color:#9ECBFF"> cached</span><span style="color:#9ECBFF"> file...</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Testing</span><span style="color:#9ECBFF"> integrity</span><span style="color:#9ECBFF"> of</span><span style="color:#9ECBFF"> cached</span><span style="color:#9ECBFF"> file...</span><span style="color:#9ECBFF"> OK</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Extracting</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-rel</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-rel</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-dbg</span></span>
+<span class="line"><span style="color:#B392F0">PS</span><span style="color:#9ECBFF"> D:</span><span style="color:#79B8FF">\v</span><span style="color:#9ECBFF">cpk</span><span style="color:#E1E4E8">g</span><span style="color:#F97583">></span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF">\v</span><span style="color:#9ECBFF">cpkg.exe</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> alembic-hdf:x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> packages</span><span style="color:#9ECBFF"> will</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> built</span><span style="color:#9ECBFF"> and</span><span style="color:#9ECBFF"> installed:</span></span>
+<span class="line"><span style="color:#B392F0">    alembic-hdf:x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">Building</span><span style="color:#9ECBFF"> package</span><span style="color:#9ECBFF"> alembic-hdf:x64-windows...</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_INSTALLED_DIR=D:/vcpkg/installed/x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> DOWNLOADS=D:/vcpkg/downloads</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_PACKAGES_DIR=D:/vcpkg/packages/alembic-hdf_x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_BUILDTREES_DIR=D:/vcpkg/buildtrees/alembic-hdf</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> CURRENT_PORT_DIR=D:/vcpkg/ports/alembic-hdf/.</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Using</span><span style="color:#9ECBFF"> cached</span><span style="color:#9ECBFF"> D:/vcpkg/downloads/1.7.1.tar.gz</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Testing</span><span style="color:#9ECBFF"> integrity</span><span style="color:#9ECBFF"> of</span><span style="color:#9ECBFF"> cached</span><span style="color:#9ECBFF"> file...</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Testing</span><span style="color:#9ECBFF"> integrity</span><span style="color:#9ECBFF"> of</span><span style="color:#9ECBFF"> cached</span><span style="color:#9ECBFF"> file...</span><span style="color:#9ECBFF"> OK</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Extracting</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-rel</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-rel</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-dbg</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Configuring</span><span style="color:#9ECBFF"> x64-windows-dbg</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Package</span><span style="color:#9ECBFF"> x64-windows-rel</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Package</span><span style="color:#9ECBFF"> x64-windows-rel</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Package</span><span style="color:#9ECBFF"> x64-windows-dbg</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Package</span><span style="color:#9ECBFF"> x64-windows-dbg</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Performing</span><span style="color:#9ECBFF"> post-build</span><span style="color:#9ECBFF"> validation</span></span>
+<span class="line"><span style="color:#B392F0">Include</span><span style="color:#9ECBFF"> files</span><span style="color:#9ECBFF"> should</span><span style="color:#9ECBFF"> not</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> duplicated</span><span style="color:#9ECBFF"> into</span><span style="color:#9ECBFF"> the</span><span style="color:#9ECBFF"> /debug/include</span><span style="color:#9ECBFF"> directory.</span><span style="color:#9ECBFF"> If</span><span style="color:#9ECBFF"> this</span><span style="color:#9ECBFF"> cannot</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> disabled</span><span style="color:#9ECBFF"> in</span><span style="color:#9ECBFF"> the</span><span style="color:#9ECBFF"> project</span><span style="color:#9ECBFF"> cmake,</span><span style="color:#9ECBFF"> use</span></span>
+<span class="line"><span style="color:#B392F0">    file(REMOVE_RECURSE</span><span style="color:#E1E4E8"> ${CURRENT_PACKAGES_DIR}</span><span style="color:#9ECBFF">/debug/include</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> /lib/cmake</span><span style="color:#9ECBFF"> folder</span><span style="color:#9ECBFF"> should</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> merged</span><span style="color:#9ECBFF"> with</span><span style="color:#9ECBFF"> /debug/lib/cmake</span><span style="color:#9ECBFF"> and</span><span style="color:#9ECBFF"> moved</span><span style="color:#9ECBFF"> to</span><span style="color:#9ECBFF"> /share/alembic-hdf/cmake.</span></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> cmake</span><span style="color:#9ECBFF"> files</span><span style="color:#9ECBFF"> were</span><span style="color:#9ECBFF"> found</span><span style="color:#9ECBFF"> outside</span><span style="color:#9ECBFF"> /share/alembic-hdf.</span><span style="color:#9ECBFF"> Please</span><span style="color:#9ECBFF"> place</span><span style="color:#9ECBFF"> cmake</span><span style="color:#9ECBFF"> files</span><span style="color:#9ECBFF"> in</span><span style="color:#9ECBFF"> /share/alembic-hdf.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicConfig.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicConfigVersion.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicTargets-release.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/cmake/Alembic/AlembicTargets.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicConfig.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicConfigVersion.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicTargets-debug.cmake</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/cmake/Alembic/AlembicTargets.cmake</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> /debug/lib/cmake</span><span style="color:#9ECBFF"> folder</span><span style="color:#9ECBFF"> should</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> merged</span><span style="color:#9ECBFF"> with</span><span style="color:#9ECBFF"> /lib/cmake</span><span style="color:#9ECBFF"> into</span><span style="color:#9ECBFF"> /share/alembic-hdf</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> dlls</span><span style="color:#9ECBFF"> were</span><span style="color:#9ECBFF"> found</span><span style="color:#9ECBFF"> in</span><span style="color:#9ECBFF"> /lib</span><span style="color:#9ECBFF"> or</span><span style="color:#9ECBFF"> /debug/lib.</span><span style="color:#9ECBFF"> Please</span><span style="color:#9ECBFF"> move</span><span style="color:#9ECBFF"> them</span><span style="color:#9ECBFF"> to</span><span style="color:#9ECBFF"> /bin</span><span style="color:#9ECBFF"> or</span><span style="color:#9ECBFF"> /debug/bin,</span><span style="color:#9ECBFF"> respectively.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/lib/Alembic.dll</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> dlls</span><span style="color:#9ECBFF"> were</span><span style="color:#9ECBFF"> found</span><span style="color:#9ECBFF"> in</span><span style="color:#9ECBFF"> /lib</span><span style="color:#9ECBFF"> or</span><span style="color:#9ECBFF"> /debug/lib.</span><span style="color:#9ECBFF"> Please</span><span style="color:#9ECBFF"> move</span><span style="color:#9ECBFF"> them</span><span style="color:#9ECBFF"> to</span><span style="color:#9ECBFF"> /bin</span><span style="color:#9ECBFF"> or</span><span style="color:#9ECBFF"> /debug/bin,</span><span style="color:#9ECBFF"> respectively.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/lib/Alembic.dll</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> software</span><span style="color:#9ECBFF"> license</span><span style="color:#9ECBFF"> must</span><span style="color:#9ECBFF"> be</span><span style="color:#9ECBFF"> available</span><span style="color:#9ECBFF"> at</span><span style="color:#E1E4E8"> ${CURRENT_PACKAGES_DIR}</span><span style="color:#9ECBFF">/share/alembic-hdf/copyright</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    file(COPY</span><span style="color:#E1E4E8"> ${CURRENT_BUILDTREES_DIR}</span><span style="color:#9ECBFF">/src/alembic-1.7.1/LICENSE.txt</span><span style="color:#9ECBFF"> DESTINATION</span><span style="color:#E1E4E8"> ${CURRENT_PACKAGES_DIR}</span><span style="color:#9ECBFF">/share/alembic-hdf</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#B392F0">    file(RENAME</span><span style="color:#E1E4E8"> ${CURRENT_PACKAGES_DIR}</span><span style="color:#9ECBFF">/share/alembic-hdf/LICENSE.txt</span><span style="color:#E1E4E8"> ${CURRENT_PACKAGES_DIR}</span><span style="color:#9ECBFF">/share/alembic-hdf/copyright</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> EXEs</span><span style="color:#9ECBFF"> were</span><span style="color:#9ECBFF"> found</span><span style="color:#9ECBFF"> in</span><span style="color:#9ECBFF"> /bin</span><span style="color:#9ECBFF"> or</span><span style="color:#9ECBFF"> /debug/bin.</span><span style="color:#9ECBFF"> EXEs</span><span style="color:#9ECBFF"> are</span><span style="color:#9ECBFF"> not</span><span style="color:#9ECBFF"> valid</span><span style="color:#9ECBFF"> distribution</span><span style="color:#9ECBFF"> targets.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcdiff.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcecho.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcechobounds.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcls.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abcstitcher.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/bin/abctree.exe</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">The</span><span style="color:#9ECBFF"> following</span><span style="color:#9ECBFF"> EXEs</span><span style="color:#9ECBFF"> were</span><span style="color:#9ECBFF"> found</span><span style="color:#9ECBFF"> in</span><span style="color:#9ECBFF"> /bin</span><span style="color:#9ECBFF"> or</span><span style="color:#9ECBFF"> /debug/bin.</span><span style="color:#9ECBFF"> EXEs</span><span style="color:#9ECBFF"> are</span><span style="color:#9ECBFF"> not</span><span style="color:#9ECBFF"> valid</span><span style="color:#9ECBFF"> distribution</span><span style="color:#9ECBFF"> targets.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcdiff.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcecho.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcechobounds.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcls.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abcstitcher.exe</span></span>
+<span class="line"><span style="color:#B392F0">    D:/vcpkg/packages/alembic-hdf_x64-windows/debug/bin/abctree.exe</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">Found</span><span style="color:#79B8FF"> 9</span><span style="color:#9ECBFF"> error</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">s</span><span style="color:#E1E4E8">)</span><span style="color:#9ECBFF">.</span><span style="color:#9ECBFF"> Please</span><span style="color:#9ECBFF"> correct</span><span style="color:#9ECBFF"> the</span><span style="color:#9ECBFF"> portfile:</span></span>
+<span class="line"><span style="color:#B392F0">    D:\vcpkg\ports\alembic-hdf\portfile.cmake</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Performing</span><span style="color:#9ECBFF"> post-build</span><span style="color:#9ECBFF"> validation</span><span style="color:#9ECBFF"> done</span></span>
+<span class="line"><span style="color:#B392F0">Error:</span><span style="color:#9ECBFF"> Building</span><span style="color:#9ECBFF"> package</span><span style="color:#9ECBFF"> alembic-hdf:x64-windows</span><span style="color:#9ECBFF"> failed</span><span style="color:#9ECBFF"> with:</span><span style="color:#9ECBFF"> POST_BUILD_CHECKS_FAILED</span></span>
+<span class="line"><span style="color:#B392F0">Please</span><span style="color:#9ECBFF"> ensure</span><span style="color:#9ECBFF"> you're using the latest portfiles with `.\vcpkg update`, then</span></span>
+<span class="line"><span style="color:#9ECBFF">submit an issue at https://github.com/Microsoft/vcpkg/issues including:</span></span>
+<span class="line"><span style="color:#9ECBFF">  Package: alembic-hdf:x64-windows</span></span>
+<span class="line"><span style="color:#9ECBFF">  Vcpkg version: 0.0.81-144d3718c4197b101c7d61ee6a258200371fb1ab</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">Additionally, attach any relevant sections from the log files above.</span></span></code></pre>
+<p>という感じになった。
+エラーメッセージがすごく親切。
+あと、NINJAビルド速い。
+エラーにはなるがビルド結果は以下のように出力された。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#B392F0">VCPKG_DIR/packages/alembic-hdf_x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  BUILD_INFO</span></span>
+<span class="line"><span style="color:#B392F0">│</span></span>
+<span class="line"><span style="color:#B392F0">├─bin</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      abcdiff.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      abcecho.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      abcechobounds.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      abcls.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      abcstitcher.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      abctree.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span></span>
+<span class="line"><span style="color:#B392F0">├─debug</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  ├─bin</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      abcdiff.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      abcecho.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      abcechobounds.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      abcls.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      abcstitcher.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      abctree.exe</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  ├─include</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">  └─Alembic</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─Abc</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcCollection</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcCoreAbstract</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcCoreFactory</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcCoreLayer</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcCoreOgawa</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcGeom</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      ├─AbcMaterial</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#9ECBFF">      └─Util</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span><span style="color:#79B8FF">              *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  └─lib</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#9ECBFF">  Alembic.dll</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#9ECBFF">  Alembic.lib</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      └─cmake</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">          └─Alembic</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">                  AlembicConfig.cmake</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">                  AlembicConfigVersion.cmake</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">                  AlembicTargets-debug.cmake</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">                  AlembicTargets.cmake</span></span>
+<span class="line"><span style="color:#B392F0">│</span></span>
+<span class="line"><span style="color:#B392F0">├─include</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">  └─Alembic</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─Abc</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcCollection</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcCoreAbstract</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcCoreFactory</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcCoreLayer</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcCoreOgawa</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcGeom</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      ├─AbcMaterial</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span><span style="color:#79B8FF">      *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      │</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#9ECBFF">      └─Util</span></span>
+<span class="line"><span style="color:#B392F0">│</span><span style="color:#79B8FF">              *</span><span style="color:#9ECBFF">.h</span></span>
+<span class="line"><span style="color:#B392F0">│</span></span>
+<span class="line"><span style="color:#B392F0">└─lib</span></span>
+<span class="line"><span style="color:#B392F0">    │</span><span style="color:#9ECBFF">  Alembic.dll</span></span>
+<span class="line"><span style="color:#B392F0">    │</span><span style="color:#9ECBFF">  Alembic.lib</span></span>
+<span class="line"><span style="color:#B392F0">    │</span></span>
+<span class="line"><span style="color:#B392F0">    └─cmake</span></span>
+<span class="line"><span style="color:#B392F0">        └─Alembic</span></span>
+<span class="line"><span style="color:#B392F0">                AlembicConfig.cmake</span></span>
+<span class="line"><span style="color:#B392F0">                AlembicConfigVersion.cmake</span></span>
+<span class="line"><span style="color:#B392F0">                AlembicTargets-release.cmake</span></span>
+<span class="line"><span style="color:#B392F0">                AlembicTargets.cmake</span></span></code></pre>
+<p>ここから不要なものを削除したり、場所の違うものを移動したりすることで完成できそう。
+エラーメッセージに沿って修正してみる</p>
+<p><code>debug/include</code> 不要</p>
+<p>エラーメッセージに含まれるとおりに。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(REMOVE_RECURSE </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/include)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">lib/cmake/Alembic/*.cmakeをshare/alembic-hdfに移動するべし</span></span>
+<span class="line"><span style="color:#E1E4E8">debug/lib/cmake/Alembicを統合するべし。</span></span>
+<span class="line"><span style="color:#E1E4E8">vcpkg_fixup_cmake_targets(CONFIG_PATH </span><span style="color:#9ECBFF">"lib/cmake/Alembic"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>ぽい。 <code>alembic/portfile.cmake</code> を参考にした</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#E1E4E8">lib/Alembic.dllをbin/Alembic.dllに移動せよ</span></span>
+<span class="line"><span style="color:#E1E4E8">debug/lib/Alembic.dllも。</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(RENAME </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/lib/Alembic.dll </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/bin/Alembic.dll)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(RENAME </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/lib/Alembic.dll </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/bin/Alembic.dll)</span></span></code></pre>
+<p><code>alembic/portfile.cmake</code> を参考にした</p>
+<p>ライセンスファイルをコピーせよ
+エラーメッセージに含まれるとおりに。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(COPY </span><span style="color:#F97583">${CURRENT_BUILDTREES_DIR}</span><span style="color:#E1E4E8">/src/alembic-1.7.1/LICENSE.txt DESTINATION </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/share/alembic-hdf)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(RENAME </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/share/alembic-hdf/LICENSE.txt </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/share/alembic-hdf/copyright)</span></span></code></pre>
+<p>exeを削除せよ</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(GLOB EXE </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/bin/*.exe)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(GLOB DEBUG_EXE </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/bin/*.exe)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(REMOVE </span><span style="color:#F97583">${EXE}</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(REMOVE </span><span style="color:#F97583">${DEBUG_EXE}</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>alembic/portfile.cmakeを参考にした
+おまけ: debug用にpdbをコピー
+alembic/portfile.cmakeを参考にした
+vcpkg_copy_pdbs()</p>
+<p>vcpkg_install_cmakeより下を抜粋。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#E1E4E8">vcpkg_install_cmake()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Remove debug/include</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(REMOVE_RECURSE </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/include)</span></span>
+<span class="line"><span style="color:#6A737D"># fix *.cmake</span></span>
+<span class="line"><span style="color:#E1E4E8">vcpkg_fixup_cmake_targets(CONFIG_PATH </span><span style="color:#9ECBFF">"lib/cmake/Alembic"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#6A737D"># Rename dll</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(RENAME </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/lib/Alembic.dll </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/bin/Alembic.dll)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(RENAME </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/lib/Alembic.dll </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/bin/Alembic.dll)</span></span>
+<span class="line"><span style="color:#6A737D"># Handle copyright</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(COPY </span><span style="color:#F97583">${CURRENT_BUILDTREES_DIR}</span><span style="color:#E1E4E8">/src/alembic-1.7.1/LICENSE.txt DESTINATION </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/share/alembic-hdf)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(RENAME </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/share/alembic-hdf/LICENSE.txt </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/share/alembic-hdf/copyright)</span></span>
+<span class="line"><span style="color:#6A737D"># Remove exe files</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(GLOB EXE </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/bin/*.exe)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(GLOB DEBUG_EXE </span><span style="color:#F97583">${CURRENT_PACKAGES_DIR}</span><span style="color:#E1E4E8">/debug/bin/*.exe)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(REMOVE </span><span style="color:#F97583">${EXE}</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">file</span><span style="color:#E1E4E8">(REMOVE </span><span style="color:#F97583">${DEBUG_EXE}</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#6A737D"># Copy pdb</span></span>
+<span class="line"><span style="color:#E1E4E8">vcpkg_copy_pdbs()</span></span></code></pre>
+<p>再度ビルド。</p>
+<p><code>> vcpkg install alembic-hdf:x64-windows</code></p>
+<p>うまくいった。
+USE_HDF5を有効にする
+portfileの修正
+CONTROLに依存追加。
+Build-Depends: ilmbase, hdf5</p>
+<p>USE_HDF5を有効に。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#E1E4E8">vcpkg_configure_cmake(</span></span>
+<span class="line"><span style="color:#E1E4E8">    SOURCE_PATH </span><span style="color:#F97583">${SOURCE_PATH}</span></span>
+<span class="line"><span style="color:#E1E4E8">    PREFER_NINJA </span><span style="color:#6A737D"># Disable this option if project cannot be built with Ninja</span></span>
+<span class="line"><span style="color:#E1E4E8">    OPTIONS -DUSE_HDF5=</span><span style="color:#F97583">ON</span></span>
+<span class="line"><span style="color:#6A737D">    # OPTIONS_RELEASE -DOPTIMIZE=1</span></span>
+<span class="line"><span style="color:#6A737D">    # OPTIONS_DEBUG -DDEBUGGABLE=1</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>ビルドあんどエラー
+ビルドしてみるがエラーになる。</p>
+<p><code>VCPKG_DIR\buildtrees\alembic-hdf\package-x64-windows-rel-out.log</code> を見て原因を探る。</p>
+<p>hdf5に対するlinkが無くて、hdf5関連のシンボルが見つからん。
+パッチ
+alembic-1.7.1/lib/Alembic/CMakeLists.txtを修正したいのでやり方を調べる。
+パッチの当て方</p>
+<p>portfile.cmakeに記述する。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#E1E4E8">vcpkg_extract_source_archiveよりあと、vcpkg_install_cmakeより前。</span></span>
+<span class="line"><span style="color:#E1E4E8">vcpkg_apply_patches(</span></span>
+<span class="line"><span style="color:#E1E4E8">    SOURCE_PATH </span><span style="color:#F97583">${SOURCE_PATH}</span></span>
+<span class="line"><span style="color:#E1E4E8">    PATCHES </span><span style="color:#F97583">${CMAKE_CURRENT_LIST_DIR}</span><span style="color:#E1E4E8">/fix-hdf5link.patch</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>パッチの作り方</p>
+<p><a href="https://github.com/Microsoft/vcpkg/blob/master/docs/examples/patching-libpng.md#patching-the-code-to-improve-compatibility">https://github.com/Microsoft/vcpkg/blob/master/docs/examples/patching-libpng.md#patching-the-code-to-improve-compatibility</a></p>
+<p>なるほど。
+gitを準備して・・・</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#B392F0">vcpkg></span><span style="color:#9ECBFF"> cd</span><span style="color:#9ECBFF"> ./buildtrees/alembic-hdf/src/alembic-1.7.1/</span></span>
+<span class="line"><span style="color:#B392F0">vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1></span><span style="color:#9ECBFF"> git</span><span style="color:#9ECBFF"> init</span></span>
+<span class="line"><span style="color:#B392F0">vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1></span><span style="color:#9ECBFF"> git</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> .</span></span>
+<span class="line"><span style="color:#B392F0">vcpkg/buildtrees/alembic-hdf/src/alembic-1.7.1></span><span style="color:#9ECBFF"> git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "temp"</span></span></code></pre>
+<p>修正
+alembic-1.7.1/lib/Alembic/CMakeLists.txtを修正。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="diff"><code><span class="line"><span style="color:#85E89D">> git diff</span></span>
+<span class="line"><span style="color:#FDAEB7"><span style="user-select: none;">-</span>-git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt</span></span>
+<span class="line"><span style="color:#E1E4E8">index 5028c91..1f81d50 100644</span></span>
+<span class="line"><span style="color:#FDAEB7"><span style="user-select: none;">-</span>-- a/lib/Alembic/CMakeLists.txt</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>++ b/lib/Alembic/CMakeLists.txt</span></span>
+<span class="line"><span style="color:#B392F0;font-weight:bold">@@ -49,6 +49,12 @@</span><span style="color:#E1E4E8"> ADD_SUBDIRECTORY(AbcMaterial)</span></span>
+<span class="line"><span style="color:#E1E4E8"> ADD_SUBDIRECTORY(Ogawa)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8"> ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>IF (USE_HDF5)</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>    TARGET_LINK_LIBRARIES(Alembic</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>        ${HDF5_LIBRARIES}</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>        )</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>    ADD_DEFINITIONS(-DH5_BUILT_AS_DYNAMIC_LIB)</span></span>
+<span class="line"><span style="color:#85E89D"><span style="user-select: none;">+</span>ENDIF()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8"> TARGET_INCLUDE_DIRECTORIES(Alembic</span></span>
+<span class="line"><span style="color:#E1E4E8">     PUBLIC</span></span></code></pre>
+<p>gitでpatchを作成</p>
+<p><code>> git diff | out-file -enc ascii ..\..\..\..\ports\alembic-hdf\fix-hdf5link.patch</code></p>
+<p>ビルド</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#F97583">></span><span style="color:#E1E4E8"> .</span><span style="color:#79B8FF">\v</span><span style="color:#E1E4E8">cpkg.exe install alembic-hdf:x64-windows</span></span>
+<span class="line"><span style="color:#B392F0">Installing</span><span style="color:#9ECBFF"> package</span><span style="color:#9ECBFF"> alembic-hdf:x64-windows...</span><span style="color:#9ECBFF"> done</span></span></code></pre>
+<p>VCPKG_DIR/installed/x64-windows/bin/Alembic.dllをdependencywalkerで見てみるとばっちりhdf5.dllへのリンクが含まれている。作業完了。
+はじめてで調べながらでもわりとさくさく作業が進んだ。エラーメッセージの出し方とか、フォルダの構成とかvcpkgなかなかレベルが高いな。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#B392F0">ports</span></span>
+<span class="line"><span style="color:#B392F0">ports/alembic-hdf/CONTROL</span></span>
+<span class="line"><span style="color:#B392F0">Source:</span><span style="color:#9ECBFF"> alembic-hdf</span></span>
+<span class="line"><span style="color:#B392F0">Version:</span><span style="color:#79B8FF"> 1.7</span><span style="color:#9ECBFF">.1</span></span>
+<span class="line"><span style="color:#B392F0">Description:</span><span style="color:#9ECBFF"> alembic</span><span style="color:#9ECBFF"> with</span><span style="color:#9ECBFF"> hdf5</span></span>
+<span class="line"><span style="color:#B392F0">Build-Depends:</span><span style="color:#9ECBFF"> ilmbase,</span><span style="color:#9ECBFF"> hdf5</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span># Common Ambient Variables:</span></span>
+<span class="line"><span>#   CURRENT_BUILDTREES_DIR    = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}</span></span>
+<span class="line"><span>#   CURRENT_PACKAGES_DIR      = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}</span></span>
+<span class="line"><span>#   CURRENT_PORT_DIR          = ${VCPKG_ROOT_DIR}\ports\${PORT}</span></span>
+<span class="line"><span>#   PORT                      = current port name (zlib, etc)</span></span>
+<span class="line"><span>#   TARGET_TRIPLET            = current triplet (x86-windows, x64-windows-static, etc)</span></span>
+<span class="line"><span>#   VCPKG_CRT_LINKAGE         = C runtime linkage type (static, dynamic)</span></span>
+<span class="line"><span>#   VCPKG_LIBRARY_LINKAGE     = target library linkage type (static, dynamic)</span></span>
+<span class="line"><span>#   VCPKG_ROOT_DIR            = &#x3C;C:\path\to\current\vcpkg></span></span>
+<span class="line"><span>#   VCPKG_TARGET_ARCHITECTURE = target architecture (x64, x86, arm)</span></span>
+<span class="line"><span>#</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>include(vcpkg_common_functions)</span></span>
+<span class="line"><span>set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/alembic-1.7.1)</span></span>
+<span class="line"><span>vcpkg_download_distfile(ARCHIVE</span></span>
+<span class="line"><span>    URLS "https://github.com/alembic/alembic/archive/1.7.1.tar.gz"</span></span>
+<span class="line"><span>    FILENAME "1.7.1.tar.gz"</span></span>
+<span class="line"><span>    SHA512 89e30b681a76eaf79b20ebeff62c495971b0eb64b28f249a14bbcf3bdb40df7eda93b0ede299dd5511bd4587a2cc2d4ebd851fb89bf999fdccc31fee3cffbba2</span></span>
+<span class="line"><span>)</span></span>
+<span class="line"><span>vcpkg_extract_source_archive(${ARCHIVE})</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>vcpkg_apply_patches(</span></span>
+<span class="line"><span>    SOURCE_PATH ${SOURCE_PATH}</span></span>
+<span class="line"><span>    PATCHES ${CMAKE_CURRENT_LIST_DIR}/fix-hdf5link.patch</span></span>
+<span class="line"><span>)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>vcpkg_configure_cmake(</span></span>
+<span class="line"><span>    SOURCE_PATH ${SOURCE_PATH}</span></span>
+<span class="line"><span>    PREFER_NINJA # Disable this option if project cannot be built with Ninja</span></span>
+<span class="line"><span>    OPTIONS -DUSE_HDF5=ON</span></span>
+<span class="line"><span>    # OPTIONS_RELEASE -DOPTIMIZE=1</span></span>
+<span class="line"><span>    # OPTIONS_DEBUG -DDEBUGGABLE=1</span></span>
+<span class="line"><span>)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>vcpkg_install_cmake()</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Remove debug/include</span></span>
+<span class="line"><span>file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)</span></span>
+<span class="line"><span># fix *.cmake</span></span>
+<span class="line"><span>vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/Alembic")</span></span>
+<span class="line"><span># Rename dll</span></span>
+<span class="line"><span>file(RENAME ${CURRENT_PACKAGES_DIR}/lib/Alembic.dll ${CURRENT_PACKAGES_DIR}/bin/Alembic.dll)</span></span>
+<span class="line"><span>file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/Alembic.dll ${CURRENT_PACKAGES_DIR}/debug/bin/Alembic.dll)</span></span>
+<span class="line"><span># Handle copyright</span></span>
+<span class="line"><span>file(COPY ${CURRENT_BUILDTREES_DIR}/src/alembic-1.7.1/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/alembic-hdf)</span></span>
+<span class="line"><span>file(RENAME ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/LICENSE.txt ${CURRENT_PACKAGES_DIR}/share/alembic-hdf/copyright)</span></span>
+<span class="line"><span># Remove exe files</span></span>
+<span class="line"><span>file(GLOB EXE ${CURRENT_PACKAGES_DIR}/bin/*.exe)</span></span>
+<span class="line"><span>file(GLOB DEBUG_EXE ${CURRENT_PACKAGES_DIR}/debug/bin/*.exe)</span></span>
+<span class="line"><span>file(REMOVE ${EXE})</span></span>
+<span class="line"><span>file(REMOVE ${DEBUG_EXE})</span></span>
+<span class="line"><span># Copy pdb</span></span>
+<span class="line"><span>vcpkg_copy_pdbs()</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>diff --git a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt</span></span>
+<span class="line"><span>index 5028c91..1f81d50 100644</span></span>
+<span class="line"><span>--- a/lib/Alembic/CMakeLists.txt</span></span>
+<span class="line"><span>+++ b/lib/Alembic/CMakeLists.txt</span></span>
+<span class="line"><span>@@ -49,6 +49,12 @@ ADD_SUBDIRECTORY(AbcMaterial)</span></span>
+<span class="line"><span> ADD_SUBDIRECTORY(Ogawa)</span></span>
+<span class="line"><span> </span></span>
+<span class="line"><span> ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})</span></span>
+<span class="line"><span>+IF (USE_HDF5)</span></span>
+<span class="line"><span>+    TARGET_LINK_LIBRARIES(Alembic </span></span>
+<span class="line"><span>+        ${HDF5_LIBRARIES}</span></span>
+<span class="line"><span>+        )</span></span>
+<span class="line"><span>+    ADD_DEFINITIONS(-DH5_BUILT_AS_DYNAMIC_LIB)</span></span>
+<span class="line"><span>+ENDIF()</span></span>
+<span class="line"><span> </span></span>
+<span class="line"><span> TARGET_INCLUDE_DIRECTORIES(Alembic</span></span>
+<span class="line"><span>     PUBLIC</span></span></code></pre>
+<p>vcpkgにPR送った
+採用されたので上記の作業は必要なくなったのが、cmake-3.9.0の更新でFindHDF5が壊れるという事態が発生したので対応中…。</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

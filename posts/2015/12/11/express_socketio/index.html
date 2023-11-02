@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2015/12/11/express_socketio/"><!-- Primary Meta Tags --><title>Socket.IOな実験環境</title><meta name="title" content="Socket.IOな実験環境"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2015/12/11/express_socketio/"><meta property="og:title" content="Socket.IOな実験環境"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2015/12/11/express_socketio/"><meta property="twitter:title" content="Socket.IOな実験環境"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2015-12-11T00:00:00.000Z">2015
+-12
+-11</time></div><h1 data-astro-cid-bvzihdzo>Socket.IOな実験環境</h1><hr data-astro-cid-bvzihdzo></div><p>Socket.IO を実験する環境のメモ。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>Expressは、serve-staticで静的なファイルのhostingが目的兼後で拡張できるように</span></span>
+<span class="line"><span>coffee-scriptは無しでES6要素をなるべく入れる</span></span>
+<span class="line"><span>Socket.IOを手早く展開するのが目的なのでtypescriptは抜きにしようと思ったが、無い方がつらいので矢張り入れる</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>https://github.com/ousttrue/sio_sample</span></span>
+<span class="line"><span>Project生成</span></span>
+<span class="line"><span>> mkdir sio_sample</span></span>
+<span class="line"><span>> cd sio_sample</span></span>
+<span class="line"><span>sio_sample> npm init -y</span></span>
+<span class="line"><span>sio_sample> npm install gulp gulp-load-plugins gulp-nodemon browser-sync -D</span></span>
+<span class="line"><span>sio_sample> npm install express socket.io body-parser method-override connect-logger errorhandler serve-static --save</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>vscodeでes6を使えるように</span></span>
+<span class="line"><span>jsconifg.json</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    "compilerOptions": {</span></span>
+<span class="line"><span>        "target": "ES6"</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>後で拡張できるように以下のようなディレクトリ構成にする。</span></span>
+<span class="line"><span>build &#x3C;- srcから(加工して)コピーされる</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src &#x3C;- 加工前のファイル置き場</span></span>
+<span class="line"><span>  + server</span></span>
+<span class="line"><span>    + app.js</span></span>
+<span class="line"><span>  + client</span></span>
+<span class="line"><span>    + index.html</span></span>
+<span class="line"><span>    + index.js</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src/server/app.js</span></span>
+<span class="line"><span>"use strict";</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const http = require('http');</span></span>
+<span class="line"><span>const express = require('express');</span></span>
+<span class="line"><span>const port = process.env.port || 3000;</span></span>
+<span class="line"><span>const app = express();</span></span>
+<span class="line"><span>const server = http.createServer(app);</span></span>
+<span class="line"><span>const servestatic = require('serve-static');</span></span>
+<span class="line"><span>const serve_dir = __dirname + '/public';</span></span>
+<span class="line"><span>console.log('serve %s', serve_dir);</span></span>
+<span class="line"><span>app</span></span>
+<span class="line"><span>    .use(servestatic(serve_dir))</span></span>
+<span class="line"><span>;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// socket.io</span></span>
+<span class="line"><span>const socketio = require('socket.io');</span></span>
+<span class="line"><span>const io = socketio(server);</span></span>
+<span class="line"><span>io.on('connection', (socket) => {</span></span>
+<span class="line"><span>    console.log('a client connected %s', socket);</span></span>
+<span class="line"><span>    socket.on('disconnect', () => {</span></span>
+<span class="line"><span>        console.log('a client disconnected');</span></span>
+<span class="line"><span>    });</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// start</span></span>
+<span class="line"><span>server.listen(port);</span></span>
+<span class="line"><span>console.log('start port: %d...', port);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src/client/index.html</span></span>
+<span class="line"><span>&#x3C;!DOCTYPE html></span></span>
+<span class="line"><span>&#x3C;html lang="en"></span></span>
+<span class="line"><span>&#x3C;head></span></span>
+<span class="line"><span>    &#x3C;meta charset="UTF-8"></span></span>
+<span class="line"><span>    &#x3C;title>Document&#x3C;/title></span></span>
+<span class="line"><span>    &#x3C;script src="index.js">&#x3C;/script></span></span>
+<span class="line"><span>&#x3C;/head></span></span>
+<span class="line"><span>&#x3C;body></span></span>
+<span class="line"><span>    &#x3C;div id="target">&#x3C;/div></span></span>
+<span class="line"><span>&#x3C;/body></span></span>
+<span class="line"><span>&#x3C;/html></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src/client/index.js</span></span>
+<span class="line"><span>"use strict";</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>function setup(target) {</span></span>
+<span class="line"><span>    const div = document.createElement('div');</span></span>
+<span class="line"><span>    div.appendChild(document.createTextNode('onLoad'));</span></span>
+<span class="line"><span>    target.appendChild(div);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>window.onload = () => {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    setup(document.getElementById('target'));</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>srcからbuildに展開するgulp</span></span>
+<span class="line"><span>gulpfile.js</span></span>
+<span class="line"><span>const gulp = require('gulp');</span></span>
+<span class="line"><span>const $ = require('gulp-load-plugins')();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const config = {</span></span>
+<span class="line"><span>    server_src: './src/server/**/*',</span></span>
+<span class="line"><span>    server_dst: './build',</span></span>
+<span class="line"><span>    client_src: './src/client/**/*',</span></span>
+<span class="line"><span>    client_dst: './build/public'</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('server', () => {</span></span>
+<span class="line"><span>    gulp.src(config.server_src)</span></span>
+<span class="line"><span>        .pipe(gulp.dest(config.server_dst));</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('client', () => {</span></span>
+<span class="line"><span>    gulp.src(config.client_src)</span></span>
+<span class="line"><span>        .pipe(gulp.dest(config.client_dst));</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('default', ['server', 'client']);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>build</span></span>
+<span class="line"><span>sio_sample> gulp</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>ブラウザで動いた。</span></span>
+<span class="line"><span>browserSync導入</span></span>
+<span class="line"><span>gulpfile.js。browserSync</span></span>
+<span class="line"><span>const config = { // 追加分</span></span>
+<span class="line"><span>    app_entry: './build/app.js',</span></span>
+<span class="line"><span>    app_port: 5000,</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const browserSync = require('browser-sync').create();</span></span>
+<span class="line"><span>gulp.task('serve', ()=>{</span></span>
+<span class="line"><span>    $.nodemon({</span></span>
+<span class="line"><span>        script: config.app_entry,</span></span>
+<span class="line"><span>        exp: 'js',</span></span>
+<span class="line"><span>        ignore: [],</span></span>
+<span class="line"><span>        env: {</span></span>
+<span class="line"><span>            port: config.app_port</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    })</span></span>
+<span class="line"><span>    .on('readable', ()=>{</span></span>
+<span class="line"><span>        this.stdout.on('data', (chunk)=>{</span></span>
+<span class="line"><span>            if (/^start /.test(chunk)){</span></span>
+<span class="line"><span>                console.log('reloading...');</span></span>
+<span class="line"><span>                browserSync.reload();</span></span>
+<span class="line"><span>            }</span></span>
+<span class="line"><span>            process.stdout.write(chunk)</span></span>
+<span class="line"><span>        });</span></span>
+<span class="line"><span>    });</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('browser-sync', ['serve'], ()=>{</span></span>
+<span class="line"><span>    browserSync.init({</span></span>
+<span class="line"><span>        proxy: 'localhost:' + config.app_port,</span></span>
+<span class="line"><span>        port: 3000,</span></span>
+<span class="line"><span>        ws: true</span></span>
+<span class="line"><span>    })</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulpfile.js。watchタスク追加</span></span>
+<span class="line"><span>gulp.task('server', () => {</span></span>
+<span class="line"><span>    gulp.src(config.server_src)</span></span>
+<span class="line"><span>        .pipe(gulp.dest(config.server_dst))</span></span>
+<span class="line"><span>        .pipe(browserSync.stream())</span></span>
+<span class="line"><span>        ;</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('client', () => {</span></span>
+<span class="line"><span>    gulp.src(config.client_src)</span></span>
+<span class="line"><span>        .pipe(gulp.dest(config.client_dst))</span></span>
+<span class="line"><span>        .pipe(browserSync.stream())</span></span>
+<span class="line"><span>        ;</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('build', ['server', 'client']);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('watch', ['build', 'browser-sync'], ()=>{</span></span>
+<span class="line"><span>    gulp.watch(config.server_src, ['server']);</span></span>
+<span class="line"><span>    gulp.watch(config.client_src, ['client']);</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('default', ['watch']);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>git</span></span>
+<span class="line"><span>いったんgitに登録しよう。</span></span>
+<span class="line"><span>.gitignore</span></span>
+<span class="line"><span>/node_modules/</span></span>
+<span class="line"><span>/build/</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Socket.IOの疎通</span></span>
+<span class="line"><span>&#x3C;!DOCTYPE html></span></span>
+<span class="line"><span>&#x3C;html lang="en"></span></span>
+<span class="line"><span>&#x3C;head></span></span>
+<span class="line"><span>    &#x3C;meta charset="UTF-8"></span></span>
+<span class="line"><span>    &#x3C;title>Document&#x3C;/title></span></span>
+<span class="line"><span>    &#x3C;script type="text/javascript" src="/socket.io/socket.io.js">&#x3C;/script></span></span>
+<span class="line"><span>    &#x3C;script src="index.js">&#x3C;/script></span></span>
+<span class="line"><span>&#x3C;/head></span></span>
+<span class="line"><span>&#x3C;body></span></span>
+<span class="line"><span>    &#x3C;div id="target">&#x3C;/div></span></span>
+<span class="line"><span>&#x3C;/body></span></span>
+<span class="line"><span>&#x3C;/html></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>"use strict";</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>function setup(target) {</span></span>
+<span class="line"><span>    const div = document.createElement('div');</span></span>
+<span class="line"><span>    div.appendChild(document.createTextNode('hello'));</span></span>
+<span class="line"><span>    target.appendChild(div);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    this.socket = io.connect();</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>window.onload = () => {</span></span>
+<span class="line"><span>    setup(document.getElementById('target'));</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>typescript導入</span></span>
+<span class="line"><span>sio_sample> tsc --init</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>tsconfig.json</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    "compilerOptions": {</span></span>
+<span class="line"><span>        "module": "commonjs",</span></span>
+<span class="line"><span>        "target": "es5",</span></span>
+<span class="line"><span>        "noImplicitAny": true,</span></span>
+<span class="line"><span>        "outDir": ".",</span></span>
+<span class="line"><span>        "rootDir": ".",</span></span>
+<span class="line"><span>        "sourceMap": false</span></span>
+<span class="line"><span>    },</span></span>
+<span class="line"><span>    "exclude": [</span></span>
+<span class="line"><span>        "node_modules"</span></span>
+<span class="line"><span>    ]</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>sio_sample> npm install gulp-typescript gulp-if gulp-plumber gulp-debug -D</span></span>
+<span class="line"><span>sio_sample> cd src</span></span>
+<span class="line"><span>sio_sample/src> tsd init</span></span>
+<span class="line"><span>sio_sample/src> tsd query node express socket.io -rosa install</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulpfile.js。typescriptのコンパイルを追加</span></span>
+<span class="line"><span>const path = require('path');</span></span>
+<span class="line"><span>const tsconfig = require('./tsconfig.json');</span></span>
+<span class="line"><span>const isTypescript = (file) => {</span></span>
+<span class="line"><span>    const ext = path.extname(file.path).toLowerCase();</span></span>
+<span class="line"><span>    return ext === '.ts';</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('server', () => {</span></span>
+<span class="line"><span>    gulp.src(config.server_src)</span></span>
+<span class="line"><span>        .pipe($.plumber())</span></span>
+<span class="line"><span>        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))</span></span>
+<span class="line"><span>        .pipe($.debug('server'))</span></span>
+<span class="line"><span>        .pipe(gulp.dest(config.server_dst))</span></span>
+<span class="line"><span>        .pipe(browserSync.stream())</span></span>
+<span class="line"><span>    ;</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>gulp.task('client', () => {</span></span>
+<span class="line"><span>    gulp.src(config.client_src)</span></span>
+<span class="line"><span>        .pipe($.plumber())</span></span>
+<span class="line"><span>        .pipe($.if(isTypescript, $.typescript(tsconfig.compilerOptions)))</span></span>
+<span class="line"><span>        .pipe($.debug('client'))</span></span>
+<span class="line"><span>        .pipe(gulp.dest(config.client_dst))</span></span>
+<span class="line"><span>        .pipe(browserSync.stream())</span></span>
+<span class="line"><span>    ;</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src/server/app.jsをapp.tsにリネーム</span></span>
+<span class="line"><span>/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span>"use strict";</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>import http = require('http');</span></span>
+<span class="line"><span>import express = require('express');</span></span>
+<span class="line"><span>const port = process.env.port || 3000;</span></span>
+<span class="line"><span>const app = express();</span></span>
+<span class="line"><span>const server = http.createServer(app);</span></span>
+<span class="line"><span>const servestatic = require('serve-static');</span></span>
+<span class="line"><span>const serve_dir = __dirname + '/public';</span></span>
+<span class="line"><span>console.log('serve %s', serve_dir);</span></span>
+<span class="line"><span>app</span></span>
+<span class="line"><span>    .use(servestatic(serve_dir))</span></span>
+<span class="line"><span>;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// socket.io</span></span>
+<span class="line"><span>import socketio = require('socket.io');</span></span>
+<span class="line"><span>const io = socketio(server);</span></span>
+<span class="line"><span>io.on('connection', (socket) => {</span></span>
+<span class="line"><span>    var clientAddress=socket.client.conn.remoteAddress;</span></span>
+<span class="line"><span>    console.log('connected: %s', clientAddress);</span></span>
+<span class="line"><span>    socket.on('disconnect', () => {</span></span>
+<span class="line"><span>        console.log('disconnected: %s', clientAddress);</span></span>
+<span class="line"><span>    });</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// start</span></span>
+<span class="line"><span>server.listen(port);</span></span>
+<span class="line"><span>console.log('start port: %d...', port);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src/client/index.jsをindex.tsにリネーム</span></span>
+<span class="line"><span>/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span>"use strict";</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>declare module io {</span></span>
+<span class="line"><span>    export function connect(): SocketIO.Socket;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>function setup(target: Element) {</span></span>
+<span class="line"><span>    const div = document.createElement('div');</span></span>
+<span class="line"><span>    div.appendChild(document.createTextNode('hello socket.io'));</span></span>
+<span class="line"><span>    target.appendChild(div);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    this.socket = io.connect();</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>window.onload = () => {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    setup(document.getElementById('target'));</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>メッセージをやり取り</span></span>
+<span class="line"><span>src/server/app.ts サーバーサイド。client-messageを受けてserver-messageを発行</span></span>
+<span class="line"><span>// socket.io</span></span>
+<span class="line"><span>import socketio = require('socket.io');</span></span>
+<span class="line"><span>const io = socketio(server);</span></span>
+<span class="line"><span>io.on('connection', (socket) => {</span></span>
+<span class="line"><span>    var clientAddress = socket.client.conn.remoteAddress;</span></span>
+<span class="line"><span>    console.log('connected: %s', clientAddress);</span></span>
+<span class="line"><span>    socket.on('disconnect', () => {</span></span>
+<span class="line"><span>        console.log('disconnected: %s', clientAddress);</span></span>
+<span class="line"><span>    });</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    socket.on('client-message', (data: any) => {</span></span>
+<span class="line"><span>        socket.emit('server-message', 'server clicked message');</span></span>
+<span class="line"><span>    });</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>src/client/index.ts クライアントサイド。buttonを押したらclient-messageを発行。server-messageを受けてテキストを描画</span></span>
+<span class="line"><span>/// &#x3C;reference path="../typings/tsd.d.ts" /></span></span>
+<span class="line"><span>"use strict";</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>declare module io {</span></span>
+<span class="line"><span>    export function connect(): SocketIO.Socket;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>class Client {</span></span>
+<span class="line"><span>    socket: SocketIO.Socket;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    constructor() {</span></span>
+<span class="line"><span>        this.socket = io.connect();</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    setup(target: Element) {</span></span>
+<span class="line"><span>        const div = document.createElement('div');</span></span>
+<span class="line"><span>        div.appendChild(document.createTextNode('hello socket.io'));</span></span>
+<span class="line"><span>        target.appendChild(div);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        this.socket.on('server-message', (data: any)=>{</span></span>
+<span class="line"><span>            const div = document.createElement('div');</span></span>
+<span class="line"><span>            div.appendChild(document.createTextNode(data.toString()));</span></span>
+<span class="line"><span>            target.appendChild(div);</span></span>
+<span class="line"><span>        });</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        const button=document.createElement('button');</span></span>
+<span class="line"><span>        button.appendChild(document.createTextNode('send'));</span></span>
+<span class="line"><span>        button.onclick=(ev: MouseEvent)=>{</span></span>
+<span class="line"><span>            this.socket.emit('client-message', 'clicked');</span></span>
+<span class="line"><span>        };</span></span>
+<span class="line"><span>        target.appendChild(button);</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>var client=new Client();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>window.onload = () => {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    client.setup(document.getElementById('target'));</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>};</span></span></code></pre></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2017/08/vcpkg_opensubdiv/"><!-- Primary Meta Tags --><title>vcpkgのOpenSubdivパッケージを作ってみる</title><meta name="title" content="vcpkgのOpenSubdivパッケージを作ってみる"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2017/08/vcpkg_opensubdiv/"><meta property="og:title" content="vcpkgのOpenSubdivパッケージを作ってみる"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2017/08/vcpkg_opensubdiv/"><meta property="twitter:title" content="vcpkgのOpenSubdivパッケージを作ってみる"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2017-08-31T00:00:00.000Z">2017
+-08
+-31</time></div><h1 data-astro-cid-bvzihdzo>vcpkgのOpenSubdivパッケージを作ってみる</h1><hr data-astro-cid-bvzihdzo></div><p>CEDEC2017のセッションを聞いてUSDビルドする気が戻ってきた。部品のひとつ、OpenSubdivのvcpkg版ビルドに取り組んでみる。</p>
+<p>packageを作る
+POWERSHELLを開いてvcpkgディレクトリに移動。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#B392F0">PS></span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF">\v</span><span style="color:#9ECBFF">cpkg.exe</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> opensubdiv</span><span style="color:#9ECBFF"> https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v3_3_0.tar.gz</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Generated</span><span style="color:#9ECBFF"> portfile:</span><span style="color:#9ECBFF"> vcpkg</span><span style="color:#79B8FF">\p</span><span style="color:#9ECBFF">orts</span><span style="color:#79B8FF">\o</span><span style="color:#9ECBFF">pensubdiv</span><span style="color:#79B8FF">\p</span><span style="color:#9ECBFF">ortfile.cmake</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> Generated</span><span style="color:#9ECBFF"> CONTROL:</span><span style="color:#9ECBFF"> vcpkg</span><span style="color:#79B8FF">\p</span><span style="color:#9ECBFF">orts</span><span style="color:#79B8FF">\o</span><span style="color:#9ECBFF">pensubdiv</span><span style="color:#79B8FF">\C</span><span style="color:#9ECBFF">ONTROL</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF"> To</span><span style="color:#9ECBFF"> launch</span><span style="color:#9ECBFF"> an</span><span style="color:#9ECBFF"> editor</span><span style="color:#9ECBFF"> for</span><span style="color:#9ECBFF"> these</span><span style="color:#9ECBFF"> new</span><span style="color:#9ECBFF"> files,</span><span style="color:#9ECBFF"> run</span></span>
+<span class="line"><span style="color:#B392F0">--</span><span style="color:#9ECBFF">     .</span><span style="color:#79B8FF">\v</span><span style="color:#9ECBFF">cpkg</span><span style="color:#9ECBFF"> edit</span><span style="color:#9ECBFF"> opensubdiv</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">ports/opensubdiv/CONTROL</span></span>
+<span class="line"><span style="color:#B392F0">Source:</span><span style="color:#9ECBFF"> opensubdiv</span></span>
+<span class="line"><span style="color:#B392F0">Version:</span><span style="color:#79B8FF"> 3.3</span><span style="color:#9ECBFF">.0</span></span>
+<span class="line"><span style="color:#B392F0">Description:</span><span style="color:#9ECBFF"> An</span><span style="color:#9ECBFF"> Open-Source</span><span style="color:#9ECBFF"> subdivision</span><span style="color:#9ECBFF"> surface</span><span style="color:#9ECBFF"> library.</span></span>
+<span class="line"><span style="color:#B392F0">Build-Depends:</span><span style="color:#9ECBFF"> tbb,</span><span style="color:#9ECBFF"> glew,</span><span style="color:#9ECBFF"> ptex</span></span></code></pre>
+<p><code>ports/opensubdiv/portfile.cmake</code></p>
+<p>最低限、展開するアーカイブのパスを指定。</p>
+<p><code>set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/OpenSubdiv-3_3_0)</code></p>
+<p>ビルドしてみる
+さすがにエラーになる。vcpkg の <code>buildtree/opensubdiv</code> に潜ってビルド手順を調べてみる。
+手動ビルド
+OpenSubdivのビルドシステムはCMakeだった。
+早速、CmakeGUIでやってみる。
+<code>CMAKE_INSTALL_PREFIX=VCPKG_DIR/installed/x64-windows</code> だけ設定して様子を見る。</p>
+<p>CUDAとかOpenCLとかそっち方面の依存がある様子。
+NO_CUDAとNO_OPENCLにチェックを入れてみる。
+あとNO_DOCも。
+SolutionをGenerateしてビルドしてみる。
+Debug版だけtbb_debug.libが見つからないエラーが出た。
+DEBUG版のFIND_PACKAGEの修正</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#E1E4E8">OpenSubdiv-3_3_0/cmake/FindTBB.cmake</span></span>
+<span class="line"><span style="color:#F97583">    find_library</span><span style="color:#E1E4E8">(TBB_</span><span style="color:#F97583">${TBB_LIB}</span><span style="color:#E1E4E8">_LIBRARY</span></span>
+<span class="line"><span style="color:#F97583">        NAMES</span></span>
+<span class="line"><span style="color:#F97583">            ${TBB_LIB}</span></span>
+<span class="line"><span style="color:#E1E4E8">        HINTS</span></span>
+<span class="line"><span style="color:#9ECBFF">            "${TBB_LOCATION}/lib"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "${TBB_LOCATION}/bin"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "$ENV{TBB_LOCATION}/lib"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "$ENV{TBB_LOCATION}/bin"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "$ENV{PROGRAMFILES}/TBB/lib"</span></span>
+<span class="line"><span style="color:#E1E4E8">            /usr/lib</span></span>
+<span class="line"><span style="color:#E1E4E8">            /usr/lib/w32api</span></span>
+<span class="line"><span style="color:#E1E4E8">            /usr/local/lib</span></span>
+<span class="line"><span style="color:#E1E4E8">            /usr/X11R6/lib</span></span>
+<span class="line"><span style="color:#E1E4E8">        PATH_SUFFIXES</span></span>
+<span class="line"><span style="color:#9ECBFF">            "${TBB_LIB_ARCH}"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "${TBB_LIB_ARCH}/${TBB_COMPILER}"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "${TBB_LIB_ARCH}/gcc4.4"</span></span>
+<span class="line"><span style="color:#9ECBFF">            "${TBB_LIB_ARCH}/gcc4.1"</span></span>
+<span class="line"><span style="color:#F97583">        DOC</span><span style="color:#9ECBFF"> "Intel's Threading Building Blocks library"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>vcpkgでは、<code>VCPKG_DIR/installed/x64-windows/debug/lib/tbb_debug.lib</code> にあるので見つかりませんね。
+<code>TBB_LOCATION=VCPKG_DIR/installed/x64-windows/debug</code> を指定したらうまくいった。</p>
+<p>portfile.cmakeに反映
+ports/opensubdiv/portfile.cmake
+こうなった。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cmake"><code><span class="line"><span style="color:#E1E4E8">vcpkg_configure_cmake(</span></span>
+<span class="line"><span style="color:#E1E4E8">    SOURCE_PATH </span><span style="color:#F97583">${SOURCE_PATH}</span></span>
+<span class="line"><span style="color:#6A737D">    #PREFER_NINJA # Disable this option if project cannot be built with Ninja</span></span>
+<span class="line"><span style="color:#E1E4E8">    OPTIONS</span></span>
+<span class="line"><span style="color:#6A737D">        #-DNO_LIB=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_CUDA=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_DOC=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_OPENCL=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_OPENGL=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_METAL=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_DX=1</span></span>
+<span class="line"><span style="color:#6A737D">        #-DNO_OMP=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_TESTS=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_EXAMPLES=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_TUTORIALS=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_REGRESSION=1</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DNO_GLTESTS=1</span></span>
+<span class="line"><span style="color:#6A737D">        # for tbb_debug.lib</span></span>
+<span class="line"><span style="color:#E1E4E8">        -DTBB_LOCATION=</span><span style="color:#F97583">${CURRENT_INSTALLED_DIR}</span><span style="color:#E1E4E8">/debug</span></span>
+<span class="line"><span style="color:#6A737D">    # OPTIONS_RELEASE -DOPTIMIZE=1</span></span>
+<span class="line"><span style="color:#6A737D">    # OPTIONS_DEBUG -DDEBUGGABLE=1</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>package
+VCPKG_DIR/packages/opensubdiv_x86-windows
+packageの調整
+エラーメッセージの指示に従って。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>vcpkg_install_cmake()</span></span>
+<span class="line"><span>vcpkg_copy_pdbs()</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Handle copyright</span></span>
+<span class="line"><span>file(COPY ${CURRENT_BUILDTREES_DIR}/src/OpenSubdiv-3_3_0/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/opensubdiv)</span></span>
+<span class="line"><span>file(RENAME ${CURRENT_PACKAGES_DIR}/share/opensubdiv/LICENSE.txt ${CURRENT_PACKAGES_DIR}/share/opensubdiv/copyright)</span></span></code></pre>
+<p>以下のようになった。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="shell"><code><span class="line"><span style="color:#B392F0">+---debug</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">   \---lib</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">           osdCPU.lib</span></span>
+<span class="line"><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#B392F0">+---include</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">   \---opensubdiv</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">   version.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">       +---far</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       error.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       patchDescriptor.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       patchMap.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       patchParam.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       patchTable.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       patchTableFactory.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       primvarRefiner.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       ptexIndices.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       stencilTable.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       stencilTableFactory.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       topologyDescriptor.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       topologyLevel.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       topologyRefiner.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       topologyRefinerFactory.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       types.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">       +---hbr</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       allocator.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       bilinear.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       catmark.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       cornerEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       creaseEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       face.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       faceEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       fvarData.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       fvarEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       halfedge.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       hierarchicalEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       holeEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       loop.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       mesh.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       subdivision.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       vertex.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       vertexEdit.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">       +---osd</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       bufferDescriptor.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       cpuEvaluator.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       cpuPatchTable.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       cpuVertexBuffer.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       mesh.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       nonCopyable.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       ompEvaluator.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       ompKernel.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       opengl.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       tbbEvaluator.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       tbbKernel.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       types.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">       +---sdc</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       bilinearScheme.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       catmarkScheme.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       crease.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       loopScheme.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       options.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       scheme.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span><span style="color:#B392F0">       types.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#F97583">       |</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">       \---vtr</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               array.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               componentInterfaces.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               fvarLevel.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               fvarRefinement.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               level.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               refinement.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               sparseSelector.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               stackBuffer.h</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">               types.h</span></span>
+<span class="line"><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#B392F0">+---lib</span></span>
+<span class="line"><span style="color:#F97583">|</span><span style="color:#B392F0">       osdCPU.lib</span></span>
+<span class="line"><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#B392F0">\---share</span></span>
+<span class="line"><span style="color:#B392F0">    \---opensubdiv</span></span>
+<span class="line"><span style="color:#B392F0">            copyright</span></span></code></pre>
+<p>OpenSubdivにはdllのビルドは無いみたい。ライブラリ構成もtemplate classを主体とするもののようだ。</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

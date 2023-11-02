@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2019/vim_debugger/"><!-- Primary Meta Tags --><title>vim で DebugAdapterProtocol する</title><meta name="title" content="vim で DebugAdapterProtocol する"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2019/vim_debugger/"><meta property="og:title" content="vim で DebugAdapterProtocol する"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2019/vim_debugger/"><meta property="twitter:title" content="vim で DebugAdapterProtocol する"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2019-04-27T10:00:26.000Z">2019
+-04
+-27</time></div><h1 data-astro-cid-bvzihdzo>vim で DebugAdapterProtocol する</h1><hr data-astro-cid-bvzihdzo></div><p>vimで <code>breakpoint</code> を設置してステップ実行できるようなデバッガを調べた。</p>
+<h1 id="vim-上のデバッガ">vim 上のデバッガ</h1>
+<h2 id="lldbnvim">lldb.nvim</h2>
+<ul>
+<li><a href="https://github.com/dbgx/lldb.nvim">https://github.com/dbgx/lldb.nvim</a></li>
+</ul>
+<h2 id="vim-vebugger">vim-vebugger</h2>
+<ul>
+<li><a href="https://github.com/idanarye/vim-vebugger">https://github.com/idanarye/vim-vebugger</a></li>
+</ul>
+<p>なんか動きそうなのだが、 <code>vimproc</code> を使っていたので動かせなかった
+kaoriya 版の Vim を使うなどしてみたがよくわからず。</p>
+<h2 id="pyclewn">pyclewn</h2>
+<ul>
+<li><a href="https://github.com/Mistobaan/pyclewn">https://github.com/Mistobaan/pyclewn</a></li>
+</ul>
+<p>gdb と pdb のvimフロントエンド？</p>
+<h2 id="pubd">pubd</h2>
+<p>pythonのpdb.</p>
+<ul>
+<li><a href="https://github.com/inducer/pudb">https://github.com/inducer/pudb</a></li>
+</ul>
+<h2 id="vim-breakpts">vim-breakpts</h2>
+<p>vim スクリプト用？</p>
+<ul>
+<li><a href="https://github.com/albfan/vim-breakpts">https://github.com/albfan/vim-breakpts</a></li>
+</ul>
+<h2 id="vimspector">vimspector</h2>
+<ul>
+<li><a href="https://github.com/puremourning/vimspector">https://github.com/puremourning/vimspector</a></li>
+</ul>
+<p>VSCodeの <code>DebugAdapterProtocol</code> を使うものらしい。</p>
+<blockquote>
+<p>While Language Server Protocol is well known, the Debug Adapter Protocol is less well known, but achieves a similar goal: language agnostic API abstracting debuggers from clients.</p>
+</blockquote>
+<p>動かし方よくわからず。</p>
+<h1 id="debugadapterprotocol">DebugAdapterProtocol</h1>
+<ul>
+<li><a href="https://code.visualstudio.com/blogs/2018/08/07/debug-adapter-protocol-website">DebugAdapterProtocol</a>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-debugadapter-node">旧サイト・リポジトリ</a></li>
+</ul>
+</li>
+</ul>
+<p>読む。</p>
+<blockquote>
+<p>The “deep understanding of a language” is surfaced by the Language Server Protocol (LSP) and the “debugging support” by the Debug Adapter Protocol (DAP).</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>editor &#x3C;=> adapter &#x3C;=> gdb</span></span>
+<span class="line"><span>              ||</span></span>
+<span class="line"><span>              ++=====> pdb</span></span></code></pre>
+<p>adapterでラップして同じに見えるようにする。</p>
+<p>adapterの起動設定は、 <code>.vscode/launch.json</code> にというわけか。</p>
+<blockquote>
+<p>The Debug Adapter Protocol is not tied to VS Code and can be used as the foundation for a generic debugger UI in other development tools.</p>
+</blockquote>
+<p>新サイトで仕様を公開していくで、って書いてあるね。</p>
+<ul>
+<li>新サイト <a href="https://microsoft.github.io/debug-adapter-protocol/">https://microsoft.github.io/debug-adapter-protocol/</a>
+<ul>
+<li>新リポジトリ <a href="https://github.com/Microsoft/debug-adapter-protocol">https://github.com/Microsoft/debug-adapter-protocol</a></li>
+</ul>
+</li>
+</ul>
+<p>読む。</p>
+<ul>
+<li><a href="https://microsoft.github.io/debug-adapter-protocol/overview">https://microsoft.github.io/debug-adapter-protocol/overview</a></li>
+</ul>
+<blockquote>
+<p>single session mode: in this mode, the development tool starts a debug adapter as a standalone process and communicates with it through stdin and stdout.</p>
+</blockquote>
+<blockquote>
+<p>multi session mode: in this mode, the development tool does not start the debug adapter but assumes that it is already running and that it listens on a specific port for connections attempts.</p>
+</blockquote>
+<h2 id="dapの仕様">DAPの仕様</h2>
+<ul>
+<li><a href="https://microsoft.github.io/debug-adapter-protocol/specification">https://microsoft.github.io/debug-adapter-protocol/specification</a></li>
+</ul>
+<h2 id="dapの実装">DAPの実装</h2>
+<ul>
+<li><a href="https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/">https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/</a></li>
+</ul>
+<p>ネイティブコンパイルするタイプは言語ごとではなく、ネイティブコンパイルの様式ごとに違うものになる。例えば、 <code>vc</code> , <code>gcc</code> , <code>llvm</code> のように。</p>
+<p>となるとVMタイプのものは、 <code>.Net</code>, <code>Mono</code>, <code>java</code> といった分類になるのだろうか。
+<code>C#</code>, <code>F#</code> が両方デバッグできたりしそうではある。</p>
+<p>インタープリター型はそれぞれの言語ごとになる。</p>
+<p>あとは、リモートデバッグの事情を調べる。</p>
+<h3 id="native-debug">native debug</h3>
+<p>c++やd, rustなんかのnativeコードを出力するものをまとめて面倒見れるという理解であったいるのかな。ビルド形式とデバッグビルドに付加される情報のフォーマットに対応してデバッガを選択する必要があると。</p>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-cpptools">https://github.com/Microsoft/vscode-cpptools</a></li>
+</ul>
+<p>LLVM</p>
+<ul>
+<li><a href="https://github.com/vadimcn/vscode-lldb">https://github.com/vadimcn/vscode-lldb</a></li>
+</ul>
+<h3 id="net">.Net</h3>
+<blockquote>
+<p>Mono debugging is not supported.</p>
+</blockquote>
+<p>ILは互換性があるにしても、VMのデバッグインタフェースは互換性が無いということなのかな。</p>
+<ul>
+<li><a href="https://github.com/OmniSharp/omnisharp-vscode">https://github.com/OmniSharp/omnisharp-vscode</a></li>
+</ul>
+<h3 id="mono">Mono</h3>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-mono-debug">https://github.com/Microsoft/vscode-mono-debug</a></li>
+</ul>
+<h3 id="unity">Unity</h3>
+<ul>
+<li><a href="https://github.com/Unity-Technologies/vscode-unity-debug">https://github.com/Unity-Technologies/vscode-unity-debug</a></li>
+</ul>
+<p>UnityEditorにアタッチできるらしい。
+Unity版のMonoにアタッチできるということかしら。</p>
+<h3 id="lua--ravi">lua / ravi</h3>
+<ul>
+<li><a href="https://github.com/dibyendumajumdar/ravi-vscode-debugger">https://github.com/dibyendumajumdar/ravi-vscode-debugger</a></li>
+</ul>
+<p>こんなのあるのか・・・</p>
+<h3 id="powershell">powershell</h3>
+<ul>
+<li><a href="https://github.com/PowerShell/vscode-powershell">https://github.com/PowerShell/vscode-powershell</a></li>
+</ul>
+<h3 id="python">python</h3>
+<ul>
+<li><a href="https://github.com/Microsoft/vscode-python">https://github.com/Microsoft/vscode-python</a></li>
+</ul>
+<h1 id="vimspectorの実装">vimspectorの実装</h1>
+<ul>
+<li><a href="https://github.com/puremourning/vimspector">https://github.com/puremourning/vimspector</a></li>
+</ul>
+<p>読む。</p>
+<p><code>.\install_gadget.py</code></p>
+<p>を実行することで、 <code>VSCode</code> の <code>extension</code> を <code>download</code> する。
+<code>extension</code> に、 <code>DAP</code> が含まれているのでこれを使う。</p>
+<p><code>autoload/vimspector.vim</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="vim"><code><span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> vimspector#Launch</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#E1E4E8">  py3 </span><span style="color:#B392F0">_vimspector_session.Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span></code></pre>
+<p><code>python3/vimspector/debug_session.py</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="py"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> DebugSession</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">  def</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    pass</span></span>
+<span class="line"></span></code></pre>
+<p><code>vim.bindeval</code> を使っているので、 <code>vim8</code> 専用。
+<code>nvim</code> では回避する必要がある。</p>
+<p><code>.vimspector.json</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">    "adapters"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "configurations"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>の <code>configurations</code> からデバッグセッションの起動方法を取得して、
+デバッグアダプターを <code>vim</code> の <code>job</code> か <code>channel</code> 経由で起動する。
+<code>configurations</code> が <code>.vscode/launch.json</code> に相当するようだ。
+<code>adapters</code> は、インストールされている <code>DebugAdapter</code> のリスト。</p>
+<p><code>call vimspector#Launch()</code> <code>simple_python - launch</code> <code>/Users/ousttrue</code> と入力することでjobが、アダプター開始するところまでできた。
+しかし、アダプターがすぐに死んでいる様子。</p>
+<p>アダプターを手動起動してみる。</p>
+<p><code>node .\.vscode\extensions\ms-python.python-2019.4.11987\out\client\debugger\debugAdapter\main.js</code></p>
+<p><code>.vimspector.json</code> に書いてあるのとバージョンが違う。
+<code>file not found</code> か。</p>
+<p><code>path</code> をなおしたら動いた😃</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>-          "$HOME/.vscode/extensions/ms-python.python-2018.4.0/out/client/debugger/Main.js"</span></span>
+<span class="line"><span>+          "$HOME/.vscode/extensions/ms-python.python-2019.4.11987/out/client/debugger/debugAdapter/Main.js"</span></span></code></pre>
+<p><code>neovim</code> の <code>rplugin</code> での構成を考えてみようか。</p>
+<h1 id="python3-で-adapter-を起動してみる">python3 で Adapter を起動してみる</h1>
+<p><code>AdapterAdapter</code> というか <code>AdapterBridge</code> という感じになりそうだけど、
+<code>vim</code> で込み入った実装をするのは手に余るので、可能な限り <code>python</code> で事を進めよう。
+pythonでprotocl実験。</p>
+<p><a href="https://github.com/ousttrue/daplauncher">https://github.com/ousttrue/daplauncher</a></p>
+<ul>
+<li><a href="http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html">http://pydev.blogspot.com/2018/05/howto-launch-and-debug-in-vscode-using.html</a></li>
+<li><a href="https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/">https://vscode-docs.readthedocs.io/en/stable/extensions/example-debuggers/</a></li>
+<li><a href="https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/">https://vscode-docs.readthedocs.io/en/stable/extensionAPI/api-debugging/</a></li>
+</ul>
+<p>launchRequestの後で固まると思ったら、サイトに記述されていないパラメーターがあった。
+<code>console</code> どこに書いてあるのか・・・</p>
+<p><a href="https://github.com/Microsoft/vscode-debugadapter-node/blob/master/debugProtocol.json">https://github.com/Microsoft/vscode-debugadapter-node/blob/master/debugProtocol.json</a></p>
+<p><a href="https://github.com/Microsoft/vscode-python/issues/3762">https://github.com/Microsoft/vscode-python/issues/3762</a></p>
+<p>わかった。</p>
+<p><a href="https://github.com/Microsoft/vscode-go/issues/219">https://github.com/Microsoft/vscode-go/issues/219</a></p>
+<p>vscodeの <code>.vscode/launch.json</code> の起動設定を <code>launch</code> の引数に合体するのだ。</p>
+<p><a href="https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes">https://code.visualstudio.com/Docs/editor/debugging#_launchjson-attributes</a></p>
+<p>書いとけよー。</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

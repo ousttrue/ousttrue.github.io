@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2015/12/06/threejs_02/"><!-- Primary Meta Tags --><title>Three.jsにマウスによる視点操作を入れる</title><meta name="title" content="Three.jsにマウスによる視点操作を入れる"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2015/12/06/threejs_02/"><meta property="og:title" content="Three.jsにマウスによる視点操作を入れる"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2015/12/06/threejs_02/"><meta property="twitter:title" content="Three.jsにマウスによる視点操作を入れる"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2015-12-06T00:00:00.000Z">2015
+-12
+-06</time></div><h1 data-astro-cid-bvzihdzo>Three.jsにマウスによる視点操作を入れる</h1><hr data-astro-cid-bvzihdzo></div><pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span></span></span>
+<span class="line"><span>source</span></span>
+<span class="line"><span>今回は、TrackballControlsを導入します。</span></span>
+<span class="line"><span>TrackballControlsはThree.jsのライブラリ内に含まれるのではなくexamples扱いなので、</span></span>
+<span class="line"><span>直接コードを入手。</span></span>
+<span class="line"><span>使い方は、TrackballControlsのソースを見ると</span></span>
+<span class="line"><span>以下のようにするらしい。</span></span>
+<span class="line"><span>controls = new THREE.TrackballControls( camera );</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>controls.rotateSpeed = 1.0;</span></span>
+<span class="line"><span>controls.zoomSpeed = 1.2;</span></span>
+<span class="line"><span>controls.panSpeed = 0.8;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>controls.noZoom = false;</span></span>
+<span class="line"><span>controls.noPan = false;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>controls.staticMoving = true;</span></span>
+<span class="line"><span>controls.dynamicDampingFactor = 0.3;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>controls.keys = [ 65, 83, 68 ];</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>controls.addEventListener( 'change', render );</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>もうひとつ更新用に以下のコードも必要。</span></span>
+<span class="line"><span>function animate() {</span></span>
+<span class="line"><span>    requestAnimationFrame( animate );</span></span>
+<span class="line"><span>    controls.update();</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>やってみよう。</span></span>
+<span class="line"><span>ベースのレンダリングシーン</span></span>
+<span class="line"><span>シーンに適当にキューブを描画するコード。</span></span>
+<span class="line"><span>前回の記事をほぼ流用だけどいくつか変更点がある。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>namespaceでかこって名前衝突から防衛</span></span>
+<span class="line"><span>CreateCameraを独立</span></span>
+<span class="line"><span>キューブがアニメーションする部分をオミット</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>threejs_02.ts</span></span>
+<span class="line"><span>/// &#x3C;reference path='../../../../typings/tsd.d.ts' /></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>namespace Renderer02 {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    class Renderer {</span></span>
+<span class="line"><span>        $container: JQuery;</span></span>
+<span class="line"><span>        renderer: THREE.Renderer;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        scene: THREE.Scene;</span></span>
+<span class="line"><span>        camera: THREE.Camera;</span></span>
+<span class="line"><span>        mesh: THREE.Mesh;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        CreateRenderer($container: JQuery) {</span></span>
+<span class="line"><span>            this.$container = $container;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            this.renderer = new THREE.WebGLRenderer();</span></span>
+<span class="line"><span>            this.renderer.setSize($container.width(), $container.height());</span></span>
+<span class="line"><span>            $container.append(this.renderer.domElement);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        CreateCamera() {</span></span>
+<span class="line"><span>            this.camera = new THREE.PerspectiveCamera(75</span></span>
+<span class="line"><span>                , this.$container.width() / this.$container.height()</span></span>
+<span class="line"><span>                , 0.1, 1000);</span></span>
+<span class="line"><span>            this.camera.position.z = 5;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        CreateScene() {</span></span>
+<span class="line"><span>            this.scene = new THREE.Scene();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            var geometry = new THREE.BoxGeometry(1, 1, 1);</span></span>
+<span class="line"><span>            var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });</span></span>
+<span class="line"><span>            this.mesh = new THREE.Mesh(geometry, material);</span></span>
+<span class="line"><span>            this.scene.add(this.mesh);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        Render() {</span></span>
+<span class="line"><span>            // render</span></span>
+<span class="line"><span>            this.renderer.render(this.scene, this.camera);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    var renderer = new Renderer();</span></span>
+<span class="line"><span>    export function initialize($container: JQuery) {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        renderer.CreateRenderer($container);</span></span>
+<span class="line"><span>        renderer.CreateCamera();</span></span>
+<span class="line"><span>        renderer.CreateScene();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        renderer.Render();</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>$(() => {</span></span>
+<span class="line"><span>    var $container = $('div#renderer');</span></span>
+<span class="line"><span>    Renderer02.initialize($container);</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>TypeScript定義を追加する</span></span>
+<span class="line"><span>まず、TrackballControlsの型定義を追加する。</span></span>
+<span class="line"><span>declare module THREE {</span></span>
+<span class="line"><span>    export class TrackballControls</span></span>
+<span class="line"><span>    {</span></span>
+<span class="line"><span>        constructor(camera: THREE.Camera);</span></span>
+<span class="line"><span>        rotateSpeed: number;</span></span>
+<span class="line"><span>        zoomSpeed: number;</span></span>
+<span class="line"><span>        panSpeed: number;</span></span>
+<span class="line"><span>        noZoom: boolean;</span></span>
+<span class="line"><span>        noPan: boolean;</span></span>
+<span class="line"><span>        staticMoving: boolean;</span></span>
+<span class="line"><span>        dynamicDampingFactor: number;</span></span>
+<span class="line"><span>        keys: number[];</span></span>
+<span class="line"><span>        addEventListener(event: string, callback: Function):void;</span></span>
+<span class="line"><span>        update():void;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>TrackballControlsを初期化</span></span>
+<span class="line"><span>// Rendererのメソッドを修正</span></span>
+<span class="line"><span>    CreateCamera() {</span></span>
+<span class="line"><span>        this.camera = new THREE.PerspectiveCamera(75</span></span>
+<span class="line"><span>            , this.$container.width() / this.$container.height()</span></span>
+<span class="line"><span>            , 0.1, 1000);</span></span>
+<span class="line"><span>        this.camera.position.z = 5;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        // 以下を追加</span></span>
+<span class="line"><span>        this.controls = new THREE.TrackballControls(this.camera);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        this.controls.rotateSpeed = 1.0;</span></span>
+<span class="line"><span>        this.controls.zoomSpeed = 1.2;</span></span>
+<span class="line"><span>        this.controls.panSpeed = 0.8;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        this.controls.noZoom = false;</span></span>
+<span class="line"><span>        this.controls.noPan = false;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        this.controls.staticMoving = true;</span></span>
+<span class="line"><span>        this.controls.dynamicDampingFactor = 0.3;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        this.controls.keys = [65, 83, 68];</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        // trackballに変化があった時だけ描画を呼ぶ</span></span>
+<span class="line"><span>        this.controls.addEventListener('change', this.Render.bind(this));</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// Rendererのメソッドを追加</span></span>
+<span class="line"><span>    Animate() {</span></span>
+<span class="line"><span>        requestAnimationFrame(this.Animate.bind(this));</span></span>
+<span class="line"><span>        this.controls.update();</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// Animate呼び出しを追加</span></span>
+<span class="line"><span>    export function initialize($container: JQuery) {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        renderer.CreateRenderer($container);</span></span>
+<span class="line"><span>        renderer.CreateCamera();</span></span>
+<span class="line"><span>        renderer.CreateScene();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        renderer.Render();</span></span>
+<span class="line"><span>        renderer.Animate(); // 追加</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>動いたがWindow全体のマウスイベントが取られていてこれじゃない。</span></span>
+<span class="line"><span>canvasの親になったdivをマウスイベントの対象にしたい。</span></span>
+<span class="line"><span>div#rendererを操作対象にする</span></span>
+<span class="line"><span>TrackballControls.jsを見てたら</span></span>
+<span class="line"><span>THREE.TrackballControls = function ( object, domElement ) {</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>という記述を発見。第２引数にhtmlエレメントを渡せるらしい。</span></span>
+<span class="line"><span>定義を修正。</span></span>
+<span class="line"><span>// 定義</span></span>
+<span class="line"><span>    constructor(camera: THREE.Camera, element?: Element);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// 呼び出し</span></span>
+<span class="line"><span>   this.controls = new THREE.TrackballControls(this.camera, this.$container[0]);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>想定した動きになった。</span></span>
+<span class="line"><span>マウスカーソルを変えてみる</span></span>
+<span class="line"><span>cssの話だけれど。</span></span>
+<span class="line"><span>&#x3C;div id="renderer" style="width:300px;height:200px;cursor:pointer;">&#x3C;/div></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    $container</span></span>
+<span class="line"><span>        .mousedown(function(event) {</span></span>
+<span class="line"><span>            switch (event.button) {</span></span>
+<span class="line"><span>                case 0:</span></span>
+<span class="line"><span>                    $(this).css({ cursor: 'pointer' });</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>                case 1:</span></span>
+<span class="line"><span>                    $(this).css({ cursor: 'n-resize' });</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>                case 2:</span></span>
+<span class="line"><span>                    $(this).css({ cursor: 'move' });</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span>            }</span></span>
+<span class="line"><span>        })</span></span>
+<span class="line"><span>        .mouseup(function(event){</span></span>
+<span class="line"><span>            $(this).css({cursor: 'pointer'});</span></span>
+<span class="line"><span>        })</span></span>
+<span class="line"><span>    ;</span></span>
+<span class="line"><span></span></span></code></pre></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

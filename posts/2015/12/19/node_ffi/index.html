@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2015/12/19/node_ffi/"><!-- Primary Meta Tags --><title>node-ffiでstdcallが使いたい(頓挫)</title><meta name="title" content="node-ffiでstdcallが使いたい(頓挫)"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2015/12/19/node_ffi/"><meta property="og:title" content="node-ffiでstdcallが使いたい(頓挫)"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2015/12/19/node_ffi/"><meta property="twitter:title" content="node-ffiでstdcallが使いたい(頓挫)"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2015-12-19T00:00:00.000Z">2015
+-12
+-19</time></div><h1 data-astro-cid-bvzihdzo>node-ffiでstdcallが使いたい(頓挫)</h1><hr data-astro-cid-bvzihdzo></div><p>Windows 上で node-ffi で dll から関数を呼びだしていたのだが、
+dll にコールバックを登録した呼び出しを繰り返していると死ぬという現象に遭遇。
+調べ始めた。
+node-v5.3.0-x64.msi(Windows10)</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>node-ffiはstdcallに対応してない</span></span>
+<span class="line"><span>2014/01/25</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>http://stackoverflow.com/questions/21357502/calling-delphi-stdcall-function-with-panischar-from-node-js</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>node-ffiはstdcall対応してないで。</span></span>
+<span class="line"><span>そうなのかー。</span></span>
+<span class="line"><span>github見るとIssueがあるけど解決されなかったぽい。</span></span>
+<span class="line"><span>2012/01/13</span></span>
+<span class="line"><span>* https://github.com/node-ffi/node-ffi/issues/34</span></span>
+<span class="line"><span>残念。</span></span>
+<span class="line"><span>ついで。node-ffiはffiにパッケージ名を改めたらしい。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>https://github.com/node-ffi/node-ffi/wiki/API-changes-from-v0.x-to-v1.x</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>node-ffiを改造できないか模索する</span></span>
+<span class="line"><span>node-ffiはlibffiのラッパーとわかる。</span></span>
+<span class="line"><span>FFI_DEFAULT_ABI</span></span>
+<span class="line"><span>というのがcdeclになる様子でnode-ffiはそれしか対応していないのが問題。</span></span>
+<span class="line"><span>で、調べていくと</span></span>
+<span class="line"><span>node_modules/ffi/deps/libffi/src/x86/ffitarget.h</span></span>
+<span class="line"><span>typedef enum ffi_abi {</span></span>
+<span class="line"><span>  FFI_FIRST_ABI = 0,</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  /* ---- Intel x86 Win32 ---------- */</span></span>
+<span class="line"><span>#ifdef X86_WIN32</span></span>
+<span class="line"><span>  FFI_SYSV,</span></span>
+<span class="line"><span>  FFI_STDCALL,</span></span>
+<span class="line"><span>  FFI_THISCALL,</span></span>
+<span class="line"><span>  FFI_FASTCALL,</span></span>
+<span class="line"><span>  FFI_MS_CDECL,</span></span>
+<span class="line"><span>  FFI_LAST_ABI,</span></span>
+<span class="line"><span>#ifdef _MSC_VER</span></span>
+<span class="line"><span>  FFI_DEFAULT_ABI = FFI_MS_CDECL</span></span>
+<span class="line"><span>#else</span></span>
+<span class="line"><span>  FFI_DEFAULT_ABI = FFI_SYSV</span></span>
+<span class="line"><span>#endif</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>#elif defined(X86_WIN64)</span></span>
+<span class="line"><span>  FFI_WIN64,</span></span>
+<span class="line"><span>  FFI_LAST_ABI,</span></span>
+<span class="line"><span>  FFI_DEFAULT_ABI = FFI_WIN64</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>#else</span></span>
+<span class="line"><span>  /* ---- Intel x86 and AMD x86-64 - */</span></span>
+<span class="line"><span>  FFI_SYSV,</span></span>
+<span class="line"><span>  FFI_UNIX64,   /* Unix variants all use the same ABI for x86-64  */</span></span>
+<span class="line"><span>  FFI_LAST_ABI,</span></span>
+<span class="line"><span>#if defined(__i386__) || defined(__i386)</span></span>
+<span class="line"><span>  FFI_DEFAULT_ABI = FFI_SYSV</span></span>
+<span class="line"><span>#else</span></span>
+<span class="line"><span>  FFI_DEFAULT_ABI = FFI_UNIX64</span></span>
+<span class="line"><span>#endif</span></span>
+<span class="line"><span>#endif</span></span>
+<span class="line"><span>} ffi_abi;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>STDCALL発見・・・。しかし、この書き方だと64bitビルドで消滅するのではないか？</span></span>
+<span class="line"><span>FFI_WIN64って何？</span></span>
+<span class="line"><span>X86_WIN64って何だろう。何故、STD_CALLが無いのか。もしかして、IA64のことなのか。</span></span>
+<span class="line"><span>どうやら、そのよう定義済みプリプロセッサー・シンボルの使用。</span></span>
+<span class="line"><span>うちはamd64なのでnot IA64。</span></span>
+<span class="line"><span>node-ffiのどこでX86_WIN64が定義されているのか</span></span>
+<span class="line"><span>node_modules/ffi/deps/libffi/config/win/x64</span></span>
+<span class="line"><span>/* Specify which architecture libffi is configured for. */</span></span>
+<span class="line"><span>#ifndef X86_WIN64</span></span>
+<span class="line"><span>#define X86_WIN64</span></span>
+<span class="line"><span>#endif</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>とりあえず書き換えて、</span></span>
+<span class="line"><span>#ifndef X86_WIN32</span></span>
+<span class="line"><span>#define X86_WI32</span></span>
+<span class="line"><span>#endif</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>> cd node_modules/ffi</span></span>
+<span class="line"><span>> npm install</span></span>
+<span class="line"><span>> node-gyp rebuild</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_raw_THISCALL" は未解決です。 [D:\dev\_web\neuron.</span></span>
+<span class="line"><span>js\node_modules\ffi\build\ffi_bindings.vcxproj]</span></span>
+<span class="line"><span>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_SYSV" は未解決です。 [D:\dev\_web\neuron.js\node_</span></span>
+<span class="line"><span>modules\ffi\build\ffi_bindings.vcxproj]</span></span>
+<span class="line"><span>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_STDCALL" は未解決です。 [D:\dev\_web\neuron.js\no</span></span>
+<span class="line"><span>de_modules\ffi\build\ffi_bindings.vcxproj]</span></span>
+<span class="line"><span>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_THISCALL" は未解決です。 [D:\dev\_web\neuron.js\n</span></span>
+<span class="line"><span>ode_modules\ffi\build\ffi_bindings.vcxproj]</span></span>
+<span class="line"><span>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_closure_raw_SYSV" は未解決です。 [D:\dev\_web\neuron.js\n</span></span>
+<span class="line"><span>ode_modules\ffi\build\ffi_bindings.vcxproj]</span></span>
+<span class="line"><span>libffi.lib(ffi.obj) : error LNK2001: 外部シンボル "ffi_call_win32" は未解決です。 [D:\dev\_web\neuron.js\node_mo</span></span>
+<span class="line"><span>dules\ffi\build\ffi_bindings.vcxproj]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>頓挫・・・。</span></span>
+<span class="line"><span>上記関数の実体がwin32.asmの中にあるが64bitでコンパイルすると失敗する・・・。</span></span>
+<span class="line"><span>libffiを64bitビルドしてstdcallするところから出直さねばならない。</span></span>
+<span class="line"><span>32bit版のnode.jsに妥協</span></span>
+<span class="line"><span>FFI_STDCALLで関数登録</span></span>
+<span class="line"><span>// stdcallのabi番号。Windowsの32bit版Node.js専用</span></span>
+<span class="line"><span>const FFI_STDCALL=2;</span></span>
+<span class="line"><span>// callbackをFFI_STDCALLに設定</span></span>
+<span class="line"><span>const CallbackType = FFI.Function(ref.types.void</span></span>
+<span class="line"><span>    , [ref.refType(ref.types.void)], FFI_STDCALL);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// 関数定義をFFI_STDCALLに設定</span></span>
+<span class="line"><span>const DllLib = FFI.Library("hoge.dll", {</span></span>
+<span class="line"><span>    RegisterCallback: [ref.types.void, [ref.refType(ref.types.void), CallbackType, {abi: FFI_STDCALL}],</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>上記の記述でWindowsの32bit版Node.jsではFFI登録にSTDCALLを設定できたっぽい。</span></span>
+<span class="line"><span>でも、プログラムが死ぬ。</span></span>
+<span class="line"><span>どうやらJavascript層より下で死んでいるようでエラーを吐かずに突然死する。ううむ。</span></span>
+<span class="line"><span>こりゃ、Cのデバッガをアタッチせねばなるまい。</span></span>
+<span class="line"><span>0x016E0008 で例外がスローされました (node.exe 内): 0xC0000005: 場所 0x00000588 の読み取り中にアクセス違反が発生しました</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>この例外のハンドラーがある場合は、プログラムを安全に続行できます。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>uncaughtException</span></span>
+<span class="line"><span>こんなの発見した。</span></span>
+<span class="line"><span>東京Node学園#8 Let It Crash!?</span></span>
+<span class="line"><span>さっそくやってみる</span></span>
+<span class="line"><span>process.on('uncaughtException', function (err) {</span></span>
+<span class="line"><span>  console.log('Caught exception: ' + err);</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>ひっかからないな・・・</span></span>
+<span class="line"><span>自前ビルドしてどう死んでいるか確かめるか。</span></span></code></pre></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

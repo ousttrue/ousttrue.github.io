@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2017/08/usd/"><!-- Primary Meta Tags --><title>PixarのUniversal Scene Descriptionをビルドしてみる</title><meta name="title" content="PixarのUniversal Scene Descriptionをビルドしてみる"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2017/08/usd/"><meta property="og:title" content="PixarのUniversal Scene Descriptionをビルドしてみる"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2017/08/usd/"><meta property="twitter:title" content="PixarのUniversal Scene Descriptionをビルドしてみる"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2017-08-14T00:00:00.000Z">2017
+-08
+-14</time></div><h1 data-astro-cid-bvzihdzo>PixarのUniversal Scene Descriptionをビルドしてみる</h1><hr data-astro-cid-bvzihdzo></div><h1 id="pixarのuniversal-scene-descriptionをビルドしてみる">PixarのUniversal Scene Descriptionをビルドしてみる</h1>
+<p>20170902。実はビルドスクリプトがあって、簡単になっていた。</p>
+<p>動画でCEDEC2017のセッションを聞いてよさげな気がしたので再度やってみた(ちょっと前に途中までやって放置していた)。
+usdviewが使えるようにするとよいらしい。</p>
+<h2 id="pixar-usd-の-windows-ビルド方法20179-版">Pixar USD の Windows ビルド方法（2017/9 版）</h2>
+<p>自動ビルドスクリプトがついているので放っておくだけなのだけど、うまくいかなかったところを補足する。
+環境は、<code>Windows10(64bit)</code> + <code>VisualStudio2017</code> + <code>VisualStudio2015 のコンパイラ追加インストール(VisualStudio2017のインストールメニューにある)</code>
+visualstudio補足
+VisualStudioは、最近のバージョンに限ってもいろいろある。</p>
+<ul>
+<li>VisualStudio2017(MSVC14.1)のみ</li>
+<li>VisualStudio2017(MSVC14.1)にVS2015(MSVC14.0)のコンパイラが追加インストールされている(うちはこれ)</li>
+<li>VisualStudio2015(MSVC14.0)のみ</li>
+<li>Visual C++ 2015 Build Tools(MSVC14.0)Python3ビルド向けにIDEの無いバージョン)</li>
+</ul>
+<p>ものによって <code>vcvars.bat</code> の場所が違って、<code>bjam</code> とか <code>distutils</code> がコンパイラの発見に失敗したりする場合があるようだ。
+<code>cl.exe</code> が見つからないような場合、visualstudioの提供する設定済みのdosプロンプトから始めるのが手堅いかもしれない。
+一応、
+<code>VisualStudio2017 - x64 native tools command prompt</code> からはじめる。
+CMakeはVisualStudioの検出にあまり失敗しないので、おもにBoostのビルド対策。
+効果があったかは不明。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>D:\work> cl</span></span>
+<span class="line"><span>Microsoft(R) C/C++ Optimizing Compiler Version 19.10.25019 for x64</span></span>
+<span class="line"><span>Copyright (C) Microsoft Corporation.  All rights reserved.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]</span></span></code></pre>
+<p><code>VS2017</code> しか入っていないとき
+build_usd.py内Boost.Pythonに関してmsvc=14.0指定(VS2015)があるので、これをコメントアウトすればたぶんVS2017しかなくてもビルドできる。Windows版のPython2.7のビルドコンパイラは <code>VS2008(MSVC9.0)</code> らしい。</p>
+<p><a href="https://www.microsoft.com/en-us/download/details.aspx?id=44266">https://www.microsoft.com/en-us/download/details.aspx?id=44266</a></p>
+<h2 id="python補足">python補足</h2>
+<p>Python27以外のPythonが入っているとはまる率が上がる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>D:\work> python -V</span></span>
+<span class="line"><span>Python 3.6.0 :: Anaconda 4.3.0 (64-bit)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>違うPythonだー。</span></span>
+<span class="line"><span>D:\work> set PATH=D:\Python27;D:\Python27\Scripts;%PATH%</span></span>
+<span class="line"><span>D:\work> python -V</span></span>
+<span class="line"><span>Python 2.7.14rc1</span></span>
+<span class="line"><span>D:\work> pip install pyside</span></span>
+<span class="line"><span>Collecting pyside</span></span>
+<span class="line"><span>  Downloading PySide-1.2.4-cp27-none-win_amd64.whl (45.0MB)</span></span>
+<span class="line"><span>    100% |################################| 45.0MB 36kB/s</span></span>
+<span class="line"><span>Installing collected packages: pyside</span></span>
+<span class="line"><span>Successfully installed pyside-1.2.4</span></span></code></pre>
+<p>python使いたるもの２系、３系両方入っていたりするものである。
+cloneしてビルドスクリプトを実行</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>D:\work> git clone https://github.com/PixarAnimationStudios/USD</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>D:\work> mkdir USD_build</span></span>
+<span class="line"><span>D:\work> cd USD_build</span></span>
+<span class="line"><span>D:\work\USD_build></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>D:\work\USD_build> python ..\USD\build_scripts\build_usd.py</span></span>
+<span class="line"><span>usage: build_usd.py [-h] [-n] [-v | -q] [--build BUILD]</span></span>
+<span class="line"><span>                    [--generator GENERATOR]</span></span>
+<span class="line"><span>                    [--build-shared | --build-monolithic] [--src SRC]</span></span>
+<span class="line"><span>                    [--inst INST] [--force FORCE_BUILD] [--force-all]</span></span>
+<span class="line"><span>                    [--tests | --no-tests] [--docs | --no-docs]</span></span>
+<span class="line"><span>                    [--imaging | --usd-imaging | --no-imaging]</span></span>
+<span class="line"><span>                    [--ptex | --no-ptex] [--embree | --no-embree]</span></span>
+<span class="line"><span>                    [--embree-location EMBREE_LOCATION]</span></span>
+<span class="line"><span>                    [--alembic | --no-alembic] [--hdf5 | --no-hdf5]</span></span>
+<span class="line"><span>                    [--maya | --no-maya] [--maya-location MAYA_LOCATION]</span></span>
+<span class="line"><span>                    [--katana | --no-katana]</span></span>
+<span class="line"><span>                    [--katana-api-location KATANA_API_LOCATION]</span></span>
+<span class="line"><span>                    [--houdini | --no-houdini]</span></span>
+<span class="line"><span>                    [--houdini-location HOUDINI_LOCATION]</span></span>
+<span class="line"><span>                    install_dir</span></span>
+<span class="line"><span>build_usd.py: error: too few arguments</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>D:\work\USD_build> python ..\USD\build_scripts\build_usd.py .</span></span>
+<span class="line"><span>ERROR: CMake not found -- please install it and adjust your PATH</span></span></code></pre>
+<p>こんな風に足りないツールのメッセージが出るのでせっせとインストールしてパスを設定する。</p>
+<blockquote>
+<p>set PATH=D:\Program Files\CMake\bin;%PATH%
+set PATH=D:\Program Files\NASM;%PATH%</p>
+</blockquote>
+<p>build…</p>
+<h2 id="alembicとか無しの最小ビルド">Alembicとか無しの最小ビルド。</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>D:\work\USD_build> python ..\USD\build_scripts\build_usd.py .</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Building with settings:</span></span>
+<span class="line"><span>  USD source directory          D:\work\USD</span></span>
+<span class="line"><span>  USD install directory         D:\work\USD_build</span></span>
+<span class="line"><span>  3rd-party source directory    D:\work\USD_build\src</span></span>
+<span class="line"><span>  3rd-party install directory   D:\work\USD_build</span></span>
+<span class="line"><span>  Build directory               D:\work\USD_build\build</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  Building                      Shared libraries</span></span>
+<span class="line"><span>    Imaging                     On</span></span>
+<span class="line"><span>      Ptex support:             Off</span></span>
+<span class="line"><span>    UsdImaging                  On</span></span>
+<span class="line"><span>    Documentation               Off</span></span>
+<span class="line"><span>    Tests                       Off</span></span>
+<span class="line"><span>    Alembic Plugin              Off</span></span>
+<span class="line"><span>      HDF5 support:             Off</span></span>
+<span class="line"><span>    Maya Plugin                 Off</span></span>
+<span class="line"><span>    Katana Plugin               Off</span></span>
+<span class="line"><span>    Houdini Plugin              Off</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    Dependencies                zlib, boost, TBB, JPEG, TIFF, PNG, OpenEXR, GLEW, OpenImageIO, OpenSubdiv, PyOpenGL</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>STATUS: Installing zlib...</span></span>
+<span class="line"><span>STATUS: Installing boost...</span></span>
+<span class="line"><span>STATUS: Installing TBB...</span></span>
+<span class="line"><span>STATUS: Installing JPEG...</span></span>
+<span class="line"><span>STATUS: Installing TIFF...</span></span>
+<span class="line"><span>STATUS: Installing PNG...</span></span></code></pre>
+<p>こんな感じに順番にビルドが進んでいく。</p>
+<h2 id="pngのビルドでこけた">pngのビルドでこけた</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>pngrutil.obj : error LNK2019: 未解決の外部シンボル inflateValidate が関数 png_inflate_claim で参照されました。</span></span></code></pre>
+<p>何故か、zlibへのリンクがうまくいっていない？
+CMakeのGUIでsourceをUSD_build/src/libpng-1.6.29、buildをD:/dev/_alembic/USD_build/build/libpng-1.6.29にして確認するとZLIB_LIBRARY_RELEASEがC:/Program Files/Anaconda3/Library/lib/z.libになっていてお察し。
+pythonをフルパスで指定したらなんか治った。違うPythonが意図せず使われていたか。
+dos窓は、whichコマンドが無いしよくわからん。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>work\USD_build> D:\python27\python ..\USD\build_scripts\build_usd.py . --force png</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>STATUS: Installing PNG...</span></span>
+<span class="line"><span>STATUS: Installing OpenEXR...</span></span>
+<span class="line"><span>STATUS: Installing GLEW...</span></span>
+<span class="line"><span>STATUS: Installing OpenImageIO...</span></span>
+<span class="line"><span>STATUS: Installing OpenSubdiv...</span></span>
+<span class="line"><span>STATUS: Installing PyOpenGL...</span></span>
+<span class="line"><span>STATUS: Installing PyOpenGL...</span></span>
+<span class="line"><span>STATUS: Installing USD...</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Success! To use USD, please ensure that you have:</span></span>
+<span class="line"><span>  The following in your PYTHONPATH environment variable:</span></span>
+<span class="line"><span>    D:\dev\_alembic\USD_build\lib\python</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  The following in your PATH environment variable:</span></span>
+<span class="line"><span>    D:\dev\_alembic\USD_build\bin</span></span>
+<span class="line"><span>    D:\dev\_alembic\USD_build\lib</span></span></code></pre>
+<p>ビルドできた。</p>
+<h2 id="boostpythonメモ">Boost.Pythonメモ</h2>
+<p><code>boost_python-vc140-mt-1_61.dll</code> が <code>python36.dll</code> とか違うのにリンクしてしまう場合。
+最悪PythonをすべてアンインストールしてPython27(64bit)だけをインストールすればいけるのだが、それでは負けた気がするのでBoost.Pythonに使うPythonを強制する方法。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>USD_BUILD/user-conifg.jam</span></span>
+<span class="line"><span>using python</span></span>
+<span class="line"><span>    : 2.7                   # Version</span></span>
+<span class="line"><span>    : C:\\Python27\\python.exe      # Python Path</span></span>
+<span class="line"><span>    : C:\\Python27\\include         # include path</span></span>
+<span class="line"><span>    : C:\\Python27\\libs            # lib path(s)</span></span>
+<span class="line"><span>    ;</span></span></code></pre>
+<p>を作って環境変数 <code>BOOST_BUILD_PATH</code> を <code>user-config.jam</code> のあるディレクトリに指定する。
+<code>%USERROFILE%\user-config.jam</code> に作って <code>BOOST_BUILD_PATH</code> 無しでもよいが、消し忘れるとあとではまる可能性が増えると思う。</p>
+<p><a href="http://www.boost.org/build/doc/html/bbv2/overview/configuration.html">http://www.boost.org/build/doc/html/bbv2/overview/configuration.html</a></p>
+<p>WindowsのBoost.Pythonは作るときも使うときもリンクではまる。</p>
+<h2 id="usdviewを使ってみる">usdviewを使ってみる</h2>
+<p>USD_BUILD/bin/usdviewがある。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>USD_BUILD\bin> D:\python27\python usdview</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>sys.path</span></span>
+<span class="line"><span>Traceback (most recent call last):</span></span>
+<span class="line"><span>  File "usdview", line 25, in &#x3C;module></span></span>
+<span class="line"><span>    import pxr.Usdviewq as Usdviewq</span></span>
+<span class="line"><span>ImportError: No module named pxr.Usdviewq</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>environ[‘PATH’]</span></span>
+<span class="line"><span>Traceback (most recent call last):</span></span>
+<span class="line"><span>  File "usdview", line 37, in &#x3C;module></span></span>
+<span class="line"><span>    Usdviewq.Launcher().Run()</span></span>
+<span class="line"><span>  File "D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py", line 54, in Run</span></span>
+<span class="line"><span>    valid = self.ValidateOptions(arg_parse_result)</span></span>
+<span class="line"><span>  File "D:\dev\_alembic\USD_build\lib\python\pxr\Usdviewq\__init__.py", line 167, in ValidateOptions</span></span>
+<span class="line"><span>    from pxr import Sdf</span></span>
+<span class="line"><span>  File "D:\dev\_alembic\USD_build\lib\python\pxr\Sdf\__init__.py", line 24, in &#x3C;module></span></span>
+<span class="line"><span>    import _sdf</span></span>
+<span class="line"><span>ImportError: DLL load failed: 指定されたモジュールが見つかりません。</span></span></code></pre>
+<p>usdviewを改造してしまおう。
+環境変数PATHとPYTHONPATHを追加。
+usdview.cmd改造でもよいがpythonの方が書きやすいので。
+usdviewの冒頭のimport前に下記を追加。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> os</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> sys</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">basepath</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">os.path.dirname(os.path.dirname(os.path.abspath(</span><span style="color:#79B8FF">__file__</span><span style="color:#E1E4E8">)))</span></span>
+<span class="line"><span style="color:#E1E4E8">bin_dir</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">os.path.join(basepath, </span><span style="color:#9ECBFF">'bin'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">lib_dir</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">os.path.join(basepath, </span><span style="color:#9ECBFF">'lib'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">libpython_dir</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">os.path.join(lib_dir, </span><span style="color:#9ECBFF">'python'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">sys.path.append(libpython_dir)</span></span>
+<span class="line"><span style="color:#E1E4E8">os.environ[</span><span style="color:#9ECBFF">'PATH'</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">;</span><span style="color:#79B8FF">%s</span><span style="color:#9ECBFF">;"</span><span style="color:#F97583"> %</span><span style="color:#E1E4E8"> (bin_dir, lib_dir) </span><span style="color:#F97583">+</span><span style="color:#E1E4E8"> os.environ[</span><span style="color:#9ECBFF">'PATH'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> pxr.Usdviewq </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> Usdviewq</span></span></code></pre>
+<p>実行。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>USD_BUILD\bin> D:\python27\python usdview</span></span>
+<span class="line"><span>usage: usdview [-h] [--renderer {opt,simple}] [--select PRIMPATH]</span></span>
+<span class="line"><span>               [--camera CAMERA] [--mask PRIMPATH[,PRIMPATH...]]</span></span>
+<span class="line"><span>               [--clearsettings] [--norender] [--unloaded] [--timing]</span></span>
+<span class="line"><span>               [--memstats {none,stage,stageAndImaging}]</span></span>
+<span class="line"><span>               [--numThreads NUMTHREADS] [--ff FIRSTFRAME] [--lf LASTFRAME]</span></span>
+<span class="line"><span>               [--complexity COMPLEXITY] [--quitAfterStartup]</span></span>
+<span class="line"><span>               usdFile</span></span>
+<span class="line"><span>usdview: error: too few arguments</span></span></code></pre>
+<p>引数が必要と。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>cube.usd</span></span>
+<span class="line"><span>#usda 1.0</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>def Cube "Cube"</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<p>実行。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>Warning: in Link at line 180 of D:\dev\_alembic\USD\pxr\imaging\lib\hd\glslProgram.cpp -- Failed to link shader:</span></span>
+<span class="line"><span>Geometry shader(s) failed to link.</span></span>
+<span class="line"><span>Geometry link error: HW_UNSUPPORTED.</span></span>
+<span class="line"><span>ERROR: Internal compile error, error code: E_SC_LITERAL_NOT_DEFINED</span></span>
+<span class="line"><span>Shader not supported by HW</span></span></code></pre>
+<p>Windowは出た。しかしglslのエラーで3DViewの描画ができぬ。
+Rx480がだめなのだろうか。
+GTX買わねば・・・</p>
+<p>Alembic追加する
+ToDo</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

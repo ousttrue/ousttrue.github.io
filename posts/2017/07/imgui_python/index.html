@@ -1,0 +1,873 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2017/07/imgui_python/"><!-- Primary Meta Tags --><title>PythonでImGuiする</title><meta name="title" content="PythonでImGuiする"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2017/07/imgui_python/"><meta property="og:title" content="PythonでImGuiする"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2017/07/imgui_python/"><meta property="twitter:title" content="PythonでImGuiする"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2017-07-31T00:00:00.000Z">2017
+-07
+-31</time></div><h1 data-astro-cid-bvzihdzo>PythonでImGuiする</h1><hr data-astro-cid-bvzihdzo></div><p>Python で ImGui するのがよさげな気がしたのでやってみた。</p>
+<p>ImGui は c ではなく c++のライブラリなので Python の ctypes は使えぬ。
+本家の Bindings の項に２つの python binding が紹介されている。</p>
+<p><a href="https://github.com/chromy/cyimgui">https://github.com/chromy/cyimgui</a>
+<a href="https://github.com/swistakm/pyimgui">https://github.com/swistakm/pyimgui</a></p>
+<p>なんかうまくいかなった。
+ならば swig で自前でラップすればええやんということで、やってみる。</p>
+<p><a href="https://github.com/ousttrue/SwigImGui">https://github.com/ousttrue/SwigImGui</a></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>Swig</span></span>
+<span class="line"><span>%module swig_imgui</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%{</span></span>
+<span class="line"><span>/* Includes the header in the wrapper code */</span></span>
+<span class="line"><span>#include "imgui/imgui.h"</span></span>
+<span class="line"><span>%}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>/* Parse the header file to generate wrappers */</span></span>
+<span class="line"><span>%include "imgui/imgui.h"</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>> swig -python -c++ imgui.i</span></span></code></pre>
+<p>imgui_wrap.cxx と”swig_imgui.py”を生成した。
+imgui_wrap.cxx から_swig_imgui.pyd をビルドする。
+ビルドしてみる
+python の NativeModule をビルドするので setup.py を書いてみる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> distutils.core </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> setup, Extension</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">imgui_module </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Extension(</span><span style="color:#9ECBFF">'_swig_imgui'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">        sources</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">[</span></span>
+<span class="line"><span style="color:#9ECBFF">            'imgui_wrap.cxx'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            'imgui/imgui.cpp'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            'imgui/imgui_draw.cpp'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">            'imgui/imgui_demo.cpp'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            ],</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">setup (</span><span style="color:#FFAB70">name</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'swig_imgeui'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">        version</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> '0.1'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">        author</span><span style="color:#F97583">      =</span><span style="color:#9ECBFF"> "ousttrue"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">        description</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> """imgui wrapper using swig"""</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">        ext_modules</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [imgui_module],</span></span>
+<span class="line"><span style="color:#FFAB70">        py_modules</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">"imgui"</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span></code></pre>
+<p>ビルド。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>> C:\python36\python.exe setup.py build</span></span></code></pre>
+<p>ビルドしてみるとエラー。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>swigimgui\imgui_wrap.cxx(26285): error C2668: 'ImGui::TreePush': オーバーロード関数の呼び出しを解決することができません。(新機能 ; ヘルプを参照)</span></span>
+<span class="line"><span>swigimgui\imgui\imgui.h(338): note: 'void ImGui::TreePush(const void *)' の可能性があります</span></span>
+<span class="line"><span>swigimgui\imgui\imgui.h(337): note: または 'void ImGui::TreePush(const char *)'</span></span>
+<span class="line"><span>swigimgui\imgui_wrap.cxx(26285): note: 引数リスト '()' を一致させようとしているとき</span></span></code></pre>
+<p>ImGui::TreePush();が TreePush(const char* str_id = NULL)と TreePush(const void* ptr_id = NULL)でどちらなのか解決できない。
+修正。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>%module swig_imgui</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%{</span></span>
+<span class="line"><span>/* Includes the header in the wrapper code */</span></span>
+<span class="line"><span>#include "imgui/imgui.h"</span></span>
+<span class="line"><span>%}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%ignore ImGui::TreePush();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>/* Parse the header file to generate wrappers */</span></span>
+<span class="line"><span>%include "imgui/imgui.h"</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%include "imgui/imgui.h"の前に%ignoreを記述することで、</span></span></code></pre>
+<p>引数無しの TreePush を作らないようにした。
+これでコンパイルは通った。
+python36_d.lib にリンクしない
+python36_d.lib ではなあく python36.lib にリンクする。
+imgui.i の上の方に以下の記述を追加する。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>%begin %{</span></span>
+<span class="line"><span>#ifdef \_MSC_VER</span></span>
+<span class="line"><span>#define SWIG_PYTHON_INTERPRETER_NO_DEBUG</span></span>
+<span class="line"><span>#endif</span></span>
+<span class="line"><span>%}</span></span></code></pre>
+<p>実行してみよう</p>
+<p><a href="https://github.com/ocornut/imgui/tree/master/examples/sdl_opengl3_example">https://github.com/ocornut/imgui/tree/master/examples/sdl_opengl3_example</a></p>
+<p>をまるっと python に移植してみる。
+ここからが長くなるで。</p>
+<h1 id="imgui---standalone-example-application-for-sdl2--opengl">ImGui - standalone example application for SDL2 + OpenGL</h1>
+<h1 id="if-you-are-new-to-imgui-see-examplesreadmetxt-and-documentation-at-the-top-of-imguicpp">If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> os</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> sys</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#F97583"> not</span><span style="color:#9ECBFF"> 'PYSDL2_DLL_PATH'</span><span style="color:#F97583"> in</span><span style="color:#E1E4E8"> os.environ:</span></span>
+<span class="line"><span style="color:#E1E4E8">os.environ[</span><span style="color:#9ECBFF">'PYSDL2_DLL_PATH'</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">os.environ[</span><span style="color:#9ECBFF">'VCPKG_DIR'</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> '/installed/x64-windows/bin'</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> sdl2 </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> \</span><span style="color:#FDAEB7;font-style:italic">*</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">python_dir</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">os.path.dirname(sys.executable)</span></span>
+<span class="line"><span style="color:#E1E4E8">os.environ[</span><span style="color:#9ECBFF">'PATH'</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">+=</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">';'</span><span style="color:#F97583">+</span><span style="color:#E1E4E8">python_dir)</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> swig_imgui </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> imgui</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> ImplSdlGL3</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Setup SDL</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (SDL_Init(</span><span style="color:#79B8FF">SDL_INIT_VIDEO</span><span style="color:#F97583">|</span><span style="color:#79B8FF">SDL_INIT_TIMER</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#79B8FF">        print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Error: </span><span style="color:#79B8FF">%s\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, SDL_GetError())</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#F97583"> -</span><span style="color:#79B8FF">1</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Setup window</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_CONTEXT_FLAGS</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_CONTEXT_PROFILE_MASK</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">SDL_GL_CONTEXT_PROFILE_CORE</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_DOUBLEBUFFER</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_DEPTH_SIZE</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">24</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_STENCIL_SIZE</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">8</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_CONTEXT_MAJOR_VERSION</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_SetAttribute(</span><span style="color:#79B8FF">SDL_GL_CONTEXT_MINOR_VERSION</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    current</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">SDL_DisplayMode()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GetCurrentDisplayMode(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, current)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    window </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> SDL_CreateWindow(</span><span style="color:#F97583">b</span><span style="color:#9ECBFF">"ImGui SDL2+OpenGL3 example"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">SDL_WINDOWPOS_CENTERED</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">SDL_WINDOWPOS_CENTERED</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1280</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">720</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">SDL_WINDOW_OPENGL</span><span style="color:#F97583">|</span><span style="color:#79B8FF">SDL_WINDOW_RESIZABLE</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    glcontext </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> SDL_GL_CreateContext(window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#6A737D">    #gl3wInit();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Setup ImGui binding</span></span>
+<span class="line"><span style="color:#E1E4E8">    ImplSdlGL3.Init(window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Load Fonts</span></span>
+<span class="line"><span style="color:#6A737D">    # (there is a default font, this is only if you want to change it. see extra_fonts/README.txt for more details)</span></span>
+<span class="line"><span style="color:#6A737D">    #ImGuiIO&#x26; io = imgui.GetIO();</span></span>
+<span class="line"><span style="color:#6A737D">    #io.Fonts->AddFontDefault();</span></span>
+<span class="line"><span style="color:#6A737D">    #io.Fonts->AddFontFromFileTTF("../../extra_fonts/Cousine-Regular.ttf", 15.0f);</span></span>
+<span class="line"><span style="color:#6A737D">    #io.Fonts->AddFontFromFileTTF("../../extra_fonts/DroidSans.ttf", 16.0f);</span></span>
+<span class="line"><span style="color:#6A737D">    #io.Fonts->AddFontFromFileTTF("../../extra_fonts/ProggyClean.ttf", 13.0f);</span></span>
+<span class="line"><span style="color:#6A737D">    #io.Fonts->AddFontFromFileTTF("../../extra_fonts/ProggyTiny.ttf", 10.0f);</span></span>
+<span class="line"><span style="color:#6A737D">    #io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    show_test_window </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> True</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    show_another_window </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> False</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    clear_color </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">114</span><span style="color:#F97583">/</span><span style="color:#79B8FF">255.0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">144</span><span style="color:#F97583">/</span><span style="color:#79B8FF">255.0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">154</span><span style="color:#F97583">/</span><span style="color:#79B8FF">255.0</span><span style="color:#E1E4E8">]</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Main loop</span></span>
+<span class="line"><span style="color:#E1E4E8">    done </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> False</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#F97583">    while</span><span style="color:#F97583"> not</span><span style="color:#E1E4E8"> done:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        event</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">SDL_Event()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#F97583">        while</span><span style="color:#E1E4E8"> SDL_PollEvent(event)</span><span style="color:#F97583">!=</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">            ImplSdlGL3.ProcessEvent(event)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> event.type </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> SDL_QUIT</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">                done </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> true</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        ImplSdlGL3.NewFrame(window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        # 1. Show a simple window</span></span>
+<span class="line"><span style="color:#6A737D">        # Tip: if we don't call imgui.Begin()/imgui.End() the widgets appears in a window automatically called "Debug"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        f </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0.0</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        imgui.Text(</span><span style="color:#9ECBFF">"Hello, world!"</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        imgui.SliderFloat(</span><span style="color:#9ECBFF">"float"</span><span style="color:#E1E4E8">, f, </span><span style="color:#79B8FF">0.0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1.0</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        imgui.ColorEdit3(</span><span style="color:#9ECBFF">"clear color"</span><span style="color:#E1E4E8">, clear_color)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> imgui.Button(</span><span style="color:#9ECBFF">"Test Window"</span><span style="color:#E1E4E8">): show_test_window </span><span style="color:#F97583">^=</span><span style="color:#79B8FF"> 1</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> imgui.Button(</span><span style="color:#9ECBFF">"Another Window"</span><span style="color:#E1E4E8">): show_another_window </span><span style="color:#F97583">^=</span><span style="color:#79B8FF"> 1</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        imgui.Text(</span><span style="color:#9ECBFF">"Application average </span><span style="color:#79B8FF">%.3f</span><span style="color:#9ECBFF"> ms/frame (</span><span style="color:#79B8FF">%.1f</span><span style="color:#9ECBFF"> FPS)"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1000.0</span><span style="color:#F97583"> /</span><span style="color:#E1E4E8"> imgui.GetIO().Framerate, imgui.GetIO().Framerate)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        # 2. Show another simple window, this time using an explicit Begin/End pair</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> show_another_window:</span></span>
+<span class="line"><span style="color:#E1E4E8">            imgui.SetNextWindowSize(ImVec2(</span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">), ImGuiSetCond_FirstUseEver)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            imgui.Begin(</span><span style="color:#9ECBFF">"Another Window"</span><span style="color:#E1E4E8">, show_another_window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            imgui.Text(</span><span style="color:#9ECBFF">"Hello"</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            imgui.End()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        # 3. Show the ImGui test window. Most of the sample code is in imgui.ShowTestWindow()</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> show_test_window:</span></span>
+<span class="line"><span style="color:#E1E4E8">            imgui.SetNextWindowPos(ImVec2(</span><span style="color:#79B8FF">650</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">), ImGuiSetCond_FirstUseEver)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            imgui.ShowTestWindow(show_test_window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        # Rendering</span></span>
+<span class="line"><span style="color:#E1E4E8">        glViewport(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">int</span><span style="color:#E1E4E8">(imgui.GetIO().DisplaySize.x), </span><span style="color:#79B8FF">int</span><span style="color:#E1E4E8">(imgui.GetIO().DisplaySize.y))</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        glClear(</span><span style="color:#79B8FF">GL_COLOR_BUFFER_BIT</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        imgui.Render()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        SDL_GL_SwapWindow(window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Cleanup</span></span>
+<span class="line"><span style="color:#E1E4E8">    ImplSdlGL3.Shutdown()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_GL_DeleteContext(glcontext)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_DestroyWindow(window)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    SDL_Quit()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 0</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#F97583"> **</span><span style="color:#E1E4E8">name</span><span style="color:#F97583">**==</span><span style="color:#9ECBFF">'**main**'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">main()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">ImplSdlGL3.py</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> Init</span><span style="color:#E1E4E8">(window):</span></span>
+<span class="line"><span style="color:#F97583">pass</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> ProcessEvent</span><span style="color:#E1E4E8">(event):</span></span>
+<span class="line"><span style="color:#F97583">pass</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> NewFrame</span><span style="color:#E1E4E8">(window):</span></span>
+<span class="line"><span style="color:#F97583">pass</span></span></code></pre>
+<p>pyd のサーチ
+環境変数 PATH
+環境変数 PYSDL2_DLL_PATH
+実行
+諸々、正しく初期化していないのでクラッシュする。
+Init を移植</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> swig_imgui </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> imgui</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> sdl2 </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> \</span><span style="color:#FDAEB7;font-style:italic">*</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> Init</span><span style="color:#E1E4E8">(window):</span></span>
+<span class="line"><span style="color:#E1E4E8">io </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> imgui.GetIO()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#6A737D">#io.KeyMap[imgui.ImGuiKey_Tab] = SDLK_TAB;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_LeftArrow] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_LEFT</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_RightArrow] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_RIGHT</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_UpArrow] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_UP</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_DownArrow] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_DOWN</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_PageUp] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_PAGEUP</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_PageDown] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_PAGEDOWN</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Home] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_HOME</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_End] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDL_SCANCODE_END</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Delete] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_DELETE</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Backspace] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_BACKSPACE</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Enter] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_RETURN</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Escape] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_ESCAPE</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_A] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_a</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_C] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_c</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_V] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_v</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_X] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_x</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Y] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_y</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.KeyMap[imgui.ImGuiKey_Z] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> SDLK_z</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Alternatively you can set this to NULL and call imgui.GetDrawData() after imgui.Render() to get the same ImDrawData pointer.</span></span>
+<span class="line"><span style="color:#E1E4E8">    io.RenderDrawListsFn </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ImGui_ImplSdlGL3_RenderDrawLists</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    io.SetClipboardTextFn </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ImGui_ImplSdlGL3_SetClipboardText</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    io.GetClipboardTextFn </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ImGui_ImplSdlGL3_GetClipboardText</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#6A737D">    #io.ClipboardUserData = NULL;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">#ifdef \_WIN32</span></span>
+<span class="line"><span style="color:#E1E4E8">wmInfo</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">SDL_SysWMinfo()</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">SDL_VERSION(wmInfo.version)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">SDL_GetWindowWMInfo(window, wmInfo)</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#E1E4E8">io.ImeWindowHandle </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> wmInfo.info.win.window</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"><span style="color:#6A737D">#else</span></span>
+<span class="line"><span style="color:#6A737D">#(void)window;</span></span>
+<span class="line"><span style="color:#6A737D">#endif</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> True</span><span style="color:#FDAEB7;font-style:italic">;</span></span></code></pre>
+<p>実行してエラーをつぶしていく。
+int 型配列への index を使った代入
+冒頭の io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;がエラーになる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>io.KeyMap[imgui.ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;</span></span>
+<span class="line"><span>TypeError: 'SwigPyObject' object does not support item assignment</span></span></code></pre>
+<p>io.KeyMap の C での型。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="c"><code><span class="line"><span style="color:#F97583">int</span><span style="color:#FFAB70"> KeyMap</span><span style="color:#E1E4E8">[ImGuiKey_COUNT];</span></span></code></pre>
+<p>単なる配列へのアクセス。KeyMap を list 的なオブジェクトとして python 側に公開するよりも、io にセッターを実装することにした。
+imgui.i に追加。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>%extend ImGuiIO {</span></span>
+<span class="line"><span>void SetKeyMap(int k, int v)</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>ImGui::GetIO().KeyMap[k]=v;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<p>python では次のように使う。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#E1E4E8">io.SetKeyMap(imgui.ImGuiKey_LeftArrow, </span><span style="color:#79B8FF">SDL_SCANCODE_LEFT</span><span style="color:#E1E4E8">)</span><span style="color:#FDAEB7;font-style:italic">;</span></span></code></pre>
+<p>関数ポインタ型に python の関数を代入。
+swig 的にはこれがいちばんの難問である。
+関数ポインタを変数に代入するのがエラーになる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> RenderDrawLists</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">pass</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">io.RenderDrawListsFn </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> RenderDrawLists</span><span style="color:#FDAEB7;font-style:italic">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">TypeError</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> method </span><span style="color:#9ECBFF">'ImGuiIO_RenderDrawListsFn_set'</span><span style="color:#E1E4E8">, argument </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8"> of </span><span style="color:#79B8FF">type</span><span style="color:#9ECBFF"> 'void (_)(ImDrawData _)'</span></span>
+<span class="line"><span style="color:#E1E4E8">Press </span><span style="color:#79B8FF">any</span><span style="color:#E1E4E8"> key to </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8"> . . .</span></span></code></pre>
+<p>そりゃ、python の関数をこれに代入するのは無理だ。
+解決方法は、以下のようにする。
+imgui.i に追記。場所に注意が必要。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>%{</span></span>
+<span class="line"><span>static void PythonRenderDrawListsFn(ImDrawData* data)</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>auto func=(PyObject*)ImGui::GetIO().UserData; // Get Python function</span></span>
+<span class="line"><span>auto obj = SWIG_NewPointerObj(SWIG_as_voidptr(data)</span></span>
+<span class="line"><span>, SWIGTYPE_p_ImDrawData, 0 | 0 );</span></span>
+<span class="line"><span>auto arglist = Py_BuildValue("(O)",obj); // Build argument list</span></span>
+<span class="line"><span>PyEval_CallObject(func, arglist); // Call Python</span></span>
+<span class="line"><span>Py_DECREF(arglist); // Trash arglist</span></span>
+<span class="line"><span>Py_DECREF(obj);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>%}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// before</span></span>
+<span class="line"><span>%include "imgui/imgui.h"</span></span>
+<span class="line"><span>// after</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%extend ImGuiIO {</span></span>
+<span class="line"><span>void SetRenderDrawListsFn(PyObject \*pyfunc) {</span></span>
+<span class="line"><span>ImGui::GetIO().UserData=pyfunc;</span></span>
+<span class="line"><span>self->RenderDrawListsFn=PythonRenderDrawListsFn;</span></span>
+<span class="line"><span>Py_INCREF(pyfunc);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<p>残り２つの関数ポインタも同様の対応で行けると思うがコメントアウトして飛ばした。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>io.SetClipboardTextFn = ImGui_ImplSdlGL3_SetClipboardText;</span></span>
+<span class="line"><span>io.GetClipboardTextFn = ImGui_ImplSdlGL3_GetClipboardText;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>void\*の代入</span></span>
+<span class="line"><span>io.ImeWindowHandle = wmInfo.info.win.window;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>TypeError: in method 'ImGuiIO_ImeWindowHandle_set', argument 2 of type 'void \*'</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>セッターを作った。</span></span>
+<span class="line"><span>%extend ImGuiIO {</span></span>
+<span class="line"><span>void SetImeWindowHandle(long long v)</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>ImGui::GetIO().ImeWindowHandle = (void\*)v;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>NewFrame の移植</span></span>
+<span class="line"><span>def CreateDeviceObjects():</span></span>
+<span class="line"><span>pass</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>g_MousePressed=[False, False, False]</span></span>
+<span class="line"><span>g_MouseWheel=None</span></span>
+<span class="line"><span>def NewFrame(window):</span></span>
+<span class="line"><span>if not g_FontTexture:</span></span>
+<span class="line"><span>CreateDeviceObjects();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    io = imgui.GetIO();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Setup display size (every frame to accommodate for window resizing)</span></span>
+<span class="line"><span>    w, h=SDL_GetWindowSize(window);</span></span>
+<span class="line"><span>    display_w, display_h=SDL_GL_GetDrawableSize(window);</span></span>
+<span class="line"><span>    io.DisplaySize = imgui.ImVec2(w, h);</span></span>
+<span class="line"><span>    io.DisplayFramebufferScale = ImVec2(</span></span>
+<span class="line"><span>        (display_w / float(w)) if w > 0 else 0,</span></span>
+<span class="line"><span>        (display_h / float(h)) if h > 0 else 0);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Setup time step</span></span>
+<span class="line"><span>    time = SDL_GetTicks();</span></span>
+<span class="line"><span>    current_time = time / 1000.0;</span></span>
+<span class="line"><span>    io.DeltaTime = (current_time - g_Time) if g_Time > 0.0 else (1.0 / 60.0);</span></span>
+<span class="line"><span>    g_Time = current_time;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Setup inputs</span></span>
+<span class="line"><span>    # (we already got mouse wheel, keyboard keys &#x26; characters from SDL_PollEvent())</span></span>
+<span class="line"><span>    mouseMask, mx, my = SDL_GetMouseState();</span></span>
+<span class="line"><span>    if (SDL_GetWindowFlags(window) &#x26; SDL_WINDOW_MOUSE_FOCUS):</span></span>
+<span class="line"><span>        # Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)</span></span>
+<span class="line"><span>        io.MousePos = ImVec2(mx, my);</span></span>
+<span class="line"><span>    else:</span></span>
+<span class="line"><span>        io.MousePos = ImVec2(-1, -1);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.</span></span>
+<span class="line"><span>    io.MouseDown[0] = g_MousePressed[0] or (mouseMask &#x26; SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;</span></span>
+<span class="line"><span>    io.MouseDown[1] = g_MousePressed[1] or (mouseMask &#x26; SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;</span></span>
+<span class="line"><span>    io.MouseDown[2] = g_MousePressed[2] or (mouseMask &#x26; SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;</span></span>
+<span class="line"><span>    g_MousePressed[0] = g_MousePressed[1] = g_MousePressed[2] = False;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    io.MouseWheel = g_MouseWheel;</span></span>
+<span class="line"><span>    g_MouseWheel = 0.0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Hide OS mouse cursor if ImGui is drawing it</span></span>
+<span class="line"><span>    SDL_ShowCursor(0 if io.MouseDrawCursor else 1);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Start the frame</span></span>
+<span class="line"><span>    imgui.NewFrame();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>io.MouseDown</span></span>
+<span class="line"><span>セッター。</span></span>
+<span class="line"><span>%extend ImGuiIO {</span></span>
+<span class="line"><span>void SetMouseDown(int k, int v)</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>ImGui::GetIO().MouseDown[k]=v;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>CreateDeviceObjects の移植 # Backup GL state</span></span>
+<span class="line"><span>last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);</span></span>
+<span class="line"><span>last_array_buffer=glGetIntegerv(GL_ARRAY_BUFFER_BINDING);</span></span>
+<span class="line"><span>last_vertex_array=glGetIntegerv(GL_VERTEX_ARRAY_BINDING);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    vertex_shader =b'''#version 330</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>uniform mat4 ProjMtx;</span></span>
+<span class="line"><span>in vec2 Position;</span></span>
+<span class="line"><span>in vec2 UV;</span></span>
+<span class="line"><span>in vec4 Color;</span></span>
+<span class="line"><span>out vec2 Frag_UV;</span></span>
+<span class="line"><span>out vec4 Frag_Color;</span></span>
+<span class="line"><span>void main()</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>Frag_UV = UV;</span></span>
+<span class="line"><span>Frag_Color = Color;</span></span>
+<span class="line"><span>gl_Position = ProjMtx \* vec4(Position.xy,0,1);</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span>'''</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    fragment_shader =b'''#version 330</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>uniform sampler2D Texture;</span></span>
+<span class="line"><span>in vec2 Frag_UV;</span></span>
+<span class="line"><span>in vec4 Frag_Color;</span></span>
+<span class="line"><span>out vec4 Out_Color;</span></span>
+<span class="line"><span>void main()</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>Out_Color = Frag_Color \* texture( Texture, Frag_UV.st);</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span>'''</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    g_ShaderHandle = glCreateProgram();</span></span>
+<span class="line"><span>    g_VertHandle = glCreateShader(GL_VERTEX_SHADER);</span></span>
+<span class="line"><span>    g_FragHandle = glCreateShader(GL_FRAGMENT_SHADER);</span></span>
+<span class="line"><span>    glShaderSource(g_VertHandle, vertex_shader);</span></span>
+<span class="line"><span>    glShaderSource(g_FragHandle, fragment_shader);</span></span>
+<span class="line"><span>    glCompileShader(g_VertHandle);</span></span>
+<span class="line"><span>    glCompileShader(g_FragHandle);</span></span>
+<span class="line"><span>    glAttachShader(g_ShaderHandle, g_VertHandle);</span></span>
+<span class="line"><span>    glAttachShader(g_ShaderHandle, g_FragHandle);</span></span>
+<span class="line"><span>    glLinkProgram(g_ShaderHandle);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    g_AttribLocationTex = glGetUniformLocation(g_ShaderHandle, "Texture");</span></span>
+<span class="line"><span>    g_AttribLocationProjMtx = glGetUniformLocation(g_ShaderHandle, "ProjMtx");</span></span>
+<span class="line"><span>    g_AttribLocationPosition = glGetAttribLocation(g_ShaderHandle, "Position");</span></span>
+<span class="line"><span>    g_AttribLocationUV = glGetAttribLocation(g_ShaderHandle, "UV");</span></span>
+<span class="line"><span>    g_AttribLocationColor = glGetAttribLocation(g_ShaderHandle, "Color");</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    g_VboHandle=glGenBuffers(1);</span></span>
+<span class="line"><span>    g_ElementsHandle=glGenBuffers(1);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    g_VaoHandle=glGenVertexArrays(1);</span></span>
+<span class="line"><span>    glBindVertexArray(g_VaoHandle);</span></span>
+<span class="line"><span>    glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);</span></span>
+<span class="line"><span>    glEnableVertexAttribArray(g_AttribLocationPosition);</span></span>
+<span class="line"><span>    glEnableVertexAttribArray(g_AttribLocationUV);</span></span>
+<span class="line"><span>    glEnableVertexAttribArray(g_AttribLocationColor);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>#define OFFSETOF(TYPE, ELEMENT) ((size_t)&#x26;(((TYPE \*)0)->ELEMENT))</span></span>
+<span class="line"><span>SIZEOF_ImDrawVert=20</span></span>
+<span class="line"><span>glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, SIZEOF_ImDrawVert, ctypes.c_void_p(0));</span></span>
+<span class="line"><span>glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, SIZEOF_ImDrawVert, ctypes.c_void_p(8));</span></span>
+<span class="line"><span>glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, SIZEOF_ImDrawVert, ctypes.c_void_p(16));</span></span>
+<span class="line"><span>#undef OFFSETOF</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    CreateFontsTexture();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Restore modified GL state</span></span>
+<span class="line"><span>    glBindTexture(GL_TEXTURE_2D, last_texture);</span></span>
+<span class="line"><span>    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);</span></span>
+<span class="line"><span>    glBindVertexArray(last_vertex_array);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    return True;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>sizeof</span></span>
+<span class="line"><span>%constant int SIZEOF_ImDrawVert = sizeof(ImDrawVert);</span></span>
+<span class="line"><span>%constant int SIZEOF_ImDrawIdx = sizeof(ImDrawIdx);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>offset</span></span>
+<span class="line"><span>%{</span></span>
+<span class="line"><span>#define OFFSETOF(TYPE, ELEMENT) ((size_t)&#x26;(((TYPE \*)0)->ELEMENT))</span></span>
+<span class="line"><span>const int OFFSETOF_ImDrawVert_pos = OFFSETOF(ImDrawVert, pos);</span></span>
+<span class="line"><span>const int OFFSETOF_ImDrawVert_uv = OFFSETOF(ImDrawVert, uv);</span></span>
+<span class="line"><span>const int OFFSETOF_ImDrawVert_col = OFFSETOF(ImDrawVert, col);</span></span>
+<span class="line"><span>#undef OFFSETOF</span></span>
+<span class="line"><span>%}</span></span>
+<span class="line"><span>const int OFFSETOF_ImDrawVert_pos = OFFSETOF_ImDrawVert_pos;</span></span>
+<span class="line"><span>const int OFFSETOF_ImDrawVert_uv = OFFSETOF_ImDrawVert_uv;</span></span>
+<span class="line"><span>const int OFFSETOF_ImDrawVert_col = OFFSETOF_ImDrawVert_col;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>CreateFontsTexture の移植</span></span>
+<span class="line"><span>def CreateFontsTexture(): # Build texture atlas</span></span>
+<span class="line"><span>io = imgui.GetIO(); # Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user's existing shader.</span></span>
+<span class="line"><span>pixels, width, height=io.Fonts.GetTexDataAsRGBA32();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Upload texture to graphics system</span></span>
+<span class="line"><span>    last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);</span></span>
+<span class="line"><span>    g_FontTexture=glGenTextures(1);</span></span>
+<span class="line"><span>    glBindTexture(GL_TEXTURE_2D, g_FontTexture);</span></span>
+<span class="line"><span>    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);</span></span>
+<span class="line"><span>    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</span></span>
+<span class="line"><span>    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);</span></span>
+<span class="line"><span>    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Store our identifier</span></span>
+<span class="line"><span>    io.Fonts.TexID = g_FontTexture;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Restore state</span></span>
+<span class="line"><span>    glBindTexture(GL_TEXTURE_2D, last_texture);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>値を返すためにポインタ引数を出力に使い(in + argout)、長さの分かっているバイト列へのポインタを bytes として返す</span></span>
+<span class="line"><span>対象はこれ。</span></span>
+<span class="line"><span>IMGUI_API void GetTexDataAsRGBA32(unsigned char\*_ out_pixels, int_ out_width, int* out_height, int* out_bytes_per_pixel = NULL);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>typemap でやってみる。</span></span>
+<span class="line"><span>imgui.i の%include "imgui/imgui.h"より前に記述。</span></span>
+<span class="line"><span>%typemap(in, numinputs=0) (unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel) (unsigned char *tempP, int tempW, int tempH, int tempB) {</span></span>
+<span class="line"><span>$1 = &#x26;tempP;</span></span>
+<span class="line"><span>$2 = &#x26;tempW;</span></span>
+<span class="line"><span>$3 = &#x26;tempH;</span></span>
+<span class="line"><span>$4 = &#x26;tempB;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>%typemap(argout)(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel){</span></span>
+<span class="line"><span>auto b = PyBytes_FromStringAndSize((const char *)_$1, (_$2) _ (_$3) _ (_$4));</span></span>
+<span class="line"><span>auto w = PyLong_FromLong(_$2);</span></span>
+<span class="line"><span>auto h = PyLong_FromLong(_$3);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if ((!$result) || ($result == Py_None)) {</span></span>
+<span class="line"><span>        // new tuple3</span></span>
+<span class="line"><span>        $result = PyTuple_New(3);</span></span>
+<span class="line"><span>        PyTuple_SetItem($result, 0, b);</span></span>
+<span class="line"><span>        PyTuple_SetItem($result, 1, w);</span></span>
+<span class="line"><span>        PyTuple_SetItem($result, 2, h);</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    else{</span></span>
+<span class="line"><span>        if (!PyTuple_Check($result)) {</span></span>
+<span class="line"><span>            // new tuple4</span></span>
+<span class="line"><span>            auto t= PyTuple_New(4);</span></span>
+<span class="line"><span>            PyTuple_SetItem(t, 0, $result);</span></span>
+<span class="line"><span>            PyTuple_SetItem(t, 1, b);</span></span>
+<span class="line"><span>            PyTuple_SetItem(t, 2, w);</span></span>
+<span class="line"><span>            PyTuple_SetItem(t, 3, h);</span></span>
+<span class="line"><span>            $result=t;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        else {</span></span>
+<span class="line"><span>            // concat</span></span>
+<span class="line"><span>            auto head = $result;</span></span>
+<span class="line"><span>            auto tail = PyTuple_New(3);</span></span>
+<span class="line"><span>            PyTuple_SetItem($result, 0, b);</span></span>
+<span class="line"><span>            PyTuple_SetItem($result, 1, w);</span></span>
+<span class="line"><span>            PyTuple_SetItem($result, 2, h);</span></span>
+<span class="line"><span>            $result = PySequence_Concat(head, tail);</span></span>
+<span class="line"><span>            Py_DECREF(head);</span></span>
+<span class="line"><span>            Py_DECREF(tail);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>typemap(in)で呼び出し時に出力変数を与える必要を無くして、typemap(argout)で呼び出し後の返り値を tuple 化して値を詰める。その際に、バイト列のサイズが計算できるので PyBytes_FromStringAndSize で bytes を作る。</span></span>
+<span class="line"><span>TexID のセッター</span></span>
+<span class="line"><span>int から void*への変換。</span></span>
+<span class="line"><span>%extend ImFontAtlas {</span></span>
+<span class="line"><span>void SetTexID(long long id) {</span></span>
+<span class="line"><span>self->TexID=reinterpret_cast&#x3C;void*>(id);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>ここまで実装すると Texture の nullptr でプログラムがクラッシュしなくなる。</span></span>
+<span class="line"><span>imgui の widget に対する inout な引数</span></span>
+<span class="line"><span>float*</span></span>
+<span class="line"><span>IMGUI_API bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format = "%.3f", float power = 1.0f);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>argout にすると返り値が(bool, float)になっていまいちな気がする。</span></span>
+<span class="line"><span>swig で float\*型のヘルパークラスを作る。</span></span>
+<span class="line"><span>%include "cpointer.i"</span></span>
+<span class="line"><span>%pointer_functions(float, floatp);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>f=imgui.new_floatp()</span></span>
+<span class="line"><span>imgui.floatp_assign(f, 0.0)</span></span>
+<span class="line"><span>imgui.SliderFloat("float", f, 0.0, 1.0);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>bool*</span></span>
+<span class="line"><span>float と同様に。</span></span>
+<span class="line"><span>IMGUI_API void ShowTestWindow(bool* p_open = NULL);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%include "cpointer.i"</span></span>
+<span class="line"><span>%pointer_functions(bool, boolp);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    show_test_window = imgui.new_boolp();</span></span>
+<span class="line"><span>    imgui.boolp_assign(show_test_window, True)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if imgui.Button("Test Window"): imgui.boolp_assign(show_test_window, not boolp_assign.value))</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if imgui.boolp_value(show_test_window):</span></span>
+<span class="line"><span>        imgui.SetNextWindowPos(imgui.ImVec2(650, 20), imgui.ImGuiSetCond_FirstUseEver);</span></span>
+<span class="line"><span>        imgui.ShowTestWindow(show_test_window);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>動くとはいえこれはいかんな。ポインタクラスをもう少し便利にするか、別の方法を調べよう。</span></span>
+<span class="line"><span>float[3]</span></span>
+<span class="line"><span>IMGUI_API bool ColorEdit3(const char\* label, float col[3]);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>typemap で list リストを受け取って、list に結果を格納するように記述する。</span></span>
+<span class="line"><span>%typemap(in) float col[3] (float temp[3]) {</span></span>
+<span class="line"><span>if (!PySequence_Check($input)) {</span></span>
+<span class="line"><span>        PyErr_SetString(PyExc_ValueError,"Expected a sequence");</span></span>
+<span class="line"><span>        return NULL;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    if (PySequence_Length($input) &#x3C; $1_dim0) {</span></span>
+<span class="line"><span>        PyErr_SetString(PyExc_ValueError,"Size mismatch. Expected more than $1_dim0 elements");</span></span>
+<span class="line"><span>        return NULL;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    for (int i = 0; i &#x3C; $1_dim0; i++) {</span></span>
+<span class="line"><span>        PyObject *o = PySequence_GetItem($input,i);</span></span>
+<span class="line"><span>if (PyNumber_Check(o)) {</span></span>
+<span class="line"><span>temp[i] = (float) PyFloat_AsDouble(o);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>else {</span></span>
+<span class="line"><span>PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");</span></span>
+<span class="line"><span>return NULL;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>$1 = temp;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>%typemap(argout) float col[3] {</span></span>
+<span class="line"><span>    for (int i = 0; i &#x3C; $1_dim0; i++) {</span></span>
+<span class="line"><span>        PyObject *o = PyFloat_FromDouble((double) $1[i]);</span></span>
+<span class="line"><span>        PyList_SetItem($input, i, o);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>clear_color = [114/255.0, 144/255.0, 154/255.0, 0];</span></span>
+<span class="line"><span>imgui.ColorEdit3("clear color", clear_color);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>RenderDrawLists の移植</span></span>
+<span class="line"><span>def RenderDrawLists(draw_data):</span></span>
+<span class="line"><span>global g_ShaderHandle</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)</span></span>
+<span class="line"><span>    io = imgui.GetIO();</span></span>
+<span class="line"><span>    fb_width = int(io.DisplaySize.x * io.DisplayFramebufferScale.x);</span></span>
+<span class="line"><span>    fb_height = int(io.DisplaySize.y * io.DisplayFramebufferScale.y);</span></span>
+<span class="line"><span>    if fb_width == 0 or fb_height == 0:</span></span>
+<span class="line"><span>        return;</span></span>
+<span class="line"><span>    draw_data.ScaleClipRects(io.DisplayFramebufferScale);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Backup GL state</span></span>
+<span class="line"><span>    last_active_texture=glGetIntegerv(GL_ACTIVE_TEXTURE);</span></span>
+<span class="line"><span>    glActiveTexture(GL_TEXTURE0);</span></span>
+<span class="line"><span>    last_program=glGetIntegerv(GL_CURRENT_PROGRAM);</span></span>
+<span class="line"><span>    last_texture=glGetIntegerv(GL_TEXTURE_BINDING_2D);</span></span>
+<span class="line"><span>    last_array_buffer=glGetIntegerv(GL_ARRAY_BUFFER_BINDING);</span></span>
+<span class="line"><span>    last_element_array_buffer=glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING);</span></span>
+<span class="line"><span>    last_vertex_array=glGetIntegerv(GL_VERTEX_ARRAY_BINDING);</span></span>
+<span class="line"><span>    last_blend_src_rgb=glGetIntegerv(GL_BLEND_SRC_RGB);</span></span>
+<span class="line"><span>    last_blend_dst_rgb=glGetIntegerv(GL_BLEND_DST_RGB);</span></span>
+<span class="line"><span>    last_blend_src_alpha=glGetIntegerv(GL_BLEND_SRC_ALPHA);</span></span>
+<span class="line"><span>    last_blend_dst_alpha=glGetIntegerv(GL_BLEND_DST_ALPHA);</span></span>
+<span class="line"><span>    last_blend_equation_rgb=glGetIntegerv(GL_BLEND_EQUATION_RGB);</span></span>
+<span class="line"><span>    last_blend_equation_alpha=glGetIntegerv(GL_BLEND_EQUATION_ALPHA);</span></span>
+<span class="line"><span>    last_viewport=glGetIntegerv(GL_VIEWPORT);</span></span>
+<span class="line"><span>    last_scissor_box=glGetIntegerv(GL_SCISSOR_BOX);</span></span>
+<span class="line"><span>    last_enable_blend = glIsEnabled(GL_BLEND);</span></span>
+<span class="line"><span>    last_enable_cull_face = glIsEnabled(GL_CULL_FACE);</span></span>
+<span class="line"><span>    last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);</span></span>
+<span class="line"><span>    last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled</span></span>
+<span class="line"><span>    glEnable(GL_BLEND);</span></span>
+<span class="line"><span>    glBlendEquation(GL_FUNC_ADD);</span></span>
+<span class="line"><span>    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);</span></span>
+<span class="line"><span>    glDisable(GL_CULL_FACE);</span></span>
+<span class="line"><span>    glDisable(GL_DEPTH_TEST);</span></span>
+<span class="line"><span>    glEnable(GL_SCISSOR_TEST);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Setup viewport, orthographic projection matrix</span></span>
+<span class="line"><span>    glViewport(0, 0, fb_width, fb_height);</span></span>
+<span class="line"><span>    ortho_projection = (ctypes.c_float * 16)(</span></span>
+<span class="line"><span>         2.0/io.DisplaySize.x, 0.0,                   0.0, 0.0,</span></span>
+<span class="line"><span>         0.0,                  2.0/-io.DisplaySize.y, 0.0, 0.0,</span></span>
+<span class="line"><span>         0.0,                  0.0,                  -1.0, 0.0,</span></span>
+<span class="line"><span>        -1.0,                  1.0,                   0.0, 1.0,</span></span>
+<span class="line"><span>    );</span></span>
+<span class="line"><span>    glUseProgram(g_ShaderHandle);</span></span>
+<span class="line"><span>    glUniform1i(g_AttribLocationTex, 0);</span></span>
+<span class="line"><span>    glUniformMatrix4fv(g_AttribLocationProjMtx, 1, GL_FALSE, ortho_projection);</span></span>
+<span class="line"><span>    glBindVertexArray(g_VaoHandle);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    for n in range(draw_data.CmdListsCount):</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        cmd_list = draw_data.CmdLists[n];</span></span>
+<span class="line"><span>        idx_buffer_offset = 0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);</span></span>
+<span class="line"><span>        glBufferData(GL_ARRAY_BUFFER, cmd_list.VtxBuffer.Size * SIZEOF_ImDrawVert, cmd_list.VtxBuffer.Data, GL_STREAM_DRAW);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);</span></span>
+<span class="line"><span>        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.IdxBuffer.Size * SIZEOF_ImDrawVert, cmd_list.IdxBuffer.Data, GL_STREAM_DRAW);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        for cmd_i in range(cmd_list.CmdBuffer.Size):</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            pcmd = cmd_list.CmdBuffer[cmd_i];</span></span>
+<span class="line"><span>            if pcmd.UserCallback:</span></span>
+<span class="line"><span>                pcmd.UserCallback(cmd_list, pcmd);</span></span>
+<span class="line"><span>            else:</span></span>
+<span class="line"><span>                glBindTexture(GL_TEXTURE_2D, pcmd.TextureId);</span></span>
+<span class="line"><span>                glScissor(pcmd.ClipRect.x, (fb_height - pcmd.ClipRect.w), (pcmd.ClipRect.z - pcmd.ClipRect.x), (pcmd.ClipRect.w - pcmd.ClipRect.y));</span></span>
+<span class="line"><span>                glDrawElements(GL_TRIANGLES, pcmd.ElemCount, GL_UNSIGNED_SHORT, idx_buffer_offset);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            idx_buffer_offset += pcmd.ElemCount;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    # Restore modified GL state</span></span>
+<span class="line"><span>    glUseProgram(last_program);</span></span>
+<span class="line"><span>    glBindTexture(GL_TEXTURE_2D, last_texture);</span></span>
+<span class="line"><span>    glActiveTexture(last_active_texture);</span></span>
+<span class="line"><span>    glBindVertexArray(last_vertex_array);</span></span>
+<span class="line"><span>    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);</span></span>
+<span class="line"><span>    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);</span></span>
+<span class="line"><span>    glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);</span></span>
+<span class="line"><span>    glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha, last_blend_dst_alpha);</span></span>
+<span class="line"><span>    if (last_enable_blend):</span></span>
+<span class="line"><span>        glEnable(GL_BLEND);</span></span>
+<span class="line"><span>    else:</span></span>
+<span class="line"><span>        glDisable(GL_BLEND);</span></span>
+<span class="line"><span>    if (last_enable_cull_face):</span></span>
+<span class="line"><span>        glEnable(GL_CULL_FACE);</span></span>
+<span class="line"><span>    else:</span></span>
+<span class="line"><span>        glDisable(GL_CULL_FACE);</span></span>
+<span class="line"><span>    if (last_enable_depth_test):</span></span>
+<span class="line"><span>        glEnable(GL_DEPTH_TEST);</span></span>
+<span class="line"><span>    else:</span></span>
+<span class="line"><span>        glDisable(GL_DEPTH_TEST);</span></span>
+<span class="line"><span>    if (last_enable_scissor_test):</span></span>
+<span class="line"><span>        glEnable(GL_SCISSOR_TEST);</span></span>
+<span class="line"><span>    else:</span></span>
+<span class="line"><span>        glDisable(GL_SCISSOR_TEST);</span></span>
+<span class="line"><span>    glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3]);</span></span>
+<span class="line"><span>    glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3]);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>getter</span></span>
+<span class="line"><span>配列アクセスできない。</span></span>
+<span class="line"><span>cmd_list = draw_data.CmdLists[n]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>ゲッターを実装する</span></span>
+<span class="line"><span>%extend ImDrawData {</span></span>
+<span class="line"><span>ImDrawList\* GetCmdList(int n){</span></span>
+<span class="line"><span>return self->CmdLists[n];</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>template の型定義が無い</span></span>
+<span class="line"><span>実装する型を明示する。</span></span>
+<span class="line"><span>%template(ImVectorDrawVert) ImVector&#x3C;ImDrawVert>;</span></span>
+<span class="line"><span>%template(ImVectorDrawIdx) ImVector&#x3C;ImDrawIdx>;</span></span>
+<span class="line"><span>%template(ImVectorDrawCmd) ImVector&#x3C;ImDrawCmd>;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Byte 列を得る</span></span>
+<span class="line"><span>cmd_list.VtxBuffer.Data</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%typemap(in, numinputs=0) (unsigned char** out_bytes, int* out_size) (unsigned char *tempP, int tempSize) {</span></span>
+<span class="line"><span>$1 = &#x26;tempP;</span></span>
+<span class="line"><span>$2 = &#x26;tempSize;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>%typemap(argout)(unsigned char** out_bytes, int* out_size){</span></span>
+<span class="line"><span>auto b = PyBytes_FromStringAndSize((const char *)_$1, _$2);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if ((!$result) || ($result == Py_None)) {</span></span>
+<span class="line"><span>        $result = b;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    else{</span></span>
+<span class="line"><span>        if (!PyTuple_Check($result)) {</span></span>
+<span class="line"><span>            // new tuple4</span></span>
+<span class="line"><span>            auto t= PyTuple_New(2);</span></span>
+<span class="line"><span>            PyTuple_SetItem(t, 0, $result);</span></span>
+<span class="line"><span>            PyTuple_SetItem(t, 1, b);</span></span>
+<span class="line"><span>            $result=t;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        else {</span></span>
+<span class="line"><span>            // concat</span></span>
+<span class="line"><span>            auto head = $result;</span></span>
+<span class="line"><span>            auto tail = PyTuple_New(1);</span></span>
+<span class="line"><span>            PyTuple_SetItem($result, 0, b);</span></span>
+<span class="line"><span>            $result = PySequence_Concat(head, tail);</span></span>
+<span class="line"><span>            Py_DECREF(head);</span></span>
+<span class="line"><span>            Py_DECREF(tail);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// before</span></span>
+<span class="line"><span>%include "imgui/imgui.h"</span></span>
+<span class="line"><span>// after</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>%extend ImDrawList {</span></span>
+<span class="line"><span>void GetVtxBufferData(unsigned char **out_bytes, int *out_size){</span></span>
+<span class="line"><span>*out_bytes=(unsigned char *)self->VtxBuffer.Data;</span></span>
+<span class="line"><span>*out_size=self->VtxBuffer.Size \* sizeof(self->VtxBuffer.Data[0]);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>void GetIdxBufferData(unsigned char **out_bytes, int *out_size){</span></span>
+<span class="line"><span>*out_bytes=(unsigned char *)self->IdxBuffer.Data;</span></span>
+<span class="line"><span>*out_size=self->IdxBuffer.Size \* sizeof(self->IdxBuffer.Data[0]);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);</span></span>
+<span class="line"><span>glBufferData(GL_ARRAY_BUFFER, cmd_list.VtxBuffer.Size \* SIZEOF_ImDrawVert, cmd_list.GetVtxBufferData(), GL_STREAM_DRAW);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);</span></span>
+<span class="line"><span>glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list.IdxBuffer.Size \* SIZEOF_Idx, cmd_list.GetIdxBufferData(), GL_STREAM_DRAW);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Shutdown の移植</span></span>
+<span class="line"><span>def Shutdown():</span></span>
+<span class="line"><span>InvalidateDeviceObjects();</span></span>
+<span class="line"><span>imgui.Shutdown();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>def InvalidateDeviceObjects():</span></span>
+<span class="line"><span>global g_VaoHandle</span></span>
+<span class="line"><span>global g_VboHandle</span></span>
+<span class="line"><span>global g_ElementsHandle</span></span>
+<span class="line"><span>global g_ShaderHandle</span></span>
+<span class="line"><span>global g_VertHandle</span></span>
+<span class="line"><span>global g_FragHandle</span></span>
+<span class="line"><span>global g_FontTexture</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if (g_VaoHandle): glDeleteVertexArrays(1, g_VaoHandle);</span></span>
+<span class="line"><span>    if (g_VboHandle): glDeleteBuffers(1, g_VboHandle);</span></span>
+<span class="line"><span>    if (g_ElementsHandle): glDeleteBuffers(1, g_ElementsHandle);</span></span>
+<span class="line"><span>    g_VaoHandle = g_VboHandle = g_ElementsHandle = 0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if (g_ShaderHandle and g_VertHandle): glDetachShader(g_ShaderHandle, g_VertHandle);</span></span>
+<span class="line"><span>    if (g_VertHandle): glDeleteShader(g_VertHandle);</span></span>
+<span class="line"><span>    g_VertHandle = 0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if (g_ShaderHandle and g_FragHandle): glDetachShader(g_ShaderHandle, g_FragHandle);</span></span>
+<span class="line"><span>    if (g_FragHandle): glDeleteShader(g_FragHandle);</span></span>
+<span class="line"><span>    g_FragHandle = 0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if (g_ShaderHandle): glDeleteProgram(g_ShaderHandle);</span></span>
+<span class="line"><span>    g_ShaderHandle = 0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if (g_FontTexture):</span></span>
+<span class="line"><span>        glDeleteTextures(1, g_FontTexture);</span></span>
+<span class="line"><span>        imgui.GetIO().Fonts.SetTexID(0);</span></span>
+<span class="line"><span>        g_FontTexture = 0;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>ProcessEvent の移植</span></span>
+<span class="line"><span>def ProcessEvent(event):</span></span>
+<span class="line"><span>global g_MouseWheel</span></span>
+<span class="line"><span>global g_MousePressed</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    io = imgui.GetIO();</span></span>
+<span class="line"><span>    if event.type==SDL_MOUSEWHEEL:</span></span>
+<span class="line"><span>        if (event.wheel.y > 0):</span></span>
+<span class="line"><span>            g_MouseWheel = 1;</span></span>
+<span class="line"><span>        if (event.wheel.y &#x3C; 0):</span></span>
+<span class="line"><span>            g_MouseWheel = -1;</span></span>
+<span class="line"><span>        return True;</span></span>
+<span class="line"><span>    elif event.type==SDL_MOUSEBUTTONDOWN:</span></span>
+<span class="line"><span>        if (event.button.button == SDL_BUTTON_LEFT): g_MousePressed[0] = True;</span></span>
+<span class="line"><span>        if (event.button.button == SDL_BUTTON_RIGHT): g_MousePressed[1] = True;</span></span>
+<span class="line"><span>        if (event.button.button == SDL_BUTTON_MIDDLE): g_MousePressed[2] = True;</span></span>
+<span class="line"><span>        return True;</span></span>
+<span class="line"><span>    elif event.type==SDL_TEXTINPUT:</span></span>
+<span class="line"><span>        io.AddInputCharactersUTF8(event.text.text);</span></span>
+<span class="line"><span>        return True;</span></span>
+<span class="line"><span>    elif event.type==SDL_KEYDOWN or event.type==SDL_KEYUP:</span></span>
+<span class="line"><span>        key = event.key.keysym.sym &#x26; ~SDLK_SCANCODE_MASK;</span></span>
+<span class="line"><span>        io.SetKeysDown(key, event.type == SDL_KEYDOWN);</span></span>
+<span class="line"><span>        io.KeyShift = ((SDL_GetModState() &#x26; KMOD_SHIFT) != 0);</span></span>
+<span class="line"><span>        io.KeyCtrl = ((SDL_GetModState() &#x26; KMOD_CTRL) != 0);</span></span>
+<span class="line"><span>        io.KeyAlt = ((SDL_GetModState() &#x26; KMOD_ALT) != 0);</span></span>
+<span class="line"><span>        io.KeySuper = ((SDL_GetModState() &#x26; KMOD_GUI) != 0);</span></span>
+<span class="line"><span>        return True;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    return False;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>io.KeysDown</span></span>
+<span class="line"><span>セッター</span></span>
+<span class="line"><span>%extend ImGuiIO {</span></span>
+<span class="line"><span>void SetKeysDown(int k, int v)</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>ImGui::GetIO().KeysDown[k]=v;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>かくしてほぼ動くようになった。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>実際には新しい Widget を Python から使用するたびに値をやりとりする部分を追加しなければならないが、そこはおいおいやっていく。</span></span>
+<span class="line"><span>VisualStudio のセットアップ</span></span>
+<span class="line"><span>こういうネイティブモジュールの開発ではないとクラッシュの原因を探すのが困難になるが、VisualStudio で普通にアタッチできるので便利。</span></span>
+<span class="line"><span>ひとつの solution に python プロジェクトと、c++の dll プロジェクトを同居させてデバッグできる。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>あとで書く</span></span></code></pre></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

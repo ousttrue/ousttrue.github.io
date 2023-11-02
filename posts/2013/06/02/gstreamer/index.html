@@ -1,0 +1,323 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2013/06/02/gstreamer/"><!-- Primary Meta Tags --><title>Gstreamerを始めてみた</title><meta name="title" content="Gstreamerを始めてみた"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2013/06/02/gstreamer/"><meta property="og:title" content="Gstreamerを始めてみた"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2013/06/02/gstreamer/"><meta property="twitter:title" content="Gstreamerを始めてみた"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2013-06-11T00:00:00.000Z">2013
+-06
+-11</time></div><h1 data-astro-cid-bvzihdzo>Gstreamerを始めてみた</h1><hr data-astro-cid-bvzihdzo></div><pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>動画プログラムでもしてみようということでGstreamerをはじめた。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>#Hello world</span></span>
+<span class="line"><span>まず注意しないといけないのがgstreamerのバージョンに0.10系と1.0系があって、ほとんどの情報が0.10系のものらしいということだ。python2とpython3、ruby18とruby19のような違いがありそうなのでひとまず0.10系を使うことにする。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Basic</span></span>
+<span class="line"><span>tutorials http://docs.gstreamer.com/display/GstSDK/Basic+tutorials をやってみる</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>最初のコードをc++に改造しやすいようにちょっと変更。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>::</span></span>
+<span class="line"><span>#include &#x3C;gst/gst.h></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>int main(int argc, char *argv[])</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    gst_init (&#x26;argc, &#x26;argv);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    {</span></span>
+<span class="line"><span>        GstElement *pipeline = gst_parse_launch (</span></span>
+<span class="line"><span>                "playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm",</span></span>
+<span class="line"><span>                NULL);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        gst_element_set_state (pipeline, GST_STATE_PLAYING);</span></span>
+<span class="line"><span>        {</span></span>
+<span class="line"><span>            GstBus *bus = gst_element_get_bus (pipeline);</span></span>
+<span class="line"><span>            {</span></span>
+<span class="line"><span>                GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,</span></span>
+<span class="line"><span>                        static_cast&#x3C;GstMessageType>(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));</span></span>
+<span class="line"><span>                if (msg != NULL){</span></span>
+<span class="line"><span>                    gst_message_unref (msg);</span></span>
+<span class="line"><span>                }</span></span>
+<span class="line"><span>            }</span></span>
+<span class="line"><span>            gst_object_unref (bus);</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        gst_element_set_state (pipeline, GST_STATE_NULL);</span></span>
+<span class="line"><span>        gst_object_unref (pipeline);</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    return 0;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>build $ gcc 'pkg-config gstreamer-0.10 --cflags --libs' main.c</span></span>
+<span class="line"><span>動いた。</span></span>
+<span class="line"><span>gstreamermmでやってみる</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>https://developer.gnome.org/gstreamermm/0.10/</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>::</span></span>
+<span class="line"><span>#include &#x3C;gstreamermm.h></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>int main(int argc, char *argv[])</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    Gst::init();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    {</span></span>
+<span class="line"><span>        auto pipeline = Gst::Parse::launch (</span></span>
+<span class="line"><span>                "playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm");</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        pipeline->set_state(Gst::STATE_PLAYING);</span></span>
+<span class="line"><span>        {</span></span>
+<span class="line"><span>            auto bus = pipeline->get_bus();</span></span>
+<span class="line"><span>            auto msg = bus->pop(Gst::CLOCK_TIME_NONE,</span></span>
+<span class="line"><span>                    static_cast&#x3C;Gst::MessageType>(</span></span>
+<span class="line"><span>                        Gst::MESSAGE_ERROR</span></span>
+<span class="line"><span>                        | Gst::MESSAGE_EOS));</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>        pipeline->set_state(Gst::STATE_NULL);</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    return 0;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>build</span></span>
+<span class="line"><span>$ g++ -std=c++0x 'pkg-config gstreamermm-0.10 --cflags --libs' main.cpp</span></span>
+<span class="line"><span>unrefが省略できるのと、method呼び出しの記述方法がかわるのでコードがシンプルになる。</span></span>
+<span class="line"><span>C版から翻訳するのに少し手間がかかるが、ほぼ機械的に変更するだけなのでこちらでいってみる。</span></span>
+<span class="line"><span>2</span></span>
+<span class="line"><span>::</span></span>
+<span class="line"><span>#include &#x3C;gstreamermm.h></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>int main(int argc, char *argv[])</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    Gst::init();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    auto source = Gst::ElementFactory::create_element("videotestsrc", "source");</span></span>
+<span class="line"><span>    auto sink = Gst::ElementFactory::create_element("autovideosink", "sink");</span></span>
+<span class="line"><span>    auto pipeline = Gst::Pipeline::create("test-pipeline");</span></span>
+<span class="line"><span>    if (!pipeline || !source || !sink) {</span></span>
+<span class="line"><span>        g_printerr ("Not all elements could be created.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    auto filter=Gst::ElementFactory::create_element("vertigotv", "vertigotv_filter");</span></span>
+<span class="line"><span>    if(!filter){</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    auto filter2=Gst::ElementFactory::create_element("ffmpegcolorspace", "color_filter");</span></span>
+<span class="line"><span>    if(!filter2){</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Build the pipeline */</span></span>
+<span class="line"><span>    pipeline->add(source);</span></span>
+<span class="line"><span>    pipeline->add(sink);</span></span>
+<span class="line"><span>    pipeline->add(filter);</span></span>
+<span class="line"><span>    pipeline->add(filter2);</span></span>
+<span class="line"><span>    if(!source->link(filter)){</span></span>
+<span class="line"><span>        g_printerr ("Elements could not be linked.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    if(!filter->link(filter2)){</span></span>
+<span class="line"><span>        g_printerr ("Elements could not be linked.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    if(!filter2->link(sink)){</span></span>
+<span class="line"><span>        g_printerr ("Elements could not be linked.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Modify the source's properties */</span></span>
+<span class="line"><span>    source->set_property("pattern", 0);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Start playing */</span></span>
+<span class="line"><span>    if (!pipeline->set_state(Gst::STATE_PLAYING)) {</span></span>
+<span class="line"><span>        g_printerr ("Unable to set the pipeline to the playing state.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Wait until error or EOS */</span></span>
+<span class="line"><span>    auto bus = pipeline->get_bus ();</span></span>
+<span class="line"><span>    auto msg = bus->pop(Gst::CLOCK_TIME_NONE,</span></span>
+<span class="line"><span>            Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Parse message */</span></span>
+<span class="line"><span>    if (msg) {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        switch (msg->get_message_type()) {</span></span>
+<span class="line"><span>            case Gst::MESSAGE_ERROR:</span></span>
+<span class="line"><span>                {</span></span>
+<span class="line"><span>                    Glib::Error err;</span></span>
+<span class="line"><span>                    std::string debug_info;</span></span>
+<span class="line"><span>                    Gst::MessageError(msg->gobj_copy()).parse(err, debug_info);</span></span>
+<span class="line"><span>                    g_printerr ("Error received from element %s: %s\n",</span></span>
+<span class="line"><span>                            msg->get_source()->get_name().c_str(),</span></span>
+<span class="line"><span>                            err.what().c_str());</span></span>
+<span class="line"><span>                    g_printerr ("Debugging information: %s\n", debug_info.c_str());</span></span>
+<span class="line"><span>                }</span></span>
+<span class="line"><span>                break;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            case Gst::MESSAGE_EOS:</span></span>
+<span class="line"><span>                g_print ("End-Of-Stream reached.\n");</span></span>
+<span class="line"><span>                break;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            default:</span></span>
+<span class="line"><span>                /* We should not reach here because we only asked for ERRORs and EOS */</span></span>
+<span class="line"><span>                g_printerr ("Unexpected message received.\n");</span></span>
+<span class="line"><span>                break;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    pipeline->set_state(Gst::STATE_NULL);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    return 0;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>3</span></span>
+<span class="line"><span>::</span></span>
+<span class="line"><span>#include &#x3C;gstreamermm.h></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>struct CustomData</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    Glib::RefPtr&#x3C; Gst::Pipeline > pipeline;</span></span>
+<span class="line"><span>    Glib::RefPtr&#x3C; Gst::Element > source;</span></span>
+<span class="line"><span>    Glib::RefPtr&#x3C; Gst::Element > convert;</span></span>
+<span class="line"><span>    Glib::RefPtr&#x3C; Gst::Element > sink;</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>// Handler for the pad-added signal</span></span>
+<span class="line"><span>static void pad_added_handler (</span></span>
+<span class="line"><span>        const Glib::RefPtr&#x3C;Gst::Pad> &#x26;new_pad,</span></span>
+<span class="line"><span>        CustomData *data)</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    auto sink_pad = data->convert->get_static_pad("sink");</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    g_print ("Received new pad '%s'\n",</span></span>
+<span class="line"><span>            new_pad->get_name().c_str());</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* If our converter is already linked, we have nothing to do here */</span></span>
+<span class="line"><span>    if (sink_pad->is_linked ()) {</span></span>
+<span class="line"><span>        g_print ("  We are already linked. Ignoring.\n");</span></span>
+<span class="line"><span>        return;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Check the new pad's type */</span></span>
+<span class="line"><span>    auto new_pad_caps = new_pad->get_caps ();</span></span>
+<span class="line"><span>    auto new_pad_struct = new_pad_caps->get_structure (0);</span></span>
+<span class="line"><span>    std::string new_pad_type = new_pad_struct.get_name();</span></span>
+<span class="line"><span>    if (new_pad_type.find("audio/x-raw")==std::string::npos) {</span></span>
+<span class="line"><span>        g_print ("  It has type '%s' which is not raw audio. Ignoring.\n",</span></span>
+<span class="line"><span>                new_pad_type.c_str());</span></span>
+<span class="line"><span>        return;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Attempt the link */</span></span>
+<span class="line"><span>    if (!new_pad->link(sink_pad)) {</span></span>
+<span class="line"><span>        g_print ("  Type is '%s' but link failed.\n", new_pad_type.c_str());</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>    else {</span></span>
+<span class="line"><span>        g_print ("  Link succeeded (type '%s').\n", new_pad_type.c_str());</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>int main(int argc, char *argv[])</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>    Gst::init();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    CustomData data;</span></span>
+<span class="line"><span>    data.source = Gst::ElementFactory::create_element ("uridecodebin", "source");</span></span>
+<span class="line"><span>    data.convert = Gst::ElementFactory::create_element ("audioconvert", "convert");</span></span>
+<span class="line"><span>    data.sink = Gst::ElementFactory::create_element ("autoaudiosink", "sink");</span></span>
+<span class="line"><span>    data.pipeline = Gst::Pipeline::create ("test-pipeline");</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    if (!data.pipeline || !data.source || !data.convert || !data.sink) {</span></span>
+<span class="line"><span>        g_printerr ("Not all elements could be created.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Build the pipeline. Note that we are NOT linking the source at this</span></span>
+<span class="line"><span>     *    * point. We will do it later. */</span></span>
+<span class="line"><span>    data.pipeline->add(data.source);</span></span>
+<span class="line"><span>    data.pipeline->add(data.convert);</span></span>
+<span class="line"><span>    data.pipeline->add(data.sink);</span></span>
+<span class="line"><span>    if (!data.convert->link(data.sink)) {</span></span>
+<span class="line"><span>        g_printerr ("Elements could not be linked.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Set the URI to play */</span></span>
+<span class="line"><span>    data.source->set_property(</span></span>
+<span class="line"><span>            "uri",</span></span>
+<span class="line"><span>            Glib::ustring("http://docs.gstreamer.com/media/sintel_trailer-480p.webm")</span></span>
+<span class="line"><span>            );</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Connect to the pad-added signal */</span></span>
+<span class="line"><span>    data.source->signal_pad_added().connect([&#x26;data](</span></span>
+<span class="line"><span>                const Glib::RefPtr&#x3C;Gst::Pad> &#x26;pad)</span></span>
+<span class="line"><span>            {</span></span>
+<span class="line"><span>            pad_added_handler(pad, &#x26;data);</span></span>
+<span class="line"><span>            });</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Start playing */</span></span>
+<span class="line"><span>    if (!data.pipeline->set_state(Gst::STATE_PLAYING)) {</span></span>
+<span class="line"><span>        g_printerr ("Unable to set the pipeline to the playing state.\n");</span></span>
+<span class="line"><span>        return -1;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Listen to the bus */</span></span>
+<span class="line"><span>    auto bus = data.pipeline->get_bus();</span></span>
+<span class="line"><span>    gboolean terminate = FALSE;</span></span>
+<span class="line"><span>    do {</span></span>
+<span class="line"><span>        auto msg = bus->pop(Gst::CLOCK_TIME_NONE,</span></span>
+<span class="line"><span>                Gst::MESSAGE_STATE_CHANGED | Gst::MESSAGE_ERROR | Gst::MESSAGE_EOS);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        /* Parse message */</span></span>
+<span class="line"><span>        if (msg) {</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            switch (msg->get_message_type()) {</span></span>
+<span class="line"><span>                case Gst::MESSAGE_ERROR:</span></span>
+<span class="line"><span>                    {</span></span>
+<span class="line"><span>                        Glib::Error err;</span></span>
+<span class="line"><span>                        std::string debug_info;</span></span>
+<span class="line"><span>                        Gst::MessageError(msg->gobj_copy()).parse(err, debug_info);</span></span>
+<span class="line"><span>                        g_printerr ("Error received from element %s: %s\n",</span></span>
+<span class="line"><span>                                msg->get_source()->get_name().c_str(),</span></span>
+<span class="line"><span>                                err.what().c_str());</span></span>
+<span class="line"><span>                        g_printerr ("Debugging information: %s\n", debug_info.c_str());</span></span>
+<span class="line"><span>                        terminate = TRUE;</span></span>
+<span class="line"><span>                    }</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>                case Gst::MESSAGE_EOS:</span></span>
+<span class="line"><span>                    g_print ("End-Of-Stream reached.\n");</span></span>
+<span class="line"><span>                    terminate = TRUE;</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>                case Gst::MESSAGE_STATE_CHANGED:</span></span>
+<span class="line"><span>                    /* We are only interested in state-changed messages from the pipeline */</span></span>
+<span class="line"><span>                    if (msg->get_source() == data.pipeline) {</span></span>
+<span class="line"><span>                        Gst::State old_state;</span></span>
+<span class="line"><span>                        Gst::State new_state;</span></span>
+<span class="line"><span>                        Gst::State pending_state;</span></span>
+<span class="line"><span>                        Gst::MessageStateChanged(msg->gobj_copy()).parse(</span></span>
+<span class="line"><span>                                old_state, new_state, pending_state);</span></span>
+<span class="line"><span>                        g_print ("Pipeline state changed from %s to %s:\n",</span></span>
+<span class="line"><span>                                typeid(old_state).name(),</span></span>
+<span class="line"><span>                                typeid(new_state).name());</span></span>
+<span class="line"><span>                    }</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span>                default:</span></span>
+<span class="line"><span>                    /* We should not reach here */</span></span>
+<span class="line"><span>                    g_printerr ("Unexpected message received.\n");</span></span>
+<span class="line"><span>                    break;</span></span>
+<span class="line"><span>            }</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    } while (!terminate);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    /* Free resources */</span></span>
+<span class="line"><span>    data.pipeline->set_state(Gst::STATE_NULL);</span></span>
+<span class="line"><span>    return 0;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>.. categories:: programming</span></span>
+<span class="line"><span>.. taxonomies: {tags: : cpp, gstreamer}</span></span></code></pre></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

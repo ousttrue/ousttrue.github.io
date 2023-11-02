@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2021/luajitffi/"><!-- Primary Meta Tags --><title>libclang で luajit 向けの FFI を生成する</title><meta name="title" content="libclang で luajit 向けの FFI を生成する"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2021/luajitffi/"><meta property="og:title" content="libclang で luajit 向けの FFI を生成する"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2021/luajitffi/"><meta property="twitter:title" content="libclang で luajit 向けの FFI を生成する"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2021-07-23T00:00:00.000Z">2021
+-07
+-23</time></div><h1 data-astro-cid-bvzihdzo>libclang で luajit 向けの FFI を生成する</h1><hr data-astro-cid-bvzihdzo></div><p>lua による imgui 計画の準備として、 <code>libclang</code> によるバインディング生成器を <code>luajit</code> に移植してみた。</p>
+<p><a href="https://github.com/ousttrue/luajitffi">https://github.com/ousttrue/luajitffi</a></p>
+<p><code>libclang</code> に対してはだいだい動くようになって、自身で生成した <code>FFI</code> で動作するところまでできた。
+また、 <code>EmmyLua Annotation</code> もある程度付与できた。</p>
+<p><a href="https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua">https://github.com/ousttrue/luajitffi/blob/master/clang/mod.lua</a></p>
+<p>こいつで、 <code>imgui.h</code> から luajit FFI を生成する。</p>
+<h2 id="libclang">libclang</h2>
+<p>c(c++)ヘッダーを <code>clang_visitChildren</code> により、カーソルのTree としてパースする。
+今回は、 <code>CXChildVisit_Recurse</code> で全部のカーソルをパースすることにした。</p>
+<ul>
+<li>同じカーソルが複数個所に現れうる</li>
+<li>循環しうる(Link List ？)</li>
+</ul>
+<p>がありうることを考慮しておく。
+<code>clang-c/Index.h</code> は 6000 カーソルくらいなので問題ないが、 <code>Windows.h</code> とかは 150000 カーソルとか爆発する。</p>
+<h2 id="わりと色んなところで型がネストしていてつらい">わりと色んなところで型がネストしていてつらい</h2>
+<ul>
+<li>struct の中は namespace なので何でもあり</li>
+<li>anonymous な union や struct のその場定義</li>
+<li>typedef struct などのその場定義</li>
+<li>関数ポインタのその場定義</li>
+</ul>
+<p>要するに、Cのコードの書き方によってどのようなカーソル構造になるかのパターンを知っている必要があって、
+パターン毎に分岐して情報を収集する必要がある。
+ある型のメンバーの情報を集めていると、ネストした別の型情報が現れる場合があるので切り分ける。</p>
+<h2 id="基本的なパターン">基本的なパターン</h2>
+<p>FFI では、対象となる関数を起点にその関数が使用するすべての型の定義を取り込む。
+カーソルはCのTranslationUnitの木構造をあらわしていて、型をあらわしていない。
+カーソルから頑張って型を得る。
+型を得られるカーソルは決まっていて、<code>CXCursorType</code> が宣言Declの系列となる。</p>
+<p>TODO</p>
+<h3 id="カーソル-functiondecl">カーソル FunctionDecl</h3>
+<h3 id="カーソル-enumdecl">カーソル EnumDecl</h3>
+<h3 id="カーソル-typedefdecl">カーソル TypedefDecl</h3>
+<h3 id="カーソル-structdecl">カーソル StructDecl</h3>
+<h3 id="type-pointer">Type Pointer</h3>
+<h3 id="type-array">Type Array</h3>
+<h3 id="type-elaborated">Type Elaborated</h3>
+<h3 id="type-record">Type Record</h3>
+<h3 id="type-functionproto-関数ポインタ-pointer--functionproto">Type FunctionProto 関数ポインタ pointer => functionproto</h3>
+<h3 id="union">union</h3>
+<h3 id="typedef-struct">typedef struct</h3>
+<h3 id="c-name-mangling">c++ name mangling</h3>
+<h3 id="マクロとの戦い">マクロとの戦い</h3>
+<h2 id="luajit-ffi">luajit ffi</h2>
+<p><code>ffi.cdef</code> に素直に定義すればいいので、他の言語の FFI に比べて簡単。</p>
+<p>はまり。</p>
+<ul>
+<li><code>ffi.load</code> の返り値が GC されると関数ポインタが死ぬ</li>
+<li>pointer は <code>ffi.new('TYPE[1]')</code> のようにサイズ１の array で運用する</li>
+<li>tostring と ffi.string は違う</li>
+<li>nullptr は nil ?</li>
+</ul>
+<p>だいたいよきに計らってくれるので、 <code>rust</code> の FFI に比べて簡単なのであった。</p>
+<p>ひとつだけはまりがあって、 <code>struct</code> の値渡しができない場合がある。</p>
+<p><a href="http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs">http://wiki.luajit.org/FFI-Callbacks-with-pass-by-value-structs</a></p>
+<p>そういえば、 <code>rust</code> でも <code>struct</code> の値渡しではまった記憶が。</p>
+<p><a href="https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org">https://forum.dlang.org/thread/dkamxcamwttszxwwxttv@forum.dlang.org</a></p>
+<p>rust の場合は、 <code>struct</code> の値返しが動かなかった。
+これ、C の方で pointer 経由で値を返すラッパーを定義する必要があって回避方法はなかった。</p>
+<p><code>ImVec2 ImGui::GetContentRegionAvail()</code></p>
+<p>luajit ffi でもできるか注意が必要だな。</p>
+<h2 id="lfs-への依存を-ffi-した-windows-api-で置き換える">lfs への依存を FFI した Windows API で置き換える</h2>
+<p>現状、ファイル操作 <code>isExists</code>, <code>mkDir</code> のために lfs を使っているのだけど、
+FFI で Windows API にアクセスできるようにしたら lfs 無しにできそう。
+となれば luarocks も無しにできるので、 必要なのは luajit.exe だけになる。</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

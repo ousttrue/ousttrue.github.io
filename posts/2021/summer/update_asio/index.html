@@ -1,0 +1,457 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2021/summer/update_asio/"><!-- Primary Meta Tags --><title>Asio と Coroutine (c++20)</title><meta name="title" content="Asio と Coroutine (c++20)"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2021/summer/update_asio/"><meta property="og:title" content="Asio と Coroutine (c++20)"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2021/summer/update_asio/"><meta property="twitter:title" content="Asio と Coroutine (c++20)"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2021-08-15T00:00:00.000Z">2021
+-08
+-15</time></div><h1 data-astro-cid-bvzihdzo>Asio と Coroutine (c++20)</h1><hr data-astro-cid-bvzihdzo></div><p>非同期ライブラリ ASIO</p>
+<p><a href="http://think-async.com/Asio/index.html">http://think-async.com/Asio/index.html</a></p>
+<p>の知識を <code>c++20</code> 時代にアップデート。</p>
+<ul>
+<li><a href="https://github.com/chriskohlhoff/talking-async">https://github.com/chriskohlhoff/talking-async</a></li>
+</ul>
+<p>に動画と動画のサンプルコードが有る。</p>
+<h1 id="compiler-を最新にする">compiler を最新にする</h1>
+<p><code>ASIO_HAS_CO_AWAIT</code> が必要でこれが有効になるには新しいコンパイラが必要。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="c++"><code><span class="line"><span style="color:#6A737D">// asio/detail/config.hpp`</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Support the co_await keyword on compilers known to allow it.</span></span>
+<span class="line"><span style="color:#F97583">#if</span><span style="color:#F97583"> !defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ASIO_HAS_CO_AWAIT</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583"># if</span><span style="color:#F97583"> !defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ASIO_DISABLE_CO_AWAIT</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#  if</span><span style="color:#F97583"> defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ASIO_MSVC</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#   if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">_MSC_VER</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 1928</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">_MSVC_LANG</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 201705</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#F97583"> !defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__clang__</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#    define</span><span style="color:#B392F0"> ASIO_HAS_CO_AWAIT</span><span style="color:#E1E4E8"> 1</span></span>
+<span class="line"><span style="color:#F97583">#   elif</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">_MSC_FULL_VER</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 190023506</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#    if</span><span style="color:#F97583"> defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">_RESUMABLE_FUNCTIONS_SUPPORTED</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#     define</span><span style="color:#B392F0"> ASIO_HAS_CO_AWAIT</span><span style="color:#E1E4E8"> 1</span></span>
+<span class="line"><span style="color:#F97583">#    endif</span><span style="color:#6A737D"> // defined(_RESUMABLE_FUNCTIONS_SUPPORTED)</span></span>
+<span class="line"><span style="color:#F97583">#   endif</span><span style="color:#6A737D"> // (_MSC_FULL_VER >= 190023506)</span></span>
+<span class="line"><span style="color:#F97583">#  elif</span><span style="color:#B392F0"> defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__clang__</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#   if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">__cplusplus</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 201703</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">__cpp_coroutines</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 201703</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#    if</span><span style="color:#B392F0"> __has_include</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x3C;</span><span style="color:#B392F0">experimental</span><span style="color:#F97583">/</span><span style="color:#B392F0">coroutine</span><span style="color:#F97583">></span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#     define</span><span style="color:#B392F0"> ASIO_HAS_CO_AWAIT</span><span style="color:#E1E4E8"> 1</span></span>
+<span class="line"><span style="color:#F97583">#    endif</span><span style="color:#6A737D"> // __has_include(&#x3C;experimental/coroutine>)</span></span>
+<span class="line"><span style="color:#F97583">#   endif</span><span style="color:#6A737D"> // (__cplusplus >= 201703) &#x26;&#x26; (__cpp_coroutines >= 201703)</span></span>
+<span class="line"><span style="color:#F97583">#  elif</span><span style="color:#B392F0"> defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__GNUC__</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#   if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">__cplusplus</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 201709</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">__cpp_impl_coroutine</span><span style="color:#F97583"> >=</span><span style="color:#79B8FF"> 201902</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#    if</span><span style="color:#B392F0"> __has_include</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x3C;</span><span style="color:#B392F0">coroutine</span><span style="color:#F97583">></span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">#     define</span><span style="color:#B392F0"> ASIO_HAS_CO_AWAIT</span><span style="color:#E1E4E8"> 1</span></span>
+<span class="line"><span style="color:#F97583">#    endif</span><span style="color:#6A737D"> // __has_include(&#x3C;coroutine>)</span></span>
+<span class="line"><span style="color:#F97583">#   endif</span><span style="color:#6A737D"> // (__cplusplus >= 201709) &#x26;&#x26; (__cpp_impl_coroutine >= 201902)</span></span>
+<span class="line"><span style="color:#F97583">#  endif</span><span style="color:#6A737D"> // defined(__GNUC__)</span></span>
+<span class="line"><span style="color:#F97583"># endif</span><span style="color:#6A737D"> // !defined(ASIO_DISABLE_CO_AWAIT)</span></span>
+<span class="line"><span style="color:#F97583">#endif</span><span style="color:#6A737D"> // !defined(ASIO_HAS_CO_AWAIT)</span></span></code></pre>
+<h2 id="vc201920210818最新版いける">VC2019(20210818最新版いける)</h2>
+<p><a href="https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/">https://devblogs.microsoft.com/cppblog/c-coroutines-in-visual-studio-2019-version-16-8/</a></p>
+<blockquote>
+<p>C++20 coroutines in Visual Studio 2019 version 16.8.</p>
+</blockquote>
+<ul>
+<li><code>16.7.3</code> だめ</li>
+<li><code>16.11.1</code> 動いた。</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span># CMakeListx.txt</span></span>
+<span class="line"><span>set(TARGET_NAME pingpong)</span></span>
+<span class="line"><span>add_executable(${TARGET_NAME} main.cpp)</span></span>
+<span class="line"><span>target_link_libraries(${TARGET_NAME} PRIVATE asio)</span></span>
+<span class="line"><span>set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 20) # 必要</span></span>
+<span class="line"><span>target_compile_options(${TARGET_NAME} PUBLIC $&#x3C;$&#x3C;C_COMPILER_ID:MSVC>:/await>) # 必要</span></span>
+<span class="line"><span>target_compile_definitions(asio INTERFACE ASIO_DISABLE_STD_COROUTINE) # 必要</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">#if</span><span style="color:#F97583"> defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ASIO_HAS_STD_COROUTINE</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583"># include</span><span style="color:#9ECBFF"> &#x3C;coroutine></span></span>
+<span class="line"><span style="color:#F97583">#else</span><span style="color:#6A737D"> // defined(ASIO_HAS_STD_COROUTINE)</span></span>
+<span class="line"><span style="color:#F97583"># include</span><span style="color:#9ECBFF"> &#x3C;experimental/coroutine></span></span>
+<span class="line"><span style="color:#F97583">#endif</span><span style="color:#6A737D"> // defined(ASIO_HAS_STD_COROUTINE)</span></span></code></pre>
+<h2 id="llvm-12うまくいかず追加のコマンドライン引数か">LLVM-12(うまくいかず。追加のコマンドライン引数か)</h2>
+<p><a href="https://clang.llvm.org/cxx_status.html">https://clang.llvm.org/cxx_status.html</a></p>
+<p>LLVM-12 だと、</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span> 'C:\Program Files\LLVM\bin\clang.exe' -v</span></span>
+<span class="line"><span>clang version 12.0.1</span></span>
+<span class="line"><span>Target: x86_64-pc-windows-msvc</span></span>
+<span class="line"><span>Thread model: posix</span></span>
+<span class="line"><span>InstalledDir: C:\Program Files\LLVM\bin</span></span></code></pre>
+<p>わからん。</p>
+<h1 id="コード">コード</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/awaitable.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/co_spawn.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/detached.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/experimental/as_tuple.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/io_context.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/ip/tcp.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/read.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/streambuf.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/system_timer.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/use_awaitable.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/use_future.hpp></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio/write.hpp></span></span></code></pre>
+<h2 id="co_spawn-で-awaitable-を起動する">co_spawn で awaitable を起動する</h2>
+<p>coroutine は 戻り値の型が <code>asio::awaitable&#x3C;T></code> である必要がある。この関数の中で <code>co_await</code>, <code>co_yield</code>, <code>co_return</code> が使える。
+coroutine は lambda でもよいので、下記のようにできる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> co </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []() -> </span><span style="color:#F97583">asio::awaitable&#x3C;std::string></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    co_return</span><span style="color:#9ECBFF"> "result"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span>
+<span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> result </span><span style="color:#F97583">=</span></span>
+<span class="line"><span style="color:#B392F0">      asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">co_spawn</span><span style="color:#E1E4E8">(client_context.</span><span style="color:#B392F0">get_executor</span><span style="color:#E1E4E8">(), co, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_future);</span><span style="color:#6A737D"> // coroutine 登録</span></span>
+<span class="line"><span style="color:#E1E4E8">  client_context.</span><span style="color:#B392F0">run</span><span style="color:#E1E4E8">();</span><span style="color:#6A737D"> // ループを回す</span></span>
+<span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> pong </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> result.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">();</span><span style="color:#6A737D"> // future から結果を得る</span></span>
+<span class="line"><span style="color:#B392F0">  std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "pong: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> pong </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span></code></pre>
+<p>asio::use_future を使うことで返り値 <code>std::future</code> になるので <code>co_return</code> の値を得ることも可能。
+結果に興味がないときは、<code>asio::detached</code> でよい。
+Completion Handler というコールバックなので、 promise に set_value する関数を自前で書いたりしてもよい様子。
+<code>asio::use_awaitable</code> で <code>co_await</code> するのも可能。</p>
+<p>返り値が <code>std::tuple&#x3C;asio::error_code, RESULT></code> になるハンドラ。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">constexpr</span><span style="color:#F97583"> auto</span><span style="color:#E1E4E8"> use_nothrow_awaitable </span><span style="color:#F97583">=</span></span>
+<span class="line"><span style="color:#B392F0">    asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">experimental</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">as_tuple</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span></code></pre>
+<h2 id="client-side">client side</h2>
+<ul>
+<li>timer</li>
+<li>connect</li>
+<li>send(ping)</li>
+<li>receive(pong)</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> co </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#F97583">&#x26;</span><span style="color:#FFAB70">context</span><span style="color:#F97583"> =</span><span style="color:#FFAB70"> client_context</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">ep</span><span style="color:#E1E4E8">]() -> </span><span style="color:#F97583">asio::awaitable&#x3C;std::string></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[client]wait 1000ms..."</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#B392F0">    asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">system_timer</span><span style="color:#B392F0"> timer</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">context</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    timer.</span><span style="color:#B392F0">expires_from_now</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1000</span><span style="color:#F97583">ms</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    co_await</span><span style="color:#E1E4E8"> timer.</span><span style="color:#B392F0">async_wait</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[client]connect: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> ep </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "..."</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#B392F0">    asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">socket</span><span style="color:#B392F0"> socket</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">context</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    co_await</span><span style="color:#E1E4E8"> socket.</span><span style="color:#B392F0">async_connect</span><span style="color:#E1E4E8">(ep, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[client]connected"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[client]ping..."</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">string</span><span style="color:#B392F0"> ping</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"ping"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> write_size </span><span style="color:#F97583">=</span><span style="color:#F97583"> co_await</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">async_write</span><span style="color:#E1E4E8">(socket, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">buffer</span><span style="color:#E1E4E8">(ping),</span></span>
+<span class="line"><span style="color:#B392F0">                                                 asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span>
+<span class="line"><span style="color:#B392F0">    assert</span><span style="color:#E1E4E8">(write_size </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[client]read..."</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#B392F0">    asio</span><span style="color:#E1E4E8">::streambuf buf;</span></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> read_size </span><span style="color:#F97583">=</span><span style="color:#F97583"> co_await</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">async_read</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        socket, buf, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">transfer_at_least</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">), </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span>
+<span class="line"><span style="color:#F97583">    co_return</span><span style="color:#B392F0"> to_string</span><span style="color:#E1E4E8">(buf);</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span></code></pre>
+<h2 id="server-side">server side</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::io_context </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">_context;</span></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::acceptor _acceptor;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public:</span></span>
+<span class="line"><span style="color:#B392F0">  server</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">io_context</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">) : </span><span style="color:#B392F0">_context</span><span style="color:#E1E4E8">(context), </span><span style="color:#B392F0">_acceptor</span><span style="color:#E1E4E8">(context) {}</span></span>
+<span class="line"><span style="color:#B392F0">  ~server</span><span style="color:#E1E4E8">() {}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  void</span><span style="color:#B392F0"> listen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">const</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">endpoint</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">ep</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[server]listen: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> ep </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "..."</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _acceptor.</span><span style="color:#B392F0">open</span><span style="color:#E1E4E8">(ep.</span><span style="color:#B392F0">protocol</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    _acceptor.</span><span style="color:#B392F0">bind</span><span style="color:#E1E4E8">(ep);</span></span>
+<span class="line"><span style="color:#E1E4E8">    _acceptor.</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // coroutineを起動する</span></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> ex </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _context.</span><span style="color:#B392F0">get_executor</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">    asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">co_spawn</span><span style="color:#E1E4E8">(ex, </span><span style="color:#B392F0">accept_loop</span><span style="color:#E1E4E8">(), </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::detached);</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">accept_loop</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // 単なるループになって再起が不要に</span></span>
+<span class="line"><span style="color:#F97583">    while</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">      auto</span><span style="color:#E1E4E8"> [e, socket] </span><span style="color:#F97583">=</span><span style="color:#F97583"> co_await</span><span style="color:#E1E4E8"> _acceptor.</span><span style="color:#B392F0">async_accept</span><span style="color:#E1E4E8">(use_nothrow_awaitable);</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (e) {</span></span>
+<span class="line"><span style="color:#B392F0">        std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[server]accept error: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> e </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#F97583">        break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#B392F0">      std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[server]accepted"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">      // coroutineを起動する</span></span>
+<span class="line"><span style="color:#F97583">      auto</span><span style="color:#E1E4E8"> ex </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _context.</span><span style="color:#B392F0">get_executor</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">      asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">co_spawn</span><span style="color:#E1E4E8">(ex, </span><span style="color:#B392F0">session</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">move</span><span style="color:#E1E4E8">(socket)), </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::detached);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">session</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">socket</span><span style="color:#FFAB70"> socket</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // echo server ぽい ping pong</span></span>
+<span class="line"><span style="color:#B392F0">    asio</span><span style="color:#E1E4E8">::streambuf buf;</span></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> [e1, read_size] </span><span style="color:#F97583">=</span><span style="color:#F97583"> co_await</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">async_read</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        socket, buf, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">transfer_at_least</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">), use_nothrow_awaitable);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> pong </span><span style="color:#F97583">=</span><span style="color:#B392F0"> to_string</span><span style="color:#E1E4E8">(buf);</span></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[server]ping: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> pong </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">    pong </span><span style="color:#F97583">+=</span><span style="color:#9ECBFF"> "pong"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> [e2, write_size] </span><span style="color:#F97583">=</span><span style="color:#F97583"> co_await</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">async_write</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        socket, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">buffer</span><span style="color:#E1E4E8">(pong), use_nothrow_awaitable);</span></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "[server]pong: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> write_size </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> ep </span><span style="color:#F97583">=</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">endpoint</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">address</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">from_string</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"127.0.0.1"</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">                                    PORT);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // server</span></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::io_context server_context;</span></span>
+<span class="line"><span style="color:#B392F0">  server</span><span style="color:#B392F0"> server</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">server_context</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  server.</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(ep);</span></span>
+<span class="line"><span style="color:#B392F0">  std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">thread</span><span style="color:#B392F0"> server_thread</span><span style="color:#E1E4E8">([</span><span style="color:#F97583">&#x26;</span><span style="color:#FFAB70">server_context</span><span style="color:#E1E4E8">]() { server_context.</span><span style="color:#B392F0">run</span><span style="color:#E1E4E8">(); });</span><span style="color:#6A737D"> // thread でループを回す。</span></span></code></pre>
+<p>ループ(io_context)が隠蔽されていないのが良いですね。</p>
+<h1 id="asio-api">asio api</h1>
+<h2 id="io_context">io_context</h2>
+<p><code>c++23</code> の <code>Networking TS</code> に向けた変更？</p>
+<ul>
+<li><a href="https://amedama1x1.hatenablog.com/entry/2016/04/05/205340">Networking TS の Boost.Asio からの変更点 - その 1: Associated allocator</a></li>
+<li><a href="https://amedama1x1.hatenablog.com/entry/2016/08/20/222326">Networking TS の Boost.Asio からの変更点 - その 3: Executor</a></li>
+</ul>
+<blockquote>
+<p>io_service は Executor と ExecutionContext という概念に分割されたことで, io_context に名前が変わりました</p>
+</blockquote>
+<p><code>Boost 1.66</code></p>
+<ul>
+<li><a href="https://amedama1x1.hatenablog.com/entry/2017/12/09/102405">Networking TS の Boost.Asio からの変更点 - その 4: Associated Executor</a></li>
+</ul>
+<p>単純に io_service を io_context に追きかえるだけで動いた。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;asio.hpp></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">io_context context;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 全てのタスクが消化されるまでブロックする。</span></span>
+<span class="line"><span style="color:#E1E4E8">context.</span><span style="color:#B392F0">run</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// スレッド上で実行する例</span></span>
+<span class="line"><span style="color:#B392F0">std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">thread</span><span style="color:#B392F0"> run_thread</span><span style="color:#E1E4E8">([</span><span style="color:#F97583">&#x26;</span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">](){ context.</span><span style="color:#B392F0">run</span><span style="color:#E1E4E8">(); });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 止める</span></span>
+<span class="line"><span style="color:#E1E4E8">context.</span><span style="color:#B392F0">stop</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">run_thread.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<h2 id="endpoint">endpoint</h2>
+<p>ipaddress + port</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#B392F0">asip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">endpoint</span><span style="color:#B392F0"> ep</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">address</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">from_string</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"127.0.0.1"</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">1234</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h2 id="tcp-connect">tcp connect</h2>
+<p>socket</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#E1E4E8">io_context context;</span></span>
+<span class="line"><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">socket</span><span style="color:#B392F0"> socket</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">coontext</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>basic</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> connect</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">socket</span><span style="color:#FFAB70"> socket</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">const</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">endpoint</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">ep</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> on_connect </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [](</span><span style="color:#F97583">const</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">error_code</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">ec</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8">(ec)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">      std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "error: "</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> ec </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    else</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">      std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "connected"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span>
+<span class="line"><span style="color:#E1E4E8">  socket.</span><span style="color:#B392F0">async_connect</span><span style="color:#E1E4E8">(ep, on_connect);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><code>c++11 future</code></p>
+<p>std::future に対して <code>continue_with</code> する手段を用意しないと、これ単体では使いづらい</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#B392F0">std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">future</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">connect_future</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">socket</span><span style="color:#FFAB70"> socket</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">const</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">endpoint</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">ep</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">  // move するのが大変な場合があるので手抜き</span></span>
+<span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> p </span><span style="color:#F97583">=</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">make_shared</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">promise</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">>>();</span></span>
+<span class="line"><span style="color:#F97583">  auto</span><span style="color:#E1E4E8"> f </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> p-></span><span style="color:#B392F0">get_future</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">  socket.</span><span style="color:#B392F0">async_connect</span><span style="color:#E1E4E8">(ep, [</span><span style="color:#FFAB70">p</span><span style="color:#E1E4E8">](</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">error_code</span><span style="color:#FFAB70"> ec</span><span style="color:#E1E4E8">){</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8">(ec)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    else</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">      // future value</span></span>
+<span class="line"><span style="color:#E1E4E8">      p-></span><span style="color:#B392F0">set_value</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> f;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><code>c++20 coroutine</code></p>
+<p>有望</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">co</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">io_context</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">const</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">endpoint</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">ep</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::socket </span><span style="color:#B392F0">socket</span><span style="color:#E1E4E8">(coontext);</span></span>
+<span class="line"><span style="color:#F97583">  co_await</span><span style="color:#E1E4E8"> socket.</span><span style="color:#B392F0">async_connect</span><span style="color:#E1E4E8">(ep, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="tcp-listen">tcp listen</h2>
+<h2 id="raed_async">raed_async</h2>
+<h2 id="write_async">write_async</h2>
+<h1 id="coroutine-詳細">coroutine 詳細</h1>
+<p>asio の coroutine を学んでいたらできないことが出てきた。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">auto</span><span style="color:#E1E4E8"> result </span><span style="color:#F97583">=</span><span style="color:#F97583"> co_await</span><span style="color:#B392F0"> rpc_call</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"add"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h1 id="自前の-awaiter-が必要">自前の Awaiter が必要？</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">template</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">typename</span><span style="color:#B392F0"> R</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#E1E4E8"> ...</span><span style="color:#B392F0">AS</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">R</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">rpc_call</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">const</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">string</span><span style="color:#F97583"> &#x26;</span><span style="color:#FFAB70">method</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">AS</span><span style="color:#E1E4E8">... </span><span style="color:#FFAB70">as</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::io_context context;</span></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::socket </span><span style="color:#B392F0">socket</span><span style="color:#E1E4E8">(context);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">ip</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">tcp</span><span style="color:#E1E4E8">::endpoint ep;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  co_await</span><span style="color:#E1E4E8"> socket.</span><span style="color:#B392F0">connect_async</span><span style="color:#E1E4E8">(ep, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // msgpack-rpc</span></span>
+<span class="line"><span style="color:#B392F0">  std</span><span style="color:#E1E4E8">::vector</span><span style="color:#F97583">&#x3C;uint8_t></span><span style="color:#E1E4E8"> request </span><span style="color:#F97583">=</span><span style="color:#B392F0"> make_request</span><span style="color:#E1E4E8">(method, as...);</span></span>
+<span class="line"><span style="color:#F97583">  co_await</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">write_async</span><span style="color:#E1E4E8">(socket, request, </span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::use_awaitable); </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // ここで実行の流れが切れる</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // ?</span></span>
+<span class="line"><span style="color:#B392F0">  std</span><span style="color:#E1E4E8">::promise</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">R</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> p;</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> p.</span><span style="color:#B392F0">get_future</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><code>co_await std::future</code> できるぽいが, <code>asio</code> と混ぜてうまくいくのだろうか。</p>
+<h1 id="c20-coroutine">c++20 coroutine</h1>
+<ul>
+<li><a href="https://cpprefjp.github.io/lang/cpp20/coroutines.html">https://cpprefjp.github.io/lang/cpp20/coroutines.html</a></li>
+<li><a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html</a></li>
+<li><a href="https://qiita.com/tan-y/items/ae54153ec3eb42f80638">C++ でコルーチン (async/await 準備編)</a></li>
+<li><a href="https://qiita.com/tan-y/items/6033ab9e7298999bf214#await_ready">C++ で async/await をする</a></li>
+</ul>
+<p>内部で <code>co_await</code>, <code>co_yield</code>, <code>co_return</code> の何れかを使う関数は coroutine になる。
+返り値の型から promise_type を得られるようにする必要がある。</p>
+<p>初期化は <code>promise_type::get_return_object</code> から始まるぽい。</p>
+<h2 id="generator-の例">generator の例</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">struct</span><span style="color:#B392F0"> generator</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  struct</span><span style="color:#B392F0"> promise_type</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  using</span><span style="color:#B392F0"> handle</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">coroutine_handle</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">promise_type</span><span style="color:#E1E4E8">>;  </span></span>
+<span class="line"><span style="color:#F97583">  struct</span><span style="color:#B392F0"> promise_type</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#B392F0"> get_return_object</span><span style="color:#E1E4E8">() { </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> generator{</span><span style="color:#B392F0">handle</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">from_promise</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">)}; }</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span>
+<span class="line"><span style="color:#F97583">  using</span><span style="color:#B392F0"> handle</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">coroutine_handle</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">promise_type</span><span style="color:#E1E4E8">>;</span></span>
+<span class="line"><span style="color:#F97583">private:</span></span>
+<span class="line"><span style="color:#E1E4E8">  handle coro;</span></span>
+<span class="line"><span style="color:#B392F0">  generator</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">handle</span><span style="color:#FFAB70"> h</span><span style="color:#E1E4E8">) : </span><span style="color:#B392F0">coro</span><span style="color:#E1E4E8">(h) {}</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#E1E4E8">promise_type promise;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 戻り値型オブジェクトの初期化</span></span>
+<span class="line"><span style="color:#F97583">auto</span><span style="color:#E1E4E8"> result </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> promise.</span><span style="color:#B392F0">get_return_object</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<h1 id="asio-の実装">Asio の実装</h1>
+<h2 id="asioawaitable">asio::awaitable</h2>
+<p><code>asio::awaitable&#x3C;T></code> が CoroutineTrait の実装。</p>
+<p><code>include/asio/awaitable.hpp</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">typename</span><span style="color:#B392F0"> T</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#B392F0"> Executor</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> any_io_executor></span></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> ASIO_NODISCARD</span><span style="color:#B392F0"> awaitable</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">public:</span></span>
+<span class="line"><span style="color:#6A737D">  /// The type of the awaited value.</span></span>
+<span class="line"><span style="color:#F97583">  typedef</span><span style="color:#E1E4E8"> T value_type;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  /// The executor type that will be used for the coroutine.</span></span>
+<span class="line"><span style="color:#F97583">  typedef</span><span style="color:#E1E4E8"> Executor executor_type;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  /// Default constructor.</span></span>
+<span class="line"><span style="color:#F97583">  constexpr</span><span style="color:#B392F0"> awaitable</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">noexcept</span></span>
+<span class="line"><span style="color:#E1E4E8">    : </span><span style="color:#B392F0">frame_</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">nullptr</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  /// Move constructor.</span></span>
+<span class="line"><span style="color:#B392F0">  awaitable</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">awaitable</span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#FFAB70"> other</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">noexcept</span></span>
+<span class="line"><span style="color:#E1E4E8">    : </span><span style="color:#B392F0">frame_</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">std</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">exchange</span><span style="color:#E1E4E8">(other.frame_, </span><span style="color:#79B8FF">nullptr</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  /// Destructor</span></span>
+<span class="line"><span style="color:#B392F0">  ~awaitable</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (frame_)</span></span>
+<span class="line"><span style="color:#E1E4E8">      frame_-></span><span style="color:#B392F0">destroy</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  /// Checks if the awaitable refers to a future result.</span></span>
+<span class="line"><span style="color:#F97583">  bool</span><span style="color:#B392F0"> valid</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">const</span><span style="color:#F97583"> noexcept</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#F97583"> !!</span><span style="color:#E1E4E8">frame_;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">#if</span><span style="color:#F97583"> !defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">GENERATING_DOCUMENTATION</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // Support for co_await keyword.</span></span>
+<span class="line"><span style="color:#F97583">  bool</span><span style="color:#B392F0"> await_ready</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">const</span><span style="color:#F97583"> noexcept</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // Support for co_await keyword.</span></span>
+<span class="line"><span style="color:#F97583">  template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">class</span><span style="color:#B392F0"> U</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#F97583">  void</span><span style="color:#B392F0"> await_suspend</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#B392F0">      detail</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">coroutine_handle</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">detail</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable_frame</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">U</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">>> </span><span style="color:#FFAB70">h</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#E1E4E8">    frame_-></span><span style="color:#B392F0">push_frame</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">h.</span><span style="color:#B392F0">promise</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // Support for co_await keyword.</span></span>
+<span class="line"><span style="color:#B392F0">  T</span><span style="color:#B392F0"> await_resume</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#B392F0"> awaitable</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">static_cast&#x3C;</span><span style="color:#E1E4E8">awaitable</span><span style="color:#F97583">&#x26;&#x26;></span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">)).frame_-></span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">#endif</span><span style="color:#6A737D"> // !defined(GENERATING_DOCUMENTATION)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">private:</span></span>
+<span class="line"><span style="color:#F97583">  template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">typename</span><span style="color:#E1E4E8">> </span><span style="color:#F97583">friend</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> detail</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable_thread</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">typename</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#E1E4E8">> </span><span style="color:#F97583">friend</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> detail</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable_frame</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // Not copy constructible or copy assignable.</span></span>
+<span class="line"><span style="color:#B392F0">  awaitable</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">const</span><span style="color:#B392F0"> awaitable</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=</span><span style="color:#F97583"> delete</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">  awaitable</span><span style="color:#F97583">&#x26;</span><span style="color:#F97583"> operator</span><span style="color:#B392F0">=</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">const</span><span style="color:#B392F0"> awaitable</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=</span><span style="color:#F97583"> delete</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // Construct the awaitable from a coroutine's frame object.</span></span>
+<span class="line"><span style="color:#F97583">  explicit</span><span style="color:#B392F0"> awaitable</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">detail</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable_frame</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">></span><span style="color:#F97583">*</span><span style="color:#FFAB70"> a</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    : </span><span style="color:#B392F0">frame_</span><span style="color:#E1E4E8">(a)</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  detail</span><span style="color:#E1E4E8">::awaitable_frame</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">T, Executor</span><span style="color:#F97583">>*</span><span style="color:#E1E4E8"> frame_;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<h2 id="promise_type">promise_type</h2>
+<p><code>include/asio/impl/awaitable.hpp</code></p>
+<p>// promise_type</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583"># if</span><span style="color:#F97583"> defined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ASIO_HAS_STD_COROUTINE</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">typename</span><span style="color:#B392F0"> T</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#B392F0"> Executor</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#E1E4E8">... </span><span style="color:#B392F0">Args</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#F97583">struct</span><span style="color:#B392F0"> coroutine_traits</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">>, Args...></span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">  typedef</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">detail</span><span style="color:#E1E4E8">::awaitable_frame</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">T, Executor</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> promise_type;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">}</span><span style="color:#6A737D"> // namespace std</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583"># else</span><span style="color:#6A737D"> // defined(ASIO_HAS_STD_COROUTINE)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">namespace</span><span style="color:#B392F0"> experimental</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">typename</span><span style="color:#B392F0"> T</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#B392F0"> Executor</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">typename</span><span style="color:#E1E4E8">... </span><span style="color:#B392F0">Args</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#F97583">struct</span><span style="color:#B392F0"> coroutine_traits</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">T</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">>, Args...></span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">  typedef</span><span style="color:#B392F0"> asio</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">detail</span><span style="color:#E1E4E8">::awaitable_frame</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">T, Executor</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> promise_type;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">}}</span><span style="color:#6A737D"> // namespace std::experimental</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583"># endif</span><span style="color:#6A737D"> // defined(ASIO_HAS_STD_COROUTINE)</span></span></code></pre>
+<h2 id="asiodetailawaitable_frame">asio::detail::awaitable_frame</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">template</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">typename</span><span style="color:#B392F0"> Executor</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> awaitable_frame</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  : </span><span style="color:#F97583">public</span><span style="color:#B392F0"> awaitable_frame_base</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">public:</span></span>
+<span class="line"><span style="color:#B392F0">  awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">get_return_object</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">->coro_ </span><span style="color:#F97583">=</span><span style="color:#B392F0"> coroutine_handle</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">awaitable_frame</span><span style="color:#E1E4E8">>::</span><span style="color:#B392F0">from_promise</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#B392F0"> awaitable</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Executor</span><span style="color:#E1E4E8">>(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  void</span><span style="color:#B392F0"> return_void</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  void</span><span style="color:#B392F0"> get</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">->caller_ </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> nullptr</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">-></span><span style="color:#B392F0">rethrow_exception</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

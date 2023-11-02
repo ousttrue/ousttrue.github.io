@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2017/blender_addon_vscode/"><!-- Primary Meta Tags --><title>BlenderのAddOnを、VSCodeでデバッグする</title><meta name="title" content="BlenderのAddOnを、VSCodeでデバッグする"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2017/blender_addon_vscode/"><meta property="og:title" content="BlenderのAddOnを、VSCodeでデバッグする"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2017/blender_addon_vscode/"><meta property="twitter:title" content="BlenderのAddOnを、VSCodeでデバッグする"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2017-11-23T00:00:00.000Z">2017
+-11
+-23</time></div><h1 data-astro-cid-bvzihdzo>BlenderのAddOnを、VSCodeでデバッグする</h1><hr data-astro-cid-bvzihdzo></div><p>VSCodeのリモートデバッグを利用してBlenderのPythonにデバッガをアタッチする。</p>
+<p><a href="https://pypi.python.org/pypi/ptvsd">PTVSD</a></p>
+<p>VisualStudioのPTVS向けのリモートデバッグモジュール。VSCodeも対応しているらしい。
+リモート側でptvsdをimportして待ち受けて、VisualStudio側からtcp経由でアタッチする。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> ptvsd</span></span>
+<span class="line"><span style="color:#E1E4E8">ptvsd.enable_attach(</span><span style="color:#FFAB70">secret</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'secret'</span><span style="color:#E1E4E8">, (</span><span style="color:#9ECBFF">'0.0.0.0'</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3000</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> os </span><span style="color:#F97583">!=</span><span style="color:#9ECBFF"> 'Windows'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    ptvsd.wait_for_attach() </span><span style="color:#6A737D"># スクリプトが終わらないようにブロックする</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>+--------------+</span></span>
+<span class="line"><span>|remoteのpython|</span></span>
+<span class="line"><span>|         ptvsd|tcp:3000 &#x3C;-- VisualStudio attach</span></span>
+<span class="line"><span>+--------------+</span></span></code></pre>
+<p>dos窓</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>> netstat -an | find "3000"</span></span>
+<span class="line"><span>  TCP         0.0.0.0:3000           0.0.0.0:0              LISTENING</span></span></code></pre>
+<p>確かに待っている。
+TCP経由なのでptvsd側が、LinuxやRasPi、Blenderの組み込みPythonなどなんであってもアタッチできる。
+素のPythonでやってみる</p>
+<p>Windows10(64bit)
+Python-3.6
+PTVSD-3.0.0</p>
+<p>PTVSDのバージョンが3.0.0でないと
+デバッグアダプタープロセスが予期せず終了しました。</p>
+<p>等のエラーが出てうまくいかぬ。</p>
+<p><a href="https://github.com/DonJayamanne/pythonVSCode/issues/1039">https://github.com/DonJayamanne/pythonVSCode/issues/1039</a></p>
+<p>ptvsdのインストール</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>> py -3.6 -m pip install ptvsd==3.0.0</span></span></code></pre>
+<p>testプロジェクト</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>> mkdir ptvsd_test</span></span></code></pre>
+<p>VSCodeでptvsd_testフォルダを開く。
+testスクリプト
+ptvsd_test/main.py</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># PTVSDを準備する</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> ptvsd</span></span>
+<span class="line"><span style="color:#E1E4E8">listen </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">'0.0.0.0'</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3000</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">ptvsd.enable_attach(</span><span style="color:#9ECBFF">'my_secret'</span><span style="color:#E1E4E8">, listen)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'wait_for_attach...'</span><span style="color:#E1E4E8">, listen)</span></span>
+<span class="line"><span style="color:#E1E4E8">ptvsd.wait_for_attach() </span><span style="color:#6A737D"># リモートデバッガの接続を待つ</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">time.sleep(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">) </span><span style="color:#6A737D"># 接続後少し待つ</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'connected'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># デバッグするコード</span></span>
+<span class="line"><span style="color:#E1E4E8">i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span></span>
+<span class="line"><span style="color:#F97583">while</span><span style="color:#79B8FF"> True</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(i)</span></span>
+<span class="line"><span style="color:#E1E4E8">    i </span><span style="color:#F97583">+=</span><span style="color:#79B8FF"> 1</span></span>
+<span class="line"><span style="color:#E1E4E8">    time.sleep(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>>py -3.6 main.py</span></span>
+<span class="line"><span>wait_for_attach... ('0.0.0.0', 3000)</span></span></code></pre>
+<p>VSCodeから接続
+ptvsd_test/main.pyを開いてデバッグ開始。構成の追加でpythonを選択する。</p>
+<p>ptvsd_test/.vscode/launch.json</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    // IntelliSense を使用して利用可能な属性を学べます。</span></span>
+<span class="line"><span style="color:#6A737D">    // 既存の属性の説明をホバーして表示します。</span></span>
+<span class="line"><span style="color:#6A737D">    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387</span></span>
+<span class="line"><span style="color:#79B8FF">    "version"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"0.2.0"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "configurations"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#79B8FF">            "name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Python"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"python"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "request"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"launch"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "stopOnEntry"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "pythonPath"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${config:python.pythonPath}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "program"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${file}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "cwd"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${workspaceRoot}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "env"</span><span style="color:#E1E4E8">: {},</span></span>
+<span class="line"><span style="color:#79B8FF">            "envFile"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${workspaceRoot}/.env"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "debugOptions"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#9ECBFF">                "WaitOnAbnormalExit"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                "WaitOnNormalExit"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">                "RedirectOutput"</span></span>
+<span class="line"><span style="color:#E1E4E8">            ]</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#E1E4E8">        { </span><span style="color:#6A737D">// これ</span></span>
+<span class="line"><span style="color:#79B8FF">            "name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Python: Attach"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"python"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "request"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"attach"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "localRoot"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${workspaceRoot}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "remoteRoot"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${workspaceRoot}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "port"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">3000</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "secret"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"my_secret"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "host"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"localhost"</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // 以降省略</span></span>
+<span class="line"><span style="color:#FDAEB7;font-style:italic">}</span></span></code></pre>
+<p>デバッグの選択メニューでPython:Attachを選択。改めて開始。
+うまく接続できればデバッグコンソールにprintした内容が表示される。
+breakポイントもステップ実行も可能。素晴らしい。
+BlenderのAddOnでやってみる</p>
+<p><a href="https://github.com/Barbarbarbarian/Blender-VScode-Debugger">https://github.com/Barbarbarbarian/Blender-VScode-Debugger</a></p>
+<p>これ。
+BlenderのPythonにptvsdをインストールする
+Blenderを起動して以下のスクリプトを実行する。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> sys</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> x </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> sys.path:</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(x)</span></span></code></pre>
+<p>適当なパスを選んでそこにptvsd-3.0.0をコピーする。
+ptvsd-3.0.0.zipをダウンロード。
+解凍してptvsdフォルダをBlenderのsys.pathに含まれていたC:/Program Files/Blender Foundation/Blenderにコピーした。
+Blender-VScode-Debuggerをインストールする</p>
+<p>File - UserPreferences - Add-ons と潜ってinstall Add-on from FileボタンからBlender_VScode_Debugger.pyを選択する。
+Add-onsからDevelopment: Debugger for Visual Codeを選択してチェックボックスをOnにする
+三角を押してPreferencesを展開、Path of PTVSD module:にptvsdをインストールしたパスを設定する(うちではC:/Program Files/Blender Foundation/Blender)
+Save - User Settings</p>
+<p>実行してみる
+3DViewでspaceを押してConnect to Visual Studio Code Debuggerを選択。
+dos窓</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>> netstat -an | find "3000"</span></span>
+<span class="line"><span>  TCP         0.0.0.0:3000           0.0.0.0:0              LISTENING</span></span></code></pre>
+<p>待っている。
+試しにAddOnを作ってみる
+例えばWindows版のBlenderのAddOnパスは
+C:/Users/<strong>USER_NAME</strong>/AppData/Roaming/Blender Foundation/Blender/2.79/scripts/addons
+です。
+Hello AddOnを作る。
+hello.pyとhello/<strong>init</strong>.pyという選択肢があるが、後者で作る。
+gitやVSCodeを使うのだからフォルダが独立している方がよろしい。
+helloフォルダを作って、VSCodeでフォルダを開いた。
+hello/<strong>init</strong>.pyを作成。</p>
+<p><a href="https://docs.blender.org/manual/en/dev/advanced/scripting/addon_tutorial.html">https://docs.blender.org/manual/en/dev/advanced/scripting/addon_tutorial.html</a></p>
+<p>を参考に。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="python"><code><span class="line"><span style="color:#E1E4E8">bl_info </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">    "name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Move X Axis"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "category"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Object"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> bpy</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> ObjectMoveX</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">bpy</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">types</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Operator</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#9ECBFF">    """My Object Moving Script"""</span><span style="color:#6A737D">      # Use this as a tool-tip for menu items and buttons.</span></span>
+<span class="line"><span style="color:#E1E4E8">    bl_idname </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "object.move_x"</span><span style="color:#6A737D">        # Unique identifier for buttons and menu items to reference.</span></span>
+<span class="line"><span style="color:#E1E4E8">    bl_label </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Move X by One"</span><span style="color:#6A737D">         # Display name in the interface.</span></span>
+<span class="line"><span style="color:#E1E4E8">    bl_options </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {</span><span style="color:#9ECBFF">'REGISTER'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'UNDO'</span><span style="color:#E1E4E8">}  </span><span style="color:#6A737D"># Enable undo for the operator.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#B392F0"> execute</span><span style="color:#E1E4E8">(self, context):        </span><span style="color:#6A737D"># execute() is called when running the operator.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        # The original script</span></span>
+<span class="line"><span style="color:#E1E4E8">        scene </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> context.scene</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> obj </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> scene.objects:</span></span>
+<span class="line"><span style="color:#E1E4E8">            obj.location.x </span><span style="color:#F97583">+=</span><span style="color:#79B8FF"> 1.0</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> {</span><span style="color:#9ECBFF">'FINISHED'</span><span style="color:#E1E4E8">}            </span><span style="color:#6A737D"># Lets Blender know the operator finished successfully.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> register</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    bpy.utils.register_class(ObjectMoveX)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> unregister</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    bpy.utils.unregister_class(ObjectMoveX)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># This allows you to run the script directly from Blenders Text editor</span></span>
+<span class="line"><span style="color:#6A737D"># to test the add-on without having to install it.</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#79B8FF"> __name__</span><span style="color:#F97583"> ==</span><span style="color:#9ECBFF"> "__main__"</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    register()</span></span></code></pre>
+<p>Blenderを再起動して、AddOnのチェックボックスを有効にする。
+3DViewでスペースを押してMove X by oneを実行してみる。
+動けば準備完了。
+AddOnをステップ実行してみる</p>
+<p>3DViewでConnect to Visual Studio Code Debugger
+VSCodeで構成を追加してRemoteDebuggerでアタッチ</p>
+<p>hello/.vscode/launch.json</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="json"><code><span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#79B8FF">            "name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Python: Attach"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"python"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "request"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"attach"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "localRoot"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${workspaceRoot}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "remoteRoot"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"${workspaceRoot}"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "port"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">3000</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "secret"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"my_secret"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "host"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"localhost"</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span></code></pre>
+<p>VSCodeでexecute関数のscene=context.sceneにbreak pointをセットする
+3DViewでMove X by one</p>
+<p>うまくいった。</p>
+<h2 id="memo">Memo</h2>
+<p>Blenderプロセスが生きていればいいのでptvsd.wait_for_attach()する必要はない
+Pythonのターンになるまで接続が処理されないので、VSCodeからアタッチした後AddOnを実行するまでVSCodeは待ち状態になる</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

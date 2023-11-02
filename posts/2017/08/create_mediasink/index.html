@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2017/08/create_mediasink/"><!-- Primary Meta Tags --><title>MediaSinkを実装する</title><meta name="title" content="MediaSinkを実装する"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2017/08/create_mediasink/"><meta property="og:title" content="MediaSinkを実装する"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2017/08/create_mediasink/"><meta property="twitter:title" content="MediaSinkを実装する"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2017-08-27T00:00:00.000Z">2017
+-08
+-27</time></div><h1 data-astro-cid-bvzihdzo>MediaSinkを実装する</h1><hr data-astro-cid-bvzihdzo></div><p>DX11VideoRenderer を解読して、VideoRenderer 要件を探る。</p>
+<p>Microsoft のサンプルがあり参考になる。</p>
+<p><a href="https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer">https://github.com/Microsoft/Windows-classic-samples/tree/master/Samples/DX11VideoRenderer</a></p>
+<p>これは結構がっつり作ってあるので、削って最低限必要な要素を探る。
+IMFMediaSink を作る
+手抜きして IMFActivate 抜きで。
+<a href="https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h">https://github.com/Microsoft/Windows-classic-samples/blob/master/Samples/DX11VideoRenderer/c++/DX11VideoRenderer.h</a>
+を参考に最低限を実装してみる。
+guidgen.exe で guid を決めた。
+CustomVideoRenderer.h</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">#pragma</span><span style="color:#B392F0"> once</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;windows.h></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// {8C5C51AD-F400-4B2A-BD36-4990D07420B4}</span></span>
+<span class="line"><span style="color:#B392F0">DEFINE_GUID</span><span style="color:#E1E4E8">(CLSID_CustomVideoRenderer,</span></span>
+<span class="line"><span style="color:#F97583">0x</span><span style="color:#79B8FF">8c5c51ad</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">f400</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">4b2a</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">bd</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">36</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">49</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">90</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">d0</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">74</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">0x</span><span style="color:#79B8FF">b4</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">STDAPI</span><span style="color:#B392F0"> CreateCustomVideoRenderer</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">REFIID</span><span style="color:#FFAB70"> riid</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">void</span><span style="color:#F97583"> **</span><span style="color:#FFAB70">ppvObject</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">DX11VideoRendererから必要な部分をコピペしてくるだけである。</span></span>
+<span class="line"><span style="color:#E1E4E8">CustomVideoRenderer.c</span><span style="color:#F97583">++</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> "CustomVideoRenderer.h"</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;mfidl.h></span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> CustomVideoRenderer</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">public</span><span style="color:#B392F0"> IMFMediaSink</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    ULONG m_nRefCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public:</span></span>
+<span class="line"><span style="color:#6A737D">    // IUnknown</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP_</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ULONG</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">AddRef</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#B392F0"> InterlockedIncrement</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">m_nRefCount);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> QueryInterface</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">REFIID</span><span style="color:#FFAB70"> iid</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__deref_out</span><span style="color:#B392F0"> _Result_nullonfailure_</span><span style="color:#F97583"> void**</span><span style="color:#FFAB70"> ppv</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">ppv)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> E_POINTER;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (iid </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> IID_IUnknown)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            *</span><span style="color:#E1E4E8">ppv </span><span style="color:#F97583">=</span><span style="color:#F97583"> static_cast&#x3C;</span><span style="color:#E1E4E8">IUnknown</span><span style="color:#F97583">*></span><span style="color:#E1E4E8">(</span><span style="color:#F97583">static_cast&#x3C;</span><span style="color:#E1E4E8">IMFMediaSink</span><span style="color:#F97583">*></span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (iid </span><span style="color:#F97583">==</span><span style="color:#B392F0"> __uuidof</span><span style="color:#E1E4E8">(IMFMediaSink))</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            *</span><span style="color:#E1E4E8">ppv </span><span style="color:#F97583">=</span><span style="color:#F97583"> static_cast&#x3C;</span><span style="color:#E1E4E8">IMFMediaSink</span><span style="color:#F97583">*></span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        else</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            *</span><span style="color:#E1E4E8">ppv </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> NULL</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> E_NOINTERFACE;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#B392F0">        AddRef</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> S_OK;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP_</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ULONG</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">Release</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        ULONG uCount </span><span style="color:#F97583">=</span><span style="color:#B392F0"> InterlockedDecrement</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">m_nRefCount);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (uCount </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            delete</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#6A737D">        // For thread safety, return a temporary variable.</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> uCount;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // IMFMediaSink methods</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> AddStreamSink</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwStreamSinkIdentifier</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__in_opt</span><span style="color:#B392F0"> IMFMediaType</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pMediaType</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFStreamSink</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppStreamSink</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetCharacteristics</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__out</span><span style="color:#B392F0"> DWORD</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pdwCharacteristics</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetPresentationClock</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFPresentationClock</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppPresentationClock</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetStreamSinkById</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwIdentifier</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFStreamSink</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppStreamSink</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetStreamSinkByIndex</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwIndex</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFStreamSink</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppStreamSink</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetStreamSinkCount</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__out</span><span style="color:#B392F0"> DWORD</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pcStreamSinkCount</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> RemoveStreamSink</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwStreamSinkIdentifier</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> SetPresentationClock</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__in_opt</span><span style="color:#B392F0"> IMFPresentationClock</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pPresentationClock</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> Shutdown</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">STDAPI</span><span style="color:#B392F0"> CreateCustomVideoRenderer</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">REFIID</span><span style="color:#FFAB70"> riid</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">void</span><span style="color:#F97583"> **</span><span style="color:#FFAB70">ppvObject</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">ppvObject){</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> E_FAIL;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> sink</span><span style="color:#F97583">=new</span><span style="color:#B392F0"> CustomVideoRenderer</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    *</span><span style="color:#E1E4E8">ppvObject</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">sink;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> S_OK;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">使う</span></span>
+<span class="line"><span style="color:#E1E4E8">IMFStreamSinkからIMFTopologyNodeを作る。</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">Creating Output Nodes</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    Microsoft</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">WRL</span><span style="color:#E1E4E8">::ComPtr</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">IMFTopologyNode</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> pOutputNode;</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">FAILED</span><span style="color:#E1E4E8">(hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> MFCreateTopologyNode</span><span style="color:#E1E4E8">(MF_TOPOLOGY_OUTPUT_NODE, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">pOutputNode)))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    Microsoft</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">WRL</span><span style="color:#E1E4E8">::ComPtr</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">IMFMediaSink</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> pSink;</span></span>
+<span class="line"><span style="color:#6A737D">    // 自前のIMFMediaSinkを作る</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">FAILED</span><span style="color:#E1E4E8">(hr</span><span style="color:#F97583">=</span><span style="color:#B392F0">CreateCustomVideoRenderer</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">IID_PPV_ARGS</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">pSink)))){</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    Microsoft</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">WRL</span><span style="color:#E1E4E8">::ComPtr</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">IMFStreamSink</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> pSSink;</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">FAILED</span><span style="color:#E1E4E8">(hr</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">pSink-></span><span style="color:#B392F0">GetStreamSinkByIndex</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">pSSink))){</span></span>
+<span class="line"><span style="color:#6A737D">        // まだ作っていないのでここでエラーになる</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">FAILED</span><span style="color:#E1E4E8">(hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> pOutputNode-></span><span style="color:#B392F0">SetObject</span><span style="color:#E1E4E8">(pSSink.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">())))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span></code></pre>
+<p>IMFStreamSink がひとつは必要
+作る。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> CustomVideoStreamSink</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">public</span><span style="color:#B392F0"> IMFStreamSink</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    ULONG m_nRefCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#E1E4E8"> DWORD                 STREAM_ID;</span></span>
+<span class="line"><span style="color:#E1E4E8">    CCritSec</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">                   m_critSec;</span><span style="color:#6A737D">                      // critical section for thread safety</span></span>
+<span class="line"><span style="color:#B392F0">    Microsoft</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">WRL</span><span style="color:#E1E4E8">::ComPtr</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">IMFMediaSink</span><span style="color:#F97583">></span><span style="color:#E1E4E8">               m_pSink;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public:</span></span>
+<span class="line"><span style="color:#B392F0">    CustomVideoStreamSink</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwStreamId</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">CCritSec</span><span style="color:#F97583">&#x26;</span><span style="color:#FFAB70"> critSec</span></span>
+<span class="line"><span style="color:#E1E4E8">            , </span><span style="color:#B392F0">IMFMediaSink</span><span style="color:#F97583"> *</span><span style="color:#FFAB70">parent</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        : </span><span style="color:#B392F0">STREAM_ID</span><span style="color:#E1E4E8">(dwStreamId)</span></span>
+<span class="line"><span style="color:#E1E4E8">          , </span><span style="color:#B392F0">m_critSec</span><span style="color:#E1E4E8">(critSec)</span></span>
+<span class="line"><span style="color:#E1E4E8">          , </span><span style="color:#B392F0">m_pSink</span><span style="color:#E1E4E8">(parent)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // IUnknown</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP_</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ULONG</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">AddRef</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> QueryInterface</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">REFIID</span><span style="color:#FFAB70"> iid</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__deref_out</span><span style="color:#B392F0"> _Result_nullonfailure_</span><span style="color:#F97583"> void**</span><span style="color:#FFAB70"> ppv</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP_</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">ULONG</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">Release</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // IMFStreamSink</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> Flush</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetIdentifier</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__out</span><span style="color:#B392F0"> DWORD</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pdwIdentifier</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetMediaSink</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFMediaSink</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppMediaSink</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetMediaTypeHandler</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFMediaTypeHandler</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppHandler</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> PlaceMarker</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFSTREAMSINK_MARKER_TYPE</span><span style="color:#FFAB70"> eMarkerType</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__in</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> PROPVARIANT</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pvarMarkerValue</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__in</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> PROPVARIANT</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pvarContextValue</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> ProcessSample</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__in_opt</span><span style="color:#B392F0"> IMFSample</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pSample</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // IMFMediaEventGenerator (from IMFStreamSink)</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> BeginGetEvent</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">IMFAsyncCallback</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pCallback</span><span style="color:#E1E4E8">,</span><span style="color:#B392F0">IUnknown</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> punkState</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> EndGetEvent</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">IMFAsyncResult</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pResult</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">_Out_</span><span style="color:#B392F0"> IMFMediaEvent</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppEvent</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> GetEvent</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwFlags</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFMediaEvent</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppEvent</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    STDMETHODIMP</span><span style="color:#B392F0"> QueueEvent</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MediaEventType</span><span style="color:#FFAB70"> met</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__in</span><span style="color:#B392F0"> REFGUID</span><span style="color:#FFAB70"> guidExtendedType</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HRESULT</span><span style="color:#FFAB70"> hrStatus</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__RPC__in_opt</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> PROPVARIANT</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pvValue</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p>メソッドの中身は</p>
+<p><code>return E_FAIL;</code></p>
+<p>でお茶を濁した。</p>
+<p>IMFMediaSink::AddStreamSink 実装
+IMFMediaSink::GetStreamSinkById 実装
+IMFMediaSink::GetStreamSinkByIndex 実装
+IMFMediaSink::GetStreamSinkCount 実装
+IMFMediaSink::RemoveStreamSink 実装
+実行してみる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#6A737D">// Handler for Media Session events.</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> OnPlayerEvent</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">HWND</span><span style="color:#FFAB70"> hwnd</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">WPARAM</span><span style="color:#FFAB70"> pUnkPtr</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    HRESULT hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> g_pPlayer-></span><span style="color:#B392F0">HandleEvent</span><span style="color:#E1E4E8">(pUnkPtr);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">FAILED</span><span style="color:#E1E4E8">(hr))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // ここに来る</span></span>
+<span class="line"><span style="color:#B392F0">        NotifyError</span><span style="color:#E1E4E8">(hwnd, </span><span style="color:#9ECBFF">L"An error occurred."</span><span style="color:#E1E4E8">, hr);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#B392F0">    UpdateUI</span><span style="color:#E1E4E8">(hwnd, g_pPlayer-></span><span style="color:#B392F0">GetState</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Get the event status. If the operation that triggered the event</span></span>
+<span class="line"><span style="color:#6A737D">    // did not succeed, the status is a failure code.</span></span>
+<span class="line"><span style="color:#E1E4E8">    HRESULT hrStatus </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> S_OK;</span></span>
+<span class="line"><span style="color:#E1E4E8">    hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> pEvent-></span><span style="color:#B392F0">GetStatus</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">hrStatus);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Check if the async operation succeeded.</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">SUCCEEDED</span><span style="color:#E1E4E8">(hr) </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#B392F0"> FAILED</span><span style="color:#E1E4E8">(hrStatus))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // ここに来る</span></span>
+<span class="line"><span style="color:#E1E4E8">        hr</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">hrStatus;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span></code></pre>
+<p>デバッガで調べたら IMFStreamSink::GetMediaSink の直後にエラーになることがわかった。
+IMFStreamSink::GetMediaSink 実装
+たんたんとエラーを直していく。
+IMFStreamSink::GetMediaTypeHandler 実装</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#B392F0">HRESULT</span><span style="color:#B392F0"> DX11VideoRenderer</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">CStreamSink</span><span style="color:#E1E4E8">::</span><span style="color:#B392F0">GetMediaTypeHandler</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__deref_out_opt</span><span style="color:#B392F0"> IMFMediaTypeHandler</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppHandler</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    CAutoLock </span><span style="color:#B392F0">lock</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">m_critSec);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (ppHandler </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> NULL</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> E_POINTER;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    HRESULT hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> CheckShutdown</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // This stream object acts as its own type handler, so we QI ourselves.</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">SUCCEEDED</span><span style="color:#E1E4E8">(hr))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        hr </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">-></span><span style="color:#B392F0">QueryInterface</span><span style="color:#E1E4E8">(IID_IMFMediaTypeHandler, (</span><span style="color:#F97583">void**</span><span style="color:#E1E4E8">)ppHandler);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>IMFMediaTypeHandler が必要。
+StreamSink に IMFMediaTypeHandler を実装
+このインタフェースは StreamSink が処理できる MediaType を示すので必要。
+サポートするフォーマットを決める。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#6A737D">// IMFMediaTypeHandler</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> GetCurrentMediaType</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">_Outptr_</span><span style="color:#B392F0"> IMFMediaType</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppMediaType</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> GetMajorType</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__out</span><span style="color:#B392F0"> GUID</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pguidMajorType</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> GetMediaTypeByIndex</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">DWORD</span><span style="color:#FFAB70"> dwIndex</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">_Outptr_</span><span style="color:#B392F0"> IMFMediaType</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppType</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> GetMediaTypeCount</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__out</span><span style="color:#B392F0"> DWORD</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pdwTypeCount</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> IsMediaTypeSupported</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">IMFMediaType</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pMediaType</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">_Outptr_opt_result_maybenull_</span><span style="color:#B392F0"> IMFMediaType</span><span style="color:#F97583">**</span><span style="color:#FFAB70"> ppMediaType</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> SetCurrentMediaType</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">IMFMediaType</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pMediaType</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">PresentationClockが必要</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">Presentation Clock</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">IMFMediaSink</span><span style="color:#E1E4E8">::GetPresentationClock実装</span></span>
+<span class="line"><span style="color:#B392F0">IMFMediaSink</span><span style="color:#E1E4E8">::SetPresentationClock実装</span></span>
+<span class="line"><span style="color:#E1E4E8">MediaSinkにIMFClockStateSinkを実装</span></span>
+<span class="line"><span style="color:#6A737D">// IMFClockStateSink methods</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> OnClockPause</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFTIME</span><span style="color:#FFAB70"> hnsSystemTime</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> OnClockRestart</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFTIME</span><span style="color:#FFAB70"> hnsSystemTime</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> OnClockSetRate</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFTIME</span><span style="color:#FFAB70"> hnsSystemTime</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">float</span><span style="color:#FFAB70"> flRate</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> OnClockStart</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFTIME</span><span style="color:#FFAB70"> hnsSystemTime</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">LONGLONG</span><span style="color:#FFAB70"> llClockStartOffset</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> OnClockStop</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFTIME</span><span style="color:#FFAB70"> hnsSystemTime</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>Data Flow
+ここまでの実装で IMFSession::Start の呼び出しに応じて IMFClockStateSink::OnClockStart が呼ばれるようになった。
+Data Flow</p>
+<p>Media sinks use a pull model</p>
+<p>MesiaSink 側からサンプルを取りに行かないといけない。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="plaintext"><code><span class="line"><span>[1] The client sets the media types and the presentation clock. The media sink registers itself with the presentation clock to receive notifications about clock state changes.</span></span>
+<span class="line"><span>[2][3][4] はPreroll。ミニマムを目指す今回は省略。</span></span>
+<span class="line"><span>[5] The client calls IMFPresentationClock::Start to start the presentation clock.</span></span>
+<span class="line"><span>[6] The presentation clock notifies the media sink that the clock is starting, by calling IMFClockStateSink::OnClockStart.</span></span>
+<span class="line"><span>[7] To get more data, each stream sink sends MEStreamSinkRequestSample events. In response to each of these events, the client gets the next sample and calls ProcessSample. This step is repeated until the presentation ends.</span></span></code></pre>
+<p>State Changes
+IMFClockStateSink の実装について。</p>
+<p>In addition, stream sinks must send the following events when they have completed the state transitions:</p>
+<p>OnClockStart, OnClockRestart: MEStreamSinkStarted event
+OnClockPause: MEStreamSinkPaused event
+OnClockStop: MEStreamSinkStopped event</p>
+<p>なるほど。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> OnClockStart</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MFTIME</span><span style="color:#FFAB70"> hnsSystemTime</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">LONGLONG</span><span style="color:#FFAB70"> llClockStartOffset</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    CAutoLock </span><span style="color:#B392F0">lock</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">m_csMediaSink);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    HRESULT hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> CheckShutdown</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">SUCCEEDED</span><span style="color:#E1E4E8">(hr))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        //</span></span>
+<span class="line"><span style="color:#6A737D">        // これが必要。このあとMEStreamSinkRequestSampleを受け付ける</span></span>
+<span class="line"><span style="color:#6A737D">        //</span></span>
+<span class="line"><span style="color:#E1E4E8">        hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> m_pStream-></span><span style="color:#B392F0">QueueEvent</span><span style="color:#E1E4E8">(MEStreamSinkStarted, GUID_NULL, hr, </span><span style="color:#79B8FF">NULL</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">SUCCEEDED</span><span style="color:#E1E4E8">(hr))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> m_pStream-></span><span style="color:#B392F0">QueueEvent</span><span style="color:#E1E4E8">(MEStreamSinkRequestSample, GUID_NULL, hr, </span><span style="color:#79B8FF">NULL</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>ついに IMFStreamSink::ProcessSample がコールされた。
+試しに下記のような実装にしてみたがこれでは Clock 無視で最速でフレームを消化してしまうのでだめ。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#F97583">int</span><span style="color:#E1E4E8"> m_count </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> ProcessSample</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">**</span><span style="color:#B392F0">RPC</span><span style="color:#F97583">**</span><span style="color:#B392F0">in_opt</span><span style="color:#B392F0"> IMFSample</span><span style="color:#E1E4E8">\</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pSample</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">++</span><span style="color:#E1E4E8">m_count;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    auto</span><span style="color:#E1E4E8"> hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> S_OK;</span></span>
+<span class="line"><span style="color:#E1E4E8">    hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> QueueEvent</span><span style="color:#E1E4E8">(MEStreamSinkRequestSample, GUID_NULL, hr, </span><span style="color:#79B8FF">NULL</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>MEStreamSinkRequestSample をスケジューリングする</p>
+<p>Scheduled Work Items</p>
+<p>これを使ってみる。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="cpp"><code><span class="line"><span style="color:#B392F0">BOOL</span><span style="color:#B392F0"> NeedMoreSamples</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">void</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#E1E4E8"> DWORD cSamplesInFlight </span><span style="color:#F97583">=</span><span style="color:#6A737D"> /*m_SamplesToProcess.GetCount() +*/</span><span style="color:#E1E4E8"> m_cOutstandingSampleRequests;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> cSamplesInFlight </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> SAMPLE_QUEUE_HIWATER_THRESHOLD;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">HRESULT</span><span style="color:#B392F0"> RequestSamples</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">IMFAsyncResult</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pAsyncResult</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    HRESULT hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> S_OK;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    while</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">NeedMoreSamples</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> CheckShutdown</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">FAILED</span><span style="color:#E1E4E8">(hr))</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        m_cOutstandingSampleRequests</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> QueueEvent</span><span style="color:#E1E4E8">(MEStreamSinkRequestSample, GUID_NULL, S_OK, </span><span style="color:#79B8FF">NULL</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // 再突入</span></span>
+<span class="line"><span style="color:#E1E4E8">    hr</span><span style="color:#F97583">=</span><span style="color:#B392F0">QueueRequest</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 正しいRateにする必要がある</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#E1E4E8"> INT64 interval </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1000</span><span style="color:#F97583"> /</span><span style="color:#79B8FF"> 30</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">HRESULT</span><span style="color:#B392F0"> QueueRequest</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    HRESULT hr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> S_OK;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">SUCCEEDED</span><span style="color:#E1E4E8">(hr))</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // Enqueue</span></span>
+<span class="line"><span style="color:#E1E4E8">        MFWORKITEM_KEY cancelKey;</span></span>
+<span class="line"><span style="color:#E1E4E8">        hr </span><span style="color:#F97583">=</span><span style="color:#B392F0"> MFScheduleWorkItem</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">m_WorkQueueCB, </span><span style="color:#79B8FF">nullptr</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">interval, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">cancelKey);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> hr;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#E1E4E8"> m_count </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">STDMETHODIMP</span><span style="color:#B392F0"> ProcessSample</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">__RPC__in_opt</span><span style="color:#B392F0"> IMFSample</span><span style="color:#F97583">*</span><span style="color:#FFAB70"> pSample</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">override</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    ++</span><span style="color:#E1E4E8">m_count;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    m_cOutstandingSampleRequests</span><span style="color:#F97583">--</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // do something</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">  S_OK;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>DX11VideoRenderer::CScheduler を使えばよいと思う。
+だいたい仕組みがわかった。
+DX11VideoRenderer から引き算して最小限の構成にする(ProcessSample が何もしない)場合、
+以下の部品を残す必要がありそう。</p>
+<p>Scheduler
+StreamSink: IMFStreamSink, IMFMediaTypeHandler
+MesiaSink: IMFMediaSink, IMFClockStateSink</p></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>

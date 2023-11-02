@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Astro v3.4.3"><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://ousttrue.github.io/posts/2019/vim_lsp/"><!-- Primary Meta Tags --><title>vim で LSP</title><meta name="title" content="vim で LSP"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://ousttrue.github.io/posts/2019/vim_lsp/"><meta property="og:title" content="vim で LSP"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://ousttrue.github.io/posts/2019/vim_lsp/"><meta property="twitter:title" content="vim で LSP"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:720px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media (max-width: 720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:white;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media (max-width: 720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head><body data-astro-cid-bvzihdzo><header data-astro-cid-3ef6ksr2><nav data-astro-cid-3ef6ksr2><h2 data-astro-cid-3ef6ksr2><a href="/" data-astro-cid-3ef6ksr2>三次元日誌(Astro)</a></h2><div class="internal-links" data-astro-cid-3ef6ksr2><a href="/about" data-astro-cid-3ef6ksr2 data-astro-cid-eimmu3lg>About</a></div><div class="social-links" data-astro-cid-3ef6ksr2><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-3ef6ksr2><span class="sr-only" data-astro-cid-3ef6ksr2>Go to Astro's GitHub repo</span><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg></a></div></nav></header><main data-astro-cid-bvzihdzo><article data-astro-cid-bvzihdzo><div class="prose" data-astro-cid-bvzihdzo><div class="title" data-astro-cid-bvzihdzo><div class="date" data-astro-cid-bvzihdzo><time datetime="2019-04-19T16:32:35.000Z">2019
+-04
+-19</time></div><h1 data-astro-cid-bvzihdzo>vim で LSP</h1><hr data-astro-cid-bvzihdzo></div><h2 id="vim-lsp-client">vim lsp client</h2>
+<p>vimのlspクライアント。</p>
+<h3 id="vim-lsp">vim-lsp</h3>
+<ul>
+<li><a href="https://github.com/prabirshrestha/vim-lsp">https://github.com/prabirshrestha/vim-lsp</a></li>
+</ul>
+<h4 id="vim-lsp解読">vim-lsp解読</h4>
+<p>plugin/lsp.vim</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="vim"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> g:lsp_auto_enable</span></span>
+<span class="line"><span style="color:#F97583">    augroup</span><span style="color:#E1E4E8"> lsp_auto_enable</span></span>
+<span class="line"><span style="color:#F97583">        autocmd!</span></span>
+<span class="line"><span style="color:#F97583">        autocmd</span><span style="color:#79B8FF"> VimEnter</span><span style="color:#E1E4E8"> * </span><span style="color:#F97583">call</span><span style="color:#B392F0"> lsp#enable</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    augroup</span><span style="color:#E1E4E8"> END</span></span>
+<span class="line"><span style="color:#F97583">endif</span></span></code></pre>
+<p>autoload/lsp.vim</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="vim"><code><span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> lsp#enable</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#F97583">    call</span><span style="color:#B392F0"> s:register_events</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> s:register_events</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#F97583">    call</span><span style="color:#B392F0"> s:on_text_document_did_open</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> s:on_text_document_did_open</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">" lspサーバの初期化をするぽい</span></span>
+<span class="line"><span style="color:#6A737D">" server_nameは 'pyls'など</span></span>
+<span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> s:ensure_flush</span><span style="color:#E1E4E8">(buf, server_name, </span><span style="color:#79B8FF">cb</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">" lspサーバープロセスを起動して、stdin, stdout, stderrを接続する</span></span>
+<span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> s:lsp_start</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">opts</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">abort</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    let</span><span style="color:#E1E4E8"> l:lsp_id </span><span style="color:#F97583">=</span><span style="color:#B392F0"> lsp#client#start</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'cmd'</span><span style="color:#E1E4E8">: l:cmd,</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_stderr'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_stderr'</span><span style="color:#E1E4E8">, [a:server_name]),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_exit'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_exit'</span><span style="color:#E1E4E8">, [a:server_name]),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_notification'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_notification'</span><span style="color:#E1E4E8">, [a:server_name]),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_request'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_request'</span><span style="color:#E1E4E8">, [a:server_name]),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#E1E4E8"> })</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span></code></pre>
+<p><code>autoload/lsp/client.vim</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="vim"><code><span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> s:lsp_start</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">opts</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#6A737D">    " async.vim ライブラリに移る</span></span>
+<span class="line"><span style="color:#F97583">    let</span><span style="color:#E1E4E8"> l:client_id </span><span style="color:#F97583">=</span><span style="color:#B392F0"> async#job#start</span><span style="color:#E1E4E8">(a:opts.cmd, {</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_stdout'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_stdout'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_stderr'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_stderr'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#9ECBFF"> 'on_exit'</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">function</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'s:on_exit'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#F97583">        \</span><span style="color:#E1E4E8"> })</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">" stdout を on_notification と on_request に切り出す</span></span>
+<span class="line"><span style="color:#F97583">function!</span><span style="color:#B392F0"> s:on_stdout</span><span style="color:#E1E4E8">(id, data, event) </span><span style="color:#F97583">abort</span></span>
+<span class="line"><span style="color:#F97583">endfunction</span></span></code></pre>
+<ul>
+<li><a href="https://github.com/prabirshrestha/async.vim">https://github.com/prabirshrestha/async.vim</a></li>
+</ul>
+<p><code>autoload/async/job.vim</code> ファイル一個だけだった。</p>
+<p><code>vim</code> と <code>nvim</code> の違いをラップしているぽい。</p>
+<p><code>vim</code> の <code>job_start</code> と <code>nvim</code> の <code>jobstart</code>。
+なるほど。</p>
+<h4 id="vim-lspの動きを追うdls">vim-lspの動きを追う(dls)</h4>
+<p><a href="https://github.com/d-language-server/dls">dls</a> だと</p>
+<p>ServerCapabilities</p>
+<p>に</p>
+<p>definitionProvider</p>
+<p>が入ってないな・・・</p>
+<p>Requestにそもそも入っていないのでは</p>
+<p>入れてみた。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="vim"><code><span class="line"><span style="color:#F97583">        autocmd</span><span style="color:#79B8FF"> User</span><span style="color:#E1E4E8"> lsp_setup </span><span style="color:#F97583">call</span><span style="color:#B392F0"> lsp#register_server</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF"> 'name'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'d'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF"> 'cmd'</span><span style="color:#E1E4E8">: {server_info->[</span><span style="color:#9ECBFF">'root_dls'</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#6A737D">                    "\ 'cmd': {server_info->['dub', 'run', '-q', 'serve-d']},</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF"> 'root_uri'</span><span style="color:#E1E4E8">: {server_info-></span><span style="color:#B392F0">lsp#utils#path_to_uri</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">lsp#utils#find_nearest_parent_file_directory</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">lsp#utils#get_buffer_path</span><span style="color:#E1E4E8">(), </span><span style="color:#9ECBFF">'dub.json'</span><span style="color:#E1E4E8">))},</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF"> 'whitelist'</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">'d'</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF"> 'capabilities'</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF">   'workspace'</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF">       'applyEdit'</span><span style="color:#E1E4E8">: v:</span><span style="color:#79B8FF">true</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#E1E4E8">   },</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF">   'textDocument'</span><span style="color:#E1E4E8">: {</span><span style="color:#6A737D"> " これ</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF">       'definition'</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#9ECBFF">         'dynamicRegistration'</span><span style="color:#E1E4E8">: v:</span><span style="color:#79B8FF">true</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#E1E4E8">     }</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#E1E4E8">   }</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#F97583">                    \</span><span style="color:#E1E4E8"> })</span></span></code></pre>
+<p>実際に通信するようになた。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="json"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#9ECBFF">"--->"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"d"</span><span style="color:#E1E4E8">, {</span><span style="color:#79B8FF">"method"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"textDocument/definition"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"on_notification"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"---funcref---"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"params"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"textDocument"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"uri"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"file:///home/ousttrue/work/d_hello/source/app.d"</span><span style="color:#E1E4E8">}, </span><span style="color:#79B8FF">"position"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"character"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"line"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">14</span><span style="color:#E1E4E8">}}}]</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="json"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#9ECBFF">"&#x3C;---"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"d"</span><span style="color:#E1E4E8">, {</span><span style="color:#79B8FF">"response"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"id"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"jsonrpc"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"2.0"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"result"</span><span style="color:#E1E4E8">: []}, </span><span style="color:#79B8FF">"request"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"id"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"jsonrpc"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"2.0"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"method"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"textDocument/definition"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"params"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"textDocument"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"uri"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"file:///home/ousttrue/work/d_hello/source/app.d"</span><span style="color:#E1E4E8">}, </span><span style="color:#79B8FF">"position"</span><span style="color:#E1E4E8">: {</span><span style="color:#79B8FF">"character"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"line"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">14</span><span style="color:#E1E4E8">}}}}]</span></span></code></pre>
+<p>エラーが <code>Definition not found</code> に変わって
+確かに、 <code>result</code> の中身が空っぽなので <code>not found</code> とサーバーが応答している。</p>
+<p>問題が <code>vim-lsp</code> から <code>dls</code> に移った。</p>
+<h3 id="ale">ale</h3>
+<ul>
+<li><a href="https://github.com/w0rp/ale">https://github.com/w0rp/ale</a></li>
+</ul>
+<h3 id="languageclient">LanguageClient</h3>
+<ul>
+<li><a href="https://github.com/autozimu/LanguageClient-neovim">https://github.com/autozimu/LanguageClient-neovim</a></li>
+</ul>
+<p>一部が <code>rust</code> で実装されているぽい。</p>
+<h3 id="vim-lsp-1">vim-lsp</h3>
+<ul>
+<li><a href="https://www.kieranbamforth.me/blog/vim-lsp.html">https://www.kieranbamforth.me/blog/vim-lsp.html</a></li>
+</ul>
+<h3 id="built-in">built-in</h3>
+<p>まだ、実装中？</p>
+<h2 id="language-server-protocol">Language Server Protocol</h2>
+<ul>
+<li><a href="https://microsoft.github.io/language-server-protocol/specification">https://microsoft.github.io/language-server-protocol/specification</a></li>
+</ul>
+<p><code>version 3.x</code></p>
+<p><a href="https://github.com/Microsoft/language-server-protocol/blob/master/versions/protocol-2-x.md">https://github.com/Microsoft/language-server-protocol/blob/master/versions/protocol-2-x.md</a></p>
+<h3 id="通信シーケンス">通信シーケンス</h3>
+<h4 id="---request1-initialize"><code>&#x3C;-- request1 initialize</code></h4>
+<h4 id="---response1"><code>--> response1</code></h4>
+<h4 id="---notify-initialized"><code>&#x3C;-- notify initialized</code></h4>
+<h4 id="---notify-textdocumentdidopen"><code>&#x3C;-- notify textDocument/didOpen</code></h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" lang="vim"><code><span class="line"><span style="color:#F97583">autocmd</span><span style="color:#79B8FF"> FileType</span><span style="color:#E1E4E8"> * </span><span style="color:#F97583">call</span><span style="color:#B392F0"> wf#lsp#setFileType</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<h4 id="---notify-textdocumentdidchange"><code>&#x3C;-- notify textDocument/didChange</code></h4>
+<h4 id="---notify-textdocumentpublishdiagnostics"><code>--> notify textDocument/publishDiagnostics</code></h4>
+<h4 id="---request2-textdocumentdocumenthighlight"><code>&#x3C;-- request2 textDocument/documentHighlight</code></h4>
+<h4 id="---response2"><code>--> response2</code></h4>
+<h2 id="log-viewer">log viewer</h2>
+<ul>
+<li>
+<p><a href="https://github.com/Microsoft/language-server-protocol-inspector">https://github.com/Microsoft/language-server-protocol-inspector</a></p>
+<ul>
+<li><a href="https://microsoft.github.io/language-server-protocol/inspector/">https://microsoft.github.io/language-server-protocol/inspector/</a></li>
+</ul>
+</li>
+<li>
+<p><a href="https://qiita.com/Rockdoor/items/f5dca558bbc843d8f334">VSCode 用 SystemVerilogの拡張を作る（#7）</a></p>
+</li>
+<li>
+<p>VSCodeでlsp を実行させて通信ログを出力</p>
+</li>
+<li>
+<p>通信ログを見やすく表示</p>
+</li>
+</ul>
+<p>しかし、どうやってログを作るかよくわからん。
+<code>vim-lsp</code> のログを改造して作ってみる。</p>
+<h2 id="各言語のサーバー">各言語のサーバー</h2>
+<p>試してみたやつ。</p>
+<h3 id="python">python</h3>
+<h4 id="pyls">pyls</h4>
+<p>Linux, Windows 共に動いた。</p>
+<h3 id="dlang">dlang</h3>
+<h4 id="serve-d">serve-d</h4>
+<p>うまくいかなかったので、調べている・・・</p>
+<h4 id="dls">dls</h4>
+<p>うまくいかなかったので、調べている・・・</p>
+<h3 id="c">c++</h3>
+<p>Linuxで動いた。</p>
+<h4 id="cquery">cquery</h4></div></article></main><footer data-astro-cid-sz7xmlte>
+&copy; 2023 ousttrue. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte><a href="https://github.com/ousttrue/" target="_blank" data-astro-cid-sz7xmlte><svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg></a></div></footer></body></html>
