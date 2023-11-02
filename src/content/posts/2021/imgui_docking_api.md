@@ -56,7 +56,7 @@ DockSpace     ID=0x7CF2A649 Window=0x9A404470 Pos=0,30 Size=1200,870 Split=X
 
 libclang のパース結果の `CXCursor` のツリー
 
-![image]("tree.jpg")
+![image](./tree.jpg)
 
 - [ ] selection
 
@@ -64,4 +64,4 @@ libclang のパース結果の `CXCursor` のツリー
 
 glTF を表示してみた。さくさく書けてよさそう。
 
-![image]("table.jpg")
+![image](./table.jpg)

@@ -69,7 +69,7 @@ color emoji を設定する。
 * https://github.com/mintty/wsltty/issues/93
 * `%USERPROFILE%\AppData\Roaming\wsltty` フォルダに対して作業する
 
-![emoji](emoji.jpg)
+![emoji](./emoji.jpg)
 
 複合文字とか複雑すぎなのでは・・・
 
