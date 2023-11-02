@@ -1,8 +1,7 @@
 ---
+title: "そして astro へ"
 date: 2023-10-28
-tags:
-  - ssg
-title: そして astro へ
+tags: ["ssg"]
 ---
 
 xterm.js を A-Frame で使うべく TypeScript で
@@ -18,8 +17,7 @@ gatsby の contents/blog を src/content/blog にシンボリックリンクし�
 
 # Content entry frontmatter does not match schema
 
-- pubDate を date に変えた
-- description が 無くても動くように改造
+元記事にあわせて pubDate を date に変えたが、不整合ではまる。
 
 # わりとあっさり動いた
 
@@ -86,13 +84,13 @@ https://docs.astro.build/ja/core-concepts/routing/#%E9%9D%99%E7%9A%84ssg%E3%83%A
 
 なんとなく動いた。
 
-# memo
+# astro の blog template に戻した
 
-しかし素の JSX(tsx) を練習したいので、
-他のにするかもしぬ。
-(astro は `.astro` 形式)
+改めて、
 
-https://vike.dev/
+https://docs.astro.build/ja/tutorial/0-introduction/
 
-が気になっている。
+https://docs.astro.build/ja/guides/content-collections/
+
+に目を通してシンプル化した。
 
