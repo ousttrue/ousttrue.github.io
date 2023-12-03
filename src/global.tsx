@@ -4,18 +4,35 @@ import { Head } from "minista"
 
 import "./global.css"
 
-export default function({ url, title, children }: GlobalProps) {
+function Header(props: GlobalProps) {
+  return (<header>
+    <h1><a href="/">三次元日誌(minista)</a></h1>
+  </header>)
+}
+
+function Footer(props: GlobalProps) {
+  return (<footer>powered by <a href="https://minista.qranoko.jp/">minista</a></footer>)
+}
+
+function Content(props: GlobalProps) {
+  return (<article>{props.children}</article>)
+}
+
+export default function(props: GlobalProps) {
   return (
     <>
       <Head>
-        <title>{title}</title>
+        <title>{props.title}</title>
         <meta property="description" content="description" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
       </Head>
-      {url === "/" ? (
-        <div className="home">{children}</div>
-      ) : (
-        <div>{children}</div>
-      )}
+
+      <div id="root">
+        <Header {...props} />
+        <Content {...props} />
+        <Footer {...props} />
+      </div>
     </>
   )
 }

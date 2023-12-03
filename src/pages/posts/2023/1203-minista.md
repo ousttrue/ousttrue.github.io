@@ -5,16 +5,15 @@ tags: ["ssg"]
 ---
 
 まだ astro をあまり使っていないのだが、
-さらに minista への移行を試みる。
+さらに [minista](https://minista.qranoko.jp/) への移行を試みる。
 素の jsx を使いたいのじゃ。
-
 なので、 `svelte` とか `astro` とか独自記法のものはやめておく意向。
 
 - `jsx` + `typescript` => `tsx`
 - `vite`
 
 くらいまではやるという線引き。
-たぶん、`astro` より `minista` の方が便利ではないがシンプル。
+たぶん、`astro` より `minista` の方が便利ではないがシンプルなのではないか。
 
 # minista 移行メモ
 
@@ -61,11 +60,13 @@ export default function () {
 }
 ```
 
+とりあえず index が起動。
+
 ## markdown 記事を投入
 
-astro の`contentCollection` に当たる機能が無いのでここだけ手作りで補う。
+astro の`contentCollection` に該当する機能が無いので手作りで補う。
 
-`contentCollection` は `src/contents` 配下の `*.md` を集めて記事のコレクションで
+astro の `contentCollection` は `src/contents` 配下の `*.md` を集めて記事のコレクションで
 ブログを作ったりするという機能だ。
 
 minista では、以下の機能で代替できそうだ。
@@ -73,7 +74,7 @@ minista では、以下の機能で代替できそうだ。
 - [fetch](https://minista.qranoko.jp/docs/fetch) 
 - [async function](https://minista.qranoko.jp/docs/async-function)
 
-getStaticData で `md` をサーチして、frontmatter を取り出したリストを作れば動いた。
+getStaticData で `md` を glob して、frontmatter を取り出したリストを作れば動いた。
 
 `index.tsx`
 ```tsx
@@ -132,7 +133,8 @@ export default function(props: PageIssuesProps) {
 }
 ```
 
+普通に `console.log` で print デバッグできたし。
 画期的にシンプルになったのでは。
-hugo 的なものにありがちな作法を守って記事を配置する方式よりわかりやすいような気がする。
-自分で配置して列挙する、これじゃよ。
+hugo などの ssg によくある、特定のフォルダに記事を配置する方式よりわかりやすいような気がする。
+自分で配置して、自分で列挙する、これじゃよ。
 

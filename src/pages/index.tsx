@@ -13,6 +13,7 @@ type Post = {
   title: string;
   path: string;
   date: Date;
+  tags?: string[];
 }
 
 export async function getStaticData(): Promise<StaticData> {
@@ -62,17 +63,37 @@ function Date(props: { date: Date }) {
   </span>)
 }
 
+
+function Tag(props: { tag: string }) {
+  return <span className="tag">{props.tag}</span>;
+}
+
+function Title(props: { post: Post }) {
+  const post = props.post;
+  return (<div>
+    <a className="title" href={`${post.path}`}>{post.title}</a>
+  </div>)
+}
+
+function Post(props: { post: Post }) {
+  const post = props.post;
+
+  return (
+    <li>
+      <Date date={post.date} />
+      <span style={{ display: 'inline-block' }}>
+        <Title post={props.post} />
+        {post.tags ? post.tags.map(x => <Tag tag={x} />) : ''}
+      </span>
+    </li>
+  )
+}
+
 export default function(props: PageIssuesProps) {
   return (
     <>
-      <h1>Posts</h1>
-      <ul>
-        {props.posts?.map((item, index) => (
-          <li key={index}>
-            <Date date={item.date} />
-            <a href={`${item.path}`}>{item.title}</a>
-          </li>
-        ))}
+      <ul className="posts">
+        {props.posts?.map((post, i) => <Post post={post} key={i} />)}
       </ul>
     </>
   )
