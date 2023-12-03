@@ -132,3 +132,7 @@ export default function(props: PageIssuesProps) {
 }
 ```
 
+画期的にシンプルになったのでは。
+hugo 的なものにありがちな作法を守って記事を配置する方式よりわかりやすいような気がする。
+自分で配置して列挙する、これじゃよ。
+
