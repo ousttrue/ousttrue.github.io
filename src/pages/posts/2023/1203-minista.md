@@ -138,3 +138,105 @@ export default function(props: PageIssuesProps) {
 hugo などの ssg によくある、特定のフォルダに記事を配置する方式よりわかりやすいような気がする。
 自分で配置して、自分で列挙する、これじゃよ。
 
+## layout とか
+
+Theme とか Template とかそういう作業。
+
+とりあえず [global](https://minista.qranoko.jp/docs/global) で満足した。
+
+少し React 知識があればさくさくできそうな感じ。
+いわゆる HtmlTemplate より JSX(TSX) の方がわかりやすさで勝っている。
+基本を覚えれば、なんかやるたびに検索するという頻度は少ない気がする。
+
+## trouble: Unknown language
+
+既存記事の移植でエラーが発生。
+
+```
+[plugin:@mdx-js/rollup] Unknown language: `{digraph}` is not registered
+```
+
+どうも、`.md` のコードブロックにマイナーな言語とかを書いていると出る。
+
+`minista.config.js` で
+```js
+    useRehypeHighlight: false,
+```
+とすることでエラーは出なくなったので `rehype` まわり。
+動くように対処する方法・・・。
+
+```js
+// node_modules/lowlight/lib/core.js:50
+  if (!high.getLanguage(language)) {
+    throw fault('Unknown language: `%s` is not registered', language)
+  }
+```
+
+stacktrace が `node_modules/rehype-highlight/lib/index.js` までしか遡れないのでわからんなー。
+
+`node_modules/minista/dist/server/page.js`
+```
+export function getPages(): Page[] {
+  const PAGES: ImportedPages = import.meta.glob(
+    [
+      "/src/pages/**/*.{tsx,jsx,mdx,md}",
+      "!/src/pages/_global.{tsx,jsx}",
+      "!/src/pages/**/*.stories.{js,jsx,ts,tsx,md,mdx}",
+    ],
+    {
+      eager: true,
+    }
+  )
+```
+
+見つけたー。
+
+`https://github.com/rehypejs/rehype-highlight/blob/6.0.0/lib/index.js#L17`
+
+`minista.config.js`
+```js
+{
+  markdown: {
+    rehypeHighlightOptions: {
+      ignoreMissing: true
+    },
+  }
+}
+```
+
+# trouble: build "EventEmitter" is not exported 
+
+```
+by "__vite-browser-external", imported by "node_modules/minipass/dist/esm/index.js".
+file: C:/Users/oustt/ghq/github.com/ousttrue/ousttrue.github.io/node_modules/minipass/dist/esm/index.js:7:9
+```
+
+これっぽい。
+
+https://www.npmjs.com/package/vite-plugin-node-polyfills
+
+`minista.config.js`
+```js
+import nodePolyfills from 'rollup-plugin-polyfill-node';
+
+{
+  vite: {
+    plugins: [
+      nodePolyfills(),
+    ],
+  },
+}
+```
+
+エラーが変わった。
+
+```
+"jsx" is not exported by "node_modules/react/jsx-runtime.js", imported by "node_modules/minista/dist/shared/comment.js".
+1: import { jsx } from "react/jsx-runtime";
+```
+
+
+
+
+
+

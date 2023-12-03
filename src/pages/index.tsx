@@ -83,7 +83,7 @@ function Post(props: { post: Post }) {
       <Date date={post.date} />
       <span style={{ display: 'inline-block' }}>
         <Title post={props.post} />
-        {post.tags ? post.tags.map(x => <Tag tag={x} />) : ''}
+        {post.tags ? post.tags.map((x, i) => <Tag tag={x} key={i} />) : ''}
       </span>
     </li>
   )

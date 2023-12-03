@@ -82,7 +82,9 @@ export default defineConfig({
     useRemarkGfm: true,
     useRehypeHighlight: true,
     remarkGfmOptions: {},
-    rehypeHighlightOptions: {},
+    rehypeHighlightOptions: {
+      ignoreMissing: true
+    },
     mdxOptions: {
       remarkPlugins: [],
       rehypePlugins: [],
