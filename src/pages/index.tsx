@@ -1,11 +1,13 @@
+import React from "react";
+import type { StaticData, PageProps } from "minista"
+
+// import { data } from './posts.js';
+
+import { glob } from "glob"
+import fm from 'front-matter'
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { readFile } from 'node:fs/promises'
-import React from "react";
-import type { StaticData, PageProps } from "minista"
-import { glob } from "glob"
-import fm from 'front-matter'
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,6 +19,11 @@ type Post = {
 }
 
 export async function getStaticData(): Promise<StaticData> {
+
+  // for (const post of data.props.posts) {
+  //   post.date = new Date();
+  //   console.log(post);
+  // }
 
   const data: { props: { posts: Post[] } } = {
     props: {
@@ -41,7 +48,7 @@ type PageIssuesProps = PageProps & {
   posts?: Post[]
 }
 
-function Date(props: { date: Date }) {
+function Day(props: { date: Date }) {
   function yyyy() {
     return props.date.getFullYear().toString();
   }
@@ -80,7 +87,7 @@ function Post(props: { post: Post }) {
 
   return (
     <li>
-      <Date date={post.date} />
+      <Day date={post.date} />
       <span style={{ display: 'inline-block' }}>
         <Title post={props.post} />
         {post.tags ? post.tags.map((x, i) => <Tag tag={x} key={i} />) : ''}

@@ -206,37 +206,17 @@ export function getPages(): Page[] {
 
 # trouble: build "EventEmitter" is not exported 
 
-```
-by "__vite-browser-external", imported by "node_modules/minipass/dist/esm/index.js".
-file: C:/Users/oustt/ghq/github.com/ousttrue/ousttrue.github.io/node_modules/minipass/dist/esm/index.js:7:9
-```
+node 関数を使ってはいけないらしい。
+glob した結果を json に一度書き出して import するようにしたら動いた。
+dev は glob で、build は json 経由になるように手を考える。
 
-これっぽい。
-
-https://www.npmjs.com/package/vite-plugin-node-polyfills
-
-`minista.config.js`
 ```js
-import nodePolyfills from 'rollup-plugin-polyfill-node';
-
-{
-  vite: {
-    plugins: [
-      nodePolyfills(),
-    ],
-  },
-}
+// import { glob } from "glob"
+// import fm from 'front-matter'
+// import { fileURLToPath } from "node:url";
+// import path from "node:path";
+// import { readFile } from 'node:fs/promises'
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 ```
-
-エラーが変わった。
-
-```
-"jsx" is not exported by "node_modules/react/jsx-runtime.js", imported by "node_modules/minista/dist/shared/comment.js".
-1: import { jsx } from "react/jsx-runtime";
-```
-
-
-
-
-
 
