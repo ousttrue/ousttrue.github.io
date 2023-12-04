@@ -28,10 +28,18 @@ export async function writeStaticData(dir: string, pattern: string, dst: string)
     data.props.posts.push(post);
   }
 
-  console.log(JSON.stringify(data, null, 2));
+  // console.log(JSON.stringify(data, null, 2));
 
   // return data;
-  fs.writeFile(dst, 'export default data = ' + JSON.stringify(data, null, 2));
+  fs.writeFile(dst, `
+
+
+export function getPosts() {
+  return ${JSON.stringify(data, null, 2)}
 }
 
-writeStaticData('src/pages/posts', '**/*.md', 'src/pages/posts.js');
+export default function Dummy(){ return <></> }
+`);
+}
+
+writeStaticData('src/pages/posts', '**/*.md', 'src/pages/posts.tsx');

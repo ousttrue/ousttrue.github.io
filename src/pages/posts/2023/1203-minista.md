@@ -220,3 +220,76 @@ dev は glob で、build は json 経由になるように手を考える。
 // const __dirname = path.dirname(__filename);
 ```
 
+`minista.config.js`
+```js
+{
+  vite: {
+    build: {
+      rollupOptions: {
+        external: [
+          // require('./package.json').devDependencies || []
+          "minista",
+          "react",
+          "react-dom",
+          "typescript",
+          "front-matter",
+          "glob",
+        ]
+      }
+    }
+  },
+}
+```
+
+`dynamic import` が tsx しかうまくいかない？
+
+
+```js
+export async function getStaticData(): Promise<StaticData> {
+
+  if (process.env.NODE_ENV === 'production') {
+    // 生成済みの JSON から記事を得ることで node API へのアクセスを回避。
+    // vite/minista の module 解決の都合で
+    // posts.json ではなあく posts.tsx に偽装している・・・
+    const { getPosts } = await import('./posts');
+    const data = getPosts();
+    for (const post of data.props.posts) {
+      // date が文字列になるので復旧
+      post.date = new Date(post.date);
+      // console.log(post);
+    }
+    return data;
+  }
+  else {
+    // dynamic import で build error 回避
+    const { glob } = await import( "glob");
+    const fm = await import( 'front-matter');
+    const { fileURLToPath } = await import( "node:url");
+    const path = await import( "node:path");
+    const { readFile } = await import( 'node:fs/promises');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const data: { props: { posts: Post[] } } = {
+      props: {
+        posts: [],
+      },
+    }
+
+    const matches = await glob('**/*.md', { cwd: __dirname })
+
+    for (const match of matches) {
+      const res = await readFile(path.join(__dirname, match), { encoding: 'utf-8' });
+      const post = fm.default(res).attributes as Post;
+      post.path = match.substring(0, match.length - 3).replace(/\\/g, '/');
+      // console.log(match, post);
+      data.props.posts.push(post);
+    }
+
+    return data;
+  }
+}
+```
+
+小手先のハックで乗り切ったぽい。
+

@@ -1,15 +1,6 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
 
-// import { data } from './posts.js';
-
-import { glob } from "glob"
-import fm from 'front-matter'
-import { fileURLToPath } from "node:url";
-import path from "node:path";
-import { readFile } from 'node:fs/promises'
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 type Post = {
   title: string;
@@ -18,30 +9,45 @@ type Post = {
   tags?: string[];
 }
 
+
 export async function getStaticData(): Promise<StaticData> {
 
-  // for (const post of data.props.posts) {
-  //   post.date = new Date();
-  //   console.log(post);
-  // }
-
-  const data: { props: { posts: Post[] } } = {
-    props: {
-      posts: [],
-    },
+  if (process.env.NODE_ENV === 'production') {
+    const { getPosts } = await import('./posts');
+    const data = getPosts();
+    for (const post of data.props.posts) {
+      post.date = new Date(post.date);
+      // console.log(post);
+    }
+    return data;
   }
+  else {
+    const { glob } = await import( "glob");
+    const fm = await import( 'front-matter');
+    const { fileURLToPath } = await import( "node:url");
+    const path = await import( "node:path");
+    const { readFile } = await import( 'node:fs/promises');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
 
-  const matches = await glob('**/*.md', { cwd: __dirname })
+    const data: { props: { posts: Post[] } } = {
+      props: {
+        posts: [],
+      },
+    }
 
-  for (const match of matches) {
-    const res = await readFile(path.join(__dirname, match), { encoding: 'utf-8' });
-    const post = fm(res).attributes as Post;
-    post.path = match.substring(0, match.length - 3).replace(/\\/g, '/');
-    // console.log(match, post);
-    data.props.posts.push(post);
+    const matches = await glob('**/*.md', { cwd: __dirname })
+
+    for (const match of matches) {
+      const res = await readFile(path.join(__dirname, match), { encoding: 'utf-8' });
+      const post = fm.default(res).attributes as Post;
+      post.path = match.substring(0, match.length - 3).replace(/\\/g, '/');
+      // console.log(match, post);
+      data.props.posts.push(post);
+    }
+
+    return data;
   }
-
-  return data;
 }
 
 type PageIssuesProps = PageProps & {

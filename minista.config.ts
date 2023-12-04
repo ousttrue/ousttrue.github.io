@@ -132,5 +132,19 @@ export default defineConfig({
       indent_size: 2,
     },
   },
-  vite: {},
+  vite: {
+    build: {
+      rollupOptions: {
+        external: [
+          // require('./package.json').devDependencies || []
+          "minista",
+          "react",
+          "react-dom",
+          "typescript",
+          "front-matter",
+          "glob",
+        ]
+      }
+    }
+  },
 })
