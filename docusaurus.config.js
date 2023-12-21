@@ -8,7 +8,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: '三次元日誌(docusaurus)',
+  title: '三次元日誌',
   tagline: 'SSG迷走',
   // favicon: 'img/favicon.ico',
 
@@ -49,7 +49,7 @@ const config = {
           path: 'posts',
           routeBasePath: 'posts',
           showReadingTime: false,
-          blogSidebarCount: 'ALL',
+          blogSidebarCount: 15,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
@@ -67,7 +67,7 @@ const config = {
       // Replace with your project's social card
       // image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: '三次元日誌',
+        title: '三次元日誌(docusaurus)',
         // logo: {
         //   alt: 'My Site Logo',
         //   src: 'img/logo.svg',
@@ -80,6 +80,18 @@ const config = {
           //   label: 'Tutorial',
           // },
           { to: '/posts', label: 'Blog', position: 'left' },
+          { to: '/posts/tags', label: 'Tags', position: 'left' },
+          { to: '/posts/archive', label: 'Archive', position: 'left' },
+          {
+            href: 'https://ousttrue.github.io/cmake_book',
+            label: 'CmakeMemo',
+            position: 'right',
+          },
+          {
+            href: 'https://ousttrue.github.io/blender_book',
+            label: 'BlenderMemo',
+            position: 'right',
+          },
           {
             href: 'https://github.com/ousttrue',
             label: 'GitHub',
