@@ -28,7 +28,7 @@ title: libclang で 言語バインディングを作る
     * `rust`
 
 * (2021)https://github.com/ousttrue/luajitffi/tree/master/clang/cdef
-    * [libclang で luajit 向けの FFI を生成する](/posts/2019/luajitffi/)
+    * [libclang で luajit 向けの FFI を生成する](/posts/2021/luajitffi/)
     * imgui による cindex のパース結果のビューワーを作ってみたが動作が遅かった。
         * https://github.com/ousttrue/luajitffi/tree/master/clangffi
         * https://github.com/ousttrue/limgui/blob/master/samples/clang_viewer.lua

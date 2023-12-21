@@ -91,7 +91,7 @@ rpc.on_message(&dispatcher);
 
 なるほど。
 
-[NvimTexture](@/posts/2021/summer/nvimtexture.md) へ続く
+[NvimTexture](/posts/2021/summer/nvimtexture.md) へ続く
 
 # 20210829  太字がずれる？
 
