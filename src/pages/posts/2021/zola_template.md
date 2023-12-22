@@ -94,7 +94,7 @@ https://www.getzola.org/documentation/templates/pagination/
 
 https://www.getzola.org/documentation/content/linking/#internal-links
 
-`[NvimTexture](@/posts/2021/summer/nvimtexture.md)`
+`[NvimTexture](/posts/2021/summer/nvimtexture.md)`
 
 `@` と `.md` が必要。
 

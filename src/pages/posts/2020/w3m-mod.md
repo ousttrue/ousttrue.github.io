@@ -216,7 +216,7 @@ typedef hogeTag Hoge;
 
 `w3m` は `DEFUN` でキーアサインできる関数を定義している。
 
-[readme.func](/w3m/doc-jp/readme.func/)
+<!-- [readme.func](/w3m/doc-jp/readme.func/) -->
 
 
 以下のように、キーボードなどのイベントをトリガーにアクションを実行するというイメージ。

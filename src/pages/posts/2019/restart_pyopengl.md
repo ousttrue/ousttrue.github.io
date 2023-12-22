@@ -25,7 +25,7 @@ CreateWindow と OnMouseDown 等はこれに任せた。
 ### glBufferDataで躓いた
 
 * [PyOpenGLで描画。VBO周りの混乱](https://qiita.com/ousttrue/items/e343baabdbdd6b7891c4)
-* [PyOpenGLのglBufferDataにはどんなデータが渡せるのか](/posts/glbufferdata)
+* [PyOpenGLのglBufferDataにはどんなデータが渡せるのか](/posts/2017/glbufferdata)
 * [pyOpenGLのglBufferData](https://qiita.com/ousttrue/items/44a119e62aea1f12c5af)
 
 調べ直して、記事をメンテナンスした。

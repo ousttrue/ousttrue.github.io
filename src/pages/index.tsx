@@ -1,5 +1,6 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
+import { allPosts } from '../../.contentlayer/generated';
 
 
 type Post = {
@@ -12,46 +13,18 @@ type Post = {
 
 export async function getStaticData(): Promise<StaticData> {
 
-  if (process.env.NODE_ENV === 'production') {
-    const { getPosts } = await import('./posts');
-    const data = getPosts();
-    for (const post of data.props.posts) {
-      post.date = new Date(post.date);
-      // console.log(post);
-    }
-    return data;
+  // console.log(typeof(allPosts));
+  const data: { props: { posts: Post[] } } = {
+    props: {
+      posts: allPosts,
+    },
   }
-  else {
-    // const { glob } = await import( "glob");
-    // const fm = await import( 'front-matter');
-    // const { fileURLToPath } = await import( "node:url");
-    // const path = await import( "node:path");
-    // const { readFile } = await import( 'node:fs/promises');
-    // const __filename = fileURLToPath(import.meta.url);
-    // const __dirname = path.dirname(__filename);
-    //
-    // const data: { props: { posts: Post[] } } = {
-    //   props: {
-    //     posts: [],
-    //   },
-    // }
-
-    // const matches = await glob('**/*.md', { cwd: __dirname })
-
-    // for (const match of matches) {
-    //   const res = await readFile(path.join(__dirname, match), { encoding: 'utf-8' });
-    //   const post = fm.default(res).attributes as Post;
-    //   post.path = match.substring(0, match.length - 3).replace(/\\/g, '/');
-    //   // console.log(match, post);
-    //   data.props.posts.push(post);
-    // }
-
-    const { getDynamicPosts } = await import('../../getPosts.js');
-
-    const data = await getDynamicPosts();
-
-    return data;
+  for (const post of data.props.posts) {
+    post.date = new Date(post.date);
+    // console.log(post);
   }
+  data.props.posts.sort((a, b) => b.date.getTime() - a.date.getTime());
+  return Promise.resolve(data);
 }
 
 type PageIssuesProps = PageProps & {
