@@ -1,4 +1,5 @@
 // src/global.tsx
+import React from 'react'
 import type { GlobalProps } from "minista"
 import { Head } from "minista"
 
@@ -8,6 +9,7 @@ function Header(props: GlobalProps) {
   return (<header>
     <h1 style={{ flexGrow: 1 }}><a href="/">三次元日誌(minista)</a></h1>
     <a href="https://ousttrue.github.io/cmake_book/">CmakeBook</a>
+    <a href="https://ousttrue.github.io/blender_book">BlenderBook</a>
     <a href="https://github.com/">github</a>
   </header >)
 }

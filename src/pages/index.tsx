@@ -1,14 +1,6 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
-import { allPosts } from '../../.contentlayer/generated';
-
-
-type Post = {
-  title: string;
-  path: string;
-  date: Date;
-  tags?: string[];
-}
+import { allPosts, Post } from '../../.contentlayer/generated';
 
 
 export async function getStaticData(): Promise<StaticData> {
@@ -65,7 +57,7 @@ function Title(props: { post: Post }) {
   </div>)
 }
 
-function Post(props: { post: Post }) {
+function PostElement(props: { post: Post }) {
   const post = props.post;
 
   return (
@@ -83,7 +75,7 @@ export default function(props: PageIssuesProps) {
   return (
     <>
       <ul className="posts">
-        {props.posts?.map((post, i) => <Post post={post} key={i} />)}
+        {props.posts?.map((post, i) => <PostElement post={post} key={i} />)}
       </ul>
     </>
   )

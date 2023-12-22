@@ -24,3 +24,11 @@ import を相対パスで書いた。
 import { allPosts } from '../../.contentlayer/generated';
 ```
 
+## markdown の改行コードが CRLF
+
+```
+failed with YAMLParseError: Unexpected scalar
+```
+
+だめらしい。
+
