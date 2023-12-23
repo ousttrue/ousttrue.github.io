@@ -16,4 +16,4 @@ export default function Dummy(){ return <></> }
 `);
 }
 
-writeStaticData('src/pages/posts.tsx');
+writeStaticData('src/pages/posts.ts');
