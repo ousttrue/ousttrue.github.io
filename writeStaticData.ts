@@ -12,9 +12,9 @@ export function getPosts() {
   return ${JSON.stringify(data, null, 2)}
 }
 
+// workadound for minista
+export default function Dummy(){ return <></> }
 `);
-
 }
-
 
 writeStaticData('src/pages/posts.ts');
