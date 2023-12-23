@@ -1,5 +1,5 @@
 ---
-title: "contentlayer 導入"
+title: "contentlayer 導入(断念)"
 date: 2023-12-22
 tags: ["ssg"]
 ---

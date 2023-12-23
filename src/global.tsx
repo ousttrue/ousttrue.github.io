@@ -2,27 +2,17 @@
 import React from 'react'
 import type { GlobalProps } from "minista"
 import { Head } from "minista"
+import { Navbar, Footer, Button, Divider } from 'react-daisyui'
+import PostHeader from './components/postheader';
 
 import "./global.css"
 
-function Header(props: GlobalProps) {
-  return (<header>
-    <h1 style={{ flexGrow: 1 }}><a href="/">三次元日誌(minista)</a></h1>
-    <a href="https://ousttrue.github.io/cmake_book/">CmakeBook</a>
-    <a href="https://ousttrue.github.io/blender_book">BlenderBook</a>
-    <a href="https://github.com/">github</a>
-  </header >)
-}
-
-function Footer(props: GlobalProps) {
-  return (<footer>powered by <a href="https://minista.qranoko.jp/">minista</a></footer>)
-}
-
-function Content(props: GlobalProps) {
-  return (<article>{props.children}</article>)
-}
-
 export default function(props: GlobalProps) {
+  const isPost = props.url.match(/^\/posts\/\d+/);
+  if (isPost) {
+    console.log(props);
+  }
+
   return (
     <>
       <Head>
@@ -33,9 +23,36 @@ export default function(props: GlobalProps) {
       </Head>
 
       <div id="root">
-        <Header {...props} />
-        <Content {...props} />
-        <Footer {...props} />
+        <Navbar className="bg-secondary text-secondary-content">
+          <div className="flex-1">
+            <Button tag="a" className="text-x1" href="/">三次元日誌(minista + daisyui)</Button>
+          </div>
+          <div className="flex-none">
+            <Button tag="a" href="https://ousttrue.github.io/cmake_book/">CmakeBook</Button>
+            <Button tag="a" href="https://ousttrue.github.io/blender_book">BlenderBook</Button>
+            <Button tag="a" href="https://github.com/">github</Button>
+          </div>
+        </Navbar>
+
+        <article>
+          {isPost
+            ? (<>
+              <div className="markdown">
+                <PostHeader post={props.children.props} />
+                <Divider />
+                {props.children}
+              </div>
+            </>)
+            : props.children
+          }
+        </article>
+
+        <Footer className="p-10 bg-neutral text-neutral-content">
+          powered by
+          <a href="https://minista.qranoko.jp/">minista</a>
+          +
+          <a href="https://react.daisyui.com/">daisyui</a>
+        </Footer>
       </div>
     </>
   )

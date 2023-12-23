@@ -29,6 +29,9 @@ export async function getDynamicPosts() {
     // console.log(match, post);
     data.props.posts.push(post);
   }
+  data.props.posts.sort((a, b) => {
+    return b.date.getTime() - a.date.getTime();
+  });
 
   return data;
 }
