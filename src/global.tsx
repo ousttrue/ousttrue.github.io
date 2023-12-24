@@ -23,6 +23,7 @@ export default function(props: GlobalProps) {
         <Navbar className="bg-secondary text-secondary-content">
           <div className="flex-1">
             <Button tag="a" className="text-x1" href="/">三次元日誌(minista + daisyui)</Button>
+            <Button tag="a" href="/posts">archive</Button>
           </div>
           <div className="flex-none">
             <Button tag="a" href="https://ousttrue.github.io/cmake_book/">CmakeBook</Button>
