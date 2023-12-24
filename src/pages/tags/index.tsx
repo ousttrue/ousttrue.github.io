@@ -1,7 +1,7 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
 import { getPosts } from '../posts/getPosts.js';
-import { Button } from 'react-daisyui'
+import Tag from '../../components/tag.jsx';
 
 
 export async function getStaticData(): Promise<StaticData> {
@@ -15,11 +15,6 @@ export async function getStaticData(): Promise<StaticData> {
 
 type PageTagsTemplateProps = PageProps & {
   tags: string[]
-}
-
-function Tag(props: { tag: string }) {
-  const { tag } = props;
-  return <Button tag="a" href={`/tags/${tag}`}>{tag}</Button>
 }
 
 export default function(props: PageTagsTemplateProps) {

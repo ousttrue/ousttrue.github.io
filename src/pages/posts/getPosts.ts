@@ -1,17 +1,9 @@
-import type { PageProps } from "minista"
 import { getStaticPosts } from './getStaticPosts.jsx';
 import { getDynamicPosts } from './getDynamicPosts.js';
+import type { PostType } from '../../components/postheader.jsx';
 
 
-export type PostType = {
-  title: string;
-  slug: string;
-  date: Date;
-  tags?: string[];
-}
-
-
-export async function getPosts() {
+export async function getPosts(): Promise<PostType[]> {
   if (process.env.NODE_ENV === 'production') {
     // @ts-ignore
     const posts: PostType[] = getStaticPosts();
@@ -25,4 +17,3 @@ export async function getPosts() {
     return await getDynamicPosts();
   }
 }
-

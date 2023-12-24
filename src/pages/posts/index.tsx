@@ -1,7 +1,7 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
-import PostHeader from '../../components/postheader';
-import { getPosts, PostType } from './getPosts.js';
+import { PostType } from '../../components/postheader';
+import { getPosts } from './getPosts.js';
 import { Timeline } from 'react-daisyui';
 
 
