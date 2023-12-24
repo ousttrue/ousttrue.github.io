@@ -1,13 +1,5 @@
 import React from 'react';
-import { Badge, Card, Link } from 'react-daisyui'
-
-
-export type PostType = {
-  title: string;
-  slug: string;
-  date: Date;
-  tags?: string[];
-}
+import { Button, Badge, Card, Link } from 'react-daisyui'
 
 
 function Day(props: { date: Date | string }) {
@@ -37,7 +29,8 @@ function Day(props: { date: Date | string }) {
 }
 
 function Tag(props: { tag: string }) {
-  return <Badge color="secondary">{props.tag}</Badge>;
+  const tag = props.tag;
+  return <Button tag="a" size="xs" color="secondary" href={`/tags/${tag}`}>{tag}</Button>;
 }
 
 export default function PostHeader(props: { post: PostType }) {

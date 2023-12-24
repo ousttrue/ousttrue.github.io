@@ -1,8 +1,13 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
-import PostHeader, { PostType } from '../../components/postheader';
-import { getPosts, PageIssuesProps } from './getPosts.js';
+import PostHeader from '../../components/postheader';
+import { getPosts, PostType } from './getPosts.js';
 import { Timeline } from 'react-daisyui';
+
+
+export type PagePostsProps = PageProps & {
+  posts: PostType[]
+}
 
 
 export async function getStaticData(): Promise<StaticData> {
@@ -28,7 +33,7 @@ function YearPosts(props: { year: number, posts: PostType[] }) {
   </Timeline.Item>)
 }
 
-export default function(props: PageIssuesProps) {
+export default function(props: PagePostsProps) {
 
   const map: Map<number, PostType[]> = new Map();
   for (const post of props.posts) {

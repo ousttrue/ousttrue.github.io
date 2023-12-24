@@ -22,13 +22,14 @@ export default function(props: GlobalProps) {
       <div id="root">
         <Navbar className="bg-secondary text-secondary-content">
           <div className="flex-1">
-            <Button tag="a" className="text-x1" href="/">三次元日誌(minista + daisyui)</Button>
+            <Button tag="a" className="text-x1" href="/">三次元日誌(minista)</Button>
             <Button tag="a" href="/posts">archive</Button>
+            <Button tag="a" href="/tags">tags</Button>
           </div>
           <div className="flex-none">
             <Button tag="a" href="https://ousttrue.github.io/cmake_book/">CmakeBook</Button>
             <Button tag="a" href="https://ousttrue.github.io/blender_book">BlenderBook</Button>
-            <Button tag="a" href="https://github.com/">github</Button>
+            <Button tag="a" href="https://github.com/ousttrue/ousttrue.github.io">github</Button>
           </div>
         </Navbar>
 
