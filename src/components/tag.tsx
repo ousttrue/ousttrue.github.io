@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button, Badge, Card, Link } from 'react-daisyui'
+import type { PostType } from './postheader';
+
 
 const colorMap = {
   zola: 'neutral',
@@ -75,13 +77,16 @@ const colorMap = {
   vscode: 'accent',
 }
 
-// function Tag(props: { tag: string }) {
-//   const { tag } = props;
-//   return <Button tag="a" href={`/tags/${tag}`}>{tag}</Button>
-// }
+export type TagType = {
+  name: string,
+  posts?: PostType[],
+}
 
-
-export default function Tag(props: { tag: string }) {
-  const tag = props.tag;
-  return <Button tag="a" size="xs" color={colorMap[tag] ?? "default"} href={`/tags/${tag}`}>{tag}</Button>;
+export default function Tag(props: { tag: TagType }) {
+  const { name, posts } = props.tag;
+  return (<Button
+    tag="a" size="xs" color={colorMap[name] ?? "default"} href={`/tags/${name}`}>
+    {name}
+    {posts ? <Badge>{posts.length}</Badge> : ''}
+  </Button>);
 }

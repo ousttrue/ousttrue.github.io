@@ -1,45 +1,26 @@
 import React from 'react';
 import type { StaticData, PageProps } from "minista"
-import { Button } from 'react-daisyui'
-import { getPosts } from '../posts/getPosts.js';
-import PostHeader, { PostType } from '../../components/postheader';
+import PostHeader from '../../components/postheader';
+import Tag, { TagType } from '../../components/tag';
+import { getTags } from './getTags.js';
 
 
 export async function getStaticData(): Promise<StaticData[]> {
-  const posts = await getPosts();
-
-  const map: Map<string, PostType[]> = new Map();
-  for (const post of posts) {
-    if (post.tags) {
-      for (const tag of post.tags) {
-        const tagPosts = map.get(tag)
-        if (tagPosts) {
-          tagPosts.push(post);
-        }
-        else {
-          map.set(tag, [post]);
-        }
-      }
-    }
-  }
-
+  const map = await getTags();
   return Array.from(map.keys()).map((key) => ({
-    props: { tag: key, posts: map.get(key)! },
+    props: { tag: { name: key, posts: map.get(key)! } },
     paths: { tag: key },
   }));
 }
 
-type PageTagTemplateProps = PageProps & {
-  tag: string,
-  posts: PostType[]
-}
+type PageTagTemplateProps = PageProps & { tag: TagType };
 
 export default function(props: PageTagTemplateProps) {
-  const { tag, posts } = props;
+  const tag = props.tag;
   return (
     <>
-      <Button tag="a">{tag}</Button>
-      {posts.map((post) => <PostHeader key={post.slug} post={post} />)}
+      <Tag tag={tag} />
+      {tag.posts.map((post) => <PostHeader key={post.slug} post={post} />)}
     </>
   )
 }

@@ -20,7 +20,7 @@ export default function(props: GlobalProps) {
       </Head>
 
       <div id="root">
-        <Navbar className="bg-secondary text-secondary-content">
+        <Navbar className="bg-accent text-accent-content">
           <div className="flex-1">
             <Button tag="a" className="text-x1" href="/">三次元日誌(minista)</Button>
             <Button tag="a" href="/posts">blog</Button>

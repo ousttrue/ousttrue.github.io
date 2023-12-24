@@ -1,13 +1,21 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
+import { Divider, Button, Badge } from 'react-daisyui'
 import PostHeader, { PostType } from '../../components/postheader';
 import { getPosts } from './getPosts.js';
 
 
 function YearPosts(props: { year: number, posts: PostType[] }) {
+  const { year, posts } = props;
   return (<div>
-    {props.year}
-    {props.posts.map((post, i) => <PostHeader key={i} post={post} />)}
+    <Divider>
+      <Button>
+        {year}
+        <Badge>{posts.length}</Badge>
+      </Button>
+    </Divider>
+    {posts.map((post, i) => <PostHeader key={i} post={post} />)}
+    <Divider />
   </div>)
 }
 

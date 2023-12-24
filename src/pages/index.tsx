@@ -16,7 +16,7 @@ export async function getStaticData(): Promise<StaticData> {
 export default function(props: PagePostsProps) {
   return (
     <>
-      root
+      TODO...
     </>
   )
 }

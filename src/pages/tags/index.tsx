@@ -1,27 +1,32 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
 import { getPosts } from '../posts/getPosts.js';
-import Tag from '../../components/tag.jsx';
-
+import Tag, { TagType } from '../../components/tag.jsx';
+import { getTags } from './getTags.js';
 
 export async function getStaticData(): Promise<StaticData> {
-  const posts = await getPosts();
-  const tags = Array.from(new Set(posts.map((post) => post.tags).flat()));
-  tags.sort();
+  const map = await getTags();
+  const keys = Array.from(map.keys());
+  keys.sort();
   return {
-    props: { tags: tags },
+    props: {
+      tags: keys.map((key) => ({
+        name: key,
+        posts: map.get(key)!,
+      }))
+    },
   };
 }
 
 type PageTagsTemplateProps = PageProps & {
-  tags: string[]
+  tags: TagType[]
 }
 
 export default function(props: PageTagsTemplateProps) {
   const tags = props.tags;
   return (
     <>
-      {tags.map((tag) => <Tag key={tag} tag={tag} />)}
+      {tags.map((tag) => <Tag key={tag.name} tag={tag} />)}
     </>
   )
 }

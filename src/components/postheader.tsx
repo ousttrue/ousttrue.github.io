@@ -48,7 +48,7 @@ export default function PostHeader(props: { post: PostType }) {
           <Day date={post.date} />
           <a href={`/posts/${post.slug}`}>{post.title}</a>
         </Card.Title>
-        {post.tags ? post.tags.map((x, i) => <Tag tag={x} key={i} />) : ''}
+        {post.tags ? post.tags.map((x, i) => <Tag key={i} tag={{ name: x }} />) : ''}
       </span>
     </Card>
   )
