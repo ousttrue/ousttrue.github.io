@@ -12,7 +12,6 @@ module.exports = {
     require('daisyui')
   ],
   daisyui: {
-    themes: ["garden", "light", "dark"],
+    themes: ["garden"],
   },
 }
-

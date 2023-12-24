@@ -4,7 +4,7 @@ import { Badge, Card, Link } from 'react-daisyui'
 
 export type PostType = {
   title: string;
-  path: string;
+  slug: string;
   date: Date;
   tags?: string[];
 }
@@ -43,12 +43,14 @@ function Tag(props: { tag: string }) {
 export default function PostHeader(props: { post: PostType }) {
   const post = props.post;
 
+  console.log(props);
+
   return (
     <Card>
       <span style={{ display: 'inline-block' }}>
         <Card.Title>
           <Day date={post.date} />
-          <a href={`${post.path ?? post.url}`}>{post.title}</a>
+          <a href={post.url ?? `/posts/${post.slug}`}>{post.title}</a>
         </Card.Title>
         {post.tags ? post.tags.map((x, i) => <Tag tag={x} key={i} />) : ''}
       </span>

@@ -1,9 +1,4 @@
-type Post = {
-  title: string;
-  path: string;
-  date: Date;
-  tags?: string[];
-}
+import { PostType } from '../../components/postheader';
 
 
 export async function getDynamicPosts() {
@@ -13,27 +8,18 @@ export async function getDynamicPosts() {
   const fs = await import('node:fs/promises');
   const glob = await import("glob");
   const fm = await import('front-matter');
-
-  const data: { props: { posts: Post[] } } = {
-    props: {
-      posts: [],
-    },
-  }
-
+  const posts: PostType[] = [];
   const matches = await glob.glob(pattern, { cwd: dir })
 
   for (const match of matches) {
     const res = await fs.readFile(path.join(dir, match), { encoding: 'utf-8' });
-    const post = fm.default(res).attributes as Post;
-    post.path = match.substring(0, match.length - 3).replace(/\\/g, '/');
-    // console.log(match, post);
-    data.props.posts.push(post);
+    const post = fm.default(res).attributes as PostType;
+    post.slug = match.substring(6, match.length - 3).replace(/\\/g, '/');
+    posts.push(post);
   }
-  data.props.posts.sort((a, b) => {
+  posts.sort((a, b) => {
     return b.date.getTime() - a.date.getTime();
   });
 
-  return data;
+  return posts;
 }
-
-

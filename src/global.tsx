@@ -9,9 +9,6 @@ import "./global.css"
 
 export default function(props: GlobalProps) {
   const isPost = props.url.match(/^\/posts\/\d+/);
-  if (isPost) {
-    console.log(props);
-  }
 
   return (
     <>
