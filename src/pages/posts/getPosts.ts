@@ -1,5 +1,5 @@
 import { getStaticPosts } from './getStaticPosts.jsx';
-import { getDynamicPosts } from './getDynamicPosts.js';
+import { getDynamicPosts, getDynamicBody } from './getDynamicPosts.js';
 import type { PostType } from '../../components/postheader.jsx';
 
 
@@ -16,4 +16,8 @@ export async function getPosts(): Promise<PostType[]> {
   else {
     return await getDynamicPosts();
   }
+}
+
+export async function getBody(slug: string): Promise<string> {
+  return await getDynamicBody(slug);
 }

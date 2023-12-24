@@ -16,9 +16,7 @@ export async function getStaticData(): Promise<StaticData> {
 export default function(props: PagePostsProps) {
   return (
     <>
-      <ul className="posts">
-        {props.posts.map((post, i) => <PostHeader post={post} key={i} />)}
-      </ul>
+      root
     </>
   )
 }

@@ -2,7 +2,7 @@
 import React from 'react'
 import type { GlobalProps } from "minista"
 import { Head } from "minista"
-import { Navbar, Footer, Button, Divider } from 'react-daisyui'
+import { Navbar, Footer, Button } from 'react-daisyui'
 import PostHeader from './components/postheader';
 
 import "./global.css"
@@ -23,7 +23,7 @@ export default function(props: GlobalProps) {
         <Navbar className="bg-secondary text-secondary-content">
           <div className="flex-1">
             <Button tag="a" className="text-x1" href="/">三次元日誌(minista)</Button>
-            <Button tag="a" href="/posts">archive</Button>
+            <Button tag="a" href="/posts">blog</Button>
             <Button tag="a" href="/tags">tags</Button>
           </div>
           <div className="flex-none">
@@ -34,16 +34,7 @@ export default function(props: GlobalProps) {
         </Navbar>
 
         <article>
-          {isPost
-            ? (<>
-              <div className="markdown">
-                <PostHeader post={props.children.props} />
-                <Divider />
-                {props.children}
-              </div>
-            </>)
-            : props.children
-          }
+          {props.children}
         </article>
 
         <Footer className="p-10 bg-neutral text-neutral-content">

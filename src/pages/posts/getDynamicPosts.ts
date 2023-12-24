@@ -2,7 +2,7 @@ import { PostType } from '../../components/postheader';
 
 
 export async function getDynamicPosts() {
-  const dir = 'src/pages';
+  const dir = '.';
   const pattern = 'posts/**/*.md';
   const path = await import("node:path");
   const fs = await import('node:fs/promises');
@@ -22,4 +22,12 @@ export async function getDynamicPosts() {
   });
 
   return posts;
+}
+
+export async function getDynamicBody(slug: string): Promise<string> {
+  const fs = await import('node:fs');
+  const content = fs.readFileSync(`posts/${slug}.md`, 'utf8');
+  // frontmatter
+  const list = content.split(/^---/m)
+  return list[list.length - 1];
 }

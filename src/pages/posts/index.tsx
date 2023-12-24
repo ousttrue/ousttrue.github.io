@@ -1,36 +1,25 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
-import { PostType } from '../../components/postheader';
+import PostHeader, { PostType } from '../../components/postheader';
 import { getPosts } from './getPosts.js';
-import { Timeline } from 'react-daisyui';
-
-
-export type PagePostsProps = PageProps & {
-  posts: PostType[]
-}
-
-
-export async function getStaticData(): Promise<StaticData> {
-  return { props: { posts: await getPosts() } };
-}
-
-function PostItem(props: { post: PostType }) {
-  const post = props.post;
-  return (<div>
-    {post.date.getMonth() + 1}月
-    <a href={post.url ?? `/posts/${post.slug}`}>{post.title}</a>
-  </div>);
-}
 
 
 function YearPosts(props: { year: number, posts: PostType[] }) {
-  return (<Timeline.Item connect="both">
-    <Timeline.Start>{props.year}</Timeline.Start>
-    <Timeline.Middle />
-    <Timeline.End>
-      {props.posts.map((post, i) => <PostItem key={i} post={post} />)}
-    </Timeline.End>
-  </Timeline.Item>)
+  return (<div>
+    {props.year}
+    {props.posts.map((post, i) => <PostHeader key={i} post={post} />)}
+  </div>)
+}
+
+export async function getStaticData(): Promise<StaticData[]> {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    props: { posts },
+  }));
+}
+
+export type PagePostsProps = PageProps & {
+  posts: PostType[]
 }
 
 export default function(props: PagePostsProps) {
@@ -51,9 +40,9 @@ export default function(props: PagePostsProps) {
   keys.sort((a, b) => b - a);
 
   return (
-    <Timeline vertical={true}>
+    <div className="grid grid-cols-2">
       {keys.map((year) => <YearPosts key={year}
         year={year} posts={map.get(year)!} />)}
-    </Timeline>
+    </div>
   )
 }

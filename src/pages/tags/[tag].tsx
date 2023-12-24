@@ -1,8 +1,8 @@
 import React from 'react';
 import type { StaticData, PageProps } from "minista"
 import { Button } from 'react-daisyui'
-import { getPosts, PostType } from '../posts/getPosts.js';
-import PostHeader from '../../components/postheader';
+import { getPosts } from '../posts/getPosts.js';
+import PostHeader, { PostType } from '../../components/postheader';
 
 
 export async function getStaticData(): Promise<StaticData[]> {
@@ -39,7 +39,7 @@ export default function(props: PageTagTemplateProps) {
   return (
     <>
       <Button tag="a">{tag}</Button>
-      {posts.map((post) => <PostHeader post={post} />)}
+      {posts.map((post) => <PostHeader key={post.slug} post={post} />)}
     </>
   )
 }

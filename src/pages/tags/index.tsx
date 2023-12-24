@@ -21,7 +21,7 @@ export default function(props: PageTagsTemplateProps) {
   const tags = props.tags;
   return (
     <>
-      {tags.map((tag) => <Tag tag={tag} />)}
+      {tags.map((tag) => <Tag key={tag} tag={tag} />)}
     </>
   )
 }

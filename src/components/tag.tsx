@@ -9,6 +9,7 @@ const colorMap = {
   mdbook: 'neutral',
   octpress: 'neutral',
   wyam: 'neutral',
+  sphinx: 'neutral',
 
   cg: 'primary',
   '3D': 'primary',
@@ -23,7 +24,6 @@ const colorMap = {
   imgui: 'primary',
   mediafoundation: 'primary',
   opencv: 'primary',
-  sphinx: 'primary',
   threejs: 'primary',
   unity: 'primary',
   usd: 'primary',
