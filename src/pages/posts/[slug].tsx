@@ -25,11 +25,11 @@ type PagePostTemplateProps = PageProps & {
 
 export default function(props: PagePostTemplateProps) {
   const { post, body } = props;
-  return (
+  return (<>
+    <PostHeader post={post} />
+    <Divider />
     <div className="markdown">
-      <PostHeader post={post} />
-      <Divider />
       <Markdown content={body} rehypeHighlightOptions={{ ignoreMissing: true }} />
     </div>
-  )
+  </>)
 }

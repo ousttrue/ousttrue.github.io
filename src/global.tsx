@@ -9,6 +9,7 @@ import "./global.css"
 
 export default function(props: GlobalProps) {
   const isPost = props.url.match(/^\/posts\/\d+/);
+  console.log(props);
 
   return (
     <>
@@ -27,13 +28,14 @@ export default function(props: GlobalProps) {
             <Button tag="a" href="/tags">tags</Button>
           </div>
           <div className="flex-none">
+            <Button tag="a" href="https://ousttrue.github.io/meson_book/">MesonBook</Button>
             <Button tag="a" href="https://ousttrue.github.io/cmake_book/">CmakeBook</Button>
             <Button tag="a" href="https://ousttrue.github.io/blender_book">BlenderBook</Button>
             <Button tag="a" href="https://github.com/ousttrue/ousttrue.github.io">github</Button>
           </div>
         </Navbar>
 
-        <article>
+        <article className="bg-orange-100">
           {props.children}
         </article>
 

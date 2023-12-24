@@ -82,9 +82,14 @@ export type TagType = {
   posts?: PostType[],
 }
 
+export function Tags(props: { tags: string[] }) {
+  return props.tags.map((tag) => <Tag key={tag} tag={{ name: tag }} />)
+}
+
 export default function Tag(props: { tag: TagType }) {
   const { name, posts } = props.tag;
   return (<Button
+    className="m-1"
     tag="a" size="xs" color={colorMap[name] ?? "default"} href={`/tags/${name}`}>
     {name}
     {posts ? <Badge>{posts.length}</Badge> : ''}

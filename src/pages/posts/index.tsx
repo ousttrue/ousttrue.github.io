@@ -48,7 +48,7 @@ export default function(props: PagePostsProps) {
   keys.sort((a, b) => b - a);
 
   return (
-    <div className="grid grid-cols-2">
+    <div>
       {keys.map((year) => <YearPosts key={year}
         year={year} posts={map.get(year)!} />)}
     </div>

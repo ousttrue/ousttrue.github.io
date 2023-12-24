@@ -1,5 +1,6 @@
 import React from 'react';
 import type { StaticData, PageProps } from "minista"
+import { Divider, Button, Badge } from 'react-daisyui'
 import PostHeader from '../../components/postheader';
 import Tag, { TagType } from '../../components/tag';
 import { getTags } from './getTags.js';
@@ -19,7 +20,7 @@ export default function(props: PageTagTemplateProps) {
   const tag = props.tag;
   return (
     <>
-      <Tag tag={tag} />
+      <Divider><Tag tag={tag} /></Divider>
       {tag.posts.map((post) => <PostHeader key={post.slug} post={post} />)}
     </>
   )

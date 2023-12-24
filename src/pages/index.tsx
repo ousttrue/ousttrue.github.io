@@ -1,22 +1,32 @@
 import React from "react";
 import type { StaticData, PageProps } from "minista"
-import PostHeader from '../components/postheader';
-import { getPosts, PostType } from './posts/getPosts.js';
+import { Card, Button } from "react-daisyui"
 
 
-export type PagePostsProps = PageProps & {
-  posts: PostType[]
+type QuadData = {
+  name: string;
+  icon: string;
+  url: string;
 }
 
+function Quad(props: { data: QuadData }) {
+  const { name, icon, url } = props.data;
 
-export async function getStaticData(): Promise<StaticData> {
-  return { props: { posts: await getPosts() } };
+  return (<Button
+    className="w-60 h-60 m-2"
+    tag="a"
+    href={url}
+  >
+    {icon}{name}
+  </Button>);
 }
 
 export default function(props: PagePostsProps) {
   return (
     <>
-      TODO...
+      <Quad data={{ name: "buildtool", url: "/buildtool", icon: "🚧" }} />
+      <Quad data={{ name: "ssg", url: "/ssg", icon: "⚡" }} />
+      <Quad data={{ name: "3D", url: "/threed", icon: "🐵" }} />
     </>
   )
 }

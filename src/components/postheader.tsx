@@ -42,14 +42,14 @@ export default function PostHeader(props: { post: PostType }) {
   const post = props.post;
 
   return (
-    <Card>
-      <span style={{ display: 'inline-block' }}>
-        <Card.Title>
-          <Day date={post.date} />
-          <a href={`/posts/${post.slug}`}>{post.title}</a>
-        </Card.Title>
+    <Card className="bg-white m-2">
+      <Card.Title>
+        <Day date={post.date} />
+        <a href={`/posts/${post.slug}`}>{post.title}</a>
+      </Card.Title>
+      <div>
         {post.tags ? post.tags.map((x, i) => <Tag key={i} tag={{ name: x }} />) : ''}
-      </span>
+      </div>
     </Card>
   )
 }
