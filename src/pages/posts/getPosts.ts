@@ -9,7 +9,13 @@ export type PageIssuesProps = PageProps & {
 
 export async function getPosts() {
   if (process.env.NODE_ENV === 'production') {
-    return getStaticPosts();
+    // @ts-ignore
+    const posts: PostType[] = getStaticPosts();
+    for (const post of posts) {
+      // string to Date
+      post.date = new Date(post.date);
+    }
+    return posts;
   }
   else {
     return await getDynamicPosts();

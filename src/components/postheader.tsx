@@ -43,14 +43,12 @@ function Tag(props: { tag: string }) {
 export default function PostHeader(props: { post: PostType }) {
   const post = props.post;
 
-  console.log(props);
-
   return (
     <Card>
       <span style={{ display: 'inline-block' }}>
         <Card.Title>
           <Day date={post.date} />
-          <a href={post.url ?? `/posts/${post.slug}`}>{post.title}</a>
+          <a href={`/posts/${post.slug}`}>{post.title}</a>
         </Card.Title>
         {post.tags ? post.tags.map((x, i) => <Tag tag={x} key={i} />) : ''}
       </span>

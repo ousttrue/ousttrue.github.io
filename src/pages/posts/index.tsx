@@ -19,12 +19,11 @@ function PostItem(props: { post: PostType }) {
 
 
 function YearPosts(props: { year: number, posts: PostType[] }) {
-  // console.log(props)
   return (<Timeline.Item connect="both">
     <Timeline.Start>{props.year}</Timeline.Start>
     <Timeline.Middle />
     <Timeline.End>
-      {props.posts.map((post) => <PostItem post={post} />)}
+      {props.posts.map((post, i) => <PostItem key={i} post={post} />)}
     </Timeline.End>
   </Timeline.Item>)
 }
@@ -48,7 +47,7 @@ export default function(props: PageIssuesProps) {
 
   return (
     <Timeline vertical={true}>
-      {keys.map((year) => <YearPosts
+      {keys.map((year) => <YearPosts key={year}
         year={year} posts={map.get(year)!} />)}
     </Timeline>
   )

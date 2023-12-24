@@ -4,7 +4,6 @@ import { getDynamicPosts } from './src/pages/posts/getDynamicPosts.js';
 export async function writeStaticData(dst: string) {
   const fs = await import('node:fs/promises');
   const posts = await getDynamicPosts();
-  // console.log(JSON.stringify(data, null, 2));
 
   fs.writeFile(dst, `
 import React from 'react';
