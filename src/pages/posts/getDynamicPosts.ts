@@ -15,6 +15,9 @@ export async function getDynamicPosts() {
     const res = await fs.readFile(path.join(dir, match), { encoding: 'utf-8' });
     const post = fm.default(res).attributes as PostType;
     post.slug = match.substring(6, match.length - 3).replace(/\\/g, '/');
+    if (post.tags) {
+      post.tags = post.tags.map((tag) => tag.toLowerCase());
+    }
     posts.push(post);
   }
   posts.sort((a, b) => {
