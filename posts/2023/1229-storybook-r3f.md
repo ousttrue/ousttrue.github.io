@@ -16,6 +16,12 @@ https://minista.qranoko.jp/docs/partial-hydration
 だった。
 これが hydration か。なるほどー。
 
+しかし、build すると
+
+```
+Uncaught TypeError: Failed to resolve module specifier "react". Relative references must start with either "/", "./", or "../".
+```
+
 # storybook
 
 さらに、 `storybook` 入れてみる。

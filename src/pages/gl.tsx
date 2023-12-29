@@ -1,3 +1,4 @@
+import React from "react";
 import R3f from "../components/r3f?ph"
 
 export default function() {
