@@ -6,6 +6,7 @@ import Tag from './tag.jsx';
 export type PostType = {
   title: string;
   slug: string;
+  ext: string;
   date: Date;
   tags?: string[];
 }

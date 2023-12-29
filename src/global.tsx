@@ -26,6 +26,7 @@ export default function(props: GlobalProps) {
             <Button tag="a" className="text-x1" href="/">三次元日誌(minista)</Button>
             <Button tag="a" href="/posts">blog</Button>
             <Button tag="a" href="/tags">tags</Button>
+            <Button tag="a" href="/storybook">storybook</Button>
           </div>
           <div className="flex-none">
             <Button tag="a" href="https://ousttrue.github.io/meson_book/">MesonBook</Button>

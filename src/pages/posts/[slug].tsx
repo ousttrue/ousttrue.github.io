@@ -9,7 +9,7 @@ export async function getStaticData(): Promise<StaticData[]> {
   const posts = await getPosts();
   const list: StaticData[] = [];
   for (const post of posts) {
-    const body = await getBody(post.slug);
+    const body = await getBody(post.slug, post.ext);
     list.push({
       props: { post, body },
       paths: { slug: post.slug },

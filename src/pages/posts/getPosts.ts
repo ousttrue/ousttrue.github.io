@@ -18,6 +18,6 @@ export async function getPosts(): Promise<PostType[]> {
   }
 }
 
-export async function getBody(slug: string): Promise<string> {
-  return await getDynamicBody(slug);
+export async function getBody(slug: string, ext: string): Promise<string> {
+  return await getDynamicBody(slug, ext);
 }
