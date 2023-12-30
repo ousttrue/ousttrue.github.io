@@ -1,5 +1,5 @@
 ---
-title: "svelte も"
+title: "svelte で"
 date: 2023-12-30
 tags: ["ssg"]
 ---
