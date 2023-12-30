@@ -40,6 +40,23 @@ markdown の posts を収集して表示する方法が解らぬ。
 5つ作った。
 普通に `async load` 関数で動くようなので中身作れば動きそう。
 
+
+```
++ src/
+  + lib/
+    + getPosts.ts
+  + routes/
+    + posts/
+      +page.svelte
+      +page.server.ts
+      [slut]/
+        +page.svelte
+        +page.server.ts
++ posts/ # getPosts でここを glob する
+  + **/*.md
+  + **/*.jpg # 未解決
+```
+
 - `src/lib/getPosts.ts` : dummy のロジック
 ```ts
 export type PostType = {
@@ -179,6 +196,8 @@ https://ssssota.github.io/svelte-exmarkdown/
 <Markdown md={data.post.content} />
 ```
 
+Gfm と rehype-highlight はドキュメント通りでさくっとできた。
+
 ## SSG build
 
 https://kit.svelte.dev/docs/adapter-static
@@ -187,4 +206,9 @@ markdown からの内部リンクと画像リンクにエラーが出るが、
 後回しにして握りつぶした。
 
 https://github.com/sveltejs/kit/discussions/9723
+
+```markdown
+![image](./image.jpg)
+```
+という記法を解決する必要がある。
 
