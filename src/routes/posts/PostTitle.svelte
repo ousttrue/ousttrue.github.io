@@ -2,6 +2,7 @@
   import type { PostType } from "$lib/getPosts";
   export let post: PostType;
   import PostData from "./PostDate.svelte";
+  import PostTag from "../tags/PostTag.svelte";
 </script>
 
 <div class="card bg-white m-2">
@@ -12,7 +13,7 @@
   {#if post.tags}
     <div class="flex">
       {#each post.tags as tag}
-        <div class="badge">{tag}</div>
+        <PostTag {tag} />
       {/each}
     </div>
   {/if}

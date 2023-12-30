@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { PostsType } from "$lib/getPosts";
   export let data: PostsType;
-  import PostTitle from "./PostTitle.svelte";
+  import PostTag from "./PostTag.svelte";
 </script>
 
-{#each data.posts as post}
-  <PostTitle {post} />
+{#each data.tags as tag}
+  <PostTag {tag} />
 {/each}

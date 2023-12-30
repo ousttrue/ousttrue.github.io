@@ -13,10 +13,24 @@ export type PostType = {
   body: string;
 }
 
-export async function getPosts(): Promise<PostType[]> {
+
+export type PostTagType = {
+  name: string;
+  count: number;
+}
+
+
+export type PostsType = {
+  posts: PostType[];
+  tags: PostTagType[];
+}
+
+
+export async function getPosts(): Promise<PostsType> {
 
   const dir = '.';
   const posts: PostType[] = [];
+  const tags: { [key: string]: number } = {};
 
   {
     const matches = await glob.glob('posts/**/*.{md,mdx}', { cwd: dir })
@@ -36,6 +50,14 @@ export async function getPosts(): Promise<PostType[]> {
       attributes.ext = matched[2];
       if (attributes.tags) {
         attributes.tags = attributes.tags.map((tag) => tag.toLowerCase());
+        for (const tag of attributes.tags) {
+          if (tag in tags) {
+            tags[tag]++;
+          }
+          else {
+            tags[tag] = 1;
+          }
+        }
       }
       posts.push(attributes);
     }
@@ -44,5 +66,11 @@ export async function getPosts(): Promise<PostType[]> {
     });
   }
 
-  return posts;
+  return {
+    posts,
+    tags: Object.keys(tags).map((tag) => ({
+      name: tag,
+      count: tags[tag],
+    }))
+  };
 }
