@@ -4,6 +4,7 @@
   import rehypeHighlight from "rehype-highlight";
   import "highlight.js/styles/github.css";
   import "./markdown.css";
+  import PostTitle from "../PostTitle.svelte";
 
   const plugins = [
     gfmPlugin(),
@@ -15,7 +16,7 @@
   export let data;
 </script>
 
-<h1>{data.post.title}</h1>
+<PostTitle post={data} />
 <div class="markdown">
-  <Markdown md={data.post.content} {plugins} />
+  <Markdown md={data.body} {plugins} />
 </div>

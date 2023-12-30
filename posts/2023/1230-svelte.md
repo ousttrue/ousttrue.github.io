@@ -7,7 +7,7 @@ tags: ["ssg"]
 React をかじった後で `svelte` を見てみるとわかりみがある。
 やってみる。
 
-# totorial
+# tutorial
 
 `Part1 Basic Svelte` にさらっと目を通す。
 
@@ -215,4 +215,6 @@ https://github.com/sveltejs/kit/discussions/9723
 ## tailwind
 
 https://tailwindcss.com/docs/guides/sveltekit
+
+react-daisyui に頼っていたので、素の tailwind が良くわかっていないことが判明。
 

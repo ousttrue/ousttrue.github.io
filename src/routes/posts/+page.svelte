@@ -1,11 +1,9 @@
-<script>
-  export let data;
+<script lang="ts">
+  import type { PostType } from "$lib/getPosts";
+  export let data: { summaries: PostType[] };
+  import PostTitle from "./PostTitle.svelte";
 </script>
 
-<h1>blog</h1>
-
-<ul>
-  {#each data.summaries as { slug, title }}
-    <li><a href="/posts/{slug}">{title}</a></li>
-  {/each}
-</ul>
+{#each data.summaries as post}
+  <PostTitle {post} />
+{/each}
