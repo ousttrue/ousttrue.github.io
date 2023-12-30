@@ -3,6 +3,7 @@
   import { gfmPlugin } from "svelte-exmarkdown/gfm";
   import rehypeHighlight from "rehype-highlight";
   import "highlight.js/styles/github.css";
+  import "./markdown.css";
 
   const plugins = [
     gfmPlugin(),
@@ -15,4 +16,6 @@
 </script>
 
 <h1>{data.post.title}</h1>
-<Markdown md={data.post.content} {plugins} />
+<div class="markdown">
+  <Markdown md={data.post.content} {plugins} />
+</div>

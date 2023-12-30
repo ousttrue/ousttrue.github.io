@@ -212,3 +212,7 @@ https://github.com/sveltejs/kit/discussions/9723
 ```
 という記法を解決する必要がある。
 
+## tailwind
+
+https://tailwindcss.com/docs/guides/sveltekit
+
