@@ -27,4 +27,4 @@ def main(dir: pathlib.Path):
 
 
 if __name__ == "__main__":
-    main(HERE / 'gists')
+    main(HERE / 'github')

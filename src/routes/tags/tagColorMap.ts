@@ -8,6 +8,9 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   wyam: { tagColor: 'neutral', devicon: 'devicon-html5-plain' },
   sphinx: { tagColor: 'neutral', devicon: 'devicon-html5-plain' },
 
+  gist: { tagColor: 'neutral', devicon: 'devicon-github-original' },
+  github: { tagColor: 'neutral', devicon: 'devicon-github-original' },
+
   cg: { tagColor: 'primary', devicon: '' },
   '3D': { tagColor: 'primary', devicon: '' },
   bullet: { tagColor: 'primary', devicon: '' },

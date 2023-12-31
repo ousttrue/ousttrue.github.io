@@ -1,15 +1,18 @@
-+++
-title = "iogltf"
-date = 2018-10-02 02:55:37+00:00
-updated = 2018-10-28 14:02:10+00:00
-tags = ["repository", "Python"]
-[extra]
-css = "github"
-star = 0
-forks_count = 1
-license = "{'key': 'mit', 'name': 'MIT License', 'spdx_id': 'MIT', 'url': 'https://api.github.com/licenses/mit', 'node_id': 'MDc6TGljZW5zZTEz'}"
-url = "https://github.com/ousttrue/iogltf"
-+++
+---
+date: 2018-10-02 02:55:37+00:00
+extra:
+  css: github
+  forks_count: 1
+  license: '{''key'': ''mit'', ''name'': ''MIT License'', ''spdx_id'': ''MIT'', ''url'':
+    ''https://api.github.com/licenses/mit'', ''node_id'': ''MDc6TGljZW5zZTEz''}'
+  star: 0
+  url: https://github.com/ousttrue/iogltf
+tags:
+- repository
+- Python
+title: iogltf
+updated: 2018-10-28 14:02:10+00:00
+---
 
 <https://github.com/ousttrue/iogltf>
 

@@ -1,15 +1,17 @@
-+++
-title = "MEF2Sample"
-date = 2015-07-05 10:33:03+00:00
-updated = 2015-07-05 13:07:52+00:00
-tags = ["repository", "C#"]
-[extra]
-css = "github"
-star = 0
-forks_count = 1
-license = "None"
-url = "https://github.com/ousttrue/MEF2Sample"
-+++
+---
+date: 2015-07-05 10:33:03+00:00
+extra:
+  css: github
+  forks_count: 1
+  license: None
+  star: 0
+  url: https://github.com/ousttrue/MEF2Sample
+tags:
+- repository
+- C#
+title: MEF2Sample
+updated: 2015-07-05 13:07:52+00:00
+---
 
 <https://github.com/ousttrue/MEF2Sample>
 

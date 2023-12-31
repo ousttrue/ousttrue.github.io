@@ -1,15 +1,17 @@
-+++
-title = "EditorSample"
-date = 2015-07-21 18:37:00+00:00
-updated = 2015-07-21 23:45:20+00:00
-tags = ["repository", "C#"]
-[extra]
-css = "github"
-star = 0
-forks_count = 0
-license = "None"
-url = "https://github.com/ousttrue/EditorSample"
-+++
+---
+date: 2015-07-21 18:37:00+00:00
+extra:
+  css: github
+  forks_count: 0
+  license: None
+  star: 0
+  url: https://github.com/ousttrue/EditorSample
+tags:
+- repository
+- C#
+title: EditorSample
+updated: 2015-07-21 23:45:20+00:00
+---
 
 <https://github.com/ousttrue/EditorSample>
 

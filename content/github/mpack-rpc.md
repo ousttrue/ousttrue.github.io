@@ -1,15 +1,15 @@
-+++
-title = "mpack-rpc"
-date = 2014-02-17 12:28:50+00:00
-updated = 2014-02-17 12:28:50+00:00
-tags = ["repository"]
-[extra]
-css = "github"
-star = 0
-forks_count = 0
-license = "None"
-url = "https://github.com/ousttrue/mpack-rpc"
-+++
+---
+date: 2014-02-17 12:28:50+00:00
+extra:
+  css: github
+  forks_count: 0
+  license: None
+  star: 0
+  url: https://github.com/ousttrue/mpack-rpc
+tags:
+- repository
+title: mpack-rpc
+updated: 2014-02-17 12:28:50+00:00
+---
 
 <https://github.com/ousttrue/mpack-rpc>
-

@@ -1,15 +1,17 @@
-+++
-title = "SegmentTree"
-date = 2019-05-16 13:56:54+00:00
-updated = 2019-05-17 08:36:45+00:00
-tags = ["repository", "C#"]
-[extra]
-css = "github"
-star = 1
-forks_count = 0
-license = "None"
-url = "https://github.com/ousttrue/SegmentTree"
-+++
+---
+date: 2019-05-16 13:56:54+00:00
+extra:
+  css: github
+  forks_count: 0
+  license: None
+  star: 1
+  url: https://github.com/ousttrue/SegmentTree
+tags:
+- repository
+- C#
+title: SegmentTree
+updated: 2019-05-17 08:36:45+00:00
+---
 
 <https://github.com/ousttrue/SegmentTree>
 

@@ -1,15 +1,17 @@
-+++
-title = "SimpleAbcViewer"
-date = 2017-07-27 01:35:55+00:00
-updated = 2017-07-27 01:36:57+00:00
-tags = ["repository", "C++"]
-[extra]
-css = "github"
-star = 2
-forks_count = 1
-license = "None"
-url = "https://github.com/ousttrue/SimpleAbcViewer"
-+++
+---
+date: 2017-07-27 01:35:55+00:00
+extra:
+  css: github
+  forks_count: 1
+  license: None
+  star: 2
+  url: https://github.com/ousttrue/SimpleAbcViewer
+tags:
+- repository
+- C++
+title: SimpleAbcViewer
+updated: 2017-07-27 01:36:57+00:00
+---
 
 <https://github.com/ousttrue/SimpleAbcViewer>
 
