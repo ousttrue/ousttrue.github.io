@@ -17,7 +17,9 @@
       <li><a href="https://ousttrue.github.io/cmake_book/">CmakeBook</a></li>
       <li><a href="https://ousttrue.github.io/blender_book">BlenderBook</a></li>
       <li>
-        <a href="https://github.com/ousttrue/ousttrue.github.io">github</a>
+        <a href="https://github.com/ousttrue/ousttrue.github.io"
+          ><i class="devicon-github-original" style="font-size: 1.5rem;"></i></a
+        >
       </li>
     </ul>
   </div>
