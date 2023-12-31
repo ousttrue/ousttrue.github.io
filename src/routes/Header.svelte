@@ -6,7 +6,7 @@
   <div class="flex-1">
     <a class="btn btn-ghost text-xl" href="/">三次元日誌(svelte)</a>
     <ul class="menu menu-horizontal px-1">
-      <li><a href="/posts">blog</a></li>
+      <li><a href="/posts">posts</a></li>
       <li><a href="/tags">tags</a></li>
       <li><a href="/storybook">storybook</a></li>
     </ul>

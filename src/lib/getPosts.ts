@@ -46,12 +46,22 @@ export async function getPosts(): Promise<PostsType> {
 
       const { attributes, body } = fm<PostType>(res);
       attributes.body = body;
-      if (attributes.extra && attributes.extra.css == 'gist') {
-        if (attributes.tags) {
-          attributes.tags.push('gist')
+      if (attributes.extra) {
+        if (attributes.extra.css == 'gist') {
+          if (attributes.tags) {
+            attributes.tags.push('gist')
+          }
+          else {
+            attributes.tags = ['gist']
+          }
         }
-        else {
-          attributes.tags = ['gist']
+        else if (attributes.extra.css == 'github') {
+          if (attributes.tags) {
+            attributes.tags[0] = 'github'
+          }
+          else {
+            attributes.tags = ['github']
+          }
         }
       }
 
