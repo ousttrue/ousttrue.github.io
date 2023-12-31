@@ -4,6 +4,7 @@ import * as glob from "glob";
 import fm from 'front-matter';
 
 
+
 export type PostType = {
   title: string;
   slug: string;
@@ -64,13 +65,19 @@ export async function getPosts(): Promise<PostsType> {
     posts.sort((a, b) => {
       return b.date.getTime() - a.date.getTime();
     });
+
   }
+
+  const tagItems = Object.keys(tags).map((tag) => ({
+    name: tag,
+    count: tags[tag],
+  }));
+  tagItems.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
 
   return {
     posts,
-    tags: Object.keys(tags).map((tag) => ({
-      name: tag,
-      count: tags[tag],
-    }))
+    tags: tagItems
   };
 }
