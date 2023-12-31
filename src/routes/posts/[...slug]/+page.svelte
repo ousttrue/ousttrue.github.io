@@ -8,6 +8,7 @@
 
   import type unist from "unist";
   import remarkParse from "remark-parse";
+  import remarkGfm from "remark-gfm";
   import remarkSlug from "remark-slug";
   import remarkToc from "remark-toc";
   import remark2rehype from "remark-rehype";
@@ -41,6 +42,7 @@
   const mkBody = unified()
     // mdast
     .use(remarkParse)
+    .use(remarkGfm)
     // hast
     .use(remark2rehype)
     .use(rehypeSlug)
@@ -58,7 +60,6 @@
     .use(onlyToc)
     .use(rehypeStringify);
   const toc = mkToc.processSync(data.body).value;
-
 </script>
 
 <div class="container">
@@ -69,6 +70,7 @@
   </div>
   <div class="body">
     <PostTitle post={data} />
+    <div class="divider"></div>
     <div class="markdown">
       {@html body}
     </div>

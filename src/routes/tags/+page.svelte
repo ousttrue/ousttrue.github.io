@@ -4,7 +4,7 @@
   import PostTag from "./PostTag.svelte";
 </script>
 
-<div style="display: flex; flex-wrap: wrap; width: 100%; height: 100%;">
+<div style="display: flex; flex-wrap: wrap; width: 100%;">
   {#each data.tags as tag}
     <PostTag {tag} />
   {/each}

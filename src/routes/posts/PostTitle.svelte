@@ -17,7 +17,11 @@
         {/each}
       {/if}
       <h2 class="card-title">
-        <a href={`/posts/${post.slug}`}>{post.title}</a>
+        {#if post.extra && post.extra.url}
+          🔗<a class="link link-warning" href={post.extra.url}>{post.title}</a>
+        {:else}
+          <a href={`/posts/${post.slug}`}>{post.title}</a>
+        {/if}
       </h2>
     </div>
   </div>

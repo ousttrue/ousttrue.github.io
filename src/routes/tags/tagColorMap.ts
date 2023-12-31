@@ -43,6 +43,7 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   cmake: { tagColor: 'secondary', devicon: 'devicon-cmake-plain' },
   com: { tagColor: 'secondary', devicon: 'devicon-windows8-original' },
   csharp: { tagColor: 'secondary', devicon: 'devicon-csharp-plain' },
+  'c#': { tagColor: 'secondary', devicon: 'devicon-csharp-plain' },
   cpp: { tagColor: 'secondary', devicon: 'devicon-cplusplus-plain' },
   clang: { tagColor: 'secondary', devicon: 'devicon-cplusplus-plain' },
   boost: { tagColor: 'secondary', devicon: 'devicon-cplusplus-plain' },
@@ -70,4 +71,5 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   xonsh: { tagColor: 'accent', devicon: 'devicon-python-plain' },
   vim: { tagColor: 'accent', devicon: 'devicon-vim-plain' },
   vscode: { tagColor: 'accent', devicon: 'devicon-vscode-plain' },
+  windows: { tagColor: 'accent', devicon: 'devicon-windows8-original' },
 }
