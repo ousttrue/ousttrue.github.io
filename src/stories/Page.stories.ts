@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/svelte';
 import { within, userEvent, expect } from '@storybook/test';
 
-import { Page } from './Page';
+import Page from './Page.svelte';
 
 const meta = {
   title: 'Example/Page',
@@ -10,7 +10,7 @@ const meta = {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Page>;
+} satisfies Meta<Page>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

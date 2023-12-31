@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-
-import { Header } from './Header';
+import type { Meta, StoryObj } from '@storybook/svelte';
+import Header from './Header.svelte';
 
 const meta = {
   title: 'Example/Header',
@@ -11,7 +10,7 @@ const meta = {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Header>;
+} satisfies Meta<Header>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
