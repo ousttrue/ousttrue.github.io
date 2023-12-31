@@ -3,6 +3,10 @@
   export let data: PostType;
 
   import { unified } from "unified";
+  import { visit } from "unist-util-visit";
+  import { parseSelector } from "hast-util-parse-selector";
+
+  import type unist from "unist";
   import remarkParse from "remark-parse";
   import remarkSlug from "remark-slug";
   import remarkToc from "remark-toc";
@@ -15,25 +19,58 @@
   import "./markdown.css";
   import PostTitle from "../PostTitle.svelte";
 
-  const md2html = unified()
+  function transform(tree: unist.Node) {
+    visit(
+      tree,
+      (node) => node.type == "root",
+      (node, i, parent) => {
+        // console.log(node, i, parent);
+        // const wrap = parseSelector("div.root");
+        // wrap.children = [...node.children];
+        node.children = [node.children[0]];
+      },
+    );
+  }
+  function onlyToc() {
+    return (tree: unist.Node) => {
+      transform(tree);
+    };
+  }
+
+  // body
+  const mkBody = unified()
     // mdast
     .use(remarkParse)
-    // .use(remarkSlug)
-    // .use(remarkToc, {
-    //   heading: "目次",
-    //   tight: true,
-    // })
     // hast
     .use(remark2rehype)
     .use(rehypeSlug)
-    .use(rehypeToc)
     .use(rehypeHighlight)
     .use(rehypeStringify);
-  const file = md2html.processSync(data.body);
-  // console.log(file);
+  const body = mkBody.processSync(data.body).value;
+
+  const mkToc = unified()
+    // mdast
+    .use(remarkParse)
+    // hast
+    .use(remark2rehype)
+    .use(rehypeSlug)
+    .use(rehypeToc, {})
+    .use(onlyToc)
+    .use(rehypeStringify);
+  const toc = mkToc.processSync(data.body).value;
+
 </script>
 
-<PostTitle post={data} />
-<div class="markdown">
-  {@html file.value}
+<div class="container">
+  <div class="toc">
+    <div class="markdown">
+      {@html toc}
+    </div>
+  </div>
+  <div class="body">
+    <PostTitle post={data} />
+    <div class="markdown">
+      {@html body}
+    </div>
+  </div>
 </div>
