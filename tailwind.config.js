@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import daisyui from 'daisyui';
+const config = {
   content: [
     'node_modules/daisyui/dist/**/*.js',
     'node_modules/react-daisyui/dist/**/*.js',
@@ -9,9 +10,10 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require('daisyui')
+    daisyui,
   ],
   daisyui: {
     themes: ["retro"],
   },
 }
+export default config;
