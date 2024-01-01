@@ -86,3 +86,8 @@ export function match(param) {
 `+page.server.ts` は stringify できる JsonObject を返すことが期待される。
 `+server.ts` は HttpResponse を直接返す。byte 列なども扱える。
 
+## build したら 画像が失くなった
+
+苦肉の策として、rehype で img.src に base64 化することにした。 
+とりあえず build しても動いた。
+

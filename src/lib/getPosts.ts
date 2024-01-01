@@ -1,5 +1,6 @@
 import path from "node:path";
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import * as glob from "glob";
 import fm from 'front-matter';
 
@@ -109,6 +110,15 @@ const typeMap: { [key: string]: string } = {
 export async function getAsset(slug: string): Promise<{ buffer: Buffer, contentType: string }> {
   console.log("getAsset", slug);
   const buffer = await fs.readFile(`posts/${slug}`);
+  return {
+    buffer,
+    contentType: typeMap[path.extname(slug).toLowerCase()] ?? 'application/octet-stream',
+  };
+}
+
+export function getAssetSync(slug: string): { buffer: Buffer, contentType: string } {
+  console.log("getAssetSync", slug);
+  const buffer = fsSync.readFileSync(`posts/${slug}`);
   return {
     buffer,
     contentType: typeMap[path.extname(slug).toLowerCase()] ?? 'application/octet-stream',
