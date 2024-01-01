@@ -63,6 +63,9 @@ TAG_MAP = {
 }
 
 
+#
+# github
+#
 def get_github(user: str, dst: pathlib.Path, force: bool):
     if not force and (dst / "user.json").exists():
         return
@@ -128,35 +131,22 @@ class Repo:
     def __str__(self) -> str:
         return f"{self.name}: [{self.language}]{self.description}"
 
-    def format_toml(self) -> str:
-        f = f"""
-[[extra.repos]]
-label = "{self.name}"
-url = "{self.url}"
-description = "{self.description}"
-created = {self.created_at}
-pushed = {self.pushed_at}
-star = {self.star}"""
-        if self.language:
-            f += f'\nlanguage = "{self.language}"'
-        return f
-
     def format_md(self):
         f = f"""---
-title = "{self.name}"
-date = {self.created_at}
-updated = {self.pushed_at}
+title: "{self.name}"
+date: {self.created_at}
+updated: {self.pushed_at}
 """
         if self.language:
             tags = ", ".join([f'"{tag}"' for tag in self.language])
-            f += f"taxonomies.tags = [{tags}]\n"
+            f += f"tags: [{tags}]\n"
 
-        f += f"""[extra]
-css = "github"
-star = {self.star}
-forks_count = {self.forks_count}
-license = "{self.license}"
-url = "{self.url}"
+        f += f"""extra:
+  css: "github"
+  star: {self.star}
+  forks_count: {self.forks_count}
+  license: "{self.license}"
+  url: "{self.url}"
 ---
 
 <{self.url}>
@@ -183,8 +173,7 @@ def get_repos(dir: pathlib.Path) -> List[pathlib.Path]:
 
 
 @task
-def repos(c):
-    # type: (Context) -> None
+def repos(c: Context):
     """
     generate Github
     """
@@ -207,7 +196,7 @@ def repos(c):
             repo.language += TAG_MAP[repo.name]
         body = repo.format_md().encode("utf-8")
 
-        path = dir / f"{repo.name}.md"
+        path = dir / f"{repo.created_at.date().isoformat()}_{repo.name}.md"
         if path in files:
             del files[path]
         if path.exists() and path.read_bytes() == body:
@@ -223,6 +212,9 @@ def repos(c):
         f.unlink()
 
 
+#
+# gists
+#
 def get_gists(dir: pathlib.Path) -> List[pathlib.Path]:
     paths = []
     i = 0
@@ -246,27 +238,15 @@ class Gist:
         self.created_at = datetime.datetime.strptime(item["created_at"], DATE_FORMAT)
         self.updated_at = datetime.datetime.strptime(item["updated_at"], DATE_FORMAT)
 
-    def format_toml(self):
-        f = f"""
-[[extra.gists]]
-label = "{self.name}"
-url = "{self.url}"
-created = {self.created_at}
-updated = {self.updated_at}"""
-        if self.description:
-            f += f'\ndescription = "{self.description}"'
-
-        return f
-
     def format_md(self):
-        f = f"""+++
-title = "{self.name}"
-date = {self.created_at}
-updated = {self.updated_at}
-[extra]
-css = "gist"
-url = "{self.url}"
-+++
+        f = f"""---
+title: "{self.name}"
+date: {self.created_at}
+updated: {self.updated_at}
+extra:
+  css: "gist"
+  url: "{self.url}"
+---
 
 <{self.url}>
 
@@ -359,8 +339,7 @@ def qiita(c: Context):
     dir.mkdir(exist_ok=True, parents=True)
     for q in qs:
         qiita = Qiita(q)
-        created = datetime.datetime.fromisoformat(q["created_at"])
-        path = dir / f"{created.date().isoformat()}-{qiita.title}.md"
+        path = dir / f"{qiita.created_at.date().isoformat()}_{qiita.title}.md"
         if path in files:
             del files[path]
 
@@ -431,8 +410,7 @@ def zenn(c: Context):
     dir.mkdir(exist_ok=True, parents=True)
     for item in items:
         zenn = Zenn(item)
-        created = datetime.datetime.fromisoformat(item["published_at"])
-        path = dir / f"{created.date().isoformat()}-{zenn.title}.md"
+        path = dir / f"{zenn.created_at.date().isoformat()}_{zenn.title}.md"
         if path in files:
             del files[path]
 

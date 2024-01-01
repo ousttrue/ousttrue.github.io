@@ -58,6 +58,7 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   sq: { tagColor: 'secondary', devicon: '' },
   uwp: { tagColor: 'secondary', devicon: 'devicon-windows8-original' },
   vcpkg: { tagColor: 'secondary', devicon: 'devicon-cplusplus-plain' },
+  go: { tagColor: 'secondary', devicon: 'devicon-go-plain' },
 
   lsp: { tagColor: 'accent', devicon: '' },
   wsl: { tagColor: 'accent', devicon: 'devicon-windows8-original' },
