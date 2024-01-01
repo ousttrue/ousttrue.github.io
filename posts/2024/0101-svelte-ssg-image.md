@@ -14,10 +14,9 @@ posts/2024/image.jpg
 ```
 
 のように md 記事と同じフォルダに画像を配置する運用。
+紆余曲折。
 
-# 説明
-
-> 本質的には、SvelteKit アプリは Request を Response に変換するマシンです。
+# routing match (dev用)
 
 もともと、`+page.server.ts` には画像ファイルに対するリクエストは来ていて、
 エラーになっていた。
@@ -86,8 +85,43 @@ export function match(param) {
 `+page.server.ts` は stringify できる JsonObject を返すことが期待される。
 `+server.ts` は HttpResponse を直接返す。byte 列なども扱える。
 
-## build したら 画像が失くなった
+# rollup-plugin-copy(build用)
 
-苦肉の策として、rehype で img.src に base64 化することにした。 
-とりあえず build しても動いた。
+> Before you use this plugin, consider using public directory or import in JavaScript. In most cases, these will work.
+
+わかるんだが、とりあえず動く方法として。
+
+`vite.config.ts`
+```js
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig, searchForWorkspaceRoot } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy'
+
+
+export default defineConfig({
+  plugins: [
+    sveltekit(),
+    viteStaticCopy({
+      structured: true,
+      targets: [
+        {
+          src: './posts/**/*.jpg',
+          dest: './',
+        },
+      ],
+    }),
+  ],
+  server: {
+    fs: {
+      // https://stackoverflow.com/questions/74902697/error-the-request-url-is-outside-of-vite-serving-allow-list-after-git-init
+      allow: [
+        // search up for workspace root
+        searchForWorkspaceRoot(process.cwd()),
+        // your custom rules
+        '/posts',
+      ],
+    },
+  },
+});
+```
 

@@ -1,14 +1,6 @@
----
-date: 2023-12-24
----
-
 import React from 'react';
 import { Markdown, Image } from "minista"
 import Tag, { Tags } from "../../components/tag"
-
-
-<div class="markdown">
-
 
 # 3D programming
 
@@ -19,10 +11,9 @@ import Tag, { Tags } from "../../components/tag"
 # GPU
 
 # Blender
+
 ## addon memo
-https://ousttrue.github.io/blender_book/docs/
+
+https://ousttrue.github.io/blender\_book/docs/
 
 ## posts
-<Tag tag={{name:"blender"}} />
-
-</div>

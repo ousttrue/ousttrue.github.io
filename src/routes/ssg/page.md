@@ -1,17 +1,3 @@
----
-title: "ssg"
-date: 2023-12-24
----
-
-import React from 'react';
-import { Markdown, Image } from "minista"
-import Tag, { Tags } from "../components/tag"
-
-
-<Tags tags={[ 'ssg', 'sphinx', 'hugo']} />
-<div class="markdown">
-
-
 # ssg
 
 ## docusaurus
@@ -31,5 +17,3 @@ mdx から async 関数呼べれば今でもできそう。調べる。
 TODO:
 
 - [ ] syntax highlight
-
-</div>
