@@ -1,3 +1,12 @@
+"""
+invoke コマンドによるtask。
+
+# usage
+> pip install invoke
+> invoke download
+> invoke all
+
+"""
 from invoke import task, Context
 from typing import List
 import urllib.request
@@ -152,7 +161,7 @@ star = {self.star}'''
         return f
 
     def format_md(self):
-        f = f'''+++
+        f = f'''---
 title = "{self.name}"
 date = {self.created_at}
 updated = {self.pushed_at}
@@ -167,7 +176,7 @@ star = {self.star}
 forks_count = {self.forks_count}
 license = "{self.license}"
 url = "{self.url}"
-+++
+---
 
 <{self.url}>
 
@@ -336,18 +345,17 @@ updated = {self.updated_at}'''
         return f
 
     def format_md(self):
-        f = f'''+++
-title = "{self.title}"
-date = {self.created_at}
-updated = {self.updated_at}
-tags = {self.tags}
-[extra]
-css = "qiita"
-url = "{self.url}"
-+++
+        f = f'''---
+title: "{self.title}"
+date: {self.created_at}
+updated: {self.updated_at}
+tags: {self.tags}
+extra:
+  css: "qiita"
+  url: "{self.url}"
+---
 
 <{self.url}>
-
 '''
         return f
 
@@ -364,7 +372,8 @@ def qiita(c):
     dir.mkdir(exist_ok=True, parents=True)
     for q in qs:
         qiita = Qiita(q)
-        path = dir / f'{qiita.title}.md'
+        created = datetime.datetime.fromisoformat(q['created_at'])
+        path = dir / f'{created.date().isoformat()}-{qiita.title}.md'
         if path in files:
             del files[path]
 
