@@ -18,11 +18,11 @@
       {/if}
       <h2 class="card-title">
         {#if post.extra && post.extra.url}
-          🔗<a
+          <a
             class="link link-warning"
             href={post.extra.url}
             target="_blank"
-            rel="noopener noreferrer">{post.title}</a
+            rel="noopener noreferrer">⧉ {post.title}</a
           >
         {:else}
           <a href={`/posts/${post.slug}`}>{post.title}</a>
