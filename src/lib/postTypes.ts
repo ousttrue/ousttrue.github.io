@@ -4,7 +4,8 @@ export type PostType = {
   ext: string;
   date: Date;
   tags?: string[];
-  body: string;
+  body: string; // markdown
+  html: string; // rendered
 }
 
 
