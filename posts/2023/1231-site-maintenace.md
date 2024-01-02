@@ -1,7 +1,7 @@
 ---
 title: "だいぶ手が拡がってしまった"
 date: 2023-12-31
-tags: ["ssg", "svelte", "webgl"]
+tags: ["ssg", "svelte"]
 ---
 
 quest3 を入手したあたりから webxr するべく web 周りを弄っているのだが芋蔓式に手が拡がっていき、 延々と ssg を作り替えているようになってきました。

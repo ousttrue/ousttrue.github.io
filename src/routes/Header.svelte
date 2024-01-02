@@ -1,8 +1,11 @@
 <script>
   import "../app.css";
+
+  const bg =
+    process.env.NODE_ENV == "production" ? "bg-base-100" : "bg-red-100";
 </script>
 
-<nav class="navbar bg-base-100">
+<nav class="navbar {bg}">
   <div class="flex-1">
     <a class="btn btn-ghost text-xl" href="/">三次元日誌(svelte)</a>
     <ul class="menu menu-horizontal px-1">

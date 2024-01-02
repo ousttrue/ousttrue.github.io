@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import daisyui from 'daisyui';
+import typography from '@tailwindcss/typography';
 const config = {
   content: [
     'node_modules/daisyui/dist/**/*.js',
@@ -10,10 +11,12 @@ const config = {
     extend: {},
   },
   plugins: [
+    typography,
     daisyui,
   ],
   daisyui: {
     themes: ["retro"],
   },
 }
+
 export default config;

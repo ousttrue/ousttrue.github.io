@@ -3,18 +3,23 @@
   export let slug: string | null = null;
 
   // https://ssssota.github.io/svelte-exmarkdown/
-  import Markdown from "svelte-exmarkdown";
+  // import Markdown from "svelte-exmarkdown";
   import type { Plugin } from "svelte-exmarkdown/types";
   import "$lib/markdown.css";
 
+  import rehypeStringify from "rehype-stringify";
   import remarkGfm from "remark-gfm";
+  import remarkParse from "remark-parse";
+  import remarkRehype from "remark-rehype";
+  import { unified } from "unified";
+
   import type unist from "unist";
   import rehypeSlug from "rehype-slug";
   import rehypeToc from "rehype-toc";
-  import rehypeHighlight from "rehype-highlight";
-  import "highlight.js/styles/github.css";
+  // import rehypeHighlight from "rehype-highlight";
+  // import "highlight.js/styles/github.css";
+  import rehypePrettyCode from "rehype-pretty-code";
 
-  // import path from "node:path";
   import { visit } from "unist-util-visit";
 
   function dirname(src: string) {
@@ -47,15 +52,32 @@
     };
   }
 
-  const plugins: Plugin[] = [
-    { remarkPlugin: [remarkGfm] },
-    { rehypePlugin: [rehypeSlug] },
-    { rehypePlugin: [rehypeToc] },
-    { rehypePlugin: [rehypeHighlight] },
-    // { rehypePlugin: [image64] },
-  ];
+  // const plugins: Plugin[] = [
+  //   { remarkPlugin: [remarkGfm] },
+  //   { rehypePlugin: [rehypeSlug] },
+  //   { rehypePlugin: [rehypeToc] },
+  //   // { rehypePlugin: [rehypeHighlight] },
+  //   { rehypePlugin: [rehypePrettyCode] },
+  //   // { rehypePlugin: [image64] },
+  // ];
   //     .use(rehypeSlug)
   //     .use(rehypeHighlight)
+
+  async function toHtml() {
+    return (
+      unified()
+        // mdast
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkRehype)
+        // rehype
+        .use(rehypeSlug)
+        .use(rehypeToc)
+        .use(rehypePrettyCode)
+        .use(rehypeStringify)
+        .process(md)
+    );
+  }
 
   // function getHtml(body: string, dir: string) {
   //
@@ -102,8 +124,13 @@
   //     .use(rehypeStringify);
   //   return mkToc.processSync(body).value;
   // }
+  const promise = toHtml();
 </script>
 
 <div class="markdown">
-  <Markdown {md} {plugins} />
+  {#await promise}
+    <p>...markdown processing...</p>
+  {:then html}
+    {@html html}
+  {/await}
 </div>

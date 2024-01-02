@@ -6,7 +6,10 @@
   import "$lib/markdown.css";
 </script>
 
-<PostTitle post={data} />
-<div class="divider"></div>
+<div class="toc_space">
+  <PostTitle post={data} />
 
-<CustomMarkdown md={data.body} slug={data.slug} />
+  <div class="divider"></div>
+
+  <CustomMarkdown md={data.body} slug={data.slug} />
+</div>

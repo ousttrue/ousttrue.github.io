@@ -18,5 +18,3 @@ export type PostsType = {
   posts: PostType[];
   tags: PostTagType[];
 }
-
-
