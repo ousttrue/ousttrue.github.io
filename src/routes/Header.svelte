@@ -8,7 +8,7 @@
     <ul class="menu menu-horizontal px-1">
       <li><a href="/posts">posts</a></li>
       <li><a href="/tags">tags</a></li>
-      <li><a href="/storybook">storybook</a></li>
+      <li><a href="/histoire">histoire</a></li>
     </ul>
   </div>
   <div class="flex-none">
