@@ -50,4 +50,3 @@ DesignSystem に居た tailwind は居なくなってしまった。
 => .histoire/dist
 ```
 
-
