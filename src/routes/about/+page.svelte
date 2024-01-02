@@ -1,7 +1,8 @@
 <script lang="ts">
-  import CustomMarkdown from "$lib/CustomMarkdown.svelte";
-  import PostTags from "../tags/PostTags.svelte";
-  import md from "./page.md?raw";
+  import Page from "./page.md";
+  import "$lib/markdown.css";
 </script>
 
-<CustomMarkdown {md} />
+<div class="markdown">
+  <Page />
+</div>

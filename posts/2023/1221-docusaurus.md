@@ -1,7 +1,7 @@
 ---
 title: "docusaurus お試し"
 date: 2023-12-21
-tags: ["ssg"]
+tags: ["ssg", "react"]
 ---
 
 ちょっと Docusaurus を使うかもしれないので練習する。

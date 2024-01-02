@@ -1,7 +1,7 @@
 ---
 title: "svelte static の画像"
 date: 2024-01-01
-tags: ["ssg"]
+tags: ["ssg", "svelte"]
 ---
 
 とりあえずできた。

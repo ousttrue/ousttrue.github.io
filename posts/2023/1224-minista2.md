@@ -1,7 +1,7 @@
 ---
 title: "minista の fetch がわかってきた"
-date: 2023-12-25
-tags: ["ssg"]
+date: 2023-12-24
+tags: ["ssg", "react"]
 ---
 
 これ。

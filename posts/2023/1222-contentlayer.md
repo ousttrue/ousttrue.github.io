@@ -1,7 +1,7 @@
 ---
 title: "contentlayer 導入(断念)"
 date: 2023-12-22
-tags: ["ssg"]
+tags: ["ssg", "react"]
 ---
 
 `minista` に戻して、 [contentlayer](https://contentlayer.dev/) 入れてみた。

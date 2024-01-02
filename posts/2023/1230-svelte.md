@@ -1,7 +1,7 @@
 ---
 title: "svelte で"
 date: 2023-12-30
-tags: ["ssg"]
+tags: ["ssg", "svelte"]
 ---
 
 React をかじった後で `svelte` を見てみるとわかりみがある。

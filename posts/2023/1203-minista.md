@@ -1,7 +1,7 @@
 ---
 title: "minista へ"
 date: 2023-12-03
-tags: ["ssg"]
+tags: ["ssg", "react"]
 ---
 
 まだ astro をあまり使っていないのだが、

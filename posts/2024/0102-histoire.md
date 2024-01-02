@@ -1,7 +1,7 @@
 ---
 title: "storybook を histoire に変えてみる"
 date: 2024-01-02
-tags: ["ssg"]
+tags: ["ssg", "svelte"]
 ---
 
 `historie` じゃなくて `histoire`。
@@ -31,11 +31,13 @@ export default defineConfig({
   tree: {
     file: 'path',
   },
+  vite: {
+    base: '/histoire/'
+  },
 })
 ```
 
 tree を付けるとディレトリ構造そのままで表示される。
-DesignSystem に居た tailwind は居なくなってしまった。
 
 ```sh
 > npx histoire dev
@@ -49,4 +51,8 @@ DesignSystem に居た tailwind は居なくなってしまった。
 > npx histoire build
 => .histoire/dist
 ```
+
+https://histoire.dev/guide/config.html
+
+を見て `vite.base` を足した。
 

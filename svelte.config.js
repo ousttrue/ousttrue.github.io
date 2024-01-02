@@ -3,9 +3,20 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 // https://kit.svelte.jp/docs/adapter-static
 import adapter from '@sveltejs/adapter-static';
 
+import preprocess from 'svelte-preprocess';
+import { mdsvex } from 'mdsvex';
+import mdsvexConfig from './mdsvex.config.js';
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: vitePreprocess(),
+  extensions: ['.svelte', ...mdsvexConfig.extensions],
+  preprocess: [
+    preprocess({
+      postcss: true
+    }),
+    mdsvex(mdsvexConfig),
+    vitePreprocess(),
+  ],
 
   kit: {
     adapter: adapter({

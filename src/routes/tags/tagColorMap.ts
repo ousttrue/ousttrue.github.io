@@ -7,6 +7,8 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   octpress: { tagColor: 'neutral', devicon: 'devicon-html5-plain' },
   wyam: { tagColor: 'neutral', devicon: 'devicon-html5-plain' },
   sphinx: { tagColor: 'neutral', devicon: 'devicon-html5-plain' },
+  svelte: { tagColor: 'neutral', devicon: 'devicon-svelte-plain' },
+  react: { tagColor: 'neutral', devicon: 'devicon-react-plain' },
 
   gist: { tagColor: 'neutral', devicon: 'devicon-github-original' },
   github: { tagColor: 'neutral', devicon: 'devicon-github-original' },
@@ -42,6 +44,7 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   dlang: { tagColor: 'secondary', devicon: 'devicon-dlang-plain' },
   ffi: { tagColor: 'secondary', devicon: '' },
   fsharp: { tagColor: 'secondary', devicon: 'devicon-fsharp-plain' },
+  'f#': { tagColor: 'secondary', devicon: 'devicon-fsharp-plain' },
   cython: { tagColor: 'secondary', devicon: 'devicon-python-plain' },
   cmake: { tagColor: 'secondary', devicon: 'devicon-cmake-plain' },
   com: { tagColor: 'secondary', devicon: 'devicon-windows8-original' },

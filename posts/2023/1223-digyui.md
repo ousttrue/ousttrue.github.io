@@ -1,7 +1,7 @@
 ---
 title: "react-daisyui 導入"
 date: 2023-12-23
-tags: ["ssg"]
+tags: ["ssg", "react"]
 ---
 
 見た目を作るのに
