@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PostType } from "$lib/getPosts";
+  import type { PostType } from "$lib";
   import CustomMarkdown from "$lib/CustomMarkdown.svelte";
   export let data: PostType;
   import PostTitle from "../PostTitle.svelte";

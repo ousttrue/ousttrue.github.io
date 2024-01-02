@@ -21,6 +21,7 @@
           ><i class="devicon-github-original" style="font-size: 1.5rem;"></i></a
         >
       </li>
+      <li><a href="/about">about</a></li>
     </ul>
   </div>
 </nav>

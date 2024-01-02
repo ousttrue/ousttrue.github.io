@@ -1,50 +1,25 @@
-import path from "node:path";
-import fs from 'node:fs/promises';
-import * as glob from "glob";
+import type { PostType, PostsType } from './postTypes';
 import fm from 'front-matter';
 
-
-export type PostType = {
-  title: string;
-  slug: string;
-  ext: string;
-  date: Date;
-  tags?: string[];
-  body: string;
-}
-
-
-export type PostTagType = {
-  name: string;
-  count: number;
-}
-
-
-export type PostsType = {
-  posts: PostType[];
-  tags: PostTagType[];
-}
-
+const postsMap = import.meta.glob('../../posts/**/*', { as: 'raw' })
 
 export async function getPosts(): Promise<PostsType> {
 
-  const dir = '.';
   const posts: PostType[] = [];
   const tags: { [key: string]: number } = {};
 
   {
-    const matches = await glob.glob('posts/**/*.{md,mdx}', { cwd: dir })
-
-    for (const m of matches) {
-      const matched = m.match(/^posts[\\\/](.*)(\.mdx?)$/);
-      if (!matched) {
-        throw new Error("not match: md|mdx");
+    for (const key in postsMap) {
+      if (!key.endsWith('.md')) {
+        continue;
       }
 
-      const res = await fs.readFile(path.join(dir, m), { encoding: 'utf-8' });
-
-      const { attributes, body } = fm<PostType>(res);
+      const md = await postsMap[key]();
+      const { attributes, body } = fm<PostType>(md);
+      // console.log(attributes);
+      attributes.slug = key.substring(12, key.length - 3).replace(/\\/g, '/');
       attributes.body = body;
+
       if (attributes.extra) {
         if (attributes.extra.css == 'gist') {
           if (attributes.tags) {
@@ -64,8 +39,6 @@ export async function getPosts(): Promise<PostsType> {
         }
       }
 
-      attributes.slug = matched[1].replace(/\\/g, '/');
-      attributes.ext = matched[2];
       if (attributes.tags) {
         attributes.tags = attributes.tags.map((tag) => tag.toLowerCase());
         for (const tag of attributes.tags) {

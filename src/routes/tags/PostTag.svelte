@@ -1,7 +1,7 @@
 <script lang="ts">
   export let tag: PostTagType;
   import "../../app.css";
-  import type { PostTagType } from "$lib/getPosts";
+  import type { PostTagType } from "$lib";
   import { TagColorMap } from "./tagColorMap";
 
   const tagName = typeof tag == "string" ? tag : tag.name;

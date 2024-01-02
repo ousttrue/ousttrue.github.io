@@ -1,5 +1,4 @@
 import { getPosts } from '$lib/getPosts';
-import type { PostsType } from '$lib/getPosts';
 
 // @ts-ignore
 export async function load({ params }) {

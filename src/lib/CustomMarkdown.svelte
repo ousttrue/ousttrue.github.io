@@ -1,6 +1,6 @@
 <script lang="ts">
   export let md: string;
-  export let slug: string = null;
+  export let slug: string | null = null;
 
   // https://ssssota.github.io/svelte-exmarkdown/
   import Markdown from "svelte-exmarkdown";
@@ -16,8 +16,6 @@
 
   // import path from "node:path";
   import { visit } from "unist-util-visit";
-
-  import { getAssetSync } from "$lib/getAsset";
 
   function dirname(src: string) {
     const found = src.lastIndexOf("/");

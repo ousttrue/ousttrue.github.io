@@ -1,7 +1,12 @@
+import type { PageServerLoad } from './$types';
 import { getPosts } from '$lib/getPosts';
 
-// @ts-ignore
-export async function load({ params }) {
+
+export const load: PageServerLoad = async ({ params }) => {
   const { posts } = await getPosts();
-  return posts.find((post) => post.slug === params.slug);
+  const found = posts.find((post) => post.slug === params.slug);
+  if (!found) {
+    console.log(posts.map(x => x.slug), params);
+  }
+  return found;
 }
