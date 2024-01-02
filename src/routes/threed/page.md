@@ -1,7 +1,3 @@
-import React from 'react';
-import { Markdown, Image } from "minista"
-import Tag, { Tags } from "../../components/tag"
-
 # 3D programming
 
 # pixar USD

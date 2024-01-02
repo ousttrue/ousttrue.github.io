@@ -1,6 +1,6 @@
 <script lang="ts">
   export let md: string;
-  export let slug: string;
+  export let slug: string = null;
 
   // https://ssssota.github.io/svelte-exmarkdown/
   import Markdown from "svelte-exmarkdown";
