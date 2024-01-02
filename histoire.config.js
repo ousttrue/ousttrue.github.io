@@ -8,4 +8,7 @@ export default defineConfig({
   tree: {
     file: 'path',
   },
+  vite: {
+    base: '/histoire/'
+  },
 })
