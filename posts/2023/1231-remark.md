@@ -1,7 +1,7 @@
 ---
 title: "markdown と格闘"
 date: 2023-12-31
-tags: ["ssg", "svelte"]
+tags: ["ssg", "svelte", "remark"]
 ---
 
 post に TOC を付けようとして試行錯誤。

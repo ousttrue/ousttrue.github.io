@@ -1,7 +1,7 @@
 ---
 title: "linkcard やってみる"
 date: 2024-01-03
-tags: ["ssg", "svelte"]
+tags: ["ssg", "svelte", "remark"]
 ---
 
 markdown 記事内の外部リンクをカード表示するのをやってみる。
@@ -12,11 +12,11 @@ https://www.haxibami.net/blog/posts/blog-renewal
 
 mdast の ノード置き換えできた🙏
 
-# Svelte で LinkCard
+# Taildind で LinkCard
 
 https://zenn.dev/dl10yr/articles/b49e70fe595c14
 
-tailwind を参考に svelte 化 🙏
+参考に svelte 化 🙏
 
 # meta と card を連結
 
@@ -116,12 +116,15 @@ https://qiita.com/masato_makino/items/ef35e6687a71ded7b35a#remark-link-card
 
 https://github.com/gladevise/remark-link-card
 
+# 最初に作った方法にキャッシュを作る方式になった
+
+しかしメンテナンス性が悪いので、もう少しきれいにしたいわね。
 
 # TODO
 
 せっかくなので LinkCard を svelte component 化したい
 
-参考
+## 参考
 
 https://github.com/ssssota/svelte-exmarkdown
 

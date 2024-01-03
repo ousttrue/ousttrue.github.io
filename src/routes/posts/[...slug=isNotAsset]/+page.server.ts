@@ -29,9 +29,9 @@ function toLinkCard(meta: {
   icon: string | undefined;
 }): string {
   return `
-<a href="${meta.url}" class="not-prose border" target="_blank" rel="noreferrer">
+<a href="${meta.url}" class="not-prose mb" target="_blank" rel="noreferrer">
   <div
-    class="w-full flex justify-around bg-white rounded-md border"
+    class="w-full flex justify-around bg-white rounded-md border mb-4"
   >
     <div class="w-2/5">
       <img src="${meta.og}" alt="${meta.title}" class="max-h-30 m-auto" />
@@ -60,11 +60,11 @@ async function renderMarkdown(md: string) {
   const toHtml = unified()
     // mdast
     .use(remarkParse)
+    .use(remarkGfm)
     .use(remarkLinkCard)
     // .use(rlc)
     // .use(remarkRehype, { allowDangerousHtml: true }) // mdast → hast
     // .use(rehypeStringify, { allowDangerousHtml: true }) // hast → html
-    .use(remarkGfm)
     .use(remarkRehype, {
       handlers: {
         extlink: extLinkHandler
