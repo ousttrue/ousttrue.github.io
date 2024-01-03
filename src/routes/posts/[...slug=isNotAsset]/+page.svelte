@@ -2,7 +2,7 @@
   import type { PostType } from "$lib";
   export let data: PostType;
   import PostTitle from "../PostTitle.svelte";
-  import "$lib/markdown.css";
+  import "$lib/toc.css";
 </script>
 
 <div class="toc_space">
@@ -10,7 +10,7 @@
 
   <div class="divider"></div>
 
-  <div class="markdown">
+  <article class="prose">
     {@html data.html}
-  </div>
+  </article>
 </div>

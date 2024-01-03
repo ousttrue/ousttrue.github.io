@@ -1,14 +1,14 @@
 <script>
   import "../app.css";
-  import Header from './Header.svelte';
+  import Header from "./Header.svelte";
 </script>
 
 <div id="root">
   <Header />
 
-  <article class="bg-orange-100">
+  <div class="main bg-orange-100">
     <slot />
-  </article>
+  </div>
 
   <footer class="p-10 bg-neutral text-neutral-content">
     powered by
