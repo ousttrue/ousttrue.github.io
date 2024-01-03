@@ -6,8 +6,9 @@
 </script>
 
 <nav class="navbar {bg}">
+  <a class="btn btn-ghost text-xl" href="/">三次元日誌(svelte)</a>
+
   <div class="navbar-start">
-    <a class="btn btn-ghost text-xl" href="/">三次元日誌(svelte)</a>
     <ul class="menu menu-horizontal px-1">
       <li><a href="/posts">📝posts</a></li>
       <li><a href="/tags">🔖tags</a></li>
