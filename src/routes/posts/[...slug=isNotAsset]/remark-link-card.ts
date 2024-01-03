@@ -1,7 +1,7 @@
-import fetchSiteMetadata from "fetch-site-metadata";
 import { visit } from "unist-util-visit";
-
 import { isParent, isLink, isParagraph } from "./mdast-util-node-is";
+import { metaDataMap } from './metaDataCache';
+import type { MetaData } from './metaDataCache';
 
 import type { Paragraph, Link, Literal } from "mdast";
 import type { H } from "mdast-util-to-hast";
@@ -9,15 +9,10 @@ import type { Plugin, Transformer } from "unified";
 import type { Node, Parent } from "unist";
 import type { VFileCompatible } from "vfile";
 
+
 export interface ExtLink extends Literal {
   type: "extlink";
-  meta: {
-    url: string;
-    title: string;
-    description: string;
-    og: string | undefined;
-    icon: string | undefined;
-  };
+  meta: MetaData;
 }
 
 function isExtLink(node: unknown): node is Paragraph {
@@ -45,26 +40,10 @@ function isExtLink(node: unknown): node is Paragraph {
   return true;
 }
 
-function fetchMeta(url: string) {
-  const metas = fetchSiteMetadata(url).then((data) => {
-    const metaData = {
-      url: url,
-      title: data.title ?? "(No title)",
-      description: data.description ?? "",
-      og: data.image?.src?.startsWith("https") ? data.image?.src : undefined,
-      icon: data.icon?.startsWith("https") ? data.icon : undefined,
-    };
-    return metaData;
-  });
-  return metas;
-}
-
 export const remarkLinkCard: Plugin = function extLinkTrans(): Transformer {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return async (tree: Node, _file: VFileCompatible) => {
-    const promises: (() => Promise<void>)[] = [];
     visit(tree, isExtLink, visitor);
-    await Promise.all(promises.map((t) => t()));
 
     function visitor(
       node: Paragraph,
@@ -81,13 +60,13 @@ export const remarkLinkCard: Plugin = function extLinkTrans(): Transformer {
 
       const child = node.children[0] as Link;
 
-      promises.push(async () => {
-        const data = await fetchMeta(child.url);
+      const data = metaDataMap[child.url];
+      if (data) {
         parent.children[index] = {
           type: "extlink",
           meta: data,
         } as ExtLink;
-      });
+      }
     }
   };
 };

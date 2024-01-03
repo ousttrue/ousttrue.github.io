@@ -12,6 +12,7 @@ import type { ExtLink } from './remark-link-card';
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import rlc from 'remark-link-card';
 import { unified } from "unified";
 import rehypeParse from "rehype-parse";
 import rehypeSlug from "rehype-slug";
@@ -59,11 +60,14 @@ async function renderMarkdown(md: string) {
   const toHtml = unified()
     // mdast
     .use(remarkParse)
-    .use(remarkLinkCard)
+    // .use(remarkLinkCard)
+    .use(rlc)
+    .use(remarkRehype, { allowDangerousHtml: true }) // mdast → hast
+    .use(rehypeStringify, { allowDangerousHtml: true }) // hast → html
     .use(remarkGfm)
     .use(remarkRehype, {
       handlers: {
-        extlink: extLinkHandler
+        // extlink: extLinkHandler
       }
     })
     // rehype

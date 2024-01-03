@@ -97,6 +97,26 @@ fromHtml でできちゃった。
 
 画像位置とか調整はまだだが、なんか今風のサイトっぽくなった感じがするなー。
 
+# build 失敗
+
+```
+TypeError: fetch failed
+    at Object.fetch (node:internal/deps/undici/undici:11730:11)
+
+    code: 'UND_ERR_CONNECT_TIMEOUT'
+```
+
+なんとかせねば。
+
+# remark-link-card 発見
+
+
+https://qiita.com/masato_makino/items/ef35e6687a71ded7b35a#remark-link-card
+
+
+https://github.com/gladevise/remark-link-card
+
+
 # TODO
 
 せっかくなので LinkCard を svelte component 化したい

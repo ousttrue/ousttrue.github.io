@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Page from "./page.md";
+  import Page from "./_page.md";
   import "$lib/markdown.css";
 </script>
 
