@@ -52,5 +52,5 @@ webxr を中心に進めたところ、 `WebRTC` と `React` が射程に入り�
 
 # 参考
 
-- [Next.jsでブログをつくった](https://www.haxibami.net/blog/posts/blog-renewal)
+[Next.jsでブログをつくった](https://www.haxibami.net/blog/posts/blog-renewal)
 
