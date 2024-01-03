@@ -12,7 +12,7 @@ import type { ExtLink } from './remark-link-card';
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import rlc from 'remark-link-card';
+// import rlc from 'remark-link-card';
 import { unified } from "unified";
 import rehypeParse from "rehype-parse";
 import rehypeSlug from "rehype-slug";
@@ -29,18 +29,18 @@ function toLinkCard(meta: {
   icon: string | undefined;
 }): string {
   return `
-<a href="${meta.url}" class="not-prose" target="_blank" rel="noreferrer">
+<a href="${meta.url}" class="not-prose border" target="_blank" rel="noreferrer">
   <div
-    class="w-full flex justify-around bg-white rounded-md p-3 border"
+    class="w-full flex justify-around bg-white rounded-md border"
   >
-    <div class="w-1/2">
-      <img src="${meta.og}" alt="${meta.title}" class="max-h-20 m-auto" />
+    <div class="w-2/5">
+      <img src="${meta.og}" alt="${meta.title}" class="max-h-30 m-auto" />
     </div>
-    <div class="flex flex-col justify-start px-1 ml-3">
-      <div class="text-sm font-bold text-black whitespace-pre-wrap">
+    <div class="w-3/5 flex flex-col justify-start">
+      <div class="text-sm font-bold text-black p-2">
         ${meta.title}
       </div>
-      <div class="text-gray-400 text-xs whitespace-pre-wrap">
+      <div class="text-gray-400 text-xs px-2">
         ${meta.description}
       </div>
     </div>
@@ -60,14 +60,14 @@ async function renderMarkdown(md: string) {
   const toHtml = unified()
     // mdast
     .use(remarkParse)
-    // .use(remarkLinkCard)
-    .use(rlc)
-    .use(remarkRehype, { allowDangerousHtml: true }) // mdast → hast
-    .use(rehypeStringify, { allowDangerousHtml: true }) // hast → html
+    .use(remarkLinkCard)
+    // .use(rlc)
+    // .use(remarkRehype, { allowDangerousHtml: true }) // mdast → hast
+    // .use(rehypeStringify, { allowDangerousHtml: true }) // hast → html
     .use(remarkGfm)
     .use(remarkRehype, {
       handlers: {
-        // extlink: extLinkHandler
+        extlink: extLinkHandler
       }
     })
     // rehype

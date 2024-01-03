@@ -1,6 +1,6 @@
 import { visit } from "unist-util-visit";
 import { isParent, isLink, isParagraph } from "./mdast-util-node-is";
-import { metaDataMap } from './metaDataCache';
+import { metaDataCache } from './metaDataCache';
 import type { MetaData } from './metaDataCache';
 
 import type { Paragraph, Link, Literal } from "mdast";
@@ -15,7 +15,7 @@ export interface ExtLink extends Literal {
   meta: MetaData;
 }
 
-function isExtLink(node: unknown): node is Paragraph {
+export function isExtLink(node: unknown): node is Paragraph {
   if (!isParagraph(node)) {
     return false;
   }
@@ -25,8 +25,8 @@ function isExtLink(node: unknown): node is Paragraph {
   if (children.length != 1) {
     return false;
   }
-
   const singleChild = children[0];
+
   if (
     !(
       isLink(singleChild) &&
@@ -60,7 +60,8 @@ export const remarkLinkCard: Plugin = function extLinkTrans(): Transformer {
 
       const child = node.children[0] as Link;
 
-      const data = metaDataMap[child.url];
+      const data = metaDataCache[child.url];
+      console.log(child.url, data);
       if (data) {
         parent.children[index] = {
           type: "extlink",
