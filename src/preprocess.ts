@@ -17,6 +17,19 @@ import remarkParse from "remark-parse";
 import { unified } from "unified";
 import fetchSiteMetadata from "fetch-site-metadata";
 
+const excludes = [
+  'https://github.com/ousttrue/',
+  'https://gist.github.com/',
+  'https://qiita.com/ousttrue/',
+  'https://zenn.dev/ousttrue/',
+  'https://pypi.python.org/pypi/ptvsd',
+  'https://docs.github.com/ja',
+  'https://gohugo.io/',
+  'http:',
+  'https://forum.unity3d.com/threads',
+];
+
+
 function isExtLink(node: unknown): node is Paragraph {
   if (!isParagraph(node)) {
     return false;
@@ -83,18 +96,6 @@ function getExtLinks(mdPath: string): string[] {
   // console.log(urlList);
   return urlList;
 }
-
-const excludes = [
-  'https://github.com/ousttrue/',
-  'https://gist.github.com/',
-  'https://qiita.com/ousttrue/',
-  'https://zenn.dev/ousttrue/',
-  'https://pypi.python.org/pypi/ptvsd',
-  'https://docs.github.com/ja',
-  'https://gohugo.io/',
-  'http:',
-];
-
 
 async function main(): Promise<{ [key: string]: MetaData }> {
   const newMap: { [key: string]: MetaData } = {};

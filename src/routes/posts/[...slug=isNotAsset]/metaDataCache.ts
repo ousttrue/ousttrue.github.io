@@ -8,6 +8,20 @@ export type MetaData = {
 };
 
 export const metaDataCache: { [key: string]: MetaData } = {
+  "https://trap.jp/post/1549/": {
+    "url": "https://trap.jp/post/1549/",
+    "title": "350行でつくるVite⚡",
+    "description": "この記事はtraP新歓ブログリレー2022 [https://trap.jp/tag/welcome-relay-2022/] 41日目(4/18)の記事です。\n\nこんにちは、19Bの翠(sappi_red)です。\n普段はSysAd班 [https://trap.jp/sysad/]で活動しています。\n\nこの記事ではVite [https://vitejs.dev/]\n-likeなウェブフロントエンドツールをつくっていきながら、Viteの大まかな仕組みを説明していきます。\n\nできる限り細かく手順を書いたので、ぜひ実際に追ってみてください！\n\n実際に完成したものはこのリポジトリ(sapphi-red/micro-vite\n[https://github.com/sapphi-red/micro-vite])にあります。名称は愚直にMicroViteにしました。\n\nある程度Viteに近い実装にはなっていますが、そこそこいろんな箇所が異なります\n\nまた、動作確認はNode.js v16.14.2で行っています。(がおそらくv12以降なら動くと思います)\n\n準備\nとりあえず動作確認用のごく単純",
+    "og": "https://trap.jp/content/images/2022/04/vite.png",
+    "icon": "https://trap.jp/content/images/size/w256h256/2020/01/traP_logo_icon.png"
+  },
+  "https://trap.jp/post/1863/": {
+    "url": "https://trap.jp/post/1863/",
+    "title": "Viteでの開発中のSSR対応の仕組み",
+    "description": "この記事は新歓ブログリレー2023 37日目(4/14)の記事です。\n\nこんにちは、19B/22Mの翠(sappi_red)です。SysAd班 [https://trap.jp/sysad/]で活動していました。Vite\n[https://vitejs.dev/]のチームメンバー [https://vitejs.dev/team.html]だったりもします。\n\nこの記事ではViteでの開発中のSSR対応の仕組みがどう実装されているか、どうしてそうなっているかについて紹介します。\n\n前提知識\n特筆すべき点のみを取り上げたざっくりとした説明です。\n\nWebフロントエンド\nWeb上のサービス・アプリケーションのユーザー側に近い開発領域のことを指します。「ボタンを押したときにどうなるか」や「ページ内のどこに何が表示されるか」をプログラムするなど、主にユーザーの端末上で動作するプログラムの部分を指します。\n\nVite\nWebフロントエンド開発において使われているツールの一つです。フロントエンドのプログラムを構成するファイルを各実行環境(ブラウザ、Node.jsなど)が効率よく利用・実行できるよう",
+    "og": "https://trap.jp/content/images/2023/04/vite-ssr-how-1.png",
+    "icon": "https://trap.jp/content/images/size/w256h256/2020/01/traP_logo_icon.png"
+  },
   "https://www.haxibami.net/blog/posts/blog-renewal": {
     "url": "https://www.haxibami.net/blog/posts/blog-renewal",
     "title": "Next.jsでブログをつくった",
