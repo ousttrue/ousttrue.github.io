@@ -55,9 +55,9 @@ function extLinkHandler(_h: any, node: ExtLink) {
 }
 
 
-async function renderMarkdown(md: string) {
+async function renderMarkdown(md: string): Promise<{ html: string, toc: string }> {
 
-  const toHtml = unified()
+  const processor = unified()
     // mdast
     .use(remarkParse)
     .use(remarkGfm)
@@ -76,8 +76,19 @@ async function renderMarkdown(md: string) {
     .use(rehypePrettyCode)
     .use(rehypeStringify)
     ;
-  const vfile = await toHtml.process(md);
-  return vfile.value;
+
+  const tree = await processor.run(processor.parse(md));
+
+  // split tree
+  const tocTree = {
+    type: 'root',
+    children: [tree.children.shift()],
+  };
+
+  const html = processor.stringify(tree);
+  const toc = processor.stringify(tocTree);
+
+  return { html, toc };
 }
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -89,7 +100,9 @@ export const load: PageServerLoad = async ({ params }) => {
   }
 
   // render
-  post.html = await renderMarkdown(post.body);
+  const { html, toc } = await renderMarkdown(post.body);
+  post.html = html;
+  post.toc = toc;
 
   return post;
 }

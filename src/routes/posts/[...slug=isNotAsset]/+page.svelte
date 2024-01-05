@@ -5,12 +5,16 @@
   import "$lib/toc.css";
 </script>
 
-<div class="toc_space">
-  <PostTitle post={data} />
+<article class=" mx-auto md:flex md:justify-center">
+  <div class="md:w-4xl overflow-y-auto">
+    <PostTitle post={data} />
+    <div class="divider"></div>
+    <div class="prose">
+      {@html data.html}
+    </div>
+  </div>
 
-  <div class="divider"></div>
-
-  <article class="prose">
-    {@html data.html}
-  </article>
-</div>
+  <div class="prose hidden md:flex flex-col w-64">
+    {@html data.toc}
+  </div>
+</article>

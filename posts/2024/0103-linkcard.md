@@ -1,7 +1,7 @@
 ---
 title: "linkcard やってみる"
 date: 2024-01-03
-tags: ["ssg", "svelte", "remark"]
+tags: ["ssg", "svelte", "markdown"]
 ---
 
 markdown 記事内の外部リンクをカード表示するのをやってみる。

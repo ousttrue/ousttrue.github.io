@@ -9,6 +9,7 @@ export const TagColorMap: { [key: string]: { tagColor: string, devicon: string }
   sphinx: { tagColor: 'neutral', devicon: 'devicon-html5-plain' },
   svelte: { tagColor: 'neutral', devicon: 'devicon-svelte-plain' },
   react: { tagColor: 'neutral', devicon: 'devicon-react-plain' },
+  markdown: { tagColor: 'neutral', devicon: 'devicon-markdown-plain' },
 
   gist: { tagColor: 'neutral', devicon: 'devicon-github-original' },
   github: { tagColor: 'neutral', devicon: 'devicon-github-original' },

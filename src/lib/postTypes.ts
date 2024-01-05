@@ -6,6 +6,7 @@ export type PostType = {
   tags?: string[];
   body: string; // markdown
   html: string; // rendered
+  toc: string; // rendered
 }
 
 
