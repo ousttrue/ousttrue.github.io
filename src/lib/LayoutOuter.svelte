@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Header from "./Header.svelte";
+  import Header from "$lib/Header.svelte";
 
   // <div class="flex flex-col h-full bg-green-300">
   //   <header class="flex justify-between items-center bg-blue-300 p-4">

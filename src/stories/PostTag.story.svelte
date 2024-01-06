@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Hst } from "@histoire/plugin-svelte";
   export let Hst: Hst;
-  import PostTag from "./PostTag.svelte";
+  import PostTag from "$lib/PostTag.svelte";
 </script>
 
 <svelte:component this={Hst.Story}>

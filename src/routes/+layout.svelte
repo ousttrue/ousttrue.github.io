@@ -1,6 +1,6 @@
 <script>
   import "../app.css";
-  import LayoutOuter from "./LayoutOuter.svelte";
+  import LayoutOuter from "$lib/LayoutOuter.svelte";
 </script>
 
 <LayoutOuter>

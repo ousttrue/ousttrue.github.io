@@ -1,32 +1,19 @@
 <script lang="ts">
-  // import React from "react";
-  // import type { StaticData, PageProps } from "minista"
-  // import { Card, Button } from "react-daisyui"
-  import Quad from "./Quad.svelte";
+  import type { StaticDataType } from "$lib/StaticDataType.d.ts";
+  export let data: StaticDataType;
+  import LayoutSide from "$lib/LayoutSide.svelte";
+  import Quad from "$lib/Quad.svelte";
+  import Tree from "$lib/Tree.svelte";
+  import { getChildren } from "$lib/getCategories";
+  import CategoryLink from "$lib/CategoryLink.svelte";
 </script>
 
-<Quad data={{ name: "buildtool", url: "/buildtool", icon: "🚧" }} />
-<Quad data={{ name: "ssg", url: "/ssg", icon: "⚡" }} />
-<Quad data={{ name: "3D", url: "/threed", icon: "🐵" }} />
+<LayoutSide>
+  <div slot="sidebar">
+    <Tree tree={data.categories} {getChildren} component={CategoryLink} />
+  </div>
 
-<Quad
-  data={{
-    name: "MesonBook",
-    url: "https://ousttrue.github.io/meson_book/",
-    icon: "🔗",
-  }}
-/>
-<Quad
-  data={{
-    name: "CmakeBook",
-    url: "https://ousttrue.github.io/cmake_book/",
-    icon: "🔗",
-  }}
-/>
-<Quad
-  data={{
-    name: "BlenderBook",
-    url: "https://ousttrue.github.io/blender_book/",
-    icon: "🔗",
-  }}
-/>
+  {#each data.quads as quad}
+    <Quad {quad} />
+  {/each}
+</LayoutSide>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PostsType } from "$lib";
   export let data: PostsType;
-  import PostTitle from "./PostTitle.svelte";
+  import PostTitle from "$lib/PostTitle.svelte";
 </script>
 
 {#each data.posts as post}

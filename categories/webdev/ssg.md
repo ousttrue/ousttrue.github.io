@@ -1,3 +1,8 @@
+---
+title: SSG
+---
+
+
 # ssg
 
 ## docusaurus

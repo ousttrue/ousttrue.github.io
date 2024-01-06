@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { PostTagType } from "$lib";
   export let tag: string | PostTagType;
-  import "../../app.css";
-  import { TagColorMap } from "./tagColorMap";
+  import "../app.css";
+  import { TagColorMap } from "$lib/tagColorMap";
 
   const tagName = typeof tag == "string" ? tag : tag.name;
   const { tagColor, devicon } = TagColorMap[tagName] ?? {

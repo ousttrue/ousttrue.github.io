@@ -1,3 +1,7 @@
+---
+title: 3DCG
+---
+
 # 3D programming
 
 # pixar USD

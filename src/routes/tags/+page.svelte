@@ -1,11 +1,7 @@
 <script lang="ts">
-  import type { PostsType } from "$lib/postTypes";
-  export let data: PostsType;
-  import PostTag from "./PostTag.svelte";
+  import type { PageData } from "./$types";
+  export let data: PageData;
+  import LayoutTag from "$lib/LayoutTag.svelte";
 </script>
 
-<div style="display: flex; flex-wrap: wrap; width: 100%;">
-  {#each data.tags as tag}
-    <PostTag {tag} />
-  {/each}
-</div>
+<LayoutTag {data} />

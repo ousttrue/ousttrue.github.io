@@ -1,4 +1,4 @@
-import type { PostType, PostsType } from './postTypes';
+import type { PostType, PostsType } from '$lib/postTypes';
 import fm from 'front-matter';
 
 const postsMap = import.meta.glob('../../posts/**/*', { as: 'raw' })

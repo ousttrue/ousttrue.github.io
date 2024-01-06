@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Hst } from "@histoire/plugin-svelte";
   export let Hst: Hst;
-  import LayoutOuter from "./LayoutOuter.svelte";
+  import LayoutOuter from "$lib/LayoutOuter.svelte";
 </script>
 
 <svelte:component this={Hst.Story}>

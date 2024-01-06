@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { PostType } from "$lib/postTypes";
   export let post: PostType;
-  import PostData from "./PostDate.svelte";
-  import PostTag from "../tags/PostTag.svelte";
+  import PostData from "$lib/PostDate.svelte";
+  import PostTag from "$lib/PostTag.svelte";
 </script>
 
 <div class="card bg-base-100 shadow-xl m-2">

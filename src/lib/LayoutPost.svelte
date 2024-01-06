@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PostType } from "$lib";
   export let post: PostType;
-  import PostTitle from "../PostTitle.svelte";
+  import PostTitle from "$lib/PostTitle.svelte";
   import "$lib/toc.css";
 </script>
 
