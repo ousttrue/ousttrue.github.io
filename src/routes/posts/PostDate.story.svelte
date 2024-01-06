@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Hst } from "@histoire/plugin-svelte";
   export let Hst: Hst;
-  import PostDate from "../routes/posts/PostDate.svelte";
+  import PostDate from "./PostDate.svelte";
 </script>
 
 <svelte:component this={Hst.Story}>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PostType } from "$lib/getPosts";
+  import type { PostType } from "$lib/postTypes";
   export let post: PostType;
   import PostData from "./PostDate.svelte";
   import PostTag from "../tags/PostTag.svelte";

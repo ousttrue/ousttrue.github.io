@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { Hst } from "@histoire/plugin-svelte";
   export let Hst: Hst;
-  import Meow from "./Meow.svelte";
+  import LayoutOuter from "./LayoutOuter.svelte";
 </script>
 
 <svelte:component this={Hst.Story}>
-  <Meow />
+  <!-- component -->
+  <LayoutOuter>
+    <main class="grow h-96 bg-orange-300">main</main>
+  </LayoutOuter>
 </svelte:component>

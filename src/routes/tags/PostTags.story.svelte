@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Hst } from "@histoire/plugin-svelte";
   export let Hst: Hst;
-  import PostTags from "../routes/tags/PostTags.svelte";
+  import PostTags from "./PostTags.svelte";
 </script>
 
 <link

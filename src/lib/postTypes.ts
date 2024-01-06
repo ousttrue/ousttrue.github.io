@@ -1,12 +1,12 @@
 export type PostType = {
-  title: string;
   slug: string;
-  ext: string;
+  title: string;
   date: Date;
+  extra?: any;
   tags?: string[];
-  body: string; // markdown
-  html: string; // rendered
-  toc: string; // rendered
+  body?: string; // markdown
+  html?: string; // rendered
+  toc?: string; // rendered
 }
 
 

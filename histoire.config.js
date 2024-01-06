@@ -11,4 +11,5 @@ export default defineConfig({
   vite: {
     base: '/histoire/'
   },
+  setupFile: '/src/histoire-setup.ts',
 })
