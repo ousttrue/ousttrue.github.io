@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PostsType } from "$lib";
   export let data: PostsType;
-  import PagePosts from "$lib/PagePosts.svelte";
+  import PostTags from "$lib/PostTags.svelte";
 </script>
 
-<PagePosts posts={data.posts} />
+<PostTags tags={data.tags} />

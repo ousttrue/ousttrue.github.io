@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { StaticDataType } from "$lib/StaticDataType.d.ts";
-  export let data: StaticDataType;
+  import type { PageData } from "./$types";
+  export let data: PageData;
   import LayoutSide from "$lib/LayoutSide.svelte";
   import Quad from "$lib/Quad.svelte";
   import Tree from "$lib/Tree.svelte";

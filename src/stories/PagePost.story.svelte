@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Hst } from "@histoire/plugin-svelte";
   export let Hst: Hst;
-  import LayoutPost from "$lib/LayoutPost.svelte";
+  import PagePost from "$lib/PagePost.svelte";
 </script>
 
 <svelte:component this={Hst.Story}>
-  <LayoutPost
+  <PagePost
     post={{
       slug: "title",
       title: "title",

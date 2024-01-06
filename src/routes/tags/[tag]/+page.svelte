@@ -4,4 +4,4 @@
   import PageTag from "$lib/PageTag.svelte";
 </script>
 
-<PageTag tag={data} />
+<PageTag {data} />

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PostType } from "$lib";
   export let data: PostType;
-  import LayoutPost from "$lib/LayoutPost.svelte";
+  import PagePost from "$lib/PagePost.svelte";
 </script>
 
-<LayoutPost post={data} />
+<PagePost post={data} />

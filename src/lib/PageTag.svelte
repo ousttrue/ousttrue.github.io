@@ -1,11 +1,12 @@
 <script lang="ts">
-  export let tag;
+  import type { PostType } from "$lib";
+  export let data: { tag: string; posts: PostType[] };
   import PostTag from "$lib/PostTag.svelte";
   import PostTitle from "$lib/PostTitle.svelte";
 </script>
 
-<PostTag tag={{ name: tag.tag, count: tag.posts.length }} />
+<PostTag tag={{ name: data.tag, count: data.posts.length }} />
 
-{#each tag.posts as post}
+{#each data.posts as post}
   <PostTitle {post} />
 {/each}
