@@ -45,6 +45,12 @@ tree を付けるとディレトリ構造そのままで表示される。
 
 動いた。
 
+# .npmrc
+
+```
+legacy-peer-deps=true
+```
+
 # build
 
 ```sh
