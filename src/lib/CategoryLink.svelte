@@ -8,6 +8,8 @@
   $: active = isSelected(data, select);
 </script>
 
-<a style={active ? "color: white" : ""} href={`/categories/${data.slug}`}
-  >{data.title}</a
->
+{#if data}
+  <a style={active ? "color: white" : ""} href={`/categories/${data.slug}`}
+    >{data.title}</a
+  >
+{/if}

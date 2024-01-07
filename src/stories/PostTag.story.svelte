@@ -6,14 +6,14 @@
 
 <svelte:component this={Hst.Story}>
   <Hst.Variant title="text">
-  <PostTag tag="tag" />
-    </Hst.Variant>
-    <Hst.Variant title="TagType">
-  <PostTag
-    tag={{
-      name: "tag",
-      count: 10,
-    }}
-  />
-    </Hst.Variant>
+    <PostTag tag="tag" />
+  </Hst.Variant>
+  <Hst.Variant title="TagType">
+    <PostTag
+      tag={{
+        name: "tag",
+        count: 10,
+      }}
+    />
+  </Hst.Variant>
 </svelte:component>

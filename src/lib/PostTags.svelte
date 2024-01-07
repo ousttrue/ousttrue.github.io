@@ -5,7 +5,7 @@
   import PostTag from "$lib/PostTag.svelte";
 </script>
 
-<div style="display: flex; flex-wrap: wrap; width: 100%;">
+<div class="flex flex-wrap items-center">
   {#each tags as tag}
     <PostTag {tag} />
   {/each}

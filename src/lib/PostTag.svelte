@@ -11,16 +11,15 @@
   };
 
   // console.log(tagName, tagColor);
+  const href = typeof tag == "string" ? `/tags/${tag}` : `/tags/${tag.name}`;
 </script>
 
-{#if typeof tag == "string"}
-  <a class="btn btn-xs btn-{tagColor} m-1" href="/tags/{tag}"
-    ><i class={devicon}></i>{tag}</a
-  >
-{:else}
-  <a class="btn btn-xs btn-{tagColor} m-1" href="/tags/{tag.name}">
-    <i class={devicon}></i>
+<a class="btn variant-filled m-1 p-1" {href}
+  ><i class={devicon}></i>
+  {#if typeof tag == "string"}
+    {tag}
+  {:else}
     {tag.name}
-    <div class="badge">{tag.count}</div>
-  </a>
-{/if}
+    <div class="badge variant-filled-surface">{tag.count}</div>
+  {/if}
+</a>

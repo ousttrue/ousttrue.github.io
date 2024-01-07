@@ -8,6 +8,40 @@ export type MetaData = {
 };
 
 export const metaDataCache: { [key: string]: MetaData } = {
+  "https://www.skeleton.dev/": {
+    "url": "https://www.skeleton.dev/",
+    "title": "Skeleton — UI Toolkit for Svelte + Tailwind",
+    "description": "Skeleton is a fully featured UI Toolkit for building reactive interfaces quickly using Svelte and Tailwind.",
+    "og": "https://user-images.githubusercontent.com/1509726/212382766-f29b9c9a-82e3-44c2-b911-b17a9197e5b9.jpg",
+    "icon": "https://www.skeleton.dev/favicon.png"
+  },
+  "https://svelte.dev/repl/347b37e18b5d4a65bbacfd097536db02?version=4.2.8": {
+    "url": "https://svelte.dev/repl/347b37e18b5d4a65bbacfd097536db02?version=4.2.8",
+    "title": "Recursive Component Renders Flat • REPL • Svelte",
+    "description": "Interactive Svelte playground",
+    "og": "https://svelte.dev/images/twitter-thumbnail.jpg",
+    "icon": "https://svelte.dev/favicon.png"
+  },
+  "https://svelte.dev/repl/abc6ecc5953c4c77af402185a2219df4?version=4.2.8": {
+    "url": "https://svelte.dev/repl/abc6ecc5953c4c77af402185a2219df4?version=4.2.8",
+    "title": "SCC - Multiple Slot • REPL • Svelte",
+    "description": "Interactive Svelte playground",
+    "og": "https://svelte.dev/images/twitter-thumbnail.jpg",
+    "icon": "https://svelte.dev/favicon.png"
+  },
+  "https://github.com/sveltejs/kit/issues/4895": {
+    "url": "https://github.com/sveltejs/kit/issues/4895",
+    "title": "<script> is not executed when browsing from a [slug].svelte route to itself even with a different slug · Issue #4895 · sveltejs/kit",
+    "description": "Describe the bug If you have a [slug].svelte route page that has a link to itself, when you click on the link, the page <script> is not executed as expected. This causes all the page variables not ...",
+    "og": "https://opengraph.githubassets.com/f96f0862da5d0d56cf7dc3e5bc7bf754b5de8cc074e20fe3c00f603435472fe8/sveltejs/kit/issues/4895",
+    "icon": "https://github.githubassets.com/favicons/favicon.png"
+  },
+  "https://unifiedjs.com/explore/package/unified/": {
+    "url": "https://unifiedjs.com/explore/package/unified/",
+    "title": "unified",
+    "description": "Interface for parsing, inspecting, transforming, and serializing content through syntax trees",
+    "og": "https://unifiedjs.com/image/cover-1200.png"
+  },
   "https://trap.jp/post/1549/": {
     "url": "https://trap.jp/post/1549/",
     "title": "350行でつくるVite⚡",
@@ -21,6 +55,18 @@ export const metaDataCache: { [key: string]: MetaData } = {
     "description": "この記事は新歓ブログリレー2023 37日目(4/14)の記事です。\n\nこんにちは、19B/22Mの翠(sappi_red)です。SysAd班 [https://trap.jp/sysad/]で活動していました。Vite\n[https://vitejs.dev/]のチームメンバー [https://vitejs.dev/team.html]だったりもします。\n\nこの記事ではViteでの開発中のSSR対応の仕組みがどう実装されているか、どうしてそうなっているかについて紹介します。\n\n前提知識\n特筆すべき点のみを取り上げたざっくりとした説明です。\n\nWebフロントエンド\nWeb上のサービス・アプリケーションのユーザー側に近い開発領域のことを指します。「ボタンを押したときにどうなるか」や「ページ内のどこに何が表示されるか」をプログラムするなど、主にユーザーの端末上で動作するプログラムの部分を指します。\n\nVite\nWebフロントエンド開発において使われているツールの一つです。フロントエンドのプログラムを構成するファイルを各実行環境(ブラウザ、Node.jsなど)が効率よく利用・実行できるよう",
     "og": "https://trap.jp/content/images/2023/04/vite-ssr-how-1.png",
     "icon": "https://trap.jp/content/images/size/w256h256/2020/01/traP_logo_icon.png"
+  },
+  "https://github.com/qrac/minista/blob/main/packages/minista/src/cli/develop.ts#L42": {
+    "url": "https://github.com/qrac/minista/blob/main/packages/minista/src/cli/develop.ts#L42",
+    "title": "(No title)",
+    "description": "",
+    "icon": "https://github.com/favicon.ico"
+  },
+  "https://github.com/qrac/minista/blob/main/packages/minista/src/cli/build.ts#L66": {
+    "url": "https://github.com/qrac/minista/blob/main/packages/minista/src/cli/build.ts#L66",
+    "title": "(No title)",
+    "description": "",
+    "icon": "https://github.com/favicon.ico"
   },
   "https://www.haxibami.net/blog/posts/blog-renewal": {
     "url": "https://www.haxibami.net/blog/posts/blog-renewal",
@@ -1026,5 +1072,12 @@ export const metaDataCache: { [key: string]: MetaData } = {
     "title": "jQuery UI",
     "description": "jQuery UI is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library. Whether you're building highly interactive web applications or you just need to add a date picker to a form control, jQuery UI is the perfect choice.",
     "icon": "https://jqueryui.com/wp-content/themes/jqueryui.com/i/favicon.ico"
+  },
+  "https://github.com/metaphysiks/moo": {
+    "url": "https://github.com/metaphysiks/moo",
+    "title": "GitHub - pyrocat101/moo: Editor-agnostic markdown live previewer.",
+    "description": "Editor-agnostic markdown live previewer. Contribute to pyrocat101/moo development by creating an account on GitHub.",
+    "og": "https://opengraph.githubassets.com/5d46f85660c25d83f192bfffbcc964bdf6ce559998fdd30051411408d9de57f2/pyrocat101/moo",
+    "icon": "https://github.githubassets.com/favicons/favicon.png"
   }
 };

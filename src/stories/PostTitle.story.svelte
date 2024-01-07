@@ -4,6 +4,10 @@
   import PostTitle from "$lib/PostTitle.svelte";
 </script>
 
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+/>
 <svelte:component this={Hst.Story}>
   <PostTitle
     post={{

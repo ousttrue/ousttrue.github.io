@@ -5,7 +5,7 @@
   import "$lib/toc.css";
 </script>
 
-<article class=" mx-auto md:flex md:justify-center">
+<article class="mx-auto md:flex md:justify-center pl-4">
   <div class="md:w-4xl overflow-y-auto">
     <PostTitle {post} />
     <div class="divider"></div>
@@ -15,6 +15,8 @@
   </div>
 
   <div class="prose hidden md:flex flex-col w-64">
-    {@html post.toc}
+    <div class="fixed">
+      {@html post.toc}
+    </div>
   </div>
 </article>

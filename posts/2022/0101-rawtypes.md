@@ -2,6 +2,7 @@
 date: 2022-01-01
 tags:
 - python
+- libclang
 title: rawtypes 作ってみる
 ---
 

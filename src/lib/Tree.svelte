@@ -5,17 +5,29 @@
   export let getChildren: (tree: object[], current?: object) => object[];
   export let component: any;
   const children = getChildren(tree, current);
+
+  import { TreeViewItem } from "@skeletonlabs/skeleton";
 </script>
 
-{#if children.length > 0}
-  <ul>
-    {#each getChildren(tree, current) as child}
-      <li>
-        <svelte:component this={component} data={child} {select} />
-        <div style="margin-left: 1em;">
-          <svelte:self {tree} current={child} {getChildren} {component} {select} />
-        </div>
-      </li>
-    {/each}
-  </ul>
-{/if}
+<div>
+  {#if children.length == 0}
+    <TreeViewItem>
+      <svelte:component this={component} data={current} {select} />
+    </TreeViewItem>
+  {:else}
+    <TreeViewItem>
+      <svelte:component this={component} data={current} {select} />
+      <svelte:fragment slot="children">
+        {#each children as child}
+          <svelte:self
+            {tree}
+            current={child}
+            {getChildren}
+            {component}
+            {select}
+          />
+        {/each}
+      </svelte:fragment>
+    </TreeViewItem>
+  {/if}
+</div>
