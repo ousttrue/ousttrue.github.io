@@ -4,18 +4,19 @@
   import "../app.css";
   import { TagColorMap } from "$lib/tagColorMap";
 
-  const tagName = typeof tag == "string" ? tag : tag.name;
-  const { tagColor, devicon } = TagColorMap[tagName] ?? {
+  $: tagName = typeof tag == "string" ? tag : tag.name;
+  $: color = TagColorMap[tagName] ?? {
     tagColor: "default",
     devicon: "",
   };
+  // const { tagColor, devicon } = color;
 
   // console.log(tagName, tagColor);
-  const href = typeof tag == "string" ? `/tags/${tag}` : `/tags/${tag.name}`;
+  $: href = typeof tag == "string" ? `/tags/${tag}` : `/tags/${tag.name}`;
 </script>
 
 <a class="btn variant-filled m-1 p-1" {href}
-  ><i class={devicon}></i>
+  ><i class={color.devicon}></i>
   {#if typeof tag == "string"}
     {tag}
   {:else}

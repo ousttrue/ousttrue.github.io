@@ -24,6 +24,7 @@
           <Tree
             tree={data.categories}
             {current}
+            select={data.current}
             {getChildren}
             component={CategoryLink}
           />

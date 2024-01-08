@@ -1,13 +1,17 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad, RouteParams } from './$types';
 import type { PostType } from "$lib";
 import { getCategories } from "$lib/getCategories";
 import { getPosts } from "$lib/getPosts";
+import { renderMarkdown } from "$lib/markdownLinkCard";
 
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params }: { params: RouteParams }) => {
   const allPosts = await getPosts();
-  const tree = await getCategories();
-  const select = tree.find(x => x.slug == params.slug);
+  const categories = await getCategories();
+  const select = categories.find(x => x.slug == params.slug);
+  if (!select) {
+    throw new Error(`no category: ${params.slug}`);
+  }
   const sp = params.slug.split("/");
 
   const posts: PostType[] = allPosts.posts.filter((post) => {
@@ -19,6 +23,10 @@ export const load: PageServerLoad = async ({ params }) => {
     return b.date.getTime() - a.date.getTime();
   });
 
-  return { tree, select, posts };
+  const data = { tree: categories, select, posts, html: '' };
+  if (select.body) {
+    const { html } = await renderMarkdown(select.body);
+    data.html = html;
+  }
+  return data;
 }
-

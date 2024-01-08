@@ -6,10 +6,16 @@
 
   // https://github.com/sveltejs/kit/issues/4895
   $: active = isSelected(data, select);
+  // console.log(data);
 </script>
 
 {#if data}
-  <a style={active ? "color: white" : ""} href={`/categories/${data.slug}`}
-    >{data.title}</a
+  <a
+    class={active
+      ? "text-orange-400"
+      : data.posts.length == 0
+        ? "text-slate-400"
+        : ""}
+    href={`/categories/${data.slug}`}>{data.title}</a
   >
 {/if}

@@ -1,5 +1,7 @@
 import type { PostType, PostsType } from '$lib/postTypes';
 import fm from 'front-matter';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const postsMap = import.meta.glob('../../posts/**/*', { as: 'raw' })
 
@@ -16,7 +18,13 @@ export async function getPosts(): Promise<PostsType> {
 
       const md = await postsMap[key]();
       const { attributes, body } = fm<PostType>(md);
-      // console.log(attributes);
+      if (Object.keys(attributes).length == 0) {
+        // no front matter
+        const stat = fs.statSync(key.substring(6));
+        attributes.date = stat.mtime;
+        attributes.title = path.basename(key);
+        // console.log(attributes);
+      }
       attributes.slug = key.substring(12, key.length - 3).replace(/\\/g, '/');
       attributes.body = body;
 
@@ -50,12 +58,16 @@ export async function getPosts(): Promise<PostsType> {
           }
         }
       }
+      if (!attributes.date) {
+        throw new Error(`no date: ${JSON.stringify(attributes, null, 2)}`);
+      }
       posts.push(attributes);
     }
     posts.sort((a, b) => {
-      return b.date.getTime() - a.date.getTime();
+      const aa = (a && a.date) ? a.date.getTime() : 0;
+      const bb = (b && b.date) ? b.date.getTime() : 0;
+      return bb - aa;
     });
-
   }
 
   const tagItems = Object.keys(tags).map((tag) => ({

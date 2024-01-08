@@ -1,30 +1,40 @@
+import fm from 'front-matter';
 import type { CategoryType } from "$lib/CategoryType";
+import type { PostType } from "$lib";
 const categoryMap = import.meta.glob("../../categories/**/*.md", { as: 'raw' });
+import { getPosts } from "$lib/getPosts";
 
 
-function createCategory(path: string, body: string) {
+function createCategory(path: string, attributes: any, body: string, posts: PostType[]) {
   const sp = path.split("/");
   sp.shift();
   sp.shift();
   sp.shift();
-  // console.log(sp);
 
-  let category: CategoryType;
   if (sp[sp.length - 1] == "index.md") {
     sp.pop();
-    return { slug: sp.join("/"), title: sp[sp.length - 1] };
   }
   else {
     const name = sp[sp.length - 1];
     sp[sp.length - 1] = name.substring(0, name.length - 3);
-    return { slug: sp.join("/"), title: sp[sp.length - 1] };
   }
+  // console.log(sp);
+  posts = posts.filter(x => x.tags && x.tags.some(y => sp.includes(y)));
+  return {
+    slug: sp.join("/"), title: sp[sp.length - 1],
+    body,
+    attributes,
+    posts,
+  } satisfies CategoryType;
 }
 
 export async function getCategories(): Promise<CategoryType[]> {
+  const posts = await getPosts();
   const categories = [];
   for (const path in categoryMap) {
-    const category = createCategory(path, await categoryMap[path]());
+    const md = await categoryMap[path]();
+    const { attributes, body } = fm<PostType>(md);
+    const category = createCategory(path, attributes, body, posts.posts);
     // console.log(category);
     categories.push(category);
   }
@@ -51,5 +61,6 @@ export const isSelected: (current: Object, select: Object) => bool = (
   if (select) {
     return select.slug.startsWith(current.slug);
   }
+  return false;
 }
 

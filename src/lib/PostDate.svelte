@@ -1,6 +1,6 @@
 <script lang="ts">
   export let date: Date | string;
-  date = typeof date == "string" ? new Date(date) : date;
+  $: _date = typeof date == "string" ? new Date(date) : date;
 
   const year = [
     "🐀",
@@ -32,11 +32,11 @@
   ];
 
   // function Day(props: { date: Date | string }) {
-  export function yyyy() {
+  function yyyy(date: Date) {
     const y = date.getFullYear();
     return `${year[(y + 8) % year.length]}${y}`;
   }
-  export function mmdd() {
+  function mmdd(date: Date) {
     const m = date.getMonth();
     const d = date.getDate();
     // .toString().padStart(2, "0");
@@ -48,8 +48,8 @@
   /// mmdd
 </script>
 
-<div class="year">{yyyy()}</div>
-<div class="mmdd">{mmdd()}</div>
+<div class="year">{yyyy(_date)}</div>
+<div class="mmdd">{mmdd(_date)}</div>
 
 <style>
 </style>

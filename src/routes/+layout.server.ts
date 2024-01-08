@@ -1,11 +1,14 @@
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad, LayoutParams } from './$types';
 import { getCategories } from '$lib/getCategories';
 import type { StaticDataType } from "$lib/StaticDataType";
 
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: LayoutServerLoad = async ({ params }: { params: LayoutParams }) => {
+  const categories = await getCategories();
+  const current = categories.find((x) => x.slug == params.slug);
   return {
-    categories: await getCategories(),
+    categories,
+    current,
     quads: [
       {
         name: "MesonBook",

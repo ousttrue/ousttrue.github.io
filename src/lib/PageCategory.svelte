@@ -5,10 +5,6 @@
     select: object | undefined;
     posts: PostType[];
   };
-  import { getChildren } from "$lib/getCategories";
-  import CategoryLink from "$lib/CategoryLink.svelte";
-  import LayoutSide from "$lib/LayoutSide.svelte";
-  import Tree from "$lib/Tree.svelte";
   import PageTag from "$lib/PageTag.svelte";
 
   // @ts-ignore
