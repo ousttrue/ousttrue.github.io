@@ -25,7 +25,8 @@ function toLinkCard(meta: {
   og: string | undefined;
   icon: string | undefined;
 }): string {
-  return `
+  if (meta.og) {
+    return `
 <a href="${meta.url}" class="not-prose mb" target="_blank" rel="noreferrer">
   <div
     class="w-full flex justify-around bg-white rounded-md border mb-4"
@@ -44,6 +45,25 @@ function toLinkCard(meta: {
   </div>
 </a>
 `;
+  }
+  else {
+    return `
+<a href="${meta.url}" class="not-prose mb" target="_blank" rel="noreferrer">
+  <div
+    class="w-full flex justify-around bg-white rounded-md border mb-4"
+  >
+    <div class="w-3/5 flex flex-col justify-start">
+      <div class="text-sm font-bold text-black p-2">
+        ${meta.title}
+      </div>
+      <div class="text-gray-400 text-xs px-2">
+        ${meta.description}
+      </div>
+    </div>
+  </div>
+</a>
+`;
+  }
 }
 
 

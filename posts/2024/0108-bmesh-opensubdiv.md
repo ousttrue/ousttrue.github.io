@@ -7,6 +7,7 @@ tags: ["blender", "opensubdiv"]
 久しぶりにモデリングでもしてみるかーということで、
 今回はいつも使わない `subdiv` やってみようかと思いました。
 そういえば `catmull-clark` って apply しないで import / export できるのかしらと思って調べてみたところ、 `fbx` はできるらしいとわかりました。
+
 実際に blender で export / import してみたところ、 `fbx` は`crease` 付きでexport / import できるではありませんか(blender 以外とのやりとりでできるかはわからない)。
 `fbx` 以外だと、 `obj` の独自拡張ができるぽいがよくわからなかった。
 `usd` はフォーマットとしてはできるが `blender の usd` はできなさそう、という感想。
@@ -27,4 +28,8 @@ suvdiv で import / export するということは四角形が必要なので�
 fbx も usd もオーバースペックであり、もっとミニマムなやつ。
 subdiv + 四角形 は昔のメタセコではとっくにできていたのだが、 スキニングは無かった。
 旧mqoに、スキニングとモーフを足したみたいな使い勝手になればよいでしょ。
+
+# opensubdiv の meson build
+
+https://github.com/ousttrue/OpenSubdiv
 
