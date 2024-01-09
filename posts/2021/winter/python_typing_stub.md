@@ -1,7 +1,6 @@
 ---
 date: 2021-12-12
-tags:
-- python
+tags: [python, typing]
 title: python の型ヒント
 ---
 

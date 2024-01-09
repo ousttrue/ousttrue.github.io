@@ -1,7 +1,7 @@
 ---
-title: "mypyでPythonい型チェックを取り入れる"
+title: "mypyでPythonに型チェックを取り入れる"
 date: 2017-10-15
-tags: ["python"]
+tags: [python, typing]
 ---
 
 Pythonの型Annotationで型チェックする件について。

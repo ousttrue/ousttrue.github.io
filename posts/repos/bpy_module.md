@@ -10,9 +10,9 @@ extra:
   url: https://github.com/ousttrue/bpy_module
 tags:
 - repository
-- Python
 - python
 - blender
+- typing
 title: bpy_module
 updated: 2020-11-19 00:09:57+00:00
 ---
