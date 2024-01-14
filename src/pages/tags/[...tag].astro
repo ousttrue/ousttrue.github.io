@@ -1,0 +1,39 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostTag from "../../components/PostTag.astro";
+import PostTitle from "../../components/PostTitle.astro";
+import { tagNormalize } from "./tagUtil";
+
+export async function getStaticPaths() {
+  const posts: CollectionEntry<"posts">[] = await getCollection("posts");
+  posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  const flat = posts
+    .map((post) => post.data.tags)
+    .filter((tags) => tags)
+    .flat()
+    .map(tagNormalize);
+  const tags = Array.from(new Set(flat)).sort();
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((post) => post.data.tags.includes(tag)),
+    },
+  }));
+}
+
+interface Props {
+  tag: string;
+  posts: CollectionEntry<"posts">[];
+}
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={tag} description={tag}>
+  <PostTag {tag} />
+
+  <div class="flex flex-col">
+    {posts.map((post) => <PostTitle {...post} />)}
+  </div>
+</BaseLayout>

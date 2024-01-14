@@ -1,7 +1,7 @@
 ---
 title: "そして astro へ"
 date: 2023-10-28
-tags: ["ssg"]
+tags: ["ssg", "astro"]
 ---
 
 xterm.js を A-Frame で使うべく TypeScript で

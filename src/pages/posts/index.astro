@@ -4,17 +4,14 @@ import PostTitle from "../../components/PostTitle.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 import { getCollection } from "astro:content";
 
-const posts = (await getCollection("posts")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+const posts = await getCollection("posts");
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <main>
-    <section>
-      <div class="flex flex-col">
-        {posts.map((post) => <PostTitle {...post} />)}
-      </div>
-    </section>
-  </main>
+  <section>
+    <div class="flex flex-col">
+      {posts.map((post) => <PostTitle {...post} />)}
+    </div>
+  </section>
 </BaseLayout>
