@@ -1,0 +1,35 @@
+---
+import type { MarkdownHeading } from "astro";
+
+import PostTocLink from "./PostTocLink.astro";
+
+type Props = {
+  headings: MarkdownHeading[];
+};
+
+const { headings } = Astro.props;
+---
+
+<div>
+  <div class="font-semibold mb-4">目次</div>
+  <div
+    class="max-h-[calc(100svh-600px)] overflow-y-auto overscroll-contain rounded-md p-3 border-gray-200 dark:border-gray-600 border-2"
+  >
+    <ol class="list-none pl-0 my-0 ml-1 relative border-l-2 border-gray-600">
+      {
+        headings.map((heading) => (
+          <li
+            class={`relative pl-6 before:content-[''] before:bg-gray-600 before:dark:bg-gray-200 before:rounded-full before:absolute before:h-[12px] before:w-[12px] before:top-[6px] before:-left-[7px] before:border-gray-100 before:dark:border-gray-800 ${heading.depth < 3 ? "before:border-2" : "before:border-4"}`}
+          >
+            <PostTocLink
+              className={`block !text-gray-600 hover:!text-gray-800 !no-underline !font-normal dark:!text-gray-200 dark:hover:!text-gray-100 text-sm ${heading.depth < 3 && "font-semibold"}`}
+              href={`#${heading.slug}`}
+            >
+              {heading.text}
+            </PostTocLink>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</div>

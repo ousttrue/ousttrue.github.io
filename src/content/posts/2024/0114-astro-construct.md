@@ -7,7 +7,7 @@ tags: ["ssg", "astro"]
 サイトのcss整備とかやります。
 TOC や tag の整備。
 
-### ⛔ storybook
+## ⛔ storybook
 
 部品の動作確認用に最初に準備。
 `svelte` のきにあったのだけど `histoire` に要れかえて消滅したので やりなおし。
@@ -22,7 +22,7 @@ https://github.com/storybookjs/storybook/issues/18356
 
 https://docs.astro.build/ja/guides/cms/storyblok/
 
-### ✅ tailwind と DaisyUI
+## ✅ tailwind と DaisyUI
 
 - https://docs.astro.build/ja/guides/integrations-guide/tailwind/
 
@@ -35,29 +35,39 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 - [Style rendered Markdown with Tailwind Typography | Docs](https://docs.astro.build/en/recipes/tailwind-rendered-markdown/)
 - https://github.com/saadeghi/theme-change
 
+## ContentCollection
+### ✅ tag
+
+- https://docs.astro.build/ja/tutorial/5-astro-api/2/
+
 ### next / prev
 
 ### pagination
 
 - [ページネーション](https://docs.astro.build/ja/core-concepts/routing/#%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%8D%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)
 
-### ✅ tag
+## markdown
 
-- https://docs.astro.build/ja/tutorial/5-astro-api/2/
+### ✅ TOC
+
+- [Astro で Table of Contents(目次)を実装する](https://egashira.dev/blog/astrojs-toc)
+- [Building a table of contents from Astro&#39;s markdown headings](https://kld.dev/building-table-of-contents/)
+
+render 関数から見出し一覧を取得できる。
+なるほどー。
+
+```ts
+const { Content, headings } = await post.render();
+```
 
 ### markdown 拡張
 
-- TOC
-- [Building a table of contents from Astro&#39;s markdown headings](https://kld.dev/building-table-of-contents/)
-
 - info, warning とかの囲み。
 - GFM
-
 - [Add icons to external links | Docs](https://docs.astro.build/en/recipes/external-links/)
-
 - linkcard
 
-### Starlight
+## Starlight
 
 https://starlight.astro.build/ja/
 

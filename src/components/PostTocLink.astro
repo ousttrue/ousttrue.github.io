@@ -1,0 +1,19 @@
+---
+type Props = {
+  href: string;
+  className?: string;
+};
+
+const { href, className = "" } = Astro.props;
+const pattern = /^(http|https):\/\/[\w/:%#\$&\?\(\)~\.=\+\-]+$/;
+const isExternal = pattern.test(href);
+---
+
+<a
+  class={`text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 hover:underline ${
+    className ?? ""
+  }`}
+  href={href}
+  target={isExternal ? "_blank" : undefined}
+  rel={isExternal ? "noreferrer noopener" : undefined}><slot /></a
+>

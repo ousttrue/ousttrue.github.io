@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostTitle from "../../components/PostTitle.astro";
+import PostToc from "../../components/PostToc.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -13,7 +14,13 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<"posts">;
 
 const post = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
+
+const toc = headings.filter(
+  (heading) =>
+    heading.depth <= 3 &&
+    !(heading.slug === "footnote-label" && heading.text === "Footnotes"),
+);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
@@ -21,7 +28,15 @@ const { Content } = await post.render();
 
   <hr />
 
-  <article class="prose">
-    <Content />
-  </article>
+  <div class="flex">
+    <article class="prose">
+      <Content />
+    </article>
+
+    <div>
+      <div class="fixed">
+        {headings.length > 0 && <PostToc {headings}> </PostToc>}
+      </div>
+    </div>
+  </div>
 </BaseLayout>
