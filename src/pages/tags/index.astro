@@ -3,7 +3,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostTags from "../../components/PostTags.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 import { getCollection } from "astro:content";
-import { tagNormalize } from "./tagUtil";
 
 const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -12,8 +11,7 @@ const posts = (await getCollection("posts")).sort(
 const flat = posts
   .map((post) => post.data.tags)
   .filter((tags) => tags)
-  .flat()
-  .map(tagNormalize);
+  .flat();
 const tags = Array.from(new Set(flat)).sort();
 ---
 

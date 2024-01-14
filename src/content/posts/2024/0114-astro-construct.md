@@ -41,7 +41,7 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 
 - [ページネーション](https://docs.astro.build/ja/core-concepts/routing/#%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%8D%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)
 
-### tag
+### ✅ tag
 
 - https://docs.astro.build/ja/tutorial/5-astro-api/2/
 
