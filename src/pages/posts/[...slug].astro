@@ -33,31 +33,32 @@ let next = index > 0 ? posts[index - 1] : null;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
-  <PostTitle {...post} />
+  <div class="flex-col size-full">
+    <PostTitle {...post} />
 
-  <div class="divider"></div>
+    <div class="flex flex-col-reverse md:flex-row mx-auto max-w-3xl">
+      <article class="prose p-4">
+        <Content />
+      </article>
 
-  <div class="flex">
-    <article class="prose">
-      <Content />
-    </article>
+      <nav class="flex md:w-72">
+        <div class="md:fixed mx-auto">
+          {headings.length > 0 && <PostToc {headings}> </PostToc>}
+        </div>
+      </nav>
+    </div>
 
-    <div>
-      <div class="fixed">
-        {headings.length > 0 && <PostToc {headings}> </PostToc>}
+    <div class="flex justify-between mx-auto max-w-3xl">
+      <div>👈新</div>
+      <div>旧👉</div>
+    </div>
+    <div class="flex justify-between mx-auto max-w-3xl">
+      <div class="w-1/2">
+        {next && <PostTitle {...next} />}
       </div>
-    </div>
-  </div>
-
-  <div class="flex">
-    <div class="w-72">
-      👈新
-      {next && <PostTitle {...next} />}
-    </div>
-
-    <div class="w-72">
-      旧👉
-      {prev && <PostTitle {...prev} />}
+      <div class="w-1/2">
+        {prev && <PostTitle {...prev} />}
+      </div>
     </div>
   </div>
 </BaseLayout>

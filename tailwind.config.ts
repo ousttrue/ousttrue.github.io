@@ -18,7 +18,7 @@ export default {
   ],
   daisyui: {
     themes: [
-      "light",
+      "cupcake", "light",
     ]
   },
 } satisfies Config
