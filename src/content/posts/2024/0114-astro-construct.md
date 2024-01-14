@@ -7,10 +7,12 @@ tags: ["ssg", "astro"]
 サイトのcss整備とかやります。
 TOC や tag の整備。
 
+慣れてきた。`astro` いいじゃない。
+
 ## ⛔ storybook
 
 部品の動作確認用に最初に準備。
-`svelte` のきにあったのだけど `histoire` に要れかえて消滅したので やりなおし。
+`svelte` のきにあったのだけど `histoire` に入れかえて消滅したので やりなおし。
 と思ったら stroybook の astro component 対応がなかった。
 
 https://github.com/storybookjs/storybook/issues/18356
@@ -30,9 +32,13 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 > npx astro add tailwind
 ```
 
-- https://github.com/saadeghi/daisy-blog
-
 - [Style rendered Markdown with Tailwind Typography | Docs](https://docs.astro.build/en/recipes/tailwind-rendered-markdown/)
+
+`class = "prose"`
+
+### theme-change
+
+- https://github.com/saadeghi/daisy-blog
 - https://github.com/saadeghi/theme-change
 
 ## ContentCollection
@@ -40,7 +46,21 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 
 - https://docs.astro.build/ja/tutorial/5-astro-api/2/
 
-### next / prev
+### ✅ next / prev
+
+素直に実装。
+
+```ts
+const posts = await getCollection("posts");
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const index = posts.findIndex((p) => p.slug == post.slug);
+let prev = index + 1 < posts.length ? posts[index + 1] : null;
+let next = index > 0 ? posts[index - 1] : null;
+```
+
+### search
+
+サーバー使わない簡易な検索。
 
 ### pagination
 
@@ -62,10 +82,14 @@ const { Content, headings } = await post.render();
 
 ### markdown 拡張
 
-- info, warning とかの囲み。
-- GFM
-- [Add icons to external links | Docs](https://docs.astro.build/en/recipes/external-links/)
-- linkcard
+#### info, warning とかの囲み。
+#### GFM
+デフォルトに入っている？
+
+#### 外部リンクのマーカー
+
+[Add icons to external links | Docs](https://docs.astro.build/en/recipes/external-links/)
+#### linkcard
 
 ## Starlight
 

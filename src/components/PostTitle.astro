@@ -7,91 +7,21 @@ type Props = CollectionEntry<"posts">;
 const { slug, data } = Astro.props;
 ---
 
-<a href={slug ? `/posts/${slug}/` : ""}>
-  <div class="hero-image">
+<div class="card bg-base-100 shadow-xl my-2">
+  <div class="card-body">
+    <h2 class="card-title">
+      <a href={slug ? `/posts/${slug}/` : ""}>
+        {data.title}
+      </a>
+    </h2>
+    <PostDate date={data.date} />
     {
-      data.heroImage && (
-        <img width={1020} height={510} src={data.heroImage} alt="" />
+      data.updatedDate && (
+        <div class="last-updated-on">
+          Last updated on <PostDate date={data.updatedDate} />
+        </div>
       )
     }
+    {data.tags && <PostTags tags={data.tags} />}
   </div>
-  <div class="title">
-    <div class="date">
-      <PostDate date={data.date} />
-      {
-        data.updatedDate && (
-          <div class="last-updated-on">
-            Last updated on <PostDate date={data.updatedDate} />
-          </div>
-        )
-      }
-    </div>
-    <h1>{data.title}</h1>
-  </div>
-</a>
-{data.tags && <PostTags tags={data.tags} />}
-
-<style>
-  .hero-image {
-    width: 100%;
-  }
-  .hero-image img {
-    display: block;
-    margin: 0 auto;
-    border-radius: 12px;
-    box-shadow: var(--box-shadow);
-  }
-  .title {
-    margin-bottom: 1em;
-    padding: 1em 0;
-    text-align: center;
-    line-height: 1;
-  }
-  .title h1 {
-    margin: 0 0 0.5em 0;
-  }
-  .date {
-    margin-bottom: 0.5em;
-    color: rgb(var(--gray));
-  }
-  .last-updated-on {
-    font-style: italic;
-  }
-
-  ul li {
-    width: calc(50% - 1rem);
-  }
-  ul li * {
-    text-decoration: none;
-    transition: 0.2s ease;
-  }
-  ul li img {
-    margin-bottom: 0.5rem;
-    border-radius: 12px;
-  }
-  ul li a {
-    display: block;
-  }
-  .title {
-    margin: 0;
-    color: rgb(var(--black));
-    line-height: 1;
-  }
-  .date {
-    margin: 0;
-    color: rgb(var(--gray));
-  }
-  ul li a:hover h4,
-  ul li a:hover .date {
-    color: rgb(var(--accent));
-  }
-  ul a:hover img {
-    box-shadow: var(--box-shadow);
-  }
-  @media (max-width: 720px) {
-    ul li {
-      width: 100%;
-      text-align: center;
-    }
-  }
-</style>
+</div>

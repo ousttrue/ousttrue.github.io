@@ -6,6 +6,7 @@ import PostToc from "../../components/PostToc.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
+  posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: post,
@@ -16,17 +17,25 @@ type Props = CollectionEntry<"posts">;
 const post = Astro.props;
 const { Content, headings } = await post.render();
 
+const TOC_MAX_LEVEL = 3;
 const toc = headings.filter(
   (heading) =>
-    heading.depth <= 3 &&
+    heading.depth <= TOC_MAX_LEVEL &&
     !(heading.slug === "footnote-label" && heading.text === "Footnotes"),
 );
+
+// next & prev
+const posts = await getCollection("posts");
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const index = posts.findIndex((p) => p.slug == post.slug);
+let prev = index + 1 < posts.length ? posts[index + 1] : null;
+let next = index > 0 ? posts[index - 1] : null;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
   <PostTitle {...post} />
 
-  <hr />
+  <div class="divider"></div>
 
   <div class="flex">
     <article class="prose">
@@ -37,6 +46,18 @@ const toc = headings.filter(
       <div class="fixed">
         {headings.length > 0 && <PostToc {headings}> </PostToc>}
       </div>
+    </div>
+  </div>
+
+  <div class="flex">
+    <div class="w-72">
+      👈新
+      {next && <PostTitle {...next} />}
+    </div>
+
+    <div class="w-72">
+      旧👉
+      {prev && <PostTitle {...prev} />}
     </div>
   </div>
 </BaseLayout>
