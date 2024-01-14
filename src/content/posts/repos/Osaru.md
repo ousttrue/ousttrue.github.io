@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/Osaru
 tags:
 - repository
-- C#
+- CSharp
 title: Osaru
 updated: 2017-07-05 16:00:03+00:00
 ---

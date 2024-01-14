@@ -2,7 +2,7 @@
 title: "RigidCubes"
 date: 2023-01-29 18:36:20+00:00
 updated: 2023-03-07 07:45:06+00:00
-tags: ["repository", "C#"]
+tags: ["repository", "CSharp"]
 extra:
   css: "github"
   star: 0

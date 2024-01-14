@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/1cd2fadc1af8bc5882e2
 tags:
 - qiita
-- C#
+- CSharp
 - LINQ
 - Sprache
 title: Spracheでコメントを飛ばしてパースしてみる

@@ -9,8 +9,7 @@ extra:
   url: https://github.com/ousttrue/ManglingImgui
 tags:
 - repository
-- C#
-- csharp
+- CSharp
 - imgui
 title: ManglingImgui
 updated: 2020-06-30 06:36:56+00:00

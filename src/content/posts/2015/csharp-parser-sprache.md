@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/0a970d1a1f13d98b686a
 tags:
 - qiita
-- C#
+- Csharp
 - LINQ
 - Sprache
 title: C#のパーサコンビネータライブラリSpracheを使ってみる

@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/UniGLTF_Test
 tags:
 - repository
-- C#
+- CSharp
 title: UniGLTF_Test
 updated: 2018-12-25 17:04:51+00:00
 ---

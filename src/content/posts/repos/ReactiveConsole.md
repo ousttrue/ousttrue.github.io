@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/ReactiveConsole
 tags:
 - repository
-- C#
+- CSharp
 title: ReactiveConsole
 updated: 2019-01-27 07:36:37+00:00
 ---

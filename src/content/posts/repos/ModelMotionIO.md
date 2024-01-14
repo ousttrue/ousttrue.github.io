@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/ModelMotionIO
 tags:
 - repository
-- C#
+- CSharp
 title: ModelMotionIO
 updated: 2015-07-27 23:52:38+00:00
 ---

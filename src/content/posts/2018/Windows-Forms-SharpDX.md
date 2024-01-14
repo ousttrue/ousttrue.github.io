@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/611e86ef3651842c8c60
 tags:
 - qiita
-- C#
+- CSharp
 - DirectX
 - SharpDX
 title: Windows FormsでSharpDX

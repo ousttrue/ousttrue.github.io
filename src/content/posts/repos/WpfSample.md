@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/WpfSample
 tags:
 - repository
-- C#
+- CSharp
 title: WpfSample
 updated: 2015-03-11 16:01:46+00:00
 ---

@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/UniSharpDX
 tags:
 - repository
-- C#
+- CSharp
 title: UniSharpDX
 updated: 2017-10-30 11:02:04+00:00
 ---

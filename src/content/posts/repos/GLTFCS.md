@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/GLTFCS
 tags:
 - repository
-- C#
+- CSharp
 title: GLTFCS
 updated: 2019-05-25 18:35:38+00:00
 ---

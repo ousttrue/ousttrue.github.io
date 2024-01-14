@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/CustomRenderPipeline
 tags:
 - repository
-- C#
+- CSharp
 title: CustomRenderPipeline
 updated: 2018-05-10 07:04:29+00:00
 ---

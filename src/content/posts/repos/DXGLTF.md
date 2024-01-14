@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/DXGLTF
 tags:
 - repository
-- C#
+- CSharp
 title: DXGLTF
 updated: 2019-09-02 16:07:48+00:00
 ---

@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/RigidTransformUtils
 tags:
 - repository
-- C#
+- CSharp
 title: RigidTransformUtils
 updated: 2017-07-06 16:18:07+00:00
 ---

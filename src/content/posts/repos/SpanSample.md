@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/SpanSample
 tags:
 - repository
-- C#
+- CSharp
 title: SpanSample
 updated: 2019-11-24 00:27:11+00:00
 ---

@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/ColorSpaceFight
 tags:
 - repository
-- C#
+- CSharp
 title: ColorSpaceFight
 updated: 2018-11-23 19:16:16+00:00
 ---

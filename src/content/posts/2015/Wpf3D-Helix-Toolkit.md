@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/a7ffefeaa4b642a054bd
 tags:
 - qiita
-- C#
+- CSharp
 - WPF
 - WPF3D
 title: Wpf3DのHelix-Toolkitを使ってみる

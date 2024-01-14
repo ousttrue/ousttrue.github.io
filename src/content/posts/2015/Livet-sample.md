@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/425d0e3eaad6066f395f
 tags:
 - qiita
-- C#
+- CSharp
 - WPF
 - Livet
 title: Livetのサンプルを復元してみる

@@ -2,7 +2,7 @@
 title: "wgpu_fsharp"
 date: 2023-12-09 10:44:21+00:00
 updated: 2023-12-09 14:39:54+00:00
-tags: ["repository", "F#"]
+tags: ["repository", "FSharp"]
 extra:
   css: "github"
   star: 0

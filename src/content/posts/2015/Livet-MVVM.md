@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/23e2ea3ed3d8a82ec882
 tags:
 - qiita
-- C#
+- CSharp
 - WPF
 - MVVM
 - Livet

@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/8855d73824c10188262f
 tags:
 - qiita
-- C#
+- CSharp
 - WPF
 - MVVM
 title: AvalonDockをMVVMで使う

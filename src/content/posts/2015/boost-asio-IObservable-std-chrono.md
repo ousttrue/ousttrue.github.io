@@ -6,7 +6,7 @@ extra:
 tags:
 - qiita
 - C++
-- C#
+- CSharp
 - C++-CLI
 title: boost__asioのタイマーをIObservableでラップする。あとstd__chrono
 updated: 2015-01-24 17:13:23+09:00

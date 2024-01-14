@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/SegmentTree
 tags:
 - repository
-- C#
+- CSharp
 title: SegmentTree
 updated: 2019-05-17 08:36:45+00:00
 ---

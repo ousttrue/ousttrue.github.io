@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/LibTPose
 tags:
 - repository
-- C#
+- CSharp
 title: LibTPose
 updated: 2020-05-14 01:18:21+00:00
 ---

@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/bullet-xna
 tags:
 - repository
-- C#
+- CSharp
 title: bullet-xna
 updated: 2015-06-23 16:10:34+00:00
 ---

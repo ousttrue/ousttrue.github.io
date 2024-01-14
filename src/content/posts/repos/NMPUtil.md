@@ -8,8 +8,7 @@ extra:
   url: https://github.com/ousttrue/NMPUtil
 tags:
 - repository
-- C#
-- csharp
+- CSharp
 - msgpack
 title: NMPUtil
 updated: 2015-06-02 00:40:44+00:00

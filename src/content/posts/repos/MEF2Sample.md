@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/MEF2Sample
 tags:
 - repository
-- C#
+- CSharp
 title: MEF2Sample
 updated: 2015-07-05 13:07:52+00:00
 ---

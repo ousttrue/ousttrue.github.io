@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/ShrimpDX
 tags:
 - repository
-- C#
+- CSharp
 title: ShrimpDX
 updated: 2020-03-10 11:29:35+00:00
 ---

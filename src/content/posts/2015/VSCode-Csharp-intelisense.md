@@ -5,7 +5,7 @@ extra:
   url: https://qiita.com/ousttrue/items/94a093ea0c2fd91b610b
 tags:
 - qiita
-- C#
+- CSharp
 - VSCode
 title: VSCodeでC#のインテリセンスが効かないとき
 updated: 2020-01-24 18:46:50+09:00

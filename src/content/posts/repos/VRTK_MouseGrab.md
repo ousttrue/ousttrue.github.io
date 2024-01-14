@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/VRTK_MouseGrab
 tags:
 - repository
-- C#
+- CSharp
 title: VRTK_MouseGrab
 updated: 2019-01-20 08:23:57+00:00
 ---

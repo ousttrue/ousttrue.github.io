@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/SpracheSample
 tags:
 - repository
-- C#
+- CSharp
 title: SpracheSample
 updated: 2015-07-07 04:37:32+00:00
 ---

@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/GltfGui
 tags:
 - repository
-- C#
+- CSharp
 - gltf
 title: GltfGui
 updated: 2020-07-02 03:56:57+00:00

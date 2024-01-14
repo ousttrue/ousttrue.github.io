@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/SharpDXSample
 tags:
 - repository
-- C#
+- CSharp
 title: SharpDXSample
 updated: 2018-12-16 18:41:18+00:00
 ---

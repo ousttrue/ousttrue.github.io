@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/RectUI
 tags:
 - repository
-- C#
+- CSharp
 title: RectUI
 updated: 2019-05-22 14:09:11+00:00
 ---

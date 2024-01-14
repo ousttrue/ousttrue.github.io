@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/UwpNativeDllSample
 tags:
 - repository
-- C#
+- CSharp
 title: UwpNativeDllSample
 updated: 2017-05-03 15:21:20+00:00
 ---

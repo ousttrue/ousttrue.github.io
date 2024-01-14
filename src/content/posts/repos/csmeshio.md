@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/csmeshio
 tags:
 - repository
-- C#
+- CSharp
 title: csmeshio
 updated: 2012-05-15 23:32:26+00:00
 ---

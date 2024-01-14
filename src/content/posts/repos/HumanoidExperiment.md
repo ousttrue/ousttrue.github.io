@@ -9,7 +9,7 @@ extra:
   url: https://github.com/ousttrue/HumanoidExperiment
 tags:
 - repository
-- C#
+- CSharp
 title: HumanoidExperiment
 updated: 2018-10-01 03:38:46+00:00
 ---

@@ -8,7 +8,7 @@ extra:
   url: https://github.com/ousttrue/ConstraintExperiment
 tags:
 - repository
-- C#
+- CSharp
 title: ConstraintExperiment
 updated: 2020-07-22 06:46:06+00:00
 ---
