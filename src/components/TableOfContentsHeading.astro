@@ -1,0 +1,28 @@
+---
+import type { MarkdownHeading } from "astro";
+interface Prop {
+  heading: MarkdownHeading;
+  subheadings: Prop[];
+}
+const { heading, subheadings } = Astro.props;
+const before =
+  "before:border-primary before:content-[''] before:w-[10px] before:h-[10px] before:border-2 before:rounded-full before:top-3 before:left-4 before:absolute";
+---
+
+<li>
+  <a
+    class={`flex text-sm w-full py-1.5 flex relative pl-9 ${before}`}
+    href={"#" + heading.slug}
+  >
+    {heading.text}
+  </a>
+  {
+    subheadings.length > 0 && (
+      <ul class="ml-4 border-primary border-l-2 ml-5">
+        {subheadings.map((node: Prop) => (
+          <Astro.self {...node} />
+        ))}
+      </ul>
+    )
+  }
+</li>

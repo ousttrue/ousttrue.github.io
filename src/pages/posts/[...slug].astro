@@ -17,13 +17,6 @@ type Props = CollectionEntry<"posts">;
 const post = Astro.props;
 let { Content, headings } = await post.render();
 
-const TOC_MAX_LEVEL = 3;
-headings = headings.filter(
-  (heading) =>
-    heading.depth <= TOC_MAX_LEVEL &&
-    !(heading.slug === "footnote-label" && heading.text === "Footnotes"),
-);
-
 // next & prev
 const posts = await getCollection("posts");
 posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -34,11 +27,27 @@ let next = index > 0 ? posts[index - 1] : null;
 
 <BaseLayout title={post.data.title} description={post.data.description}>
   <div class="flex-col size-full">
-    <PostTitle {...post} />
+    <div class="mx-auto max-w-3xl">
+      <PostTitle {...post} />
+    </div>
 
     <div class="flex flex-col-reverse md:flex-row mx-auto max-w-3xl">
       <article class="prose p-4">
         <Content />
+
+        <div class="divider"></div>
+        <div class="flex justify-between mx-auto max-w-3xl">
+          <div>{next && "👈新"}</div>
+          <div>{prev && "旧👉"}</div>
+        </div>
+        <div class="flex justify-between mx-auto max-w-3xl">
+          <div class="w-1/2">
+            {next && <PostTitle {...next} />}
+          </div>
+          <div class="w-1/2">
+            {prev && <PostTitle {...prev} />}
+          </div>
+        </div>
       </article>
 
       <nav class="flex md:w-72">
@@ -46,19 +55,6 @@ let next = index > 0 ? posts[index - 1] : null;
           {headings.length > 0 && <PostToc {headings}> </PostToc>}
         </div>
       </nav>
-    </div>
-
-    <div class="flex justify-between mx-auto max-w-3xl">
-      <div>👈新</div>
-      <div>旧👉</div>
-    </div>
-    <div class="flex justify-between mx-auto max-w-3xl">
-      <div class="w-1/2">
-        {next && <PostTitle {...next} />}
-      </div>
-      <div class="w-1/2">
-        {prev && <PostTitle {...prev} />}
-      </div>
     </div>
   </div>
 </BaseLayout>
