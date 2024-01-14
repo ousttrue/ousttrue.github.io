@@ -5,25 +5,24 @@ tags: ["ssg", "astro"]
 ---
 
 サイトのcss整備とかやります。
-よくある blog コンポーネントを追加。
+TOC や tag の整備。
 
-### storybook
+### ⛔ storybook
 
 部品の動作確認用に最初に準備。
 `svelte` のきにあったのだけど `histoire` に要れかえて消滅したので やりなおし。
+と思ったら stroybook の astro component 対応がなかった。
 
 https://github.com/storybookjs/storybook/issues/18356
 
 - https://github.com/withastro/roadmap/issues/533
 - 進行中ぽい。
 
-と思ったら astro なかった。
-
 こちらは、一見 storybook に空目するのだけど `storyblok` デス。
 
 https://docs.astro.build/ja/guides/cms/storyblok/
 
-### tailwind と DaisyUI
+### ✅ tailwind と DaisyUI
 
 - https://docs.astro.build/ja/guides/integrations-guide/tailwind/
 
@@ -35,6 +34,8 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 
 - [Style rendered Markdown with Tailwind Typography | Docs](https://docs.astro.build/en/recipes/tailwind-rendered-markdown/)
 - https://github.com/saadeghi/theme-change
+
+### next / prev
 
 ### pagination
 
