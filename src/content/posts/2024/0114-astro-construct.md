@@ -50,7 +50,7 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 
 素直に実装。
 
-```ts
+```ts title="タイトルだよー"
 const posts = await getCollection("posts");
 posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const index = posts.findIndex((p) => p.slug == post.slug);
@@ -95,10 +95,15 @@ const { Content, headings } = await post.render();
 [Add icons to external links | Docs](https://docs.astro.build/en/recipes/external-links/)
 #### linkcard
 
-#### codeblock title
+#### ✅ codeblock title
 
+
+- [Highlight a line on code block with Astro](https://sat0shi.dev/posts/highlight-line-on-codeblock-with-astro/)
 - [Astro でコードブロックのシンタックスハイライトをしつつタイトルも付ける | monolithic kernel](https://blog.mono0x.net/2023/07/10/astro-syntax-highlight-with-title/)
 - [2023年6月版 Astro.js 小ネタ集 その2 Markdownの表示カスタマイズいろいろ. Markdown のコードブロックにタイトルをつける](https://zenn.dev/asopitech/articles/20230604-012854_1#3.-markdown-%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%89%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%81%AB%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E3%81%A4%E3%81%91%E3%82%8B)
+
+##### data-language 属性 を before で表示
+- [ソースコードの右上に言語名を表示するやつ - Object.create(null)](https://susisu.hatenablog.com/entry/2017/08/06/235706)
 
 ## Starlight
 
