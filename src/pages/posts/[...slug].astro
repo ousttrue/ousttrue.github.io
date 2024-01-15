@@ -3,6 +3,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostTitle from "../../components/PostTitle.astro";
 import PostToc from "../../components/PostToc.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -58,3 +59,16 @@ let next = index > 0 ? posts[index - 1] : null;
     </div>
   </div>
 </BaseLayout>
+
+<style is:global>
+  @tailwind components;
+
+  @layer components {
+    .remark-code-title {
+      @apply text-base pl-3 rounded-t-lg font-bold;
+    }
+    .remark-code-title + pre {
+      @apply mt-0 rounded-t-none;
+    }
+  }
+</style>

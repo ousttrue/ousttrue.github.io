@@ -1,7 +1,7 @@
 ---
 title: astro 構築
 date: 2024-01-14
-tags: ["ssg", "astro"]
+tags: ["ssg", "astro", "markdown"]
 ---
 
 サイトのcss整備とかやります。
@@ -66,6 +66,10 @@ let next = index > 0 ? posts[index - 1] : null;
 
 - [ページネーション](https://docs.astro.build/ja/core-concepts/routing/#%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%8D%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)
 
+## icon
+
+https://www.astroicon.dev/
+
 ## markdown
 
 ### ✅ TOC
@@ -90,6 +94,11 @@ const { Content, headings } = await post.render();
 
 [Add icons to external links | Docs](https://docs.astro.build/en/recipes/external-links/)
 #### linkcard
+
+#### codeblock title
+
+- [Astro でコードブロックのシンタックスハイライトをしつつタイトルも付ける | monolithic kernel](https://blog.mono0x.net/2023/07/10/astro-syntax-highlight-with-title/)
+- [2023年6月版 Astro.js 小ネタ集 その2 Markdownの表示カスタマイズいろいろ. Markdown のコードブロックにタイトルをつける](https://zenn.dev/asopitech/articles/20230604-012854_1#3.-markdown-%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%89%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%81%AB%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E3%81%A4%E3%81%91%E3%82%8B)
 
 ## Starlight
 
