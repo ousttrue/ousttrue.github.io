@@ -42,6 +42,7 @@ https://docs.astro.build/ja/guides/cms/storyblok/
 - https://github.com/saadeghi/theme-change
 
 ## ContentCollection
+
 ### ✅ tag
 
 - https://docs.astro.build/ja/tutorial/5-astro-api/2/
@@ -86,23 +87,28 @@ const { Content, headings } = await post.render();
 
 ### markdown 拡張
 
-#### info, warning とかの囲み。
+#### info, warning とかの囲み
+
 #### GFM
+
 デフォルトに入っている？
 
 #### 外部リンクのマーカー
 
 [Add icons to external links | Docs](https://docs.astro.build/en/recipes/external-links/)
+
 #### linkcard
 
 #### ✅ codeblock title
 
+- 👀 `expressive-code` [Expressive Code Blocks in Astro](https://scottwillsey.com/astro-expressive-code/)
+- `rehype-pretty-code` [Ryan Schachte&#39;s Blog](https://ryan-schachte.com/blog/fun_with_code_blocks/)
+- `rehype-pretty-code` [Highlight a line on code block with Astro](https://sat0shi.dev/posts/highlight-line-on-codeblock-with-astro/)
+- `mdx用？` `Prism` [Astro でコードブロックのシンタックスハイライトをしつつタイトルも付ける | monolithic kernel](https://blog.mono0x.net/2023/07/10/astro-syntax-highlight-with-title/)
+- `remark-flexible-code-titles` [2023年6月版 Astro.js 小ネタ集 その2 Markdownの表示カスタマイズいろいろ. Markdown のコードブロックにタイトルをつける](https://zenn.dev/asopitech/articles/20230604-012854_1#3.-markdown-%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%89%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%81%AB%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E3%81%A4%E3%81%91%E3%82%8B)
 
-- [Highlight a line on code block with Astro](https://sat0shi.dev/posts/highlight-line-on-codeblock-with-astro/)
-- [Astro でコードブロックのシンタックスハイライトをしつつタイトルも付ける | monolithic kernel](https://blog.mono0x.net/2023/07/10/astro-syntax-highlight-with-title/)
-- [2023年6月版 Astro.js 小ネタ集 その2 Markdownの表示カスタマイズいろいろ. Markdown のコードブロックにタイトルをつける](https://zenn.dev/asopitech/articles/20230604-012854_1#3.-markdown-%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%89%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%81%AB%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E3%81%A4%E3%81%91%E3%82%8B)
+##### ✅ data-language 属性 を before で表示
 
-##### data-language 属性 を before で表示
 - [ソースコードの右上に言語名を表示するやつ - Object.create(null)](https://susisu.hatenablog.com/entry/2017/08/06/235706)
 
 ## Starlight
@@ -110,4 +116,3 @@ const { Content, headings } = await post.render();
 https://starlight.astro.build/ja/
 
 sidebar に category tree を作る予定。
-
