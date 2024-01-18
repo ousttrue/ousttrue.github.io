@@ -8,7 +8,7 @@ index.astro を index.mdx に変えてみました。
 なんか React ぽい書き方が動いてしまいます。
 不思議な感じがしますね。
 
-```mdx title="/src/pages/index.mdx"
+```txt title="/src/pages/index.mdx"
 ---
 layout: ../layouts/ProseLayout.astro
 title: 三次元日誌

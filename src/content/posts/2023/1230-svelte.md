@@ -7,7 +7,7 @@ tags: ["ssg", "svelte"]
 React をかじった後で `svelte` を見てみるとわかりみがある。
 やってみる。
 
-# tutorial
+## tutorial
 
 `Part1 Basic Svelte` にさらっと目を通す。
 
@@ -19,29 +19,27 @@ markdown の posts を収集して表示する方法が解らぬ。
 こっちの先に読んだほうがいいかも。重要。
 まさに blog の例も書いてあった。
 
-# nvim
+## nvim
 
 - language-server
 - tree-sitter
 
 入れた。
 
-# 作業
+## 作業
 
 ```sh
-> mv src src.bak # 退避
-> npm init svelte # current に展開
-
+mv src src.bak # 退避
+npm init svelte # current に展開
 # src, vite.config.ts, svelte.config.ts あたりが出現
 ```
 
-## 原型
+### 原型
 
 5つ作った。
 普通に `async load` 関数で動くようなので中身作れば動きそう。
 
-
-```
+```txt
 + src/
   + lib/
     + getPosts.ts
@@ -58,11 +56,12 @@ markdown の posts を収集して表示する方法が解らぬ。
 ```
 
 - `src/lib/getPosts.ts` : dummy のロジック
+
 ```ts
 export type PostType = {
   slug: string;
   title: string;
-}
+};
 
 const posts: PostType[] = [
   {
@@ -73,7 +72,7 @@ const posts: PostType[] = [
     slug: "fuga",
     title: "Fuga",
   },
-]
+];
 
 export async function getPosts(): Promise<PostType[]> {
   return Promise.resolve(posts);
@@ -86,7 +85,7 @@ export async function getContent(slug: string): Promise<string> {
 
 - `src/routes/posts/page.svelte` : 投稿一覧
 
-```html
+```txt
 <script>
   export let data;
 </script>
@@ -95,21 +94,9 @@ export async function getContent(slug: string): Promise<string> {
 
 <ul>
   {#each data.summaries as { slug, title }}
-    <li><a href="/posts/{slug}">{title}</a></li>
+  <li><a href="/posts/{slug}">{title}</a></li>
   {/each}
 </ul>
-```
-
-- `src/routes/posts/page.server.ts` : 投稿一覧の`async load` 関数
-```ts
-```
-
-- `src/routes/posts/[slug]/page.svelte` : 投稿
-```html
-```
-
-- `src/routes/posts/[slug]/page.server.ts` : 投稿の`async load` 関数
-```ts
 ```
 
 ## local directory から getPosts する実装
@@ -122,10 +109,9 @@ export async function getContent(slug: string): Promise<string> {
 
 ```ts
 import path from "node:path";
-import fs from 'node:fs/promises';
+import fs from "node:fs/promises";
 import * as glob from "glob";
-import fm from 'front-matter';
-
+import fm from "front-matter";
 
 export type PostType = {
   title: string;
@@ -133,16 +119,16 @@ export type PostType = {
   ext: string;
   date: Date;
   tags?: string[];
-}
+};
 
 export async function getPosts(): Promise<PostType[]> {
-  const dir = '.';
-  const pattern = 'posts/**/*.{md,mdx}';
+  const dir = ".";
+  const pattern = "posts/**/*.{md,mdx}";
   const posts: PostType[] = [];
-  const matches = await glob.glob(pattern, { cwd: dir })
+  const matches = await glob.glob(pattern, { cwd: dir });
 
   for (const m of matches) {
-    const res = await fs.readFile(path.join(dir, m), { encoding: 'utf-8' });
+    const res = await fs.readFile(path.join(dir, m), { encoding: "utf-8" });
     const post = fm(res).attributes as PostType;
 
     const matched = m.match(/^posts[\\\/](.*)(\.mdx?)$/);
@@ -150,7 +136,7 @@ export async function getPosts(): Promise<PostType[]> {
       throw new Error("not match: md|mdx");
     }
 
-    post.slug = matched[1].replace(/\\/g, '/');
+    post.slug = matched[1].replace(/\\/g, "/");
     post.ext = matched[2]; //match.substring(6, match.length - 3);
     if (post.tags) {
       post.tags = post.tags.map((tag) => tag.toLowerCase());
@@ -177,23 +163,23 @@ https://qiita.com/jwnr/items/8932978ca2f50f102e3d#ex-%E3%82%AB%E3%82%B9%E3%82%BF
 
 ```ts
 export async function getContent(slug: string): Promise<string> {
-  const path = `posts/${slug}.md`
+  const path = `posts/${slug}.md`;
   console.log(path);
-  const content = await fs.readFile(path, 'utf8')
+  const content = await fs.readFile(path, "utf8");
   return content;
 }
 ```
 
 https://ssssota.github.io/svelte-exmarkdown/
 
-```html
+```txt
 <script>
   import Markdown from "svelte-exmarkdown";
   export let data;
 </script>
 
 <h1>{data.post.title}</h1>
-<Markdown md={data.post.content} />
+<Markdown md="{data.post.content}" />
 ```
 
 Gfm と rehype-highlight はドキュメント通りでさくっとできた。
@@ -207,9 +193,10 @@ markdown からの内部リンクと画像リンクにエラーが出るが、
 
 https://github.com/sveltejs/kit/discussions/9723
 
-```markdown
+```txt
 ![image](./image.jpg)
 ```
+
 という記法を解決する必要がある。
 
 ## tailwind
@@ -217,4 +204,3 @@ https://github.com/sveltejs/kit/discussions/9723
 https://tailwindcss.com/docs/guides/sveltekit
 
 react-daisyui に頼っていたので、素の tailwind が良くわかっていないことが判明。
-

@@ -103,6 +103,18 @@ const { Content, headings } = await post.render();
 
 いろいろ調べたけど astro では `astro-expressive-code` がいいです。
 
+:::warning build時エラーに 
+
+`no grammar...`
+
+preivew 時はエラーにならない。
+codeblock がシンタックス違反をしているとエラーになる！
+
+astro の markdown-sytnax-guide とかだめ。
+
+だめなときは文法を `txt` 指定にすればエラーは回避できる。
+:::
+
 #### astro-expressive-code
 
 https://expressive-code.com/reference/configuration/

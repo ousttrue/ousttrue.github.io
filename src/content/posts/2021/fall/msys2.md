@@ -13,14 +13,14 @@ title: msys2 セットアップ
 
 イントール
 
-```
-$ pacman -S vim git tmux python3
+```sh
+pacman -S vim git tmux python3
 ```
 
 更新
 
-```
-$ pacman -Syu
+```sh
+pacman -Syu
 ```
 
 * -y refresh
@@ -28,20 +28,15 @@ $ pacman -Syu
 
 サーチ
 
-```
-$ pacman -Ss pip
+```sh
+pacman -Ss pip
 ```
 
 * -s search
 
 インストール済み
 
-```
-$ pacman -Qs python
-```
-
-## /etc/fstab
-
-```
+```sh
+pacman -Qs python
 ```
 
