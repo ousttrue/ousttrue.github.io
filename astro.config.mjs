@@ -3,6 +3,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import expressiveCode from "astro-expressive-code";
+import rehypeExternalLinks from "rehype-external-links";
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 import icon from "astro-icon";
@@ -33,4 +34,14 @@ export default defineConfig({
     }),
     tailwind(),
   ],
+  markdown: {
+    rehypePlugins: [
+      [
+        rehypeExternalLinks,
+        {
+          properties: { "data-external": " 🔗" },
+        },
+      ],
+    ],
+  },
 });
