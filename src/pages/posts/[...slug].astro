@@ -1,9 +1,10 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PostTitle from "../../components/PostTitle.astro";
+import PostTitleCard from "../../components/PostTitleCard.astro";
 import PostToc from "../../components/PostToc.astro";
-// import CodeBlock from "../../components/CodeBlock.astro";
+import PostPrev from "../../components/PostPrev.astro";
+import PostNext from "../../components/PostNext.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -29,24 +30,19 @@ let next = index > 0 ? posts[index - 1] : null;
 <BaseLayout title={post.data.title} description={post.data.description}>
   <div class="flex-col size-full">
     <div class="mx-auto max-w-3xl">
-      <PostTitle {...post} />
+      <PostTitleCard {...post} />
     </div>
 
     <div class="flex flex-col-reverse md:flex-row mx-auto max-w-3xl">
       <article class="prose p-4">
         <Content />
 
-        <div class="divider"></div>
-        <div class="flex justify-between mx-auto max-w-3xl">
-          <div>{next && "👈新"}</div>
-          <div>{prev && "旧👉"}</div>
-        </div>
         <div class="flex justify-between mx-auto max-w-3xl">
           <div class="w-1/2">
-            {next && <PostTitle {...next} />}
+            {next && <PostNext {...next} />}
           </div>
           <div class="w-1/2">
-            {prev && <PostTitle {...prev} />}
+            {prev && <PostPrev {...prev} />}
           </div>
         </div>
       </article>
