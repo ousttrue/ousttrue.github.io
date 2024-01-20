@@ -71,7 +71,12 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
-      [remarkLinkCard, { cache: false }],
+      [
+        remarkLinkCard,
+        {
+          // cache: true
+        },
+      ],
       remarkDirective,
       remarkCustomDirective,
     ],
