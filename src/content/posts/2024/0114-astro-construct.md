@@ -4,8 +4,6 @@ date: 2024-01-14
 tags: ["ssg", "astro", "markdown"]
 ---
 
-import { Icon } from "astro-icon/components";
-
 サイトのcss整備とかやります。
 TOC や tag の整備。
 
@@ -87,12 +85,6 @@ npm i -D @iconify-json/mdi @iconify-json/devicon
 <Icon name="devicon:astro" class="text-4xl" />
 ```
 
-<br/>
-
-<Icon name="devicon:astro" class="text-4xl" />
-
-なるほど。
-
 ## markdown
 
 ### ✅ TOC
@@ -141,7 +133,9 @@ a[data-external]::before {
 }
 ```
 
-#### 🟩 linkcard
+#### ✅ linkcard
+
+https://futabooo.com/blog/2023/link-card/
 
 ### ✅ codeblock title
 

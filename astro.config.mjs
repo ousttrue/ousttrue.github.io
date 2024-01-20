@@ -6,9 +6,8 @@ import expressiveCode from "astro-expressive-code";
 import rehypeExternalLinks from "rehype-external-links";
 import remarkDirective from "remark-directive";
 import { h } from "hastscript";
-// import { Root } from "mdast";
-// import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
+import remarkLinkCard from "remark-link-card";
 
 const remarkCustomDirective /*: Plugin<[], Root>*/ = () => {
   return (tree) => {
@@ -71,7 +70,11 @@ export default defineConfig({
     tailwind(),
   ],
   markdown: {
-    remarkPlugins: [remarkDirective, remarkCustomDirective],
+    remarkPlugins: [
+      [remarkLinkCard, { cache: false }],
+      remarkDirective,
+      remarkCustomDirective,
+    ],
     rehypePlugins: [
       [
         rehypeExternalLinks,
