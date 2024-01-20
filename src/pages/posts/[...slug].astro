@@ -1,7 +1,7 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PostTitleCard from "../../components/PostTitleCard.astro";
+import PostTitle from "../../components/PostTitle.astro";
 import PostToc from "../../components/PostToc.astro";
 import PostPrev from "../../components/PostPrev.astro";
 import PostNext from "../../components/PostNext.astro";
@@ -25,19 +25,22 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const index = posts.findIndex((p) => p.slug == post.slug);
 let prev = index + 1 < posts.length ? posts[index + 1] : null;
 let next = index > 0 ? posts[index - 1] : null;
+
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
-  <div class="flex-col size-full">
-    <div class="mx-auto max-w-3xl">
-      <PostTitleCard {...post} />
+  <div class="size-full flex-col">
+    <div class="mx-auto max-w-3xl p-4">
+      <PostTitle {...post} />
     </div>
 
     <div class="flex flex-col-reverse md:flex-row mx-auto max-w-3xl">
-      <article class="prose p-4">
-        <Content />
+      <article class="prose">
+        <div class="p-4">
+          <Content />
+        </div>
 
-        <div class="flex justify-between mx-auto max-w-3xl">
+        <div class="flex justify-between">
           <div class="w-1/2">
             {next && <PostNext {...next} />}
           </div>
@@ -47,7 +50,7 @@ let next = index > 0 ? posts[index - 1] : null;
         </div>
       </article>
 
-      <nav class="flex md:w-72">
+      <nav class="md:w-72">
         <div class="md:fixed mx-auto">
           {headings.length > 0 && <PostToc {headings}> </PostToc>}
         </div>
@@ -55,26 +58,3 @@ let next = index > 0 ? posts[index - 1] : null;
     </div>
   </div>
 </BaseLayout>
-
-<style is:global>
-  pre[data-language] {
-    position: relative;
-  }
-
-  pre[data-language]::before {
-    content: attr(data-language);
-    font-family: "Helvetica Neue", "Helvetica", "Arial",
-      "Hiragino Kaku Gothic Pro", "Meiryo", "MS PGothic", sans-serif;
-    font-style: italic;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: #ffffff;
-    border-radius: 0 0 0 4px;
-    padding: 0 7px;
-  }
-
-  /* pre[data-language]:hover::before { */
-  /*   display: none; */
-  /* } */
-</style>

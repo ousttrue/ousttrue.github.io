@@ -63,6 +63,12 @@ export function Items(props) {
 
 [Good enough syntax highlight for MDX in Neovim using Treesitter](https://phelipetls.github.io/posts/mdx-syntax-highlight-treesitter-nvim/)
 
+[Setting up Neovim for Astro development · joschua.io](https://joschua.io/posts/2023/06/22/set-up-nvim-for-astro/)
+
+```lua title="引き数の順番を間違えていた"
+vim.treesitter.language.register("markdown", "mdx")
+```
+
 - ~/.config/nvim/file.lua に mdx 拡張子設定を追加
 - treesitter 設定で mdx を markdown に結びつける
 
