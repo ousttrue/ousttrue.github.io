@@ -3,8 +3,8 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostTitle from "../../components/PostTitle.astro";
 import PostToc from "../../components/PostToc.astro";
-import PostPrev from "../../components/PostPrev.astro";
-import PostNext from "../../components/PostNext.astro";
+import PostOlder from "../../components/PostOlder.astro";
+import PostNewer from "../../components/PostNewer.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -19,13 +19,12 @@ type Props = CollectionEntry<"posts">;
 const post = Astro.props;
 let { Content, headings } = await post.render();
 
-// next & prev
+// newer & older
 const posts = await getCollection("posts");
 posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const index = posts.findIndex((p) => p.slug == post.slug);
-let prev = index + 1 < posts.length ? posts[index + 1] : null;
-let next = index > 0 ? posts[index - 1] : null;
-
+let older = index + 1 < posts.length ? posts[index + 1] : null;
+let newer = index > 0 ? posts[index - 1] : null;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
@@ -42,10 +41,10 @@ let next = index > 0 ? posts[index - 1] : null;
 
         <div class="flex justify-between">
           <div class="w-1/2">
-            {next && <PostNext {...next} />}
+            {newer && <PostNewer {...newer} />}
           </div>
           <div class="w-1/2">
-            {prev && <PostPrev {...prev} />}
+            {older && <PostOlder {...older} />}
           </div>
         </div>
       </article>
