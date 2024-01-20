@@ -29,7 +29,6 @@ require("headlines").setup {
 
 難航した。
 
-
 inline 要素は別言語扱い。
 
 `:TSEditQueryUserAfter highlights markdown_inline`
@@ -50,4 +49,3 @@ headlines の `@codeblock` と同じにしたかったがわからず。
 https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/markdown/injections.scm
 
 treesitter の `yaml` がコンパイルされていなかった。
-
