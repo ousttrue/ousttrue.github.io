@@ -7,10 +7,6 @@ tags: [nvim, treesitter]
 colorscheme の自作に手を出したのだけど、
 設定項目が多すぎて正攻法は断念した。
 
-:::info
-tesu tesu
-:::
-
 既存の colorscheme を改造する方向にしたのだけど、
 syntax の highlight group を全消ししてから、
 再構築するという手法を考えた。

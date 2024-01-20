@@ -14,7 +14,7 @@ tags: [markdown]
 ## うちにも入れたい
 
 astro で動くプラグインを探している。
-astro 製の [starlight](https://starlight.astro.build/ja/getting-started/)  にあるのだから、
+astro 製の [starlight](https://starlight.astro.build/ja/getting-started/) にあるのだから、
 部品として公開してくれれば良いのだが見つからなかった。
 
 ということで https://github.com/elviswolcott/remark-admonitions 。
@@ -49,12 +49,64 @@ remark-13 (2020) からぽい？
 
 https://github.com/remarkjs/remark/releases/tag/13.0.0
 
-動くコードコピペよりは重くなりそうだ。
-腰を据えてやますか…
+### vitest で test driven
+
+```ts
+import { expect, test } from "vitest";
+import { fromMarkdown } from "mdast-util-from-markdown";
+
+const SRC = `
+import { expect, test } from "vitest";
+import { type Extension } from "micromark-util-types";
+import { fromMarkdown } from "mdast-util-from-markdown";
+
+const SRC = `
+:::info 情報！
+ほげほげ
+:::
+`;
+
+// 空の micromark plugin
+const admonition: Extension = {};
+
+test("micromark", () => {
+  const result = fromMarkdown(SRC, {
+    extensions: [admonition],
+  });
+  console.log(JSON.stringify(result, null, 2));
+  expect(result.type).toEqual("root");
+  expect(result.children[0].type).toEqual("heading");
+});```
+
+```json
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "paragraph",
+      "children": [
+        {
+          "type": "text",
+          "value": ":::info 情報！\nほげほげ\n:::",
+          "position": {
+            // …
+          }
+        }
+      ],
+      "position": {
+        // …
+      }
+    }
+  ],
+  "position": {
+    // …
+  }
+}
+```
 
 ### micromark Extension
 
-```js
+```js title="https://github.com/micromark/micromark/blob/main/packages/micromark-util-types/index.d.ts#L763"
 export interface Extension {
   document?: ConstructRecord | undefined
   contentInitial?: ConstructRecord | undefined
@@ -75,16 +127,19 @@ export interface Extension {
 - https://github.com/micromark/micromark-extension-gfm-strikethrough/blob/main/dev/lib/syntax.js
 - https://github.com/micromark/micromark-extension-directive/blob/main/dev/lib/syntax.js
 
-### vitest で test driven
+とりあえずこれを読むべき。
 
-```ts
-import { expect, test } from "vitest";
-import { fromMarkdown } from "mdast-util-from-markdown";
+https://github.com/micromark/micromark?tab=readme-ov-file#creating-a-micromark-extension
 
-test("micromark", () => {
-  const result = fromMarkdown("## Hello, *world*!");
-  // console.log(result);
-  expect(result.type).toEqual("root");
-  expect(result.children[0].type).toEqual("heading");
-});
-```
+inline と block だと block の方が難しい。
+micromark でちょっとインタフェースが変わったのを辻褄合わせるだけ
+を想定してたのですが、手に負えん。
+プランBへ。
+
+## remark-directive を改造
+
+https://zenn.dev/nazo6/articles/remark-zenn-markdown
+
+:::info
+むずい
+:::

@@ -4,6 +4,42 @@ import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import expressiveCode from "astro-expressive-code";
 import rehypeExternalLinks from "rehype-external-links";
+import remarkDirective from "remark-directive";
+import { h } from "hastscript";
+// import { Root } from "mdast";
+// import type { Plugin } from "unified";
+import { visit } from "unist-util-visit";
+
+const remarkCustomDirective /*: Plugin<[], Root>*/ = () => {
+  return (tree) => {
+    visit(tree, (node) => {
+      if (
+        node.type === "textDirective" ||
+        node.type === "leafDirective" ||
+        node.type === "containerDirective"
+      ) {
+        const [name, ...n] = node.name.split(" ");
+        let value = null;
+        if (n.length > 0) {
+          value = n.join(" ");
+        } else {
+          value = null;
+        }
+        // if (name === "message")
+        console.log("name", name);
+
+        node.attributes.class = `admonition admonition-info`;
+
+        const data = node.data || (node.data = {});
+        const tagName = node.type === "textDirective" ? "span" : "div";
+
+        data.hName = tagName;
+
+        data.hProperties = h(tagName, node.attributes).properties;
+      }
+    });
+  };
+};
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 import icon from "astro-icon";
@@ -35,6 +71,7 @@ export default defineConfig({
     tailwind(),
   ],
   markdown: {
+    remarkPlugins: [remarkDirective, remarkCustomDirective],
     rehypePlugins: [
       [
         rehypeExternalLinks,
