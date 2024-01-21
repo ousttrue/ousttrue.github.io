@@ -17,15 +17,10 @@ const remarkCustomDirective /*: Plugin<[], Root>*/ = () => {
         node.type === "leafDirective" ||
         node.type === "containerDirective"
       ) {
-        const [name, ...n] = node.name.split(" ");
-        let value = null;
-        if (n.length > 0) {
-          value = n.join(" ");
-        } else {
-          value = null;
-        }
+        // const [name, ...n] = node.name.split(" ");
+        // let value = n.length > 0 ? n.join(" ") : null;
         // if (name === "message")
-        console.log("name", name);
+        // console.log("name", name);
 
         node.attributes.class = `admonition admonition-info`;
 
