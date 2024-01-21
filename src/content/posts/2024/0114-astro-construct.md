@@ -65,9 +65,17 @@ let next = index > 0 ? posts[index - 1] : null;
 
 サーバー使わない簡易な検索。
 
-### 🟩 pagination
+### ✅ pagination
 
 - [ページネーション](https://docs.astro.build/ja/core-concepts/routing/#%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%8D%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)
+
+`[page].astro` を足したら動いた。同じディレクトリに同居できるぽい。
+
+```txt
+/src/pages/posts/[...slug].astro
+/src/pages/posts/[page].astro # 👈
+index.astro
+```
 
 ## ✅ icon
 
@@ -133,9 +141,11 @@ a[data-external]::before {
 }
 ```
 
-#### ✅ linkcard
+#### ✅🚧 linkcard
 
 https://futabooo.com/blog/2023/link-card/
+
+TODO: aspect比固定するべし
 
 ### ✅ codeblock title
 
