@@ -17,6 +17,12 @@ astro で動くプラグインを探している。
 astro 製の [starlight](https://starlight.astro.build/ja/getting-started/) にあるのだから、
 部品として公開してくれれば良いのだが見つからなかった。
 
+:::note
+astro の実装を探してみた。remark-directive ベース。後で読む。
+
+https://github.com/withastro/starlight/blob/main/packages/starlight/integrations/asides.ts
+:::
+
 ということで https://github.com/elviswolcott/remark-admonitions 。
 どうも remark の API 変更で動かなくなってしまったぽい。
 
