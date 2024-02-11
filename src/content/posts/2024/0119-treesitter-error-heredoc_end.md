@@ -11,6 +11,9 @@ tree-sitter のエラーになって悩む。
 Query error. Invalid node type "heredoc_end.
 ```
 
+発生するとキー入力のたびにエラーメッセージが表示されて、
+何もできなくなる。
+
 原因は、`~/local/lib/nvim/parser` にインストールされる treesitter の parser 群がバージョン不整合？を起こしていることぽい。`TSInstall` する前から`cmake build` で prebuilt されるものが、どうも良くないらしい。
 
 https://github.com/nvim-treesitter/nvim-treesitter/issues/3092
@@ -26,3 +29,12 @@ https://github.com/nvim-treesitter/nvim-treesitter/issues/3092
 
 ぜんぶ消してから `:TSInstall! bash` すればいいと思う。
 
+## 再度はまる
+
+どうも3箇所チェックするところがあるぽい。
+
+- %NVIM_INSTALL%/lib/nvim/parer 👈 cmake install
+- %HOME%/.local/share/nvim/lazy/nvim-treesitter/parser 👈 lazy treesitter install
+- %HOME%/.cache/nvim/treesitter/parser 👈 local TSInstall
+
+ぜんぶ消して TSInstall から出直すと直るかもしれない。
