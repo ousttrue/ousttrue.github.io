@@ -1,6 +1,6 @@
 ---
 title: 引き続き AFrame 改造…。
-date: 2024-0414
+date: 2024-04-14
 tags: [webxr]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: a-frame の esmodule 化
-date: 2024-0413
+date: 2024-04-13
 tags: [webxr]
 ---
 
