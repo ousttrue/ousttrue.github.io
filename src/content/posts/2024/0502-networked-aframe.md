@@ -27,7 +27,7 @@ https://github.com/networked-aframe/networked-aframe
 ></a-scene>
 ```
 
-`networked-scene` というコンポーネントが追加されている。
+### networked-scene
 
 `src\components\networked-scene.js` に書いてある。
 
@@ -35,12 +35,22 @@ https://github.com/networked-aframe/networked-aframe
 AFRAME.registerComponent("networked-scene", {});
 ```
 
+### networked
+
+これも必要
+
 ## server
 
 ### `server\socketio-server.js`
 
-vite に載せれるか？
+vite から websocket を proxy で飛ばすことで動いた。
 
-https://github.com/vite-plugin-socket-io/vite-plugin-socket-io
+https://github.com/ousttrue/aframe/tree/vite
 
-### `server\easyrtc-server.js`
+## script で `script type=module` を待つ
+
+`defer` でできた。
+
+## server logic
+
+入室管理だけだった。
