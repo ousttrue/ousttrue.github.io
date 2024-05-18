@@ -1,7 +1,7 @@
 ---
 title: gentoo, Full manual approach 難航
 date: 2024-05-05
-tags: [gentoo]
+tags: [linux]
 ---
 
 久しぶりに gentoo やってみたら、
