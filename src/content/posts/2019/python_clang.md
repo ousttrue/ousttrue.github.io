@@ -1,7 +1,7 @@
 ---
 date: 2019-04-18 16:10:34+09:00
 tags:
-- clang
+- libclang
 - python
 - cpp
 - dlang
