@@ -3,6 +3,7 @@ date: 2021-09-10
 tags:
 - 3D
 - c++
+- gizmo
 title: gizmo のライブラリを整備したい
 ---
 
