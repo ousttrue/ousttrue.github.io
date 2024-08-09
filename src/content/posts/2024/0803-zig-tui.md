@@ -76,3 +76,7 @@ curses を使っていても `termcap / termios` の実装としてしか利用�
 `libuv` を `@cImport` できない。
 自前で、 `extern fn` 定義をこさえてやる必要がありそう。
 `libclang` のから半自動で生成したいと思っている。
+
+## tuibox
+
+https://github.com/ousttrue/tuibox
