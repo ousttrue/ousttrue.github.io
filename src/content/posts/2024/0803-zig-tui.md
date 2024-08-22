@@ -15,6 +15,10 @@ https://github.com/ousttrue/kilo
 
 https://github.com/ousttrue/yaskk
 
+## skkfep
+
+https://github.com/ousttrue/skkfep
+
 ## neatvi
 
 https://github.com/ousttrue/neatvi
@@ -80,3 +84,13 @@ curses を使っていても `termcap / termios` の実装としてしか利用�
 ## tuibox
 
 https://github.com/ousttrue/tuibox
+
+## cimport がうまくいかないときに備えて
+
+cindex からのコード生成を準備。
+
+https://github.com/ousttrue/rawtypes
+
+c と zig の enum のセマンティクスが違う(場合があることわかった)。
+zig は enum 内に名前が違う同じ値を許可しない。
+`@cImport` はこれを回避するためか、`enum` は `c_int` の定数になる。
