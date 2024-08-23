@@ -22,3 +22,14 @@ python で playwright による screenshot を作成して、
 [Viteで作成したReactアプリをSSGで出力出来るように変更 #JavaScript - Qiita](https://qiita.com/otohusan/items/16f8d244859a1f1af46d)
 
 を参考に Vanilla で構築してみる。
+やはり、よくわからない。
+
+# react as htmltemplate
+
+[テンプレートエンジンに React を使いつつ、きれいな HTML を生成したいんじゃ！！](https://zenn.dev/otsukayuhi/articles/e52651b4e2c5ae7c4a17)
+
+やりたいのは、こういうことなのだ。
+だから `ssr` とかやりすぎなのでは。
+
+最初に選んだ [minista](https://minista.qranoko.jp/) の方向性が目的に適っていたぽい。
+
