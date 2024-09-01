@@ -4,34 +4,29 @@ import { StaticRouter } from "react-router-dom/server.js"
 import { Routes, Route } from "react-router-dom"
 import { Pages, Posts } from './pages.ts';
 
-type Matter = {
-  title: string,
-};
-
 export function render(url: string) {
   if (url.endsWith('/')) {
     url += 'index.html';
   }
+
   const html = ReactDOMServer.renderToString(
     <React.StrictMode>
       <StaticRouter location={url}>
         <Routes>
-          {Object.entries(Posts).map(([key, value]) => {
-            const matter = value as Matter;
+          {Object.entries(Posts).map(([key, post]) => {
             return (
               <Route
                 key={key}
                 path={key}
                 element={(<>
-                  <div>{matter.title}</div>
-                  <div>{matter.body}</div>
+                  <div>{post.title}</div>
+                  <div>{post.body}</div>
                 </>)}
               >
               </Route>
             );
           })}
-          {Object.entries(Pages).map(([key, value]) => {
-            const App = value as () => React.ReactNode;
+          {Object.entries(Pages).map(([key, App]) => {
             return (
               <Route
                 key={key}

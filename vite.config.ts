@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 import Inspect from 'vite-plugin-inspect'
+
+// loccal
 import Develop from './mydev-vite-plugin';
 import Markdown from './mymd-vite-plugin';
 

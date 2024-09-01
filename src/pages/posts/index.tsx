@@ -1,5 +1,6 @@
-export default function(props) {
-  console.log(props);
+import { type Props } from '../../pages';
+
+export default function(props: Props) {
   const { posts } = props;
   return (
     <ul>

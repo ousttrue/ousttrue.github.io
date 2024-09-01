@@ -16,22 +16,10 @@ export default function pluginDevelop(): Plugin {
 
           try {
             // 1. index.html を読み込む
-            // let template = fs.readFileSync(
-            //   path.resolve(__dirname, 'index.html'),
-            //   'utf-8',
-            // )
-            const template_src = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"><!--ssr-outlet--></div>
-  </body>
-</html>`;
+            const template_src = fs.readFileSync(
+              path.resolve(__dirname, 'index.html'),
+              'utf-8',
+            )
 
             // 2. Vite の HTML の変換を適用します。これにより Vite の HMR クライアントが定義され
             //    Vite プラグインからの HTML 変換も適用します。 e.g. global preambles
