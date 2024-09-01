@@ -1,10 +1,8 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-// import App from './App.tsx'
 import { StaticRouter } from "react-router-dom/server.js"
 import { Routes, Route } from "react-router-dom"
-import { Pages } from './pages.ts';
-
+import { Pages, Posts } from './pages.ts';
 
 type Matter = {
   title: string,
@@ -12,42 +10,38 @@ type Matter = {
 
 export function render(url: string) {
   if (url.endsWith('/')) {
-    url += 'index.tsx';
+    url += 'index.html';
   }
   const html = ReactDOMServer.renderToString(
     <React.StrictMode>
       <StaticRouter location={url}>
         <Routes>
+          {Object.entries(Posts).map(([key, value]) => {
+            const matter = value as Matter;
+            return (
+              <Route
+                key={key}
+                path={key}
+                element={(<>
+                  <div>{matter.title}</div>
+                  <div>{matter.body}</div>
+                </>)}
+              >
+              </Route>
+            );
+          })}
           {Object.entries(Pages).map(([key, value]) => {
-            if (key.endsWith('.md')) {
-              const matter = value as Matter;
-              return (
-                <Route
-                  key={key}
-                  path={key}
-                  element={
-                    <div>{matter.title}</div>
-                  }
-                >
-                </Route>
-              );
-            }
-            else if (key.endsWith('.tsx')) {
-              const App = value as () => React.ReactNode;
-              return (
-                <Route
-                  key={key}
-                  path={key}
-                  element={
-                    <App />
-                  }
-                >
-                </Route>
-              );
-            }
-            else {
-              throw new Error(key);
-            }
+            const App = value as () => React.ReactNode;
+            return (
+              <Route
+                key={key}
+                path={key}
+                element={
+                  <App posts={Posts} />
+                }
+              >
+              </Route>
+            );
           })}
         </Routes>
       </StaticRouter>
