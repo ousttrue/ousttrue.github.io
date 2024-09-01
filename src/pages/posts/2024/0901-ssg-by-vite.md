@@ -22,6 +22,7 @@ vite の plugin にデバッガをアタッチしたくて 方法を探してい
 要するに vite コマンドではなくて、自前の js から launch すればできる。
 
 ```js
+// server.ts
 import { createServer } from "vite";
 const viteServer = await createServer();
 await viteServer.listen();
@@ -42,6 +43,9 @@ node --nolazy --import \"data:text/javascript,import { register } from 'node:mod
 
 https://ja.vitejs.dev/guide/ssr
 
+`hyderate` も最初は要らない。
+あとで必要になったら足そう。
+
 ```html
 <!doctype html>
 <html lang="en">
@@ -55,7 +59,7 @@ https://ja.vitejs.dev/guide/ssr
   <body>
     <div id="root"><!--app-html--></div>
     <script type="module" src="/src/entry-client.jsx"></script>
-    // 👈 この行を削除した
+    <!-- 👈 この行を削除した -->
   </body>
 </html>
 。
@@ -71,3 +75,29 @@ https://ja.vitejs.dev/guide/ssr
 ライブラリーに任せると markdown が ReactComponent 化されていたりして、
 逆に難しくなるという状況だった。
 自作すればシンプル。
+
+## prerender も`import.meta.glob` で OK
+
+`vite.ssrLoadModule` 内で `import.meta.glob` して順に HTML 化して
+出力すればできた。
+`React` の `ssr-manifest.json` は作れなかったのだけど、使わなかったのでよし。
+
+```js
+// prerender.ts
+import path from "node:path";
+import url from "node:url";
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const dist = path.resolve(__dirname, "dist");
+
+import { createServer } from "vite";
+const vite = await createServer();
+const { generate } = await vite.ssrLoadModule("/src/entry-ssg.ts");
+generate(dist);
+vite.close(); // vite は listen せずに終了する
+```
+
+## remark & rehype を手作業で組込み
+
+- [react-markdown をやめて remark から自力でレンダリングするようにした話 | stin&#x27;s Blog](https://blog.stin.ink/articles/replace-react-markdown-with-remark)
+
+自分でやる方がむしろわかりやすい。

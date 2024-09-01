@@ -1,13 +1,12 @@
-import { type Props } from '../../pages';
+import { Posts } from '../../pages';
 
-export default function(props: Props) {
-  const { posts } = props;
+export default function() {
   return (
     <ul>
       {
-        Object.entries(posts).map(([key, post], i) => (<li key={key}>
+        Object.entries(Posts).map(([key, post]) => (<li key={key}>
           <a href={key}>
-            {post.title}
+            {post.frontmatter.title}
           </a>
         </li>))
       }

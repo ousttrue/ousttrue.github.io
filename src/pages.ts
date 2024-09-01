@@ -1,12 +1,8 @@
 import React from 'react';
+import type { Frontmatter, MarkdownData } from '../mymd-vite-plugin.ts';
 const ROOT = '/src/pages';
 
-export type Post = {
-  title: string,
-  body: string,
-};
-
-export type Props = { posts: { [key: string]: Post } };
+export type Props = { posts: { [key: string]: MarkdownData } };
 
 const pages = import.meta.glob<(props: Props) => React.ReactNode>(
   '/src/pages/**/*.tsx',
@@ -16,7 +12,7 @@ const pages = import.meta.glob<(props: Props) => React.ReactNode>(
   }
 );
 
-const posts = import.meta.glob<Post>(
+const posts = import.meta.glob<MarkdownData>(
   '/src/pages/**/*.md',
   {
     import: 'default',

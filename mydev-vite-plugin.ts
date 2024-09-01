@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import http from 'node:http';
 import { Plugin, ViteDevServer } from "vite";
 
 export default function pluginDevelop(): Plugin {
@@ -10,9 +11,8 @@ export default function pluginDevelop(): Plugin {
 
       return () => {
         // https://ja.vitejs.dev/guide/ssr
-        vite.middlewares.use(async (req, res, next) => {
-
-          const url = req.originalUrl || "";
+        vite.middlewares.use(async (
+          req: http.IncomingMessage, res: http.ServerResponse, next) => {
 
           try {
             // 1. index.html を読み込む
@@ -24,7 +24,7 @@ export default function pluginDevelop(): Plugin {
             // 2. Vite の HTML の変換を適用します。これにより Vite の HMR クライアントが定義され
             //    Vite プラグインからの HTML 変換も適用します。 e.g. global preambles
             //    from @vitejs/plugin-react
-            const template = await vite.transformIndexHtml(url, template_src)
+            const template = await vite.transformIndexHtml(req.url || "", template_src)
 
             // 3. サーバーサイドのエントリーポイントを読み込みます。 ssrLoadModule は自動的に
             //    ESM を Node.js で使用できるコードに変換します! ここではバンドルは必要ありません
@@ -34,7 +34,7 @@ export default function pluginDevelop(): Plugin {
             // 4. アプリケーションの HTML をレンダリングします。これは entry-server.js から
             //    エクスポートされた `render` 関数が、ReactDOMServer.renderToString() などの
             //    適切なフレームワークの SSR API を呼び出すことを想定しています。
-            const appHtml = await render(url)
+            const appHtml = await render(req, res)
 
             // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
             const html = template.replace(`<!--ssr-outlet-->`, appHtml.html)

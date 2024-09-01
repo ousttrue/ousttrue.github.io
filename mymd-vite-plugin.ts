@@ -2,7 +2,16 @@ import { Plugin } from 'vite';
 import path from 'node:path';
 import YAML from 'yaml'
 
-function splitMatter(src: string) {
+export type Frontmatter = {
+  title: string,
+};
+
+export type MarkdownData = {
+  frontmatter: Frontmatter,
+  content: string,
+};
+
+function splitMatter(src: string): MarkdownData {
   src = src.replace(/\r\n/g, "\n");
   const head = src.substring(0, 4);
   src = src.substring(4);
@@ -12,9 +21,9 @@ function splitMatter(src: string) {
       if (found == -1) {
         throw new Error(src.substring(4));
       }
-      let matter = YAML.parse(src.substring(0, found));
-      matter.body = src.substring(found + 5);
-      return matter;
+      const frontmatter = YAML.parse(src.substring(0, found));
+      const content = src.substring(found + 5);
+      return { frontmatter, content };
     }
     else {
       throw new Error(src);
@@ -29,6 +38,7 @@ export default function pluginMarkdown(): Plugin {
   return {
     name: "mymd-vite-plugin",
     transform(code, id) {
+      // console.log(id);
       const extension = path.extname(id)
       if (extension !== '.md') return
       const matter = splitMatter(code)
