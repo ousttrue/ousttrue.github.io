@@ -16,15 +16,27 @@ export default function pluginDevelop(): Plugin {
 
           try {
             // 1. index.html を読み込む
-            let template = fs.readFileSync(
-              path.resolve(__dirname, 'index.html'),
-              'utf-8',
-            )
+            // let template = fs.readFileSync(
+            //   path.resolve(__dirname, 'index.html'),
+            //   'utf-8',
+            // )
+            const template_src = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+  </head>
+  <body>
+    <div id="root"><!--ssr-outlet--></div>
+  </body>
+</html>`;
 
             // 2. Vite の HTML の変換を適用します。これにより Vite の HMR クライアントが定義され
             //    Vite プラグインからの HTML 変換も適用します。 e.g. global preambles
             //    from @vitejs/plugin-react
-            template = await vite.transformIndexHtml(url, template)
+            const template = await vite.transformIndexHtml(url, template_src)
 
             // 3. サーバーサイドのエントリーポイントを読み込みます。 ssrLoadModule は自動的に
             //    ESM を Node.js で使用できるコードに変換します! ここではバンドルは必要ありません
@@ -44,6 +56,7 @@ export default function pluginDevelop(): Plugin {
             res.setHeader('Content-Type', 'text/html');
             res.end(html)
           } catch (e) {
+            console.error(e);
             // エラーが検出された場合は、Vite にスタックトレースを修正させ、実際のソースコードに
             // マップし直します。
             vite.ssrFixStacktrace(e)

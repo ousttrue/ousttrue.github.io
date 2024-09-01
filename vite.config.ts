@@ -4,7 +4,11 @@ import Develop from './mydev-vite-plugin';
 
 // https://vitejs.dev/config/
 const config = defineConfig({
-  plugins: [Develop(), Inspect()],
+  plugins: [
+    Develop(),
+    // react(), 
+    Inspect(),
+  ],
 });
 
 export default config;
