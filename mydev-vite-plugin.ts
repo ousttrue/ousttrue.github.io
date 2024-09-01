@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Plugin, ViteDevServer } from "vite";
 
-export function pluginDevelop(): Plugin {
+export default function pluginDevelop(): Plugin {
   return {
     name: "mydev-vite-plugin",
 
