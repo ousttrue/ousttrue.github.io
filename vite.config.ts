@@ -1,14 +1,9 @@
-import { defineConfig, Plugin } from "vite";
+import { defineConfig } from "vite";
+import { pluginDevelop } from './mydev-vite-plugin';
 
 // https://vitejs.dev/config/
 const config = defineConfig({
   plugins: [pluginDevelop()],
 });
-
-function pluginDevelop(): Plugin {
-  return {
-    name: "mydev-vite-plugin",
-  };
-}
 
 export default config;

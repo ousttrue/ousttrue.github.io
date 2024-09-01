@@ -1,5 +1,4 @@
-import { createServer, } from "vite";
-import viteConfig from './vite.config.ts';
-const viteServer = await createServer(viteConfig);
+import { createServer, loadConfigFromFile } from "vite";
+const viteServer = await createServer();
 await viteServer.listen()
 viteServer.printUrls()
