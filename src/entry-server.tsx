@@ -18,7 +18,7 @@ export async function render(_req: http.IncomingMessage, res: http.ServerRespons
 
       const html = ReactDOMServer.renderToString(
         <React.StrictMode>
-          <Markdown frontmatter={post.frontmatter} node={ast} />
+          <Markdown path={url} frontmatter={post.frontmatter} node={ast} />
         </React.StrictMode >
       );
       return { html }

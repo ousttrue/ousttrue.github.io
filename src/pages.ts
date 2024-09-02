@@ -29,7 +29,9 @@ function fixPath(key: string, ext: string) {
 function fixDate(v: MarkdownData) {
   const { frontmatter, content } = v;
   const d = new Date();
-  d.setTime(Date.parse(frontmatter.date));
+  if (typeof frontmatter.date === "string") {
+    d.setTime(Date.parse(frontmatter.date));
+  }
   return { content, frontmatter: { ...frontmatter, date: d } };
 }
 
@@ -38,3 +40,7 @@ export const Pages = Object.fromEntries(
 export const Posts = Object.fromEntries(
   Object.entries(posts).map(([k, v]) => [fixPath(k, '.md'), fixDate(v)]));
 
+
+export const SortedPosts = Object.entries(Posts).toSorted(
+  (a, b) => a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1
+);

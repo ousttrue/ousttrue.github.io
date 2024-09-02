@@ -5,6 +5,7 @@ import YAML from 'yaml'
 export type Frontmatter = {
   title: string,
   date: string | Date,
+  tags: string[],
 };
 
 export type MarkdownData = {
