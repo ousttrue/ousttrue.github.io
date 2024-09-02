@@ -34,11 +34,11 @@ export default function pluginDevelop(): Plugin {
             // 4. アプリケーションの HTML をレンダリングします。これは entry-server.js から
             //    エクスポートされた `render` 関数が、ReactDOMServer.renderToString() などの
             //    適切なフレームワークの SSR API を呼び出すことを想定しています。
-            const appHtml = await render(req, res)
+            const rendered = await render(req, res)
 
-            if (appHtml) {
+            if (rendered) {
               // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
-              const html = template.replace(`<!--ssr-outlet-->`, appHtml.html)
+              const html = template.replace(`<!--ssr-outlet-->`, rendered)
 
               // 6. レンダリングされた HTML をクライアントに送ります。
               res.statusCode = 200;

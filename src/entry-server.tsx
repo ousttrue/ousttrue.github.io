@@ -4,7 +4,7 @@ import ReactDOMServer from 'react-dom/server'
 import { Pages, Posts } from './pages.ts';
 import { markdownParser, Markdown } from "./mdast_utils.tsx";
 
-export async function render(_req: http.IncomingMessage, res: http.ServerResponse) {
+export async function render(_req: http.IncomingMessage, res: http.ServerResponse): Promise<string | null> {
   // @ts-ignore
   let url = _req.originalUrl || '';
   if (url.endsWith('/')) {
@@ -21,7 +21,7 @@ export async function render(_req: http.IncomingMessage, res: http.ServerRespons
           <Markdown path={url} frontmatter={post.frontmatter} node={ast} />
         </React.StrictMode >
       );
-      return { html }
+      return html;
     }
   }
 
@@ -33,9 +33,7 @@ export async function render(_req: http.IncomingMessage, res: http.ServerRespons
           <App posts={Posts} />
         </React.StrictMode >
       );
-      return { html }
+      return html;
     }
   }
-
-  // return { html: `"${url}" not found` };
 }
