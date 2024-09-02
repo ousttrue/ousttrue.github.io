@@ -1,6 +1,7 @@
+import assert from 'node:assert'
 import React from 'react';
-import type { MarkdownData } from '../mymd-vite-plugin.ts';
-import { Node } from "mdast";
+import type { MarkdownData, Frontmatter } from '../mymd-vite-plugin.ts';
+import { Node, Parent, Root } from "mdast";
 import { RootContent, RootContentMap, PhrasingContent } from "mdast";
 import { remark } from "remark";
 import remarkFrontmatter from "remark-frontmatter";
@@ -15,32 +16,11 @@ export type MarkdownProps = {
   // mdast: Node,
 };
 
-export async function markdownParser(src: string): Promise<Node> {
+export async function markdownParser(src: string): Promise<Root> {
   const parsed = parseMarkdown.parse(src);
   const mdastRoot = await parseMarkdown.run(parsed);
+  // @ts-ignore
   return mdastRoot;
-}
-
-export function MarkdownRenderer(props: { node: Node }) {
-  return NodesRenderer({ nodes: props.node.children });
-}
-
-function NodesRenderer(props) {
-  const nodes = props.nodes;
-  return nodes.map((node, index) => {
-    switch (node.type) {
-      case "text": {
-        return <TextNode key={index} node={node} />;
-      }
-      case "paragraph": {
-        return <ParagraphNode key={index} node={node} />;
-      }
-      default: {
-        return <div>{`unknown: ${node.type} => ${JSON.stringify(node)}`}</div>
-        // throw new Error(`f${node}`);
-      }
-    }
-  });
 }
 
 const TextNode: React.FC<{ node: RootContentMap["text"] }> = ({ node }) => {
@@ -50,16 +30,34 @@ const TextNode: React.FC<{ node: RootContentMap["text"] }> = ({ node }) => {
 const ParagraphNode: React.FC<{ node: RootContentMap["paragraph"] }> = ({ node }) => {
   return (
     <p>
-      <NodesRenderer nodes={node.children} />
+      <NodesRenderer node={node} />
     </p>
   );
 };
 
-export function Markdown(props: MarkdownProps) {
-  const { path, post } = props;
+export function NodesRenderer({ node }: { node: Parent }) {
+  return node.children.map((child, index) => {
+    switch (child.type) {
+      case "text": {
+        return <TextNode key={index} node={child} />;
+      }
+      case "paragraph": {
+        return <ParagraphNode key={index} node={child} />;
+      }
+      default: {
+        return <p>{`unknown: ${child.type} => ${JSON.stringify(child)}`}</p>
+        // throw new Error(`f${child}`);
+      }
+    }
+  });
+}
+
+export function Markdown({ frontmatter, node }: { frontmatter: Frontmatter, node: Root }) {
 
   return (<>
-    <div>{post.frontmatter.title}</div>
-    <div>{post.content}</div>
+    <h1>{frontmatter.title}</h1>
+    <b>{frontmatter.date.toString()}</b>
+    <NodesRenderer node={node} />
   </>);
+
 }
