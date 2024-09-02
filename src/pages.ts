@@ -26,8 +26,15 @@ function fixPath(key: string, ext: string) {
   return key.substring(ROOT.length, key.length - ext.length) + ".html";
 }
 
+function fixDate(v: MarkdownData) {
+  const { frontmatter, content } = v;
+  const d = new Date();
+  d.setTime(Date.parse(frontmatter.date));
+  return { content, frontmatter: { ...frontmatter, date: d } };
+}
+
 export const Pages = Object.fromEntries(
   Object.entries(pages).map(([k, v]) => [fixPath(k, '.tsx'), v]));
 export const Posts = Object.fromEntries(
-  Object.entries(posts).map(([k, v]) => [fixPath(k, '.md'), v]));
+  Object.entries(posts).map(([k, v]) => [fixPath(k, '.md'), fixDate(v)]));
 

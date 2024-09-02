@@ -4,7 +4,7 @@ import YAML from 'yaml'
 
 export type Frontmatter = {
   title: string,
-  date: Date,
+  date: string | Date,
 };
 
 export type MarkdownData = {
@@ -23,6 +23,11 @@ function splitMatter(src: string): MarkdownData {
         throw new Error(src.substring(4));
       }
       const frontmatter = YAML.parse(src.substring(0, found));
+      // if (frontmatter.data instanceof Date) {
+      // }
+      // else {
+      //   frontmatter.date = Date.parse(frontmatter.date);
+      // }
       const content = src.substring(found + 5);
       return { frontmatter, content };
     }
