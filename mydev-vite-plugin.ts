@@ -36,13 +36,20 @@ export default function pluginDevelop(): Plugin {
             //    適切なフレームワークの SSR API を呼び出すことを想定しています。
             const appHtml = await render(req, res)
 
-            // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
-            const html = template.replace(`<!--ssr-outlet-->`, appHtml.html)
+            if (appHtml) {
+              // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
+              const html = template.replace(`<!--ssr-outlet-->`, appHtml.html)
 
-            // 6. レンダリングされた HTML をクライアントに送ります。
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            res.end(html)
+              // 6. レンダリングされた HTML をクライアントに送ります。
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'text/html');
+              res.end(html)
+            }
+            else {
+              // do nothing ?
+              res.statusCode = 404;
+              res.end('not found')
+            }
           } catch (e) {
             console.error(e);
             // エラーが検出された場合は、Vite にスタックトレースを修正させ、実際のソースコードに
@@ -50,7 +57,6 @@ export default function pluginDevelop(): Plugin {
             vite.ssrFixStacktrace(e)
             next(e)
           }
-
         })
       }
 

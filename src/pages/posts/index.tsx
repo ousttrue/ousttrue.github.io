@@ -1,10 +1,11 @@
-import { Posts } from '../../pages';
+import { type MarkdownData } from '../../../mymd-vite-plugin';
 
-export default function() {
+export default function({ posts }: { posts: { [key: string]: MarkdownData } }) {
   return (
     <ul>
       {
-        Object.entries(Posts).map(([key, post]) => (<li key={key}>
+        Object.entries(posts).toSorted((a, b) => a < b ? 1 : -1).map(([key, post]) => (<li key={key}>
+          <span>{`${post.frontmatter.date}`}</span>
           <a href={key}>
             {post.frontmatter.title}
           </a>

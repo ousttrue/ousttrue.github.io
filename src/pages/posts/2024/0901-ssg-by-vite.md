@@ -65,7 +65,25 @@ https://ja.vitejs.dev/guide/ssr
 。
 ```
 
-## `import.meta.glob` と StaticRouter
+## Router 要らんかった
+
+`hyderate` しないならば Router は無用だった。
+あると複雑さが跳ね上がる。async とか。
+無ければシンプルで、非同期も自然に記述できる。
+`remark` の await を仕込むのに頭をひねる必要もない。
+
+```js
+async function(url: string): {html: string}
+{
+  switch(url)
+  {
+    case "/" => "<html>root</html>";
+    case "/hoge.html" => "<html>hoge/html>";
+  }
+}
+```
+
+## `import.meta.glob`
 
 いままでフレームワークに隠蔽されてブラックボックスだったところが
 ようやくわかった。
