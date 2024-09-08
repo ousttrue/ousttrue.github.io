@@ -150,6 +150,12 @@ vite.close(); // vite は listen せずに終了する
 たしかに `mdast` => `dom` の方が
 `mdast` => `hast` => `dom` より簡単かもしれない。
 
+あと `mdx` ももういいかなと。
+mdx は、 `markdown` だと ok な記述がシンタックスエラーになってしまうのがわりとつらい。
+html タグ風の記述や、 `import `/ `export `などの特定の英単語がプログラウ要素として
+誤認されてしまう。
+
+
 全体的に easy から simple に倒したのだが、
 simple の要求する練度の高さがわりと険しいのであった。
 

@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ vite ]
+  # このワークフローを GitHub の Actions タブから手動で実行できるようにします。
+  workflow_dispatch:
+
+# このジョブがリポジトリをクローンし、ページデプロイメントを作成することを許可します。
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 1 つの同時デプロイメントを可能にする
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Build website
+        run: |
+          npm run build
+          npm run prerender
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
