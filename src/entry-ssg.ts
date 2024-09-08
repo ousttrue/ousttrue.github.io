@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { Pages, Posts } from './pages.ts';
+import { PAGES, POSTS } from './pages.ts';
 import { render } from './entry-server.tsx';
 
 // pre-render each route...
@@ -43,10 +43,10 @@ export async function generate(dist: string) {
   //    from @vitejs/plugin-react
   // const template = await vite.transformIndexHtml(req.url || "", template_src)
 
-  for (const [url, _] of Object.entries(Posts)) {
+  for (const [url, _] of Object.entries(POSTS)) {
     await prerenderAndWrite(template_src, url, dist);
   }
-  for (const [url, _] of Object.entries(Pages)) {
+  for (const [url, _] of Object.entries(PAGES)) {
     await prerenderAndWrite(template_src, url, dist);
   }
 }
