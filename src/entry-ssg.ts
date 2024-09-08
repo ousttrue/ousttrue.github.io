@@ -1,5 +1,6 @@
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from 'node:fs';
+import path from 'node:path';
+import http from 'node:http';
 import { Pages, Posts } from './pages.ts';
 import { render } from './entry-server.tsx';
 
@@ -8,7 +9,11 @@ async function prerenderAndWrite(template: string, url: string, dist: string) {
   const filePath = dist + url;
   console.log('pre-render...:', filePath)
 
-  const rendered = await render({ originalUrl: url }, null)
+  const incommingMessage = {
+    originalUrl: url,
+  };
+
+  const rendered = await render(incommingMessage as unknown as http.IncomingMessage, null)
   if (rendered) {
     // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
     const html = template.replace(`<!--ssr-outlet-->`, rendered);
@@ -33,9 +38,9 @@ export async function generate(dist: string) {
     'utf-8',
   )
 
-  // // 2. Vite の HTML の変換を適用します。これにより Vite の HMR クライアントが定義され
-  // //    Vite プラグインからの HTML 変換も適用します。 e.g. global preambles
-  // //    from @vitejs/plugin-react
+  // 2. Vite の HTML の変換を適用します。これにより Vite の HMR クライアントが定義され
+  //    Vite プラグインからの HTML 変換も適用します。 e.g. global preambles
+  //    from @vitejs/plugin-react
   // const template = await vite.transformIndexHtml(req.url || "", template_src)
 
   for (const [url, _] of Object.entries(Posts)) {
