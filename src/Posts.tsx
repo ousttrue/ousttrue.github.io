@@ -1,0 +1,36 @@
+import { SORTED_POSTS } from './pages';
+import Title from './Title';
+import type { Frontmatter, MarkdownData } from '../mymd-vite-plugin.ts';
+
+type Props = {
+  tag?: string,
+};
+
+function filter(key: string, post: MarkdownData, props: Props): boolean {
+  if (props.tag) {
+    if (post.frontmatter.tags) {
+      for (const tag of post.frontmatter.tags) {
+        if (tag == props.tag) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  return true;
+}
+
+export default function(props: Props) {
+  return (
+    <ul>
+      {SORTED_POSTS.filter(([key, post]) =>
+        filter(key, post, props)).map(([key, post]) => {
+          return (<li key={key}>
+            <Title path={key} frontmatter={post.frontmatter} />
+          </li>);
+        })
+      }
+    </ul>
+  )
+}

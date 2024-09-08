@@ -13,6 +13,14 @@ export type MarkdownData = {
   content: string,
 };
 
+function fixFrontmatter(frontmatter: Frontmatter)
+{
+  if(frontmatter.tags)
+  {
+    frontmatter.tags = frontmatter.tags.map(x => x.toLowerCase());
+  }
+}
+
 function splitMatter(src: string): MarkdownData {
   src = src.replace(/\r\n/g, "\n");
   const head = src.substring(0, 4);
@@ -24,11 +32,7 @@ function splitMatter(src: string): MarkdownData {
         throw new Error(src.substring(4));
       }
       const frontmatter = YAML.parse(src.substring(0, found));
-      // if (frontmatter.data instanceof Date) {
-      // }
-      // else {
-      //   frontmatter.date = Date.parse(frontmatter.date);
-      // }
+      fixFrontmatter(frontmatter);
       const content = src.substring(found + 5);
       return { frontmatter, content };
     }

@@ -1,16 +1,5 @@
-import { SortedPosts } from '../../pages';
-import Title from '../../Title';
+import Posts from '../../Posts';
 
 export default function(_) {
-  return (
-    <ul>
-      {SortedPosts.map(([key, post]) => {
-        // let date = `${typeof (post.frontmatter.date)}: ${post.frontmatter.date}`;
-        return (<li key={key}>
-          <Title path={key} frontmatter={post.frontmatter} />
-        </li>);
-      })
-      }
-    </ul>
-  )
+  return <Posts />
 }

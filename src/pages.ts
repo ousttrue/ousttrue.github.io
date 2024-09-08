@@ -24,11 +24,11 @@ const posts = import.meta.glob<MarkdownData>(
 // .xxx replace to '.html'
 function fixPath(key: string, ext: string) {
   const stem = key.substring(ROOT.length, key.length - ext.length);
-  if(stem.endsWith("/index")){
-    return  stem + ".html";
+  if (stem.endsWith("/index")) {
+    return stem + ".html";
   }
-  else{
-    return  stem + "/index.html";
+  else {
+    return stem + "/index.html";
   }
 }
 
@@ -41,12 +41,24 @@ function fixDate(v: MarkdownData) {
   return { content, frontmatter: { ...frontmatter, date: d } };
 }
 
-export const Pages = Object.fromEntries(
+export const PAGES = Object.fromEntries(
   Object.entries(pages).map(([k, v]) => [fixPath(k, '.tsx'), v]));
-export const Posts = Object.fromEntries(
+export const POSTS = Object.fromEntries(
   Object.entries(posts).map(([k, v]) => [fixPath(k, '.md'), fixDate(v)]));
 
 
-export const SortedPosts = Object.entries(Posts).toSorted(
+export const SORTED_POSTS = Object.entries(POSTS).toSorted(
   (a, b) => a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1
 );
+
+export const TAGS = function() {
+  const tags = new Set<string>();
+  for (const [_, post] of SORTED_POSTS) {
+    if (post.frontmatter.tags) {
+      for (const tag of post.frontmatter.tags) {
+        tags.add(tag);
+      }
+    }
+  }
+  return tags;
+}();

@@ -2,7 +2,7 @@ import { type Frontmatter } from '../mymd-vite-plugin';
 import DateFormat from './DateFormat';
 
 function Tag({ tag }: { tag: string }) {
-  return <a className="tag" href={`/posts/tags/${tag}`}>{tag}</a>
+  return <a className="tag" href={`/tags/${tag}`}>{tag}</a>
 }
 
 export default function Title({ path, frontmatter }: { path: string, frontmatter: Frontmatter }) {
