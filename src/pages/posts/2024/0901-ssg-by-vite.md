@@ -12,7 +12,7 @@ tags: [vite]
 - [テンプレートエンジンに React を使いつつ、きれいな HTML を生成したいんじゃ！！](https://zenn.dev/otsukayuhi/articles/e52651b4e2c5ae7c4a17)
 
 であり、生成物は static な HTML でいいのです。
-なんとなく `vite` が核心であり、他はなるべく少なくしたいという気持があった。
+なんとなく `vite` が核心であり、他はなるべく少なくしたいという気持ちがあった。
 
 ## vite の server / client の区別がついてなかった
 
@@ -37,11 +37,39 @@ node --nolazy --import \"data:text/javascript,import { register } from 'node:mod
 
 これで `vscode` のデバッガーをアタッチできるので、手に負える見通しができた。
 
+## でも express も入れたくない
+
+`vite` がサーバー能力あるからそれでいい。
+
+https://ja.vitejs.dev/guide/ssr
+
+に書いてある内容を vite の plugin の中に入れることでできる。
+この手法は、 `minista` などが実践している。
+
+https://github.com/qrac/minista/blob/main/packages/minista/src/cli/develop.ts
+
+```ts
+export default function pluginDevelop(): Plugin {
+  return {
+    name: "mydev-vite-plugin",
+
+    configureServer: (vite: ViteDevServer) => {
+      return () => {
+        // https://ja.vitejs.dev/guide/ssr
+        vite.middlewares.use(
+          async (req: http.IncomingMessage, res: http.ServerResponse, next) => {
+            // SSR
+          },
+        );
+      };
+    },
+  };
+}
+```
+
 ## シンプル SSR で React が動くようにする
 
 `@vitejs/plugin-react` なしでシンプルなものを作った。
-
-https://ja.vitejs.dev/guide/ssr
 
 `hyderate` も最初は要らない。
 あとで必要になったら足そう。
@@ -59,13 +87,12 @@ https://ja.vitejs.dev/guide/ssr
   <body>
     <div id="root"><!--app-html--></div>
     <script type="module" src="/src/entry-client.jsx"></script>
-    <!-- 👈 この行を削除した -->
+    <!-- 👆 この行を削除した -->
   </body>
 </html>
-。
 ```
 
-## Router 要らんかった
+## React の Router 要らんかった
 
 `hyderate` しないならば Router は無用だった。
 あると複雑さが跳ね上がる。async とか。
@@ -73,6 +100,7 @@ https://ja.vitejs.dev/guide/ssr
 `remark` の await を仕込むのに頭をひねる必要もない。
 
 ```js
+// url でswitch して html 文字列を返すだけ
 async function(url: string): {html: string}
 {
   switch(url)
@@ -85,19 +113,20 @@ async function(url: string): {html: string}
 
 ## `import.meta.glob`
 
-いままでフレームワークに隠蔽されてブラックボックスだったところが
-ようやくわかった。
-
 基本的に `import.meta.glob` で目的は達成できるのだけど、
+
+ライブラリーに任せると markdown が ReactComponent 化するのが
+早すぎて逆に難しくなるという状況だった。
+
 この段階では frontmatter にアクセスしたい。
-ライブラリーに任せると markdown が ReactComponent 化されていたりして、
-逆に難しくなるという状況だった。
-自作すればシンプル。
+自作して `import.meta.glob` は frontmatter のコレションを返すようにした。
+すべてのページで、すべての frontmatter にアクセスできるので
+ナビゲーションの実装も簡単。
 
 ## prerender も`import.meta.glob` で OK
 
 `vite.ssrLoadModule` 内で `import.meta.glob` して順に HTML 化して
-出力すればできた。
+ファイルに出力すればできた。
 `React` の `ssr-manifest.json` は作れなかったのだけど、使わなかったのでよし。
 
 ```js
@@ -118,4 +147,9 @@ vite.close(); // vite は listen せずに終了する
 
 - [react-markdown をやめて remark から自力でレンダリングするようにした話 | stin&#x27;s Blog](https://blog.stin.ink/articles/replace-react-markdown-with-remark)
 
-自分でやる方がむしろわかりやすい。
+たしかに `mdast` => `dom` の方が
+`mdast` => `hast` => `dom` より簡単かもしれない。
+
+全体的に easy から simple に倒したのだが、
+simple の要求する練度の高さがわりと険しいのであった。
+
