@@ -1,8 +1,5 @@
 import { TAGS } from '../../pages';
-
-function Tag({ tag }: { tag: string }) {
-  return (<a href={`/tags/${tag}`}>{tag}</a>);
-}
+import { Tag } from '../../Title.tsx';
 
 export default function(_) {
   return (

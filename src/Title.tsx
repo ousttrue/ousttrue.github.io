@@ -1,16 +1,16 @@
 import { type Frontmatter } from '../mymd-vite-plugin';
 import DateFormat from './DateFormat';
 
-function Tag({ tag }: { tag: string }) {
-  return <a className="tag" href={`/tags/${tag}`}>{tag}</a>
+export function Tag({ tag }: { tag: string }) {
+  return <a className="button" href={`/tags/${tag}`}>{tag}</a>
 }
 
 export default function Title({ path, frontmatter }: { path: string, frontmatter: Frontmatter }) {
   return (<header className="title">
-    <DateFormat date={frontmatter.date} />
-    <a href={path}>
+    <h1><a href={path}>
       {frontmatter.title}
-    </a>
+    </a></h1>
+    <DateFormat date={frontmatter.date} />
     {frontmatter.tags ? frontmatter.tags.map((tag, i) => <Tag key={i} tag={tag} />) : ''}
   </header>);
 }
