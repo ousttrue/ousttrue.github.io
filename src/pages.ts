@@ -23,7 +23,13 @@ const posts = import.meta.glob<MarkdownData>(
 // from /src/pages
 // .xxx replace to '.html'
 function fixPath(key: string, ext: string) {
-  return key.substring(ROOT.length, key.length - ext.length) + ".html";
+  const stem = key.substring(ROOT.length, key.length - ext.length);
+  if(stem.endsWith("/index")){
+    return  stem + ".html";
+  }
+  else{
+    return  stem + "/index.html";
+  }
 }
 
 function fixDate(v: MarkdownData) {
