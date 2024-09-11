@@ -67,6 +67,11 @@ const zig_sokol = [
     url: "https://ousttrue.github.io/learnopengl-examples/",
     icon: "🔗",
   },
+  {
+    name: "ozz-animation",
+    url: "https://ousttrue.github.io/ozz-animation/",
+    icon: "🔗",
+  },
 ]
 
 const vrmeditor = [
