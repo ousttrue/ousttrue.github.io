@@ -1,13 +1,18 @@
 import assert from 'node:assert'
 import React from 'react';
 import type { MarkdownData, Frontmatter } from '../mymd-vite-plugin.ts';
-import { Node, Parent, Root } from "mdast";
+import {
+  Node, Parent, Root,
+  Code, Text, Paragraph, InlineCode, Link, List, ListItem,
+  Heading,
+} from "mdast";
 import { RootContent, RootContentMap, PhrasingContent } from "mdast";
 import { remark } from "remark";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import DateFormat from './DateFormat.tsx';
 import Title from './Title.tsx';
+import { codeToHtml } from 'shiki'
 
 const parseMarkdown = remark()
   .use(remarkFrontmatter)
@@ -25,11 +30,41 @@ export async function markdownParser(src: string): Promise<Root> {
   return mdastRoot;
 }
 
-function TextNode({ node }: { node: RootContentMap["text"] }) {
-  return node.value;
-};
+export function isParent(node: Node): node is Parent {
+  return node !== null &&
+    typeof node === "object" &&
+    node.hasOwnProperty('children');
+}
 
-function ParagraphNode({ node }: { node: RootContentMap["paragraph"] }) {
+export async function markdownModifyAsync(node: Node): Promise<void> {
+  if (isParent(node)) {
+    for (const child of node.children) {
+      await markdownModifyAsync(child);
+    }
+  }
+  else {
+    switch (node.type) {
+
+      case 'code':
+        {
+          // shiki
+          const typed = node as Code;
+          const lang = typed.lang;
+          if (typeof (lang) === 'string') {
+            const html = await codeToHtml(typed.value, {
+              lang,
+              theme: 'min-dark'
+            });
+            // @ts-ignore
+            node.html = html;
+          }
+          break;
+        }
+    }
+  }
+}
+
+function RootNode({ node }: { node: Root }) {
   return (
     <p>
       {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
@@ -37,76 +72,79 @@ function ParagraphNode({ node }: { node: RootContentMap["paragraph"] }) {
   );
 };
 
-function LinkNode({ node }: { node: RootContentMap["link"] }) {
+function TextNode({ node }: { node: Text }) {
+  return node.value;
+};
+
+function ParagraphNode({ node }: { node: Paragraph }) {
+  return (
+    <p>
+      {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
+    </p>
+  );
+};
+
+function LinkNode({ node }: { node: Link }) {
   // @ts-ignore
   return (<a href={node.url}>
     {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
   </a>);
 }
 
-function ListNode({ node }: { node: RootContentMap["list"] }) {
+function ListNode({ node }: { node: List }) {
   return (<ul>
     {node.children.map((child, i) => <li key={i}><NodeRenderer node={child} /></li>)}
   </ul>)
 }
 
-function ListItemNode({ node }: { node: RootContentMap["listItem"] }) {
+function ListItemNode({ node }: { node: ListItem }) {
   return (<li>
     {node.children.map((child, i) => <li key={i}><NodeRenderer node={child} /></li>)}
   </li>)
 }
 
-function HeadingNode({ node }: { node: RootContentMap["heading"] }) {
+function HeadingNode({ node }: { node: Heading }) {
   return (<h2>
     {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
   </h2>);
 }
 
-function InlineCodeNode({ node }: { node: RootContentMap["inlineCode"] }) {
+function InlineCodeNode({ node }: { node: InlineCode }) {
   return (<span className="inline">
     {node.value}
   </span>);
 }
 
-function CodeNode({ node }: { node: RootContentMap["code"] }) {
-  return (<code><pre>
-    {node.value}
-  </pre></code>);
+function CodeNode({ node }: { node: Code }) {
+  // @ts-ignore
+  return <div dangerouslySetInnerHTML={{ __html: node.html }} />
 }
 
 export function NodeRenderer({ node }: { node: Node }) {
   switch (node.type) {
     case "text": {
-      // @ts-ignore
-      return <TextNode node={node} />;
+      return <TextNode node={node as Text} />;
     }
     case "paragraph": {
-      // @ts-ignore
-      return <ParagraphNode node={node} />;
+      return <ParagraphNode node={node as Paragraph} />;
     }
     case "link": {
-      // @ts-ignore
-      return <LinkNode node={node} />;
+      return <LinkNode node={node as Link} />;
     }
     case "list": {
-      // @ts-ignore
-      return <ListNode node={node} />;
+      return <ListNode node={node as List} />;
     }
     case "listItem": {
-      // @ts-ignore
-      return <ListItemNode node={node} />;
+      return <ListItemNode node={node as ListItem} />;
     }
     case "heading": {
-      // @ts-ignore
-      return <HeadingNode node={node} />;
+      return <HeadingNode node={node as Heading} />;
     }
     case "inlineCode": {
-      // @ts-ignore
-      return <InlineCodeNode node={node} />;
+      return <InlineCodeNode node={node as InlineCode} />;
     }
     case "code": {
-      // @ts-ignore
-      return <CodeNode node={node} />
+      return <CodeNode node={node as Code} />
     }
     default: {
       return <div className="unknown">{`unknown: ${node.type} => ${JSON.stringify(node)}`}</div>
@@ -121,7 +159,7 @@ export function Markdown({ path, frontmatter, node }: { path: string, frontmatte
     <article>
       <Title path={path} frontmatter={frontmatter} />
       <section>
-        {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
+        <RootNode node={node} />
       </section>
     </article>
   );
