@@ -1,13 +1,12 @@
-import http from "node:http";
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { PAGES, POSTS, TAGS } from './pages.ts';
 import { markdownParser, Markdown } from "./mdast_utils.tsx";
 import Posts from './Posts.tsx';
+import type { IncomingMessage } from 'connect';
 
-export async function render(_req: http.IncomingMessage, res: http.ServerResponse): Promise<string | null> {
-  // @ts-ignore
-  let url = _req.originalUrl || '';
+export async function render(req: IncomingMessage): Promise<string | null> {
+  let url = req.originalUrl || '';
   if (url.endsWith('/')) {
     url += 'index.html';
   }
@@ -53,5 +52,4 @@ export async function render(_req: http.IncomingMessage, res: http.ServerRespons
       }
     }
   }
-
 }

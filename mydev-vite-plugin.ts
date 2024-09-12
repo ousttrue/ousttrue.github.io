@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import http from 'node:http';
+import type { ServerResponse } from 'node:http';
+import type { IncomingMessage } from 'connect';
 import { Plugin, ViteDevServer } from "vite";
 
 export default function pluginDevelop(): Plugin {
@@ -12,7 +13,7 @@ export default function pluginDevelop(): Plugin {
       return () => {
         // https://ja.vitejs.dev/guide/ssr
         vite.middlewares.use(async (
-          req: http.IncomingMessage, res: http.ServerResponse, next) => {
+          req: IncomingMessage, res: ServerResponse, next) => {
 
           try {
             // 1. index.html を読み込む
