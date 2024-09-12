@@ -38,7 +38,7 @@ inline 要素は別言語扱い。
 headlines の `@codeblock` と同じにしたかったがわからず。
 `@text.underline` でお茶を濁す。
 
-```scm
+```scheme
 ;; extends
 (inline
   (code_span) @text.underline)

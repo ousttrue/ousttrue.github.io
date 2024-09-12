@@ -30,7 +30,7 @@ print(logging.getLogger().handlers)
 空の場合に logging モジュールが勝手に設定する、
 lastResort に流される！
 
-```pytnon
+```python
 _defaultLastResort = _StderrHandler(WARNING)
 lastResort = _defaultLastResort
 ```

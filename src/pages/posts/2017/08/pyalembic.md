@@ -78,7 +78,7 @@ Anaconda3(Windows10 64bit)でモジュール探す
     PyIlmBase のビルド
     OpenEXR のサイトにある pyilmbase-2.2.0tar.gz を使おうとしたのだけど、github の方が新しいようなのでこちらを使う。
     Python3 向けの修正
-    Python2 と Pytnon3 間での非互換によるコンパイルエラーを直していく。
+    Python2 と Python3 間での非互換によるコンパイルエラーを直していく。
 
     ```
     PySliceObject_XXX -> PyObject_XXX

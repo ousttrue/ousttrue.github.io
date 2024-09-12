@@ -49,15 +49,23 @@ export async function markdownModifyAsync(node: Node): Promise<void> {
         {
           // shiki
           const typed = node as Code;
-          const lang = typed.lang;
-          if (typeof (lang) === 'string') {
-            const html = await codeToHtml(typed.value, {
-              lang,
-              theme: 'min-dark'
-            });
-            // @ts-ignore
-            node.html = html;
+          let lang = typed.lang || '';
+          if (lang.startsWith("title=")) {
+            lang = '';
           }
+          if (lang.includes('/')) {
+            lang = '';
+          }
+          if (lang.includes('.')) {
+            lang = '';
+          }
+          const html = await codeToHtml(typed.value, {
+            lang,
+            theme: 'min-dark'
+          });
+          // @ts-ignore
+          node.html = html;
+
           break;
         }
     }

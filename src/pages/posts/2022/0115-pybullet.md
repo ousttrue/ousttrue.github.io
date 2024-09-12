@@ -18,7 +18,7 @@ CMake を整理しながら推進。
 
 ざっくりとこんな感じか。
 
-```{digraph} G
+```
 rankdir="BT"
 
 ExampleBrowser -> SimpleOpenGL3App -> gwen -> "Select DEMO";

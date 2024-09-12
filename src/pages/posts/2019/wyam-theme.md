@@ -59,7 +59,7 @@ config.yml も `#theme BlogTemplate` とする。
 * Model
 * Context
 
-```cshtml
+```html
 <a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Back To posts</a>
 ```
 

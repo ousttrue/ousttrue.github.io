@@ -75,7 +75,7 @@ ffi.metatype(ct, metatable)
 
 https://github.com/ousttrue/limgui/blob/master/lua/mafex.lua
 
-```C
+```c
     typedef union {
         struct {
             float _11, _12, _13, _14;

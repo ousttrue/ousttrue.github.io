@@ -45,7 +45,7 @@ https://cmake.org/cmake/help/latest/module/FindBoost.html
 
 しかし
 FIND_PACKAGEした結果のBoost_LIBRARIESを使うのには注意が必要。
-ネイティブモジュール開発で、デバッグ版にRelease版のPythonをリンクする場合(通常そうする)に、Boost.PytnonもRelease版にリンクするべきなのでここではまりうる(コンパイルは通るが実行時に謎エラーが出る)。LINK_DIRECTORIESを使って、リンク対象はBOOSTのautolink頼りの方が確実かもしれない。
+ネイティブモジュール開発で、デバッグ版にRelease版のPythonをリンクする場合(通常そうする)に、Boost.PythonもRelease版にリンクするべきなのでここではまりうる(コンパイルは通るが実行時に謎エラーが出る)。LINK_DIRECTORIESを使って、リンク対象はBOOSTのautolink頼りの方が確実かもしれない。
 
 BOOST_ALL_NO_LIB を定義して Boost_LIBRARIESにリンクする
 Boost_LIBRARIESを使わずに、BoostのAutoLinkに従う

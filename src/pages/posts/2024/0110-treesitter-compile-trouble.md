@@ -7,7 +7,7 @@ tags: ["nvim", "treesitter", "msvc"]
 日本語Windowsのロケール問題だったー。
 たぶん `utf-8` モードにすれば起きない。
 
-```error
+```
 AppData\Local\nvim-data\tree-sitter-svelte\src\allocator.h(1): warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
 ```
 msvc に `/utf-8` 引数を追加すればなおる。
