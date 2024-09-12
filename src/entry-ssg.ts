@@ -3,17 +3,16 @@ import path from 'node:path';
 import http from 'node:http';
 import { PAGES, POSTS } from './pages.ts';
 import { render } from './entry-server.tsx';
+import type { IncomingMessage } from 'connect';
 
 // pre-render each route...
 async function prerenderAndWrite(template: string, url: string, dist: string) {
   const filePath = dist + url;
   console.log('pre-render...:', filePath)
 
-  const incommingMessage = {
+  const rendered = await render({
     originalUrl: url,
-  };
-
-  const rendered = await render(incommingMessage as unknown as http.IncomingMessage, null)
+  } as IncomingMessage)
   if (rendered) {
     // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
     const html = template.replace(`<!--ssr-outlet-->`, rendered);
