@@ -1,9 +1,10 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { PAGES, POSTS, TAGS } from './pages.ts';
-import { markdownParser, markdownModifyAsync, Markdown } from "./mdast_utils.tsx";
+import { markdownParser, markdownModifyAsync } from "./mdast_utils.tsx";
 import Posts from './Posts.tsx';
 import type { IncomingMessage } from 'connect';
+import Markdown from './Markdown.tsx';
 
 export async function render(req: IncomingMessage): Promise<string | null> {
   let url = req.originalUrl || '';
