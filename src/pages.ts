@@ -51,7 +51,7 @@ export const SORTED_POSTS = Object.entries(POSTS).toSorted(
   (a, b) => a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1
 );
 
-export const TAGS = function() {
+export const TAGS: Set<string> = function() {
   const tags = new Set<string>();
   for (const [_, post] of SORTED_POSTS) {
     if (post.frontmatter.tags) {

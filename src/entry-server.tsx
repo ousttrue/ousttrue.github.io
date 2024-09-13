@@ -40,8 +40,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
   }
 
   {
-    const m = url.match(/^\/tags\/(.*)/);
-
+    const m = url.match(/^\/tags\/(.*)\/index\.html$/);
     if (m) {
       const tag = m[1];
       if (TAGS.has(tag)) {

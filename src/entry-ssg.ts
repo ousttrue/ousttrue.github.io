@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { PAGES, POSTS } from './pages.ts';
+import { PAGES, POSTS, TAGS } from './pages.ts';
 import { render } from './entry-server.tsx';
 import type { IncomingMessage } from 'connect';
 
@@ -47,5 +47,8 @@ export async function generate(dist: string) {
   }
   for (const [url, _] of Object.entries(PAGES)) {
     await prerenderAndWrite(template_src, url, dist);
+  }
+  for(const tag of TAGS){
+    await prerenderAndWrite(template_src, `/tags/${tag}/`, dist);
   }
 }
