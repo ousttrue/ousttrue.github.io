@@ -1,11 +1,18 @@
-export default function Layout(props) {
+import React from 'react';
+
+type LayoutProps = {
+  title: string,
+  children: React.ReactNode[],
+};
+
+export default function Layout(props: LayoutProps) {
   return (<html lang="en">
     <head>
       <meta charSet="UTF-8" />
-      <link rel="icon" type="image/svg+xml" href="/vite.svg" />
       <title>{props.title ? props.title : "三次元日誌"}</title>
+      <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+      <link href="/index.css" rel="stylesheet" />
     </head>
-    <link href="/index.css" rel="stylesheet" />
     <body>
       <header className="root">
         <nav>

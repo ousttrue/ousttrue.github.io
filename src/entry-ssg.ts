@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import http from 'node:http';
 import { PAGES, POSTS, TAGS } from './pages.ts';
 import { render } from './entry-server.tsx';
 import type { IncomingMessage } from 'connect';
@@ -44,11 +43,6 @@ export async function generate(dist: string) {
     'index.html',
     'utf-8',
   )
-
-  // 2. Vite の HTML の変換を適用します。これにより Vite の HMR クライアントが定義され
-  //    Vite プラグインからの HTML 変換も適用します。 e.g. global preambles
-  //    from @vitejs/plugin-react
-  // const template = await vite.transformIndexHtml(req.url || "", template_src)
 
   for (const [url, _] of Object.entries(POSTS)) {
     await prerenderAndWrite(template_src, url, dist);
