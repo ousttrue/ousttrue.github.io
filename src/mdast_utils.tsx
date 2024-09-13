@@ -101,13 +101,13 @@ function LinkNode({ node }: { node: Link }) {
 
 function ListNode({ node }: { node: List }) {
   return (<ul>
-    {node.children.map((child, i) => <li key={i}><NodeRenderer node={child} /></li>)}
+    {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
   </ul>)
 }
 
 function ListItemNode({ node }: { node: ListItem }) {
   return (<li>
-    {node.children.map((child, i) => <li key={i}><NodeRenderer node={child} /></li>)}
+    {node.children.map((child, i) => <NodeRenderer key={i} node={child} />)}
   </li>)
 }
 

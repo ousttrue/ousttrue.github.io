@@ -114,7 +114,6 @@ async function(url: string): {html: string}
 ## `import.meta.glob`
 
 基本的に `import.meta.glob` で目的は達成できるのだけど、
-
 ライブラリーに任せると markdown が ReactComponent 化するのが
 早すぎて逆に難しくなるという状況だった。
 
@@ -128,6 +127,10 @@ async function(url: string): {html: string}
 `vite.ssrLoadModule` 内で `import.meta.glob` して順に HTML 化して
 ファイルに出力すればできた。
 `React` の `ssr-manifest.json` は作れなかったのだけど、使わなかったのでよし。
+
+:::note
+manifest は `import.meta.glob` でファイル名の一覧を出力ればいよさそう。
+:::
 
 ```js
 // prerender.ts
@@ -152,7 +155,7 @@ vite.close(); // vite は listen せずに終了する
 
 あと `mdx` ももういいかなと。
 mdx は、 `markdown` だと ok な記述がシンタックスエラーになってしまうのがわりとつらい。
-html タグ風の記述や、 `import `/ `export `などの特定の英単語がプログラウ要素として
+html タグ風の記述や、 `import `/ `export `などの特定の英単語がプログラム要素として
 誤認されてしまう。
 
 

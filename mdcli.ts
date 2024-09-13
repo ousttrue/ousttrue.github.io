@@ -37,7 +37,7 @@ function printNode(node: Node, level = 0) {
         {
           const typed = node as Code;
           console.log(`${indent(level)}${node.type}: ${typed.lang}`);
-          console.log(node.html);
+          // console.log(node.html);
           break;
         }
 
