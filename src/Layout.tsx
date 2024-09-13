@@ -1,8 +1,8 @@
 import React from 'react';
 
 type LayoutProps = {
-  title: string,
-  children: React.ReactNode[],
+  title?: string,
+  children?: any,
 };
 
 export default function Layout(props: LayoutProps) {
@@ -22,7 +22,7 @@ export default function Layout(props: LayoutProps) {
           <a href="https://github.com/ousttrue/ousttrue.github.io">github</a>
         </nav>
       </header>
-      {props.children}
+      {props.children ?? ''}
       <footer className="root">footer</footer>
     </body>
   </html>);
