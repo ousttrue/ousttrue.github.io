@@ -5,6 +5,7 @@ import { markdownParser, markdownModifyAsync } from "./mdast_utils.tsx";
 import Posts from './Posts.tsx';
 import type { IncomingMessage } from 'connect';
 import Markdown from './Markdown.tsx';
+import Layout from './Layout.tsx';
 
 export async function render(req: IncomingMessage): Promise<string | null> {
   let url = req.originalUrl || '';
@@ -21,7 +22,9 @@ export async function render(req: IncomingMessage): Promise<string | null> {
 
       const html = ReactDOMServer.renderToString(
         <React.StrictMode>
-          <Markdown path={url} frontmatter={post.frontmatter} node={ast} />
+          <Layout title={post.frontmatter.title}>
+            <Markdown path={url} frontmatter={post.frontmatter} node={ast} />
+          </Layout>
         </React.StrictMode >
       );
       return html;
@@ -33,7 +36,9 @@ export async function render(req: IncomingMessage): Promise<string | null> {
     if (App) {
       const html = ReactDOMServer.renderToString(
         <React.StrictMode>
-          <App posts={POSTS} />
+          <Layout>
+            <App posts={POSTS} />
+          </Layout>
         </React.StrictMode >
       );
       return html;
@@ -47,7 +52,9 @@ export async function render(req: IncomingMessage): Promise<string | null> {
       if (TAGS.has(tag)) {
         const html = ReactDOMServer.renderToString(
           <React.StrictMode>
-            <Posts tag={tag} />
+            <Layout>
+              <Posts tag={tag} />
+            </Layout>
           </React.StrictMode >
         );
         return html;

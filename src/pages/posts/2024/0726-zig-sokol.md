@@ -1,5 +1,5 @@
 ---
-title: zig 再開
+title: zig 再開(その2)
 date: 2024-07-26
 tags: [zig, sokol, gizmo]
 ---
