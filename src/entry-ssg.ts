@@ -18,11 +18,16 @@ async function prerenderAndWrite(template: string, url: string, dist: string) {
     const html = template.replace(`<!--ssr-outlet-->`, rendered);
 
     const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      // console.log('mkdir', dir);
-      fs.mkdirSync(dir, { recursive: true });
+    try {
+      if (!fs.existsSync(dir)) {
+        // console.log('mkdir', dir);
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(filePath, html)
     }
-    fs.writeFileSync(filePath, html)
+    catch (e) {
+      console.error(e);
+    }
   }
   else {
     console.error(`${url} failed`)
@@ -48,7 +53,7 @@ export async function generate(dist: string) {
   for (const [url, _] of Object.entries(PAGES)) {
     await prerenderAndWrite(template_src, url, dist);
   }
-  for(const tag of TAGS){
+  for (const tag of TAGS) {
     await prerenderAndWrite(template_src, `/tags/${tag}/`, dist);
   }
 }
