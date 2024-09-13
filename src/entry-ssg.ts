@@ -7,7 +7,7 @@ import type { IncomingMessage } from 'connect';
 
 // pre-render each route...
 async function prerenderAndWrite(template: string, url: string, dist: string) {
-  const filePath = dist + url;
+  let filePath = dist + url;
   console.log('pre-render...:', filePath)
 
   const rendered = await render({
@@ -17,6 +17,9 @@ async function prerenderAndWrite(template: string, url: string, dist: string) {
     // 5. アプリケーションのレンダリングされた HTML をテンプレートに挿入します。
     const html = template.replace(`<!--ssr-outlet-->`, rendered);
 
+    if (filePath.endsWith('/')) {
+      filePath += 'index.html';
+    }
     const dir = path.dirname(filePath);
     try {
       if (!fs.existsSync(dir)) {
