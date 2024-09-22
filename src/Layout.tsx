@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './index.css?inline'
 
 type LayoutProps = {
   title?: string,
@@ -6,12 +7,15 @@ type LayoutProps = {
 };
 
 export default function Layout(props: LayoutProps) {
+  console.log(styles);
+
   return (<html lang="en">
     <head>
       <meta charSet="UTF-8" />
       <title>{props.title ? props.title : "三次元日誌"}</title>
       <link rel="icon" type="image/svg+xml" href="/vite.svg" />
       <link href="/index.css" rel="stylesheet" />
+      <style>{styles}</style>
     </head>
     <body>
       <header className="root">
