@@ -10,7 +10,7 @@ const config = defineConfig({
   plugins: [
     Develop(),
     Markdown(),
-    Inspect(),
+    // Inspect(),
   ],
 });
 
