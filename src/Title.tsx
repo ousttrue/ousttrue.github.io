@@ -5,12 +5,20 @@ export function Tag({ tag }: { tag: string }) {
   return <a className="button" href={`/tags/${tag}/`}>{tag}</a>
 }
 
-export default function Title({ path, frontmatter }: { path: string, frontmatter: Frontmatter }) {
-  return (<header className="title">
-    <h1><a href={path}>
-      {frontmatter.title}
-    </a></h1>
-    <DateFormat date={frontmatter.date} />
-    {frontmatter.tags ? frontmatter.tags.map((tag, i) => <Tag key={i} tag={tag} />) : ''}
-  </header>);
+export default function Title({ path, frontmatter, className }: {
+  path: string,
+  frontmatter: Frontmatter,
+  className?: string
+}) {
+  return (<div className={className ? className : "item"}>
+    <header className="title">
+      <DateFormat date={frontmatter.date} />
+      {frontmatter.tags ? frontmatter.tags.map((tag, i) => <Tag key={i} tag={tag} />) : ''}
+    </header>
+    <main>
+      <h2><a href={path}>
+        {frontmatter.title}
+      </a></h2>
+    </main>
+  </div>);
 }

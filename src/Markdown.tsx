@@ -115,12 +115,14 @@ export default function Markdown({ path, frontmatter, node }: { path: string, fr
 
   return (
     <article>
-      <Title path={path} frontmatter={frontmatter} />
+      <Title path={path} frontmatter={frontmatter} className="title" />
       <section>
         <RootNode node={node} />
       </section>
-      <Before index={i + 1} />
-      <After index={i - 1} />
+      <div className="before_after">
+        <Before index={i + 1} />
+        <After index={i - 1} />
+      </div>
     </article>
   );
 }

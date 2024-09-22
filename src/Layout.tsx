@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './index.css?inline'
+import styles from './Layout.css?inline'
 
 type LayoutProps = {
   title?: string,
@@ -18,16 +18,20 @@ export default function Layout(props: LayoutProps) {
       <style>{styles}</style>
     </head>
     <body>
-      <header className="root">
+      <div className="layout_header">
         <nav>
-          <a href="/">三次元日誌(vite)</a>
-          <a href="/posts/">posts</a>
-          <a href="/tags/">tags</a>
-          <a href="https://github.com/ousttrue/ousttrue.github.io">github</a>
+          <ul>
+            <li><a href="/">三次元日誌</a></li>
+            <li><a href="/posts/">posts</a></li>
+            <li><a href="/tags/">tags</a></li>
+            <li className="right"><a href="https://github.com/ousttrue/ousttrue.github.io">github</a></li>
+          </ul>
         </nav>
-      </header>
-      {props.children ?? ''}
-      <footer className="root">footer</footer>
+      </div>
+      <div className="layout_container">
+        {props.children ?? ''}
+      </div>
+      <div className="layout_footer">vite + react</div>
     </body>
   </html>);
 }

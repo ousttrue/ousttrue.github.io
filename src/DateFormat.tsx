@@ -4,13 +4,13 @@ export default function DateFormat({ date }: { date: Date | string }) {
     newDate.setTime(Date.parse(date));
     date = newDate;
   }
-  return (<span className="date">
-    <div>{date.getFullYear()}</div>
-    <div>
+  return (<>
+    <span>{date.getFullYear()}</span>
+    <span>
       {(date.getMonth() + 1).toString().padStart(2, '0')}
       {date.getDate().toString().padStart(2, '0')}
-    </div>
-  </span>);
+    </span>
+  </>);
 }
 
 

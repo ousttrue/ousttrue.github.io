@@ -1,6 +1,3 @@
-import React from 'react'
-import reactLogo from '../assets/react.svg'
-
 const items = [
   {
     name: "MesonBook(docusaurus)",
@@ -72,6 +69,11 @@ const zig_sokol = [
     url: "https://ousttrue.github.io/ozz-animation/",
     icon: "🔗",
   },
+  {
+    name: "zigltf",
+    url: "https://github.com/ousttrue/zigltf",
+    icon: "🔗",
+  },
 ]
 
 const vrmeditor = [
@@ -86,9 +88,10 @@ const vrmeditor = [
 
 export function Item(props) {
   return (
-    <div>
+    <div className="item">
       {props.icon}
-      <a href={props.url}>{props.name}</a>
+      {props.url ? <a href={props.url}>{props.name}</a> : ''}
+      {props.children}
     </div>
   );
 }
@@ -108,17 +111,11 @@ export default function() {
   return (
     <>
       <Items items={items} />
-
-      <h2> zig</h2>
-
+      <Item><h2>zig</h2></Item>
       <Items items={zig_items} />
-
-      <h2> zig sokol</h2>
-
+      <Item><h2>zig sokol</h2></Item>
       <Items items={zig_sokol} />
-
-      <h2> VrmEditor</h2>
-
+      <Item><h2>VrmEditor</h2></Item>
       <Items items={vrmeditor} />
     </>
   )
