@@ -10,6 +10,7 @@ export default function Layout(props: LayoutProps) {
   return (<html lang="en">
     <head>
       <meta charSet="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>{props.title ? props.title : "三次元日誌"}</title>
       <link rel="icon" type="image/svg+xml" href="/vite.svg" />
       <link href="/Layout.css" rel="stylesheet" />
