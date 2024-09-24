@@ -71,7 +71,7 @@ const zig_sokol = [
   },
   {
     name: "zigltf",
-    url: "https://github.com/ousttrue/zigltf",
+    url: "https://ousttrue.github.io/zigltf/",
     icon: "🔗",
   },
 ]
