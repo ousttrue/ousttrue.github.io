@@ -32,6 +32,8 @@ export default function() {
       <Items items={DATA.zig_sokol} />
       <div className="item"><h2>VrmEditor</h2></div>
       <Items items={DATA.vrmeditor} />
+      <div className="item"><h2>OpenVR</h2></div>
+      <Items items={DATA.openvr} />
     </>
   )
 }

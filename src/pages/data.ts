@@ -92,9 +92,15 @@ const vrmeditor: ItemType[] = [
   },
 ]
 
+const openvr: ItemType[] = [
+  { name: "VRExperiment", url: "https://github.com/ousttrue/VRExperiment", icon: "🔗" },
+  { name: "ExtraTracker", url: "https://github.com/ousttrue/ExtraTracker", icon: "🔗" },
+]
+
 export const DATA: { [name: string]: ItemType[] } = {
   items: items,
   zig_items: zig_items,
   zig_sokol: zig_sokol,
   vrmeditor: vrmeditor,
+  openvr: openvr,
 };
