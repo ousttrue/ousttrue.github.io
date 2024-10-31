@@ -1,5 +1,5 @@
 import React from 'react';
-import "./Layout.css"
+import styles from "./Layout.css?inline"
 
 type LayoutProps = {
   title?: string,
@@ -13,6 +13,7 @@ export default function Layout(props: LayoutProps) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>{props.title ? props.title : "三次元日誌"}</title>
       <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+      <style>{styles}</style>
     </head>
     <body>
       <div className="layout_header">
