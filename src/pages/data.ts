@@ -26,6 +26,11 @@ const items: ItemType[] = [
     icon: "🔗",
   },
   {
+    name: "lua note",
+    url: "https://ousttrue.github.io/lua_note/",
+    icon: "🔗",
+  },
+  {
     name: "Three.js練習(ladle + r3f)",
     url: "https://ousttrue.github.io/threets/",
     icon: "🔗",
