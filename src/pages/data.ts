@@ -7,7 +7,7 @@ export type ItemType = {
 const items: ItemType[] = [
   {
     name: "openxr + vulkan",
-    url: "https://github.com/ousttrue/hello_vulkan",
+    url: "https://ousttrue.github.io/hello_vulkan/",
     icon: "🔗",
   },
   {
