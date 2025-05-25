@@ -6,6 +6,11 @@ export type ItemType = {
 
 const items: ItemType[] = [
   {
+    name: "openxr + vulkan",
+    url: "https://github.com/ousttrue/hello_vulkan",
+    icon: "🔗",
+  },
+  {
     name: "MesonBook(docusaurus)",
     url: "https://ousttrue.github.io/meson_book/",
     icon: "🔗",
@@ -41,7 +46,7 @@ const items: ItemType[] = [
     icon: "🔗",
   },
   { name: "w3mノート", url: "https://ousttrue.github.io/w3m/", icon: "🔗" },
-]
+];
 
 const zig_items: ItemType[] = [
   {
@@ -51,7 +56,7 @@ const zig_items: ItemType[] = [
   },
   { name: "kilo", url: "https://ousttrue.github.io/kilo/", icon: "🔗" },
   { name: "zig_uv", url: "https://github.com/ousttrue/zig_uv", icon: "🔗" },
-]
+];
 
 const zig_sokol: ItemType[] = [
   { name: "rowmath", url: "https://ousttrue.github.io/rowmath/", icon: "🔗" },
@@ -85,7 +90,7 @@ const zig_sokol: ItemType[] = [
     url: "https://ousttrue.github.io/zigltf/",
     icon: "🔗",
   },
-]
+];
 
 const vrmeditor: ItemType[] = [
   { name: "grapho", url: "https://ousttrue.github.io/grapho/", icon: "🔗" },
@@ -95,12 +100,20 @@ const vrmeditor: ItemType[] = [
     url: "https://ousttrue.github.io/VrmEditor/",
     icon: "🔗",
   },
-]
+];
 
 const openvr: ItemType[] = [
-  { name: "VRExperiment", url: "https://github.com/ousttrue/VRExperiment", icon: "🔗" },
-  { name: "ExtraTracker", url: "https://github.com/ousttrue/ExtraTracker", icon: "🔗" },
-]
+  {
+    name: "VRExperiment",
+    url: "https://github.com/ousttrue/VRExperiment",
+    icon: "🔗",
+  },
+  {
+    name: "ExtraTracker",
+    url: "https://github.com/ousttrue/ExtraTracker",
+    icon: "🔗",
+  },
+];
 
 export const DATA: { [name: string]: ItemType[] } = {
   items: items,
