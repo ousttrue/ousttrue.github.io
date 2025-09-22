@@ -13,7 +13,7 @@ export function Items(props: { items: ItemType[] }) {
   return (
     <>
       {props.items.map((item, i) => (
-        <Item {...item} />
+        <Item key={i} {...item} />
       ))}
     </>
   );

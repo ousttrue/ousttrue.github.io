@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
-import Inspect from 'vite-plugin-inspect'
+import Inspect from "vite-plugin-inspect";
 
 // loccal
-import Develop from './mydev-vite-plugin';
-import Markdown from './mymd-vite-plugin';
+import Develop from "./mydev-vite-plugin";
+import Markdown from "./mymd-vite-plugin";
 
 // https://vitejs.dev/config/
 const config = defineConfig({
@@ -12,6 +12,11 @@ const config = defineConfig({
     Markdown(),
     // Inspect(),
   ],
+  server: {
+    watch: {
+      usePolling: true,
+    },
+  },
 });
 
 export default config;
