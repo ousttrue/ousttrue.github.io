@@ -6,6 +6,7 @@ const dist = path.resolve(__dirname, 'dist');
 import { createServer } from "vite";
 const vite = await createServer();
 
+process.env.PRERENDER = "true";
 const { generate } = await vite.ssrLoadModule('/src/entry-ssg.ts')
 generate(dist);
 vite.close();

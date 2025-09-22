@@ -1,5 +1,5 @@
 import import_css from "../public/Layout.css?url";
-const css = import.meta.env.DEV ? import_css : "/Layout.css";
+const css = process.env.PRERENDER ? "/Layout.css" : import_css;
 
 type LayoutProps = {
   title?: string;
