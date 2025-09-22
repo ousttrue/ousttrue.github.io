@@ -1,9 +1,9 @@
-import { SORTED_POSTS } from './pages';
-import Title from './Title';
-import type { Frontmatter, MarkdownData } from '../mymd-vite-plugin.ts';
+import { SORTED_POSTS } from "./pages";
+import Title from "./Title";
+import type { Frontmatter, MarkdownData } from "../mymd-vite-plugin.ts";
 
 type Props = {
-  tag?: string,
+  tag?: string;
 };
 
 function filter(key: string, post: MarkdownData, props: Props): boolean {
@@ -23,12 +23,12 @@ function filter(key: string, post: MarkdownData, props: Props): boolean {
 
 export default function(props: Props) {
   return (
-    <>
-      {SORTED_POSTS.filter(
-        ([key, post]) => filter(key, post, props)
-      ).map(
-        ([key, post]) => <Title key={key} path={key} frontmatter={post.frontmatter} />
+    <div className="posts">
+      {SORTED_POSTS.filter(([key, post]) => filter(key, post, props)).map(
+        ([key, post]) => (
+          <Title key={key} path={key} frontmatter={post.frontmatter} />
+        ),
       )}
-    </>
-  )
+    </div>
+  );
 }
