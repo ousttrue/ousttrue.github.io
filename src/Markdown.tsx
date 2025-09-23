@@ -64,13 +64,24 @@ function ListNode({ node }: { node: List }) {
 }
 
 function ListItemNode({ node }: { node: ListItem }) {
-  return (
-    <li>
-      {node.children.map((child, i) => (
-        <NodeRenderer key={i} node={child} />
-      ))}
-    </li>
-  );
+  if (node.checked !== null) {
+    return (
+      <li>
+        <input type="checkbox" checked={node.checked} />
+        {node.children.map((child, i) => (
+          <NodeRenderer key={i} node={child} />
+        ))}
+      </li>
+    );
+  } else {
+    return (
+      <li>
+        {node.children.map((child, i) => (
+          <NodeRenderer key={i} node={child} />
+        ))}
+      </li>
+    );
+  }
 }
 
 function HeadingNode({ node }: { node: Heading }) {
