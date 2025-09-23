@@ -92,33 +92,64 @@ function CodeNode({ node }: { node: Code }) {
   return <div dangerouslySetInnerHTML={{ __html: node.html }} />;
 }
 
-function TableNode({ node }: { node: Table }) {
-  return (
-    <table>
-      {node.children.map((child, i) => (
-        <NodeRenderer key={i} node={child} />
-      ))}
-    </table>
-  );
-}
-
-function TableRowNode({ node }: { node: TableRow }) {
+function TableRowNode({ node }: { node: TableRow }, isHeader: boolean) {
   return (
     <tr>
       {node.children.map((child, i) => (
-        <NodeRenderer key={i} node={child} />
+        <TableCellNode key={i} node={child} isHeader={isHeader} />
       ))}
     </tr>
   );
 }
 
-function TableCellNode({ node }: { node: TableCell }) {
+function TableCellNode({ node }: { node: TableCell }, isHeader: boolean) {
+  if (isHeader) {
+    return (
+      <th>
+        {node.children.map((child, i) => (
+          <NodeRenderer key={i} node={child} />
+        ))}
+      </th>
+    );
+  } else {
+    return (
+      <td>
+        {node.children.map((child, i) => (
+          <NodeRenderer key={i} node={child} />
+        ))}
+      </td>
+    );
+  }
+}
+
+function TableNode({ node }: { node: Table }) {
   return (
-    <td>
-      {node.children.map((child, i) => (
-        <NodeRenderer key={i} node={child} />
-      ))}
-    </td>
+    <table>
+      <thead>
+        <tr>
+          {node.children[0].children.map((cell, x) => (
+            <th>
+              {cell.children.map((inline, y) => (
+                <NodeRenderer key={y} node={inline} />
+              ))}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {node.children.splice(1).map((row, i) => (
+          <tr key={i}>
+            {row.children.map((cell, x) => (
+              <td>
+                {cell.children.map((inline, y) => (
+                  <NodeRenderer key={y} node={inline} />
+                ))}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -151,12 +182,12 @@ export function NodeRenderer({ node }: { node: Node }) {
     case "table": {
       return <TableNode node={node as Table} />;
     }
-    case "tableRow": {
-      return <TableRowNode node={node as TableRow} />;
-    }
-    case "tableCell": {
-      return <TableCellNode node={node as TableCell} />;
-    }
+    // case "tableRow": {
+    //   return <TableRowNode node={node as TableRow} />;
+    // }
+    // case "tableCell": {
+    //   return <TableCellNode node={node as TableCell} />;
+    // }
     default: {
       return (
         <div className="unknown">{`unknown: ${node.type} => ${JSON.stringify(node)}`}</div>
