@@ -23,7 +23,7 @@ function filter(key: string, post: MarkdownData, props: Props): boolean {
 
 export default function(props: Props) {
   return (
-    <div className="posts">
+    <div className="items">
       {SORTED_POSTS.filter(([key, post]) => filter(key, post, props)).map(
         ([key, post]) => (
           <Title key={key} path={key} frontmatter={post.frontmatter} />

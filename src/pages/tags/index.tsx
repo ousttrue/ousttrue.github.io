@@ -3,7 +3,7 @@ import { Tag } from "../../Title.tsx";
 
 export default function(_) {
   return (
-    <div className="posts">
+    <div className="items">
       {Array.from(TAGS)
         .toSorted()
         .map((tag) => {

@@ -21,7 +21,7 @@ export function Items(props: { items: ItemType[] }) {
 
 export default function() {
   return (
-    <div className="posts">
+    <div className="items">
       <Items items={DATA.items} />
       <div className="item">
         <h2>zig</h2>
