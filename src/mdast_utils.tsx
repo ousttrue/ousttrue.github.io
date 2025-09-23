@@ -6,8 +6,10 @@ import { remark } from "remark";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import { codeToHtml } from 'shiki'
+import { plugin } from './mdast_ext.ts';
 
 const parseMarkdown = remark()
+  .use(plugin)
   .use(remarkFrontmatter)
   .use(remarkGfm);
 export type MarkdownProps = {

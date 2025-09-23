@@ -4,6 +4,7 @@ import Title from "./Title.tsx";
 import type { Frontmatter } from "../mymd-vite-plugin.ts";
 import {
   Node,
+  Parent,
   Root,
   Code,
   Text,
@@ -67,7 +68,7 @@ function ListItemNode({ node }: { node: ListItem }) {
   if (node.checked !== null) {
     return (
       <li>
-        <input type="checkbox" checked={node.checked} />
+        <input type="checkbox" checked={node.checked} disabled={true} />
         {node.children.map((child, i) => (
           <NodeRenderer key={i} node={child} />
         ))}
@@ -164,6 +165,17 @@ function TableNode({ node }: { node: Table }) {
   );
 }
 
+export function MsgNode({ node }: { node: Parent }) {
+  return (
+    <div className="msg note">
+      <span>📝</span>
+      {node.children.map((child, i) => (
+        <NodeRenderer key={i} node={child} />
+      ))}
+    </div>
+  );
+}
+
 export function NodeRenderer({ node }: { node: Node }) {
   switch (node.type) {
     case "text": {
@@ -199,6 +211,9 @@ export function NodeRenderer({ node }: { node: Node }) {
     // case "tableCell": {
     //   return <TableCellNode node={node as TableCell} />;
     // }
+    case "msg": {
+      return <MsgNode node={node} />;
+    }
     default: {
       return (
         <div className="unknown">{`unknown: ${node.type} => ${JSON.stringify(node)}`}</div>
