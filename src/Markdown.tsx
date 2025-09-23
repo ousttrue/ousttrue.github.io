@@ -211,6 +211,15 @@ export function NodeRenderer({ node }: { node: Node }) {
     // case "tableCell": {
     //   return <TableCellNode node={node as TableCell} />;
     // }
+    case "delete": {
+      return (
+        <s>
+          {node.children.map((child, i) => (
+            <NodeRenderer key={i} node={child} />
+          ))}
+        </s>
+      );
+    }
     case "msg": {
       return <MsgNode node={node} />;
     }
