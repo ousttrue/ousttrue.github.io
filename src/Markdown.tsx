@@ -17,7 +17,6 @@ import {
   Table,
   TableRow,
   TableCell,
-  Container,
 } from "mdast";
 
 function RootNode({ node }: { node: Root }) {
@@ -206,9 +205,6 @@ export function NodeRenderer({ node }: { node: Node }) {
           ))}
         </s>
       );
-    }
-    case "msg": {
-      return <MsgNode node={node as any} />;
     }
     default: {
       return (
