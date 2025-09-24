@@ -17,6 +17,7 @@ import {
   Table,
   TableRow,
   TableCell,
+  Container,
 } from "mdast";
 
 function RootNode({ node }: { node: Root }) {
@@ -99,6 +100,16 @@ function InlineCodeNode({ node }: { node: InlineCode }) {
   return <span className="inline">{node.value}</span>;
 }
 
+function BlockQuoteNode({ node }: { node: Parent }) {
+  return (
+    <blockquote>
+      {node.children.map((child, i) => (
+        <NodeRenderer key={i} node={child} />
+      ))}
+    </blockquote>
+  );
+}
+
 function CodeNode({ node }: { node: Code }) {
   // @ts-ignore
   return <div dangerouslySetInnerHTML={{ __html: node.html }} />;
@@ -135,7 +146,7 @@ function TableNode({ node }: { node: Table }) {
   );
 }
 
-export function MsgNode({ node }: { node: Parent }) {
+function ContainerDirectiveNode({ node }: { node: Parent }) {
   return (
     <div className="msg note">
       <span>📝</span>
@@ -172,8 +183,14 @@ export function NodeRenderer({ node }: { node: Node }) {
     case "code": {
       return <CodeNode node={node as Code} />;
     }
+    case "blockquote": {
+      return <BlockQuoteNode node={node as Parent} />;
+    }
     case "table": {
       return <TableNode node={node as Table} />;
+    }
+    case "containerDirective": {
+      return <ContainerDirectiveNode node={node as Parent} />;
     }
     // case "tableRow": {
     //   return <TableRowNode node={node as TableRow} />;

@@ -5,13 +5,16 @@ import {
 import { remark } from "remark";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
+import remarkDirective from 'remark-directive'
 import { codeToHtml } from 'shiki'
 // import { plugin } from './mdast_ext.ts';
 
 const parseMarkdown = remark()
   // .use(plugin)
   .use(remarkFrontmatter)
-  .use(remarkGfm);
+  .use(remarkGfm)
+  .use(remarkDirective)
+  ;
 export type MarkdownProps = {
   path: string,
   post: MarkdownData,

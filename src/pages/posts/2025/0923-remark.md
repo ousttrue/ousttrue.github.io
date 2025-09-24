@@ -211,6 +211,14 @@ https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonm
 なので parser を拡張するのは筋が悪く、難易度が高いぽい。
 parser(tokenizer) じゃなくて transformer で mdast を操作するのが現実的なのではないか。
 
-## 後で試す
+## micromark-extension-directive だった
 
-https://github.com/ipikuka/remark-flexible-containers
+https://github.com/micromark/micromark-extension-directive
+
+すなわち
+
+https://github.com/remarkjs/remark-directive
+
+使用例
+
+https://github.com/mouse484/blog/commit/27f1148a3607f8ed30e0080c255b4d9aaab2e38d
