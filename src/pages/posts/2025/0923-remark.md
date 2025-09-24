@@ -1,5 +1,5 @@
 ---
-title: remark memo
+title: remark の 実装は micromark
 
 date: 2025-09-23
 tags: [markdown]
@@ -115,4 +115,102 @@ export function NodeRenderer({ node }: { node: Node }) {
 
 - @2023 [react-markdown をやめて remark から自力でレンダリングするようにした話 | stin's Blog](https://blog.stin.ink/articles/replace-react-markdown-with-remark)
 
-わりとさくっと admonition できた。
+~~わりとさくっと admonition できた。~~
+いや、できていない。admonition block の中に他のノードが入ったりすると対応できない。
+transform じゃなくて parser plugin の方がよさそう。
+inlineTokenizer じゃなくて blockTokenizer な気がする。
+
+## 難航
+
+js 作業がいつもどおり泥沼化。
+ちょっと深くなると、ドキュメントとかblog例を見ても歯が立たない。
+typescript で型まではわかるのだが、interface で切られて editor の jump で実装まで行くことができないからだ。
+実装見ればすぐ分かるものを調べて解決しようとして、無限に検索しつつ進まないという状態に陥る。
+たまたまそのものずばりのコードを github で探り当てることができた場合とかしかうまくいかない。
+vscode の debugger をアタッチするとかすればすぐわかるので、そうするべき。
+remark とか vite とかで毎回同じようなはまり方するのは、これが原因だ。
+
+- https://marketplace.visualstudio.com/items?itemName=oven.bun-vscode
+- [最高の TypeScript 開発環境を最速で作っていくよ 2025 秋](https://zenn.dev/somnicattus/articles/3c1f3756aec24a)
+
+remark のドキュメントや plugin の作り方を検索するのはやめて、
+[シンプルなプラグイン](https://vivliostyle.github.io/vivliostyle_doc/ja/vivliostyle-user-group-vol2/spring-raining/index.html)
+にアタッチして動作を探る路線に変更。
+
+ドキュメントじゃなくてコード読むべきで、
+その助けとして debugger にアタッチする。
+
+## 頓挫
+
+うまくいかなかったが、分かったことをメモする。
+まず、
+
+- @2023 [Markdown を型付きオレオレ AST に変換する | giraphme/blog](https://giraph.me/articles/unified-with-ts/)
+
+> 2020年ごろに Remark のパーサー（micromark）が仕様変更したことによって一部のプラグインが使用できなく
+
+とあるのだが、
+
+[Remark で広げる Markdown の世界](https://vivliostyle.github.io/vivliostyle_doc/ja/vivliostyle-user-group-vol2/spring-raining/index.html)
+
+の以下の部分が変わっていて互換性が無い。
+
+```js
+function rubyAttacher() {
+  const { Parser } = this;
+  if (!Parser) {
+    return;
+  }
+  const { inlineTokenizers, inlineMethods } = Parser.prototype;
+  rubyTokenizer.locator = rubyLocator;
+  inlineTokenizers.ruby = rubyTokenizer;
+  inlineMethods.splice(inlineMethods.indexOf("text"), 0, "ruby");
+}
+```
+
+今は、
+
+https://github.com/lumen-notes/lumen/blob/main/src/remark-plugins/tag.ts
+
+```js
+/**
+ * Remark plugin
+ * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+ */
+export function remarkTag(): ReturnType<Plugin<[], Root>> {
+  // @ts-ignore I'm not sure how to type `this`
+  const data = this.data()
+
+  add("micromarkExtensions", tag())
+  add("fromMarkdownExtensions", tagFromMarkdown())
+
+  function add(field: string, value: unknown) {
+    const list = data[field] ? data[field] : (data[field] = [])
+    list.push(value)
+  }
+}
+```
+
+のようなスタイルに変わっている。
+`this` が違う。
+
+micromarkExtensions により micoromark の parser をカスタマイズし、
+fromMarkdownExtensions におり micromarの 結果を mdast に乗せ換えるポイ。
+
+https://github.com/remarkjs/remark/blob/main/packages/remark-parse/lib/index.js
+
+## micromark の tokenizer
+
+admonition に近いものとして codefence のソース。
+
+https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonmark/dev/lib/code-fenced.js
+
+なのだけど、admonition は中に普通の markdown がまるっとネストするので、
+`block 要素で他の要素がネストする` という類似する文法が既存でないぽい。
+
+なので parser を拡張するのは筋が悪く、難易度が高いぽい。
+parser(tokenizer) じゃなくて transformer で mdast を操作するのが現実的なのではないか。
+
+## 後で試す
+
+https://github.com/ipikuka/remark-flexible-containers

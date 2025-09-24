@@ -59,10 +59,6 @@ https://github.com/remarkjs/remark/releases/tag/13.0.0
 
 ```ts
 import { expect, test } from "vitest";
-import { fromMarkdown } from "mdast-util-from-markdown";
-
-const SRC = `
-import { expect, test } from "vitest";
 import { type Extension } from "micromark-util-types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 
@@ -82,7 +78,8 @@ test("micromark", () => {
   console.log(JSON.stringify(result, null, 2));
   expect(result.type).toEqual("root");
   expect(result.children[0].type).toEqual("heading");
-});```
+});
+```
 
 ```json
 {
