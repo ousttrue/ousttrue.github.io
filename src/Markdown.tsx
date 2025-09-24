@@ -104,36 +104,6 @@ function CodeNode({ node }: { node: Code }) {
   return <div dangerouslySetInnerHTML={{ __html: node.html }} />;
 }
 
-function TableRowNode({ node }: { node: TableRow }, isHeader: boolean) {
-  return (
-    <tr>
-      {node.children.map((child, i) => (
-        <TableCellNode key={i} node={child} isHeader={isHeader} />
-      ))}
-    </tr>
-  );
-}
-
-function TableCellNode({ node }: { node: TableCell }, isHeader: boolean) {
-  if (isHeader) {
-    return (
-      <th>
-        {node.children.map((child, i) => (
-          <NodeRenderer key={i} node={child} />
-        ))}
-      </th>
-    );
-  } else {
-    return (
-      <td>
-        {node.children.map((child, i) => (
-          <NodeRenderer key={i} node={child} />
-        ))}
-      </td>
-    );
-  }
-}
-
 function TableNode({ node }: { node: Table }) {
   return (
     <table>
@@ -214,14 +184,14 @@ export function NodeRenderer({ node }: { node: Node }) {
     case "delete": {
       return (
         <s>
-          {node.children.map((child, i) => (
+          {(node as any).children.map((child, i) => (
             <NodeRenderer key={i} node={child} />
           ))}
         </s>
       );
     }
     case "msg": {
-      return <MsgNode node={node} />;
+      return <MsgNode node={node as any} />;
     }
     default: {
       return (
