@@ -26,13 +26,13 @@ https://gustavolsson.com/projects/sokol-android/
 
 | platform  | window system         | GPU   | note                                 |
 | --------- | --------------------- | ----- | ------------------------------------ |
-| Windows11 | sapp (sokol-app)      | d3d   | 既(default)                          |
+| Windows11 | sapp                  | d3d   | 既(default)                          |
 | Windows11 | glfw                  | d3d   | 既                                   |
-| android   | NativeActivity        | gles  | TODO:                                |
+| android   | sapp + NativeActivity | gles  | OK                                   |
 | Quest     | NativeActivity OpenXR | gles  | WIP: zig + android + gles までできた |
-| WASM      | sapp(sokol-app)       | webgl | 既                                   |
+| WASM      | sapp                  | webgl | 既                                   |
 
-言語は zig を使うことは決定していて、先日 [0.15.0](https://ziglang.org/download/0.15.1/release-notes.html) が Release された。
+言語は zig を使うことは決定していて、先日 [0.15.1](https://ziglang.org/download/0.15.1/release-notes.html) が Release された。
 これで シーン管理 を作る。
 
 ## sokol-zig
@@ -60,6 +60,11 @@ https://github.com/floooh/sokol-zig/blob/master/src/sokol/app.zig
 - `0.14` https://github.com/vkensou/zig-android-sdk
 
 動きそうなプロジェクトを捜索・・・
+できた。
+
+https://github.com/ousttrue/zbk
+
+build.zig 向け utility として整備していこう。
 
 ## ndk utility を整備
 
@@ -81,3 +86,22 @@ emscripten は emsdk のリンカーを使うので sysroot への include だ�
 ndk は zig でリンクするので、ndk の build 済みの libc を指定してやる。
 `aarch64-linux-android` や `wasm32-emscripten` の libc は zig に含まれていないので、
 `#include <string.h>` ですら sysroot を手当しないとビルドすることができないのである。
+
+以下のように addSystemIncludePath x 2 と addLibraryPath 、さらに setLibCFile することで
+zig に libc が含まれるない target (aarch64-linux-android とか) もビルドできる。
+
+```zig
+    const libc_file = try ndk.LibCFile.make(b, ndk_path, target, API_LEVEL);
+    // for compile
+    lib.addSystemIncludePath(.{ .cwd_relative = libc_file.include_dir });
+    lib.addSystemIncludePath(.{ .cwd_relative = libc_file.sys_include_dir });
+    // for link
+    lib.setLibCFile(libc_file.path);
+    lib.addLibraryPath(.{ .cwd_relative = libc_file.crt_dir });
+
+    lib.linkSystemLibrary("android");
+    lib.linkSystemLibrary("log");
+```
+
+NDK による so の build と、SDK による apk 構成を把握した。
+
