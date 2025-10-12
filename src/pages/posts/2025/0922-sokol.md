@@ -1,107 +1,70 @@
 ---
-title: zig で desktop - android - wasm 横断
+title: sokol-zig で cross platform
 
 date: 2025-09-22
-tags: [sokol, zig, wasm]
+tags: [sokol, zig, wasm, openxr]
 ---
 
-3D プログラミングで desktop(glfw), android(OpenXR) で共用にできないか模索しておったのだが、
-vulkan を採用することでいけそうと目途がついていた。
-engine 部分を vulkan で GPU との接続を Windows11 上の glfw 、Android の NativeActivity さらに、
-Windows11 上の OpenXR と Android 上の OpenXR 、Linux の OpenXR (WiVRn) でビルドと実行ができた。
-
-WASM にも同じシーンを展開できるようにしたいと思って、 vulkan は無いので WebGpu できるか試していたのだけど、
-glfw, android と統合するのは困難とわかった。
-
-ここで [sokol](https://floooh.github.io/sokol-html5/) を思い出し、
-sokol なら WASM が確実にできるので、 sokol と OpenXR を合体する路線を検討。
-OpenXR の backend に vulkan を使うことを諦めて OpenGLES とか使えば行けるじゃんと思った。
-
-次は、 sokol on android を試そう。
-
-https://gustavolsson.com/projects/sokol-android/
-
-然る後に、 sokol on Quest3 を試す。
-うまくいけば、
-
-| platform  | window system         | GPU   | note                                 |
-| --------- | --------------------- | ----- | ------------------------------------ |
-| Windows11 | sapp                  | d3d   | 既(default)                          |
-| Windows11 | glfw                  | d3d   | 既                                   |
-| android   | sapp + NativeActivity | gles  | OK                                   |
-| Quest     | NativeActivity OpenXR | gles  | WIP: zig + android + gles までできた |
-| WASM      | sapp                  | webgl | 既                                   |
+3D プログラミングで desktop(glfw), android(OpenXR) で描画を共用にできないか模索している。
 
 言語は zig を使うことは決定していて、先日 [0.15.1](https://ziglang.org/download/0.15.1/release-notes.html) が Release された。
-これで シーン管理 を作る。
+なので、 `c` (のABI) は大いに使うのだが `c++` 要素はなるべくさけようとしている( zig cc のクロスビルドでトラブルになりやすい)。
 
-## sokol-zig
+GPU API は vulkan を採用することでいけそうと目途がついていた。
+OpenGLと比べてビルドは簡単、ソースコードは大変。
+描画を vulkan で GPU との接続を Windows11 上の glfw 、Android の NativeActivity さらに、
+Windows11 上の OpenXR と Android 上の OpenXR 、Linux の OpenXR (WiVRn) でビルドと実行ができた。
 
-[sokol-zig の練習](https://ousttrue.github.io/zig-sokol-sample/)
+ついでにWASM にも同じシーンを展開できるようにしたい。 vulkan には web api は無いので WebGpu でできるか試していたのだけど、統合するのは難しそうだった。ラップするのに手間が増えすぎる。
 
-zig-0.15 に続いて sokol にも breaking change が来ていたのである。
+ここで GPU API をラップする [sokol](https://floooh.github.io/sokol-html5/) を思い出し、
+sokol なら WASM が確実にできるので、 OpenXR から sokol を使う路線を検討。
+OpenXR の backend に sokol を使って、 sokol の backend は d3d11 や OpenGLES にする。
+vulkan を使うことは諦める。
 
-https://floooh.github.io/2025/08/17/sokol-gfx-view-update.html
+## cross platform
 
-## hello_xr を zig に移植する
+どうも platform は OS レベルでは無くて、
+`OS + WindowSystem + GPU API` で切り分けるのがよさそうだ。
+ソースレベルの依存性などのビルドの都合を考慮すると以下のように組み合わせの問題になる。
 
-Desktop と Android で動いた。
-これを sokol と合体するのが次のステップ。
+| os            | window system            | GPU     | note          |
+| ------------- | ------------------------ | ------- | ------------- |
+| Windows11     | sokol-app                | d3d11   | sokol default |
+| Windows11     | glfw                     | OpenGL4 |               |
+| Windows11     | glfw                     | vulkan  |               |
+| Windows11     | OpenXR                   | OpenGL4 |               |
+| Windows11     | OpenXR                   | d3d11   |               |
+| android       | NativeActivity           | gles3   |               |
+| android       | NativeActivity           | vulkan  |               |
+| android       | NativeActivity sokol-app | gles3   |               |
+| Quest3        | NativeActivity OpenXR    | gles3   |               |
+| Quest3        | NativeActivity OpenXR    | vulkan  |               |
+| WASM          | sokol-app                | webgl   |               |
+| Linux wayland | OpenXR                   |         | WiVRn         |
 
-## sokol-zig を android と合体する
+OpenXR は WindowSystem レイヤーなのだ。
+これに真面目に対応しようとすると、window-system と gpu の組み合わせに対応する必要が出てくる。
+実際に openxr-sdk-source の hello_xr では、Platform(windows, linux, android, osx) `X` Graphics(d3d11, d3d12, opengl, opengles, vulkan, metal) という組み合わせに対応する設計になっている。
+ビルド時に Platform を分岐して、Runtime に Graphics を分岐する。
 
-https://github.com/floooh/sokol-zig/blob/master/src/sokol/app.zig
+https://github.com/KhronosGroup/OpenXR-SDK-Source/tree/main/src/tests/hello_xr
 
-> NOTE: SOKOL_NO_ENTRY and sapp_run() is currently not supported on Android.
+で、以下のように GPU を sokol 一種類にまとめることで、ほどほどの手間でクロスプラットフォームできようというわけです。
 
-どうなんだろう。
+| os        | window system            | GPU API | note |
+| --------- | ------------------------ | ------- | ---- |
+| Windows11 | sokol-app                | sokol   |      |
+| Windows11 | glfw                     | sokol   |      |
+| Windows11 | OpenXR                   | sokol   |      |
+| android   | NativeActivity           | sokol   |      |
+| android   | NativeActivity sokol-app | sokol   |      |
+| Quest3    | NativeActivity OpenXR    | sokol   |      |
+| WASM      | sokol-app                | sokol   |      |
 
-- `0.14` https://github.com/geooot/zig-sokol-crossplatform-starter
-- `0.14` https://github.com/vkensou/zig-android-sdk
+## sokol-xr
 
-動きそうなプロジェクトを捜索・・・
-できた。
+hello_xr をベースに WindowsDesktop(quest link) と Android(apk) で、
+同じ sokol レンダラーを動かす実験中。
 
-https://github.com/ousttrue/zbk
-
-build.zig 向け utility として整備していこう。
-
-## ndk utility を整備
-
-https://github.com/silbinarywolf/zig-android-sdk
-
-でだいたい目的は達せられるのだけど、 apk を作るを ndk による so のビルドと、
-それと AndroidManifest.xml や resource を構成して apk にまとめる機能の２つに分けたい。
-
-ndk を作るところは emscripten ビルドする場合にも似たことをする。
-
-|            | target                | linker | libc |
-| ---------- | --------------------- | ------ | ---- |
-| ndk        | aarch64-linux-android | zig    | sdk  |
-| emscripten | wasm32-emscripten     | sdk    | sdk  |
-
-共に zig ではなく sdk が所有する libc を使うことが必要で、
-そのために sysroot を操作する工程が必要となる。
-emscripten は emsdk のリンカーを使うので sysroot への include だけサポートすればよい。
-ndk は zig でリンクするので、ndk の build 済みの libc を指定してやる。
-`aarch64-linux-android` や `wasm32-emscripten` の libc は zig に含まれていないので、
-`#include <string.h>` ですら sysroot を手当しないとビルドすることができないのである。
-
-以下のように addSystemIncludePath x 2 と addLibraryPath 、さらに setLibCFile することで
-zig に libc が含まれるない target (aarch64-linux-android とか) もビルドできる。
-
-```zig
-    const libc_file = try ndk.LibCFile.make(b, ndk_path, target, API_LEVEL);
-    // for compile
-    lib.addSystemIncludePath(.{ .cwd_relative = libc_file.include_dir });
-    lib.addSystemIncludePath(.{ .cwd_relative = libc_file.sys_include_dir });
-    // for link
-    lib.setLibCFile(libc_file.path);
-    lib.addLibraryPath(.{ .cwd_relative = libc_file.crt_dir });
-
-    lib.linkSystemLibrary("android");
-    lib.linkSystemLibrary("log");
-```
-
-NDK による so の build と、SDK による apk 構成を把握した。
-
+https://github.com/ousttrue/sokol-xr
