@@ -15,8 +15,8 @@ const buf = allocator.alloc(u8, 1024) catch @panic("OOM");
 わずらわしくないようにデザインしていくべきだ。
 ハンドリングしない nullable や エラーは伝搬させる必要が無いのである。
 
-## nullable かつ error: 正常かつ null をハンドリングしたいか？
+## `!?hoge` nullable かつ error: 正常かつ null をハンドリングしたいか？
 
-## nullable or error: if, catch, orelse 使いたいか？
+## nullable or error: error の種類による分岐が無いなら nullable でよい
 
-## error の種類による分岐が無いなら nullable でよい
+## try で early したいなら `!void` もあり
