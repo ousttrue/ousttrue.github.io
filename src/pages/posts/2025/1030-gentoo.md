@@ -84,7 +84,7 @@ alsa の dmix を backend にすることで目的を達成できた。
 alsa, piewire, systemd の user session の設定の組合せで設定できる。
 できるが一般的でない設定は、同じことをやっている人が少ない。
 
-```alsa title="/etc/asound.conf"
+```title="/etc/asound.conf"
 ctl.!default {
   type hw
   card PCH
@@ -101,7 +101,7 @@ pcm.amp {
 }
 ```
 
-```pipewire title="~/.config/pipewire/pipewire.conf"
+```title="~/.config/pipewire/pipewire.conf"
     { factory = adapter
        args = {
            factory.name           = api.alsa.pcm.sink

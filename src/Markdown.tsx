@@ -122,7 +122,7 @@ function TableNode({ node }: { node: Table }) {
       <thead>
         <tr>
           {node.children[0].children.map((cell, x) => (
-            <th>
+            <th key={x}>
               {cell.children.map((inline, y) => (
                 <NodeRenderer key={y} node={inline} />
               ))}
@@ -134,7 +134,7 @@ function TableNode({ node }: { node: Table }) {
         {node.children.splice(1).map((row, i) => (
           <tr key={i}>
             {row.children.map((cell, x) => (
-              <td>
+              <td key={x}>
                 {cell.children.map((inline, y) => (
                   <NodeRenderer key={y} node={inline} />
                 ))}
