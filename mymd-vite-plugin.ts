@@ -1,6 +1,7 @@
 import { Plugin } from 'vite';
 import path from 'node:path';
 import YAML from 'yaml'
+const __dirname = import.meta.dirname;
 
 export type Frontmatter = {
   title: string,
@@ -52,8 +53,25 @@ export default function pluginMarkdown(): Plugin {
       // console.log(id);
       const extension = path.extname(id)
       if (extension !== '.md') return
-      const matter = splitMatter(code)
-      return 'export default ' + JSON.stringify(matter);
+      try {
+        const matter = splitMatter(code)
+        return 'export default ' + JSON.stringify(matter);
+      }
+      catch{
+        // const dirname = path.dirname(id);
+        const basename = path.basename(id, '.md');
+        const dirname = path.dirname(id).split('/').splice(7);
+        const frontmatter = {
+          title: basename,
+          date: new Date('2011-01-01'),
+          tags: dirname,
+        };
+        const content = code;
+        return 'export default ' + JSON.stringify({
+          frontmatter,
+          content,
+        });
+      }
     },
   };
 };
