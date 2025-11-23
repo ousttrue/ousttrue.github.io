@@ -17,7 +17,9 @@ import {
   Table,
   TableRow,
   TableCell,
+  Image,
 } from "mdast";
+import path from "node:path";
 
 function RootNode({ node }: { node: Root }) {
   return (
@@ -156,6 +158,10 @@ function ContainerDirectiveNode({ node }: { node: Parent }) {
   );
 }
 
+function ImageNode({ node }: { node: Image }) {
+  return <img src={path.join("..", node.url)} />;
+}
+
 export function NodeRenderer({ node }: { node: Node }) {
   switch (node.type) {
     case "text": {
@@ -206,6 +212,10 @@ export function NodeRenderer({ node }: { node: Node }) {
         </s>
       );
     }
+    case "image": {
+      return <ImageNode node={node as Image} />;
+    }
+    // {"type":"image","title":null,"url":"./tree.jpg","alt":"image","position":{"start":{"line":50,"column":1,"offset":1430},"end":{"line":50,"column":21,"offset":1450}}}
     default: {
       return (
         <div className="unknown">{`unknown: ${node.type} => ${JSON.stringify(node)}`}</div>

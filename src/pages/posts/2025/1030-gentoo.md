@@ -9,6 +9,8 @@ Ubuntu は固より、Arch でも物足りない感じがするからのう。
 
 手始めに `surface3 i5` に入れてみた。
 
+![neofetch](./neofetch.jpg)
+
 # systemd
 
 ついに `systemd` にすることにした。
@@ -52,8 +54,6 @@ ghq, fzf, lazygit はマニュアルインストールにした。
 
 rg, fd, bottom, zoxide は emerge (guru) を使った。
 
-# TODO
-
 ## plasma
 
 ## pipewire
@@ -63,3 +63,6 @@ rg, fd, bottom, zoxide は emerge (guru) を使った。
 ## WiVRn
 
 OpenXR
+
+## steam
+

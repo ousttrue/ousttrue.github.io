@@ -1,24 +1,21 @@
-import React from 'react';
-import type { Frontmatter, MarkdownData } from '../mymd-vite-plugin.ts';
-const ROOT = '/src/pages';
+import React from "react";
+import type { Frontmatter, MarkdownData } from "../mymd-vite-plugin.ts";
+const ROOT = "/src/pages";
 
 export type Props = { posts: { [key: string]: MarkdownData } };
 
 const pages = import.meta.glob<(props: Props) => React.ReactNode>(
-  '/src/pages/**/*.tsx',
+  "/src/pages/**/*.tsx",
   {
-    import: 'default',
-    eager: true
-  }
+    import: "default",
+    eager: true,
+  },
 );
 
-const posts = import.meta.glob<MarkdownData>(
-  '/src/pages/**/*.md',
-  {
-    import: 'default',
-    eager: true
-  }
-);
+const posts = import.meta.glob<MarkdownData>("/src/pages/**/*.md", {
+  import: "default",
+  eager: true,
+});
 
 // from /src/pages
 // .xxx replace to '.html'
@@ -26,8 +23,7 @@ function fixPath(key: string, ext: string) {
   const stem = key.substring(ROOT.length, key.length - ext.length);
   if (stem.endsWith("/index")) {
     return stem + ".html";
-  }
-  else {
+  } else {
     return stem + "/index.html";
   }
 }
@@ -42,16 +38,17 @@ function fixDate(v: MarkdownData) {
 }
 
 export const PAGES = Object.fromEntries(
-  Object.entries(pages).map(([k, v]) => [fixPath(k, '.tsx'), v]));
+  Object.entries(pages).map(([k, v]) => [fixPath(k, ".tsx"), v]),
+);
 export const POSTS = Object.fromEntries(
-  Object.entries(posts).map(([k, v]) => [fixPath(k, '.md'), fixDate(v)]));
-
-
-export const SORTED_POSTS = Object.entries(POSTS).toSorted(
-  (a, b) => a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1
+  Object.entries(posts).map(([k, v]) => [fixPath(k, ".md"), fixDate(v)]),
 );
 
-export const TAGS: Set<string> = function() {
+export const SORTED_POSTS = Object.entries(POSTS).toSorted((a, b) =>
+  a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1,
+);
+
+export const TAGS: Set<string> = (function() {
   const tags = new Set<string>();
   for (const [_, post] of SORTED_POSTS) {
     if (post.frontmatter.tags) {
@@ -61,4 +58,9 @@ export const TAGS: Set<string> = function() {
     }
   }
   return tags;
-}();
+})();
+
+export const COPYDATA = import.meta.glob("/src/pages/**/*.jpg", {
+  import: "default",
+  eager: true,
+});

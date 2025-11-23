@@ -1,39 +1,59 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import type { ServerResponse } from 'node:http';
-import type { IncomingMessage } from 'connect';
+import fs from "node:fs";
+import path from "node:path";
+import fs from "node:fs";
+import type { ServerResponse } from "node:http";
+import type { IncomingMessage } from "connect";
 import { Plugin, ViteDevServer } from "vite";
 
 function makeSsg(vite: ViteDevServer) {
   return function() {
-    vite.middlewares.use(async (
-      req: IncomingMessage, res: ServerResponse, next) => {
-      try {
-        const template_src = fs.readFileSync(
-          path.resolve(__dirname, 'index.html'),
-          'utf-8',
-        )
-        const template = await vite.transformIndexHtml(req.url || "", template_src)
-        const { render } = await vite.ssrLoadModule('/src/entry-server.tsx')
-        const rendered = await render(req, res)
-        if (rendered) {
-          const html = template.replace(`<!--ssr-outlet-->`, rendered)
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'text/html');
-          res.end(html)
+    vite.middlewares.use(
+      async (req: IncomingMessage, res: ServerResponse, next) => {
+        try {
+          if (req.originalUrl?.endsWith(".jpg")) {
+            // const html = template.replace(`<!--ssr-outlet-->`, rendered);
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "image/jpeg");
+            const data = fs.readFileSync(
+              path.join(
+                path.dirname(import.meta.url.substring(7)),
+                "src/pages" + req.originalUrl,
+              ),
+            );
+            res.end(data);
+          } else {
+            const template_src = fs.readFileSync(
+              path.resolve(__dirname, "index.html"),
+              "utf-8",
+            );
+            const template = await vite.transformIndexHtml(
+              req.url || "",
+              template_src,
+            );
+            const { render } = await vite.ssrLoadModule(
+              "/src/entry-server.tsx",
+            );
+            const rendered = await render(req, res);
+            if (rendered) {
+              const html = template.replace(`<!--ssr-outlet-->`, rendered);
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "text/html");
+              res.end(html);
+            } else {
+              console.log(req);
+              // do nothing ?
+              res.statusCode = 404;
+              res.end("not found");
+            }
+          }
+        } catch (e) {
+          vite.ssrFixStacktrace(e);
+          next(e);
+          console.error(e);
         }
-        else {
-          // do nothing ?
-          res.statusCode = 404;
-          res.end('not found')
-        }
-      } catch (e) {
-        vite.ssrFixStacktrace(e)
-        next(e)
-        console.error(e);
-      }
-    })
-  }
+      },
+    );
+  };
 }
 
 export default function pluginDevelop(): Plugin {
@@ -41,4 +61,4 @@ export default function pluginDevelop(): Plugin {
     name: "mydev-vite-plugin",
     configureServer: makeSsg,
   };
-};
+}
