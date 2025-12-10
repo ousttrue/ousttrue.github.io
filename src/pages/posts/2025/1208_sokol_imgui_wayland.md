@@ -87,7 +87,7 @@ https://github.com/floooh/dcimgui/commit/581c2e909c899c21923c779d4c41ea56ab93bbb
 
 その直前の版に切り替える。
 
-```zon
+```zig
         .cimgui = .{
             .url = "git+https://github.com/floooh/dcimgui.git#de39f1d7106d448909d9776eb0049fbfed24d056",
             .hash = "cimgui-0.1.0-44ClkQ_ekgDNAf1N4Fl1mJnVDyO83xbcqQElNUtURXcA",
