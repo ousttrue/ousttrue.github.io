@@ -110,8 +110,6 @@ while (true) {
 
 #### Table
 
-
-
 ## vaxis.vxfw
 
 | examples   | note                  |
@@ -132,4 +130,3 @@ while (true) {
 - https://github.com/BrookJeynes/jido
 - https://github.com/Eloitor/fancy-cat
 - https://github.com/bradcypert/book
-
