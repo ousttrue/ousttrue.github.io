@@ -1,7 +1,9 @@
 import import_css from "../public/Layout.css?url";
 const css = process.env.PRERENDER ? "/Layout.css" : import_css;
+import Breadcrumb from "./Breadcrumb";
 
 type LayoutProps = {
+  url: string;
   title?: string;
   children?: any;
 };
@@ -31,6 +33,9 @@ export default function Layout(props: LayoutProps) {
               </li>
               <li>
                 <a href="/w3m/">w3m</a>
+              </li>
+              <li>
+                <Breadcrumb url={props.url} />
               </li>
               <li className="right">
                 <a href="https://github.com/ousttrue/ousttrue.github.io">

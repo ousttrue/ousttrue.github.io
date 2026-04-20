@@ -65,7 +65,7 @@ function push_dir(stem: string) {
     dirs[parent_html] = [];
   }
   if (dirs[parent_html].indexOf(html) == -1) {
-    console.log(`${stem} => ${parent}`);
+    // console.log(`${stem} => ${parent}`);
     dirs[parent_html].push(html);
   }
 
@@ -74,10 +74,10 @@ function push_dir(stem: string) {
   }
 }
 
-for (const [key, _] of Object.entries(posts)) {
+for (const [key, _] of SORTED_POSTS) {
   // /path/to/index.html
   const ext = ".md";
-  let stem = key.substring(ROOT.length, key.length - ext.length);
+  let stem = path.dirname(key);
   push_dir(stem);
 }
 export const DIRS = dirs;

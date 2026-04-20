@@ -24,7 +24,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
 
       const html = ReactDOMServer.renderToString(
         <React.StrictMode>
-          <Layout title={post.frontmatter.title}>
+          <Layout url={url} title={post.frontmatter.title}>
             <Markdown path={url} frontmatter={post.frontmatter} node={ast} />
           </Layout>
         </React.StrictMode>,
@@ -38,7 +38,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
     if (App) {
       const html = ReactDOMServer.renderToString(
         <React.StrictMode>
-          <Layout>
+          <Layout url={url}>
             <App posts={POSTS} />
           </Layout>
         </React.StrictMode>,
@@ -54,7 +54,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
       if (TAGS.has(tag)) {
         const html = ReactDOMServer.renderToString(
           <React.StrictMode>
-            <Layout>
+            <Layout url={url}>
               <Posts tag={tag} />
             </Layout>
           </React.StrictMode>,
@@ -69,8 +69,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
     if (entries) {
       const html = ReactDOMServer.renderToString(
         <React.StrictMode>
-          <Layout>
-            {url}
+          <Layout url={url}>
             <div className="items">
               {entries.map((key) => (
                 <Title

@@ -229,6 +229,10 @@ function Before({ index }: { index: number }) {
   const post = SORTED_POSTS[index];
   if (post) {
     return <Title path={post[0]} frontmatter={post[1].frontmatter} />;
+  } else {
+    return (
+      <Title path="" frontmatter={{ title: "", date: new Date(), tags: [] }} />
+    );
   }
 }
 
@@ -236,6 +240,10 @@ function After({ index }: { index: number }) {
   const post = SORTED_POSTS[index];
   if (post) {
     return <Title path={post[0]} frontmatter={post[1].frontmatter} />;
+  } else {
+    return (
+      <Title path="" frontmatter={{ title: "", date: new Date(), tags: [] }} />
+    );
   }
 }
 
@@ -257,8 +265,8 @@ export default function Markdown({
         <RootNode node={node} />
       </section>
       <div className="before_after">
-        <Before index={i + 1} />
         <After index={i - 1} />
+        <Before index={i + 1} />
       </div>
     </article>
   );
