@@ -32,9 +32,6 @@ export default function Layout(props: LayoutProps) {
                 <a href="/tags/">tags</a>
               </li>
               <li>
-                <a href="/w3m/">w3m</a>
-              </li>
-              <li>
                 <Breadcrumb url={props.url} />
               </li>
               <li className="right">

@@ -230,9 +230,7 @@ function Before({ index }: { index: number }) {
   if (post) {
     return <Title path={post[0]} frontmatter={post[1].frontmatter} />;
   } else {
-    return (
-      <Title path="" frontmatter={{ title: "", date: new Date(), tags: [] }} />
-    );
+    return <div className="item" />;
   }
 }
 
@@ -241,9 +239,7 @@ function After({ index }: { index: number }) {
   if (post) {
     return <Title path={post[0]} frontmatter={post[1].frontmatter} />;
   } else {
-    return (
-      <Title path="" frontmatter={{ title: "", date: new Date(), tags: [] }} />
-    );
+    return <div className="item" />;
   }
 }
 
