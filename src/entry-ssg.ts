@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { PAGES, POSTS, TAGS, COPYDATA } from "./pages.ts";
+import { PAGES, POSTS, DIRS, TAGS, COPYDATA } from "./pages.ts";
 import { render } from "./entry-server.tsx";
 import type { IncomingMessage } from "connect";
 
@@ -43,6 +43,11 @@ export async function generate(dist: string) {
   }
   for (const [url, _] of Object.entries(PAGES)) {
     await prerenderAndWrite(template_src, url, dist);
+  }
+  for (const [url, _] of Object.entries(DIRS)) {
+    if (!(url in POSTS)) {
+      await prerenderAndWrite(template_src, url, dist);
+    }
   }
   for (const tag of TAGS) {
     await prerenderAndWrite(template_src, `/tags/${tag}/`, dist);

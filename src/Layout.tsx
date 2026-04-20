@@ -29,6 +29,9 @@ export default function Layout(props: LayoutProps) {
               <li>
                 <a href="/tags/">tags</a>
               </li>
+              <li>
+                <a href="/w3m/">w3m</a>
+              </li>
               <li className="right">
                 <a href="https://github.com/ousttrue/ousttrue.github.io">
                   github

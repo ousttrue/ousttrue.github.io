@@ -1,16 +1,18 @@
-import React from 'react'
-import ReactDOMServer from 'react-dom/server'
-import { PAGES, POSTS, TAGS } from './pages.ts';
+import path from "node:path";
+import React from "react";
+import ReactDOMServer from "react-dom/server";
+import { PAGES, POSTS, TAGS, DIRS } from "./pages.ts";
 import { markdownParser, markdownModifyAsync } from "./mdast_utils.tsx";
-import Posts from './Posts.tsx';
-import type { IncomingMessage } from 'connect';
-import Markdown from './Markdown.tsx';
-import Layout from './Layout.tsx';
+import Posts from "./Posts.tsx";
+import type { IncomingMessage } from "connect";
+import Markdown from "./Markdown.tsx";
+import Layout from "./Layout.tsx";
+import Title from "./Title";
 
 export async function render(req: IncomingMessage): Promise<string | null> {
-  let url = req.originalUrl || '';
-  if (url.endsWith('/')) {
-    url += 'index.html';
+  let url = req.originalUrl || "";
+  if (url.endsWith("/")) {
+    url += "index.html";
   }
 
   {
@@ -25,7 +27,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
           <Layout title={post.frontmatter.title}>
             <Markdown path={url} frontmatter={post.frontmatter} node={ast} />
           </Layout>
-        </React.StrictMode >
+        </React.StrictMode>,
       );
       return html;
     }
@@ -39,7 +41,7 @@ export async function render(req: IncomingMessage): Promise<string | null> {
           <Layout>
             <App posts={POSTS} />
           </Layout>
-        </React.StrictMode >
+        </React.StrictMode>,
       );
       return html;
     }
@@ -55,10 +57,41 @@ export async function render(req: IncomingMessage): Promise<string | null> {
             <Layout>
               <Posts tag={tag} />
             </Layout>
-          </React.StrictMode >
+          </React.StrictMode>,
         );
         return html;
       }
+    }
+  }
+
+  {
+    const entries = DIRS[url];
+    if (entries) {
+      const html = ReactDOMServer.renderToString(
+        <React.StrictMode>
+          <Layout>
+            {url}
+            <div className="items">
+              {entries.map((key) => (
+                <Title
+                  key={key}
+                  path={key}
+                  frontmatter={
+                    POSTS[key]
+                      ? POSTS[key].frontmatter
+                      : {
+                          title: path.basename(path.dirname(key)),
+                          date: new Date(),
+                          tags: [],
+                        }
+                  }
+                />
+              ))}
+            </div>
+          </Layout>
+        </React.StrictMode>,
+      );
+      return html;
     }
   }
 }

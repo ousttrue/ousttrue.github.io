@@ -1,3 +1,4 @@
+import path from "node:path";
 import React from "react";
 import type { Frontmatter, MarkdownData } from "../mymd-vite-plugin.ts";
 const ROOT = "/src/pages";
@@ -17,15 +18,21 @@ const posts = import.meta.glob<MarkdownData>("/src/pages/**/*.md", {
   eager: true,
 });
 
+function toHtml(stem: string): string {
+  if (stem.endsWith("/index")) {
+    return stem + ".html";
+  } else if (stem.endsWith("/")) {
+    return stem + "index.html";
+  } else {
+    return stem + "/index.html";
+  }
+}
+
 // from /src/pages
 // .xxx replace to '.html'
 function fixPath(key: string, ext: string) {
   const stem = key.substring(ROOT.length, key.length - ext.length);
-  if (stem.endsWith("/index")) {
-    return stem + ".html";
-  } else {
-    return stem + "/index.html";
-  }
+  return toHtml(stem);
 }
 
 function fixDate(v: MarkdownData) {
@@ -48,7 +55,34 @@ export const SORTED_POSTS = Object.entries(POSTS).toSorted((a, b) =>
   a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1,
 );
 
-export const TAGS: Set<string> = (function() {
+const dirs: { [key: string]: string[] } = {};
+
+function push_dir(stem: string) {
+  const parent = path.dirname(stem);
+  const html = toHtml(stem);
+  const parent_html = toHtml(parent);
+  if (!(parent_html in dirs)) {
+    dirs[parent_html] = [];
+  }
+  if (dirs[parent_html].indexOf(html) == -1) {
+    console.log(`${stem} => ${parent}`);
+    dirs[parent_html].push(html);
+  }
+
+  if (parent != "/") {
+    push_dir(parent);
+  }
+}
+
+for (const [key, _] of Object.entries(posts)) {
+  // /path/to/index.html
+  const ext = ".md";
+  let stem = key.substring(ROOT.length, key.length - ext.length);
+  push_dir(stem);
+}
+export const DIRS = dirs;
+
+export const TAGS: Set<string> = (function () {
   const tags = new Set<string>();
   for (const [_, post] of SORTED_POSTS) {
     if (post.frontmatter.tags) {
