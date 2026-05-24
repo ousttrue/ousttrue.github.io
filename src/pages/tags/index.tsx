@@ -2,10 +2,11 @@ import { TAGS } from "../../pages";
 import { Tag } from "../../Title.tsx";
 
 export default function(_) {
+    const tags = [...TAGS];
+    tags.sort();
   return (
     <div className="items">
-      {Array.from(TAGS)
-        .toSorted()
+      {tags
         .map((tag) => {
           // let date = `${typeof (post.frontmatter.date)}: ${post.frontmatter.date}`;
           return (

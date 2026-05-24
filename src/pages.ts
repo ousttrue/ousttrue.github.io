@@ -51,7 +51,8 @@ export const POSTS = Object.fromEntries(
   Object.entries(posts).map(([k, v]) => [fixPath(k, ".md"), fixDate(v)]),
 );
 
-export const SORTED_POSTS = Object.entries(POSTS).toSorted((a, b) =>
+export const SORTED_POSTS = [...Object.entries(POSTS)];
+SORTED_POSTS.sort((a, b) =>
   a[1].frontmatter.date < b[1].frontmatter.date ? 1 : -1,
 );
 
