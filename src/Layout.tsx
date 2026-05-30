@@ -43,7 +43,7 @@ export default function Layout(props: LayoutProps) {
           </nav>
         </div>
         <div className="layout_container">{props.children ?? ""}</div>
-        <div className="layout_footer">bun + vite + react</div>
+        <div className="layout_footer">deno + vite + react</div>
       </body>
     </html>
   );
