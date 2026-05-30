@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import fs from "node:fs";
 import type { ServerResponse } from "node:http";
 import type { IncomingMessage } from "connect";
 import { Plugin, ViteDevServer } from "vite";

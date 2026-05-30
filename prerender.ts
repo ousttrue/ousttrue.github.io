@@ -3,7 +3,7 @@ import url from 'node:url';
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const dist = path.resolve(__dirname, 'dist');
 
-import { createServer } from "vite";
+import { createServer } from "npm:vite";
 const vite = await createServer();
 
 process.env.PRERENDER = "true";
